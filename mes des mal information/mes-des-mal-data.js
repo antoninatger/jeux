@@ -185,6 +185,15 @@ const HARD = [
     why: "Les <b>données sont vraies</b>, mais la <b>présentation est truquée</b> volontairement → <b>malinformation</b> (faux cadrage). Comme aucun chiffre n'est inventé, ce n'est pas de la désinformation au sens strict."
   },
   {
+    tag: "Capture météo partagée",
+    fmt: "post", icon: "🌡️", user: "Alerte Canicule", handle: "@alerte_meteo",
+    body: "😱 REGARDEZ ces barres rouges, on va tous cramer cette semaine !!",
+    img: "images/exemple-graphique-meteo.jpg",
+    context: "Les températures affichées sont vraies (92° à 94°F, à peine 2° d'écart), mais les barres du graphique ne sont pas du tout proportionnelles aux valeurs.",
+    c: "mal",
+    why: "Les <b>chiffres sont réels</b> — 92 °F et 94 °F, soit un écart d'à peine 2 °F (~1 °C). Mais sur le graphique, les barres de jeudi et vendredi sont environ <b>15 fois plus hautes</b> que celles des autres jours, comme si l'écart était énorme. Aucun chiffre n'est inventé, mais la <b>présentation visuelle exagère massivement</b> les différences → <b>malinformation</b> (barres non proportionnelles, un cas classique d'effet de cadrage visuel)."
+  },
+  {
     tag: "Bouche-à-oreille à la récré",
     fmt: "chat",
     chat: [

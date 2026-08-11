@@ -185,6 +185,15 @@ const HARD = [
     why: "The <b>data is true</b>, but the <b>presentation is deliberately manipulated</b> → <b>malinformation</b> (false framing). Since no figure is invented, this is not disinformation in the strict sense."
   },
   {
+    tag: "Shared weather screenshot",
+    fmt: "post", icon: "🌡️", user: "Heatwave Alert", handle: "@heatwave_alert",
+    body: "😱 LOOK at these red bars, we're all going to fry this week!!",
+    img: "images/exemple-graphique-meteo.jpg",
+    context: "The temperatures shown are real (92° to 94°F, barely 2° apart), but the bars on the chart are nowhere near proportional to the values.",
+    c: "mal",
+    why: "The <b>numbers are real</b> — 92°F and 94°F, a gap of barely 2°F (~1°C). But on the chart, Thursday and Friday's bars are roughly <b>15 times taller</b> than the other days', as if the gap were huge. No figure is invented, but the <b>visual presentation wildly exaggerates</b> the differences → <b>malinformation</b> (non-proportional bars, a classic case of visual framing)."
+  },
+  {
     tag: "Playground word of mouth",
     fmt: "chat",
     chat: [
