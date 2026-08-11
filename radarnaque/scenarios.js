@@ -449,6 +449,29 @@ const SCENARIOS = [
     explication: 'Comme pour l’Assurance Maladie ou la CAF, les escrocs usurpent la DGFIP en pleine période de déclaration pour profiter de l’actualité. Un vrai remboursement d’impôt ne se débloque jamais en resaisissant un RIB sur un site externe : il est versé automatiquement sur le compte déjà connu de l’administration.'
   },
 
+  /* ---------- 24. E-mail aides climatisation en pleine canicule — ARNAQUE */
+  {
+    id: 'email-clim-aides',
+    canal: 'email',
+    entete: 'E-mail reçu en pleine vague de chaleur, à propos d’aides de l’État',
+    de: 'Clim Reversible',
+    deAdresse: 'noreply@mail-cbk-1sa.amberfunnel.com',
+    objet: 'Jusqu’à 900 € d’aides pour votre climatisation réversible',
+    date: 'Jeu. 16/07, 03:40',
+    corps: '<b>Avant les fortes chaleurs — Vérifiez votre éligibilité maintenant !</b><br><br>🏠 CLIMATISATION RÉVERSIBLE<br><span style="font-size:1.3em;font-weight:bold">900 €</span><br>sous conditions, pour l’installation ou le remplacement de votre climatisation réversible.<br><br>Aides cumulées potentielles selon conditions : <b>jusqu’à 10 800 €</b>',
+    bouton: 'Estimer mes aides 🎯',
+    verdict: 'arnaque',
+    categorie: 'Faux démarchage « aides à la rénovation énergétique » — générateur de leads',
+    indices: [
+      'Adresse d’expéditeur « amberfunnel.com » : un « funnel » est un outil marketing d’entreprise, sans aucun lien avec un organisme public ou un vrai installateur.',
+      'E-mail envoyé à 3h40 du matin : aucune entreprise sérieuse n’écrit à cette heure-là — c’est un envoi automatisé de masse.',
+      'Les montants s’empilent sans logique : « 900 € » en gros titre, puis « jusqu’à 10 800 € » plus bas — des maximums théoriques additionnés pour impressionner, pas un vrai calcul personnalisé.',
+      { risque: 'Le bouton « Estimer mes aides » mène à un formulaire qui collecte nom, adresse et téléphone — revendus ensuite à des démarcheurs en travaux.' }
+    ],
+    reflexe: 'Les aides à la rénovation énergétique se demandent uniquement sur le site officiel France Rénov’ (france-renov.gouv.fr) ou au 0 808 800 700, jamais via un lien reçu par e-mail.',
+    explication: 'Même recette que pour les panneaux solaires, mais version été : dès qu’une vague de chaleur ou de froid fait l’actualité, ces sites de génération de leads bombardent des e-mails promettant des aides exceptionnelles. Le formulaire ne débloque aucune aide : il sert à revendre vos coordonnées à des sociétés de travaux qui vous rappelleront ensuite pour vous vendre une installation surfacturée. Une vraie aide de l’État ne se demande jamais en cliquant sur un e-mail non sollicité.'
+  },
+
   /* ================== MESSAGES LÉGITIMES (à ne pas confondre) ========= */
 
   /* ---------- 12. SMS banque légitime — FIABLE ----------------------- */
@@ -962,6 +985,12 @@ const REPERES = {
     { texte:'acompte de 30 € par virement direct', bon:true, aide:'Vous demande-t-on de l’argent avant même d’avoir vu l’objet ?', note:'Demande de paiement direct avant tout contact réel : prudence.' },
     { texte:'ça évite les frais de la plateforme', bon:true, aide:'Quel prétexte utilise-t-on pour justifier de sortir du paiement sécurisé ?', note:'Prétexte classique pour vous faire sortir du paiement sécurisé.' },
     { texte:'toujours disponible', bon:false, note:'Réponse banale de vendeur : agréable, mais pas un indice en soi.' }
+  ],
+  'email-clim-aides': [
+    { texte:'noreply@mail-cbk-1sa.amberfunnel.com', bon:true, aide:'Regardez l’adresse complète de l’expéditeur : a-t-elle un rapport avec un organisme public ou un installateur ?', note:'« amberfunnel.com » est un outil marketing (« funnel » = entonnoir publicitaire), sans aucun lien avec un organisme public ou un vrai installateur.' },
+    { texte:'03:40', bon:true, aide:'Regardez l’heure d’envoi : est-ce une heure normale pour un vrai message professionnel ?', note:'Envoyé à 3h40 du matin : aucune entreprise sérieuse n’écrit à cette heure — signe d’un envoi automatisé de masse.' },
+    { texte:'jusqu’à 10 800 €', bon:true, aide:'Ce montant est-il cohérent avec les « 900 € » annoncés juste au-dessus ?', note:'Les chiffres s’empilent sans logique : « 900 € » en gros titre, puis « jusqu’à 10 800 € » plus bas — des maximums théoriques additionnés pour impressionner.' },
+    { texte:'sous conditions', bon:false, note:'Formule vague et rassurante… mais qu’on retrouve aussi dans de vraies publicités : elle ne prouve rien à elle seule.' }
   ]
 };
 

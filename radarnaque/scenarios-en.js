@@ -447,6 +447,27 @@ const SCENARIOS = [
     "explication": "Just like with health insurance or family benefits, scammers impersonate the tax authority during return season to ride the news cycle. A real tax refund is never unlocked by re-entering bank details on an external site: it is paid automatically to the account the administration already has on file."
   },
   {
+    "id": "email-clim-aides",
+    "canal": "email",
+    "entete": "E-mail received during a heatwave, about government aid",
+    "de": "Reversible AC",
+    "deAdresse": "noreply@mail-cbk-1sa.amberfunnel.com",
+    "objet": "Up to €900 in aid for your reversible air conditioning",
+    "date": "Thu, 16/07, 03:40",
+    "corps": "<b>Before the heatwave hits — Check your eligibility now!</b><br><br>🏠 REVERSIBLE AIR CONDITIONING<br><span style=\"font-size:1.3em;font-weight:bold\">€900</span><br>subject to conditions, for installing or replacing your reversible air conditioning.<br><br>Total potential aid depending on conditions: <b>up to €10,800</b>",
+    "bouton": "Estimate my aid 🎯",
+    "verdict": "arnaque",
+    "categorie": "Fake “energy renovation aid” cold outreach — lead-generation site",
+    "indices": [
+      "Sender address “amberfunnel.com”: a “funnel” is a marketing tool for businesses, with no link to any public body or real installer.",
+      "E-mail sent at 3:40 in the morning: no serious company writes at that hour — this is an automated mass mailing.",
+      "The figures don’t add up: “€900” in the headline, then “up to €10,800” further down — theoretical maximums stacked together to impress, not a real personalised calculation.",
+      { "risque": "The “Estimate my aid” button leads to a form that collects your name, address and phone number — later resold to renovation cold-callers." }
+    ],
+    "reflexe": "Energy renovation aid can only be requested on the official government site (or its equivalent in your country), never via a link received by e-mail.",
+    "explication": "Same recipe as the fake solar-panel aid, just a summer edition: whenever a heatwave or cold snap makes the news, these lead-generation sites flood inboxes with promises of exceptional aid. The form unlocks no aid at all: it exists to resell your details to renovation companies who will call you back to sell an overpriced installation. Real government aid is never requested by clicking an unsolicited e-mail."
+  },
+  {
     "id": "sms-banque-ok",
     "canal": "sms",
     "entete": "SMS from your bank",
@@ -1425,6 +1446,31 @@ const REPERES = {
       "bon": true,
       "aide": "If you have been refunded before, does the tax authority need you to re-enter your bank details?",
       "note": "The administration already has your bank details if you have been refunded before: it does not ask again by SMS."
+    }
+  ],
+  "email-clim-aides": [
+    {
+      "texte": "noreply@mail-cbk-1sa.amberfunnel.com",
+      "bon": true,
+      "aide": "Look at the sender’s full address: does it have anything to do with a public body or a real installer?",
+      "note": "“amberfunnel.com” is a marketing tool (a “funnel”), with no link to any public body or real installer."
+    },
+    {
+      "texte": "03:40",
+      "bon": true,
+      "aide": "Look at the time it was sent: is this a normal time for a genuine business message?",
+      "note": "Sent at 3:40 in the morning: no serious company writes at that hour — a sign of an automated mass mailing."
+    },
+    {
+      "texte": "up to €10,800",
+      "bon": true,
+      "aide": "Is this figure consistent with the “€900” announced just above it?",
+      "note": "The figures don’t add up: “€900” in the headline, then “up to €10,800” further down — theoretical maximums stacked together to impress."
+    },
+    {
+      "texte": "subject to conditions",
+      "bon": false,
+      "note": "A vague, reassuring phrase… but one you’ll also find in real ads: it proves nothing on its own."
     }
   ],
   "chat-leboncoin-paiement-securise-ok": [
