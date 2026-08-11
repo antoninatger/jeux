@@ -170,14 +170,42 @@ const LEVELS = [
   ],
   lesson:"« Les chiffres parlent d'eux-mêmes » ? Jamais ! Un chiffre <b>enregistré</b> n'est pas un fait <b>réel</b> : si on facilite les plaintes, les chiffres montent même quand la violence est stable. C'est tout l'écart entre <b>signalements</b> et <b>réalité</b>."
  },
+ {
+  orig:"En arrêt maladie depuis 17 ans, elle touchait près de 6 000 € par mois : l'enseignante refuse de prendre sa retraite pour ne pas perdre de revenus",
+  sources:[
+   {icon:"🌍", name:"L'article complet", body:"L'histoire se passe à Wesel, en Allemagne (Rhénanie-du-Nord-Westphalie) — jamais en France. L'enseignante, 62 ans, originaire de Duisbourg, a exercé dans un lycée professionnel de 2003 à 2009, avant d'être en arrêt maladie pour troubles mentaux jusqu'en 2026. Comme fonctionnaire allemande, elle a continué à toucher un salaire entre 5 051 € et 6 174 € par mois pendant cet arrêt."},
+   {icon:"⚖️", name:"La suite de l'histoire", body:"Fin mai, la préfecture de Düsseldorf l'a mise à la retraite d'office après un examen médical concluant qu'elle ne pourrait pas retravailler. Elle perd ainsi 1 500 à 2 000 € par mois — et conteste cette décision en justice pour récupérer son plein salaire. Elle est aussi accusée d'avoir exercé comme naturopathe pendant ses arrêts maladie."},
+  ],
+  slots:[
+   {name:"Le lieu (souvent oublié)", opts:[
+    {t:"En France, comme souvent :", emo:20, prec:0, trap:"Relis les sources : cette histoire se passe à Wesel, en Allemagne — jamais en France. Affirmer un pays sans vérifier, c'est le point de départ classique d'une rumeur qui s'emballe sur les réseaux."},
+    {t:"Un cas glaçant :", emo:15, prec:0},
+    {t:"Chez nous aussi ?", emo:30, prec:0},
+    {t:"En Allemagne,", emo:0, prec:35},
+   ]},
+   {name:"Le fait", opts:[
+    {t:"une enseignante touchait près de 6 000 € par mois sans travailler depuis 17 ans", emo:20, prec:10},
+    {t:"le système paie des fonctionnaires à ne rien faire pendant dix-sept ans", emo:35, prec:0},
+    {t:"une fonctionnaire touchait un plein salaire sans jamais remettre les pieds en classe", emo:30, prec:5},
+    {t:"une enseignante allemande de 62 ans a continué à percevoir son salaire pendant 17 ans d'arrêt maladie pour troubles mentaux", emo:0, prec:40},
+   ]},
+   {name:"La chute", opts:[
+    {t:": elle refuse aujourd'hui de partir à la retraite pour ne pas perdre d'argent.", emo:25, prec:5},
+    {t:": un symbole du laxisme total des administrations.", emo:35, prec:0},
+    {t:", et conteste en justice sa mise à la retraite forcée, décidée par les autorités allemandes.", emo:0, prec:35},
+    {t:".", emo:0, prec:10},
+   ]},
+  ],
+  lesson:"Le titre original ne précise <b>jamais où</b> se passe cette histoire — beaucoup de lecteurs ont supposé que c'était en France et se sont indignés contre « nos » fonctionnaires. Or tout se déroule à Wesel, en <b>Allemagne</b>, avec un statut de fonctionnaire et des règles de retraite différentes des nôtres. Réflexe à garder : quand un titre reste vague sur le lieu, cherche-le avant de t'indigner — ou de partager."
+ },
 ];
 
 const EMO_MAX=30, PREC_MIN=70;
-let lvl=0, sel=[], attempts=0, stars=0, solved=false;
+let lvl=0, sel=[], attempts=0, stars=0, solved=false, optBtns=[], levelResults=[];
 const $=id=>document.getElementById(id);
 
 function startGame(){
-  lvl=0; stars=0;
+  lvl=0; stars=0; levelResults=[];
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
@@ -201,27 +229,40 @@ function renderLevel(){
   L.sources.forEach(s=>{
     const d=document.createElement("div");
     d.className="source";
-    d.innerHTML=`<div class="source-hd">${s.icon} ${s.name} <span class="sread">✓ lu</span><span class="schev">▶</span></div><div class="source-bd">${s.body}</div>`;
-    d.querySelector(".source-hd").onclick=()=>{d.classList.toggle("open");d.classList.add("read");};
+    d.innerHTML=`<button type="button" class="source-hd" aria-expanded="false">${s.icon} ${s.name} <span class="sread">✓ lu</span><span class="schev">▶</span></button><div class="source-bd">${s.body}</div>`;
+    const hd=d.querySelector(".source-hd");
+    hd.onclick=()=>{
+      d.classList.toggle("open");
+      d.classList.add("read");
+      hd.setAttribute("aria-expanded", d.classList.contains("open")?"true":"false");
+    };
     sc.appendChild(d);
   });
   // Slots
   const sl=$("slots"); sl.innerHTML="";
+  optBtns=[];
   L.slots.forEach((slot,si)=>{
     const g=document.createElement("div");
     g.className="slotgroup";
     g.innerHTML=`<div class="slotname">${si+1}. ${slot.name}</div>`;
     const wrap=document.createElement("div");
     wrap.className="slotopts";
+    optBtns[si]=[];
     slot.opts.forEach((o,oi)=>{
       const b=document.createElement("button");
-      b.className="opt"+(oi===0?" sel":"");
+      b.className="opt";
+      b.setAttribute("aria-pressed","false");
       b.textContent=o.t;
       b.onclick=()=>{
         sel[si]=oi;
-        wrap.querySelectorAll(".opt").forEach((x,k)=>x.classList.toggle("sel",k===oi));
+        wrap.querySelectorAll(".opt").forEach((x,k)=>{
+          x.classList.toggle("sel",k===oi);
+          x.classList.remove("trap-alert");
+          x.setAttribute("aria-pressed", k===oi?"true":"false");
+        });
         updateDraft();
       };
+      optBtns[si].push(b);
       wrap.appendChild(b);
     });
     g.appendChild(wrap);
@@ -261,9 +302,12 @@ function publish(){
   attempts++;
   revealGauges();
   const fb=$("feedback");
+  optBtns.forEach(row=>row.forEach(b=>b.classList.remove("trap-alert")));
   // Piège : segment contredit par les sources ?
-  const trapped=L.slots.map((s,i)=>s.opts[sel[i]]).find(o=>o.trap);
-  if(trapped){
+  const trapIdx=L.slots.findIndex((s,i)=>s.opts[sel[i]].trap);
+  if(trapIdx!==-1){
+    const trapped=L.slots[trapIdx].opts[sel[trapIdx]];
+    optBtns[trapIdx][sel[trapIdx]].classList.add("trap-alert");
     fb.className="ko"; fb.style.display="block";
     $("fb-title").textContent="🛑 Retoqué par le rédac chef !";
     $("fb-expl").innerHTML="Ton segment « <i>"+trapped.t+"</i> » contredit les sources. "+trapped.trap+"<br><br>🔎 Relis les sources et corrige ta une.";
@@ -288,6 +332,7 @@ function publish(){
   const allRead=[...document.querySelectorAll(".source")].every(s=>s.classList.contains("read"));
   const got = attempts===1 ? (allRead?3:2) : (attempts===2?2:1);
   stars+=got;
+  levelResults.push({orig:L.orig, stars:got});
   $("hud-stars").textContent="⭐ "+stars;
   fb.className="ok"; fb.style.display="block";
   $("fb-title").textContent="🗞️ Une publiée ! Le rédac chef applaudit.";
@@ -319,4 +364,7 @@ function endGame(){
   msg+="<br><br>💡 Souviens-toi : la prochaine fois qu'un titre te fait peur ou t'indigne, demande-toi : <b>« comment cette même info aurait-elle pu être présentée autrement ? »</b>";
   $("end-title").textContent=title;
   $("end-msg").innerHTML=msg;
+  $("end-recap").innerHTML=levelResults.map((r,i)=>
+    `<div class="recap-row"><span class="rr-title">${i+1}. ${r.orig}</span><span class="rr-stars">${"⭐".repeat(r.stars)}${"☆".repeat(3-r.stars)}</span></div>`
+  ).join("");
 }

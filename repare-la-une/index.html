@@ -9,7 +9,7 @@
 :root {
   --bg:#e8e1d2; --panel:#faf6ec; --card:#ffffff;
   --acc:#b3261e; --gr:#1e8e5a; --rd:#c0392b; --bl:#1f6fb2;
-  --tx:#241e12; --mu:#857a64; --bord:rgba(60,48,25,0.18);
+  --tx:#241e12; --mu:#675d4c; --bord:rgba(60,48,25,0.18);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.55) 0%,transparent 50%),repeating-linear-gradient(0deg,transparent 0 3px,rgba(120,100,60,.025) 3px 4px);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}
@@ -50,7 +50,7 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 /* Sources : chemises d'archives */
 #sources{display:grid;gap:8px;}
 .source{background:#f3ead2;border:1px solid #d9cba6;border-radius:6px;overflow:hidden;}
-.source-hd{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-weight:800;font-size:.88rem;transition:background .15s;}
+.source-hd{display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;text-align:left;font-family:inherit;color:inherit;padding:11px 14px;cursor:pointer;font-weight:800;font-size:.88rem;transition:background .15s;}
 .source-hd:hover{background:rgba(120,90,30,.07);}
 .source-hd .schev{margin-left:auto;color:var(--mu);transition:transform .25s;font-size:.8rem;}
 .source.open .schev{transform:rotate(90deg);}
@@ -79,10 +79,11 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .slotgroup{margin-bottom:10px;}
 .slotname{font-size:.72rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
 .slotopts{display:grid;gap:7px;}
-.opt{background:var(--card);border:2px solid var(--bord);border-radius:8px;padding:10px 13px;cursor:pointer;text-align:left;font-family:'Nunito',sans-serif;color:var(--tx);font-size:.86rem;font-weight:700;line-height:1.35;transition:all .15s;}
+.opt{background:var(--card);border:2px solid var(--bord);border-radius:8px;padding:10px 13px;min-height:44px;display:flex;align-items:center;cursor:pointer;text-align:left;font-family:'Nunito',sans-serif;color:var(--tx);font-size:.86rem;font-weight:700;line-height:1.35;transition:all .15s;}
 .opt:hover{border-color:rgba(60,48,25,.45);}
 .opt.sel{border-color:#241e12;background:#fdf6dd;}
 .opt.sel::before{content:"✏️ ";}
+.opt.trap-alert{border-color:var(--rd);box-shadow:0 0 0 3px rgba(192,57,43,.25);}
 
 #publish{width:100%;background:#1e8e5a;color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 14px rgba(30,142,90,.3);transition:transform .2s;margin-top:6px;}
 #publish:hover{transform:translateY(-2px);}
@@ -103,11 +104,17 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 #end .score-big{font-family:'Playfair Display',serif;font-weight:900;font-size:2.4rem;color:var(--tx);margin:10px 0;}
 #end p{color:#5c5340;font-weight:700;margin-bottom:18px;line-height:1.55;}
 #end p b{color:var(--tx);}
+#end-recap{margin:0 0 18px;text-align:left;font-size:.82rem;}
+.recap-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px solid var(--bord);}
+.recap-row:last-child{border-bottom:none;}
+.recap-row .rr-title{flex:1;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.recap-row .rr-stars{white-space:nowrap;font-size:.95rem;}
 /* ── Collection : retour hub + accessibilité ── */
 .back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:var(--panel,rgba(15,20,30,.7));border:1px solid var(--bord,rgba(255,255,255,.15));color:var(--mu,#9fb3cc);text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
 .back-hub:hover{opacity:1;transform:translateX(-2px);}
 :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid var(--acc,#f7c948);outline-offset:2px;border-radius:6px;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+@media(max-width:400px){header{margin-top:40px;}}
 </style>
 </head>
 <body>
@@ -125,6 +132,7 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
     <p style="margin-top:10px;" data-i18n-html="brief2">🎯 Ta mission : <b>réécrire chaque titre</b> en choisissant de meilleurs segments, pour faire <b>baisser l'émotion 😱</b> (objectif ≤ 30) et <b>monter la précision &amp; le contexte 🎯</b> (objectif ≥ 70). Attention : certains segments en rajoutent encore dans le dramatique…</p>
     <p style="margin-top:10px;" data-i18n-html="brief3">🙈 <b>Les jauges restent cachées pendant l'écriture</b> : à toi de juger chaque segment avec ton flair de rédac chef. Le verdict ne tombe qu'au moment de publier !</p>
     <p style="margin-top:10px;" data-i18n-html="brief4">🔎 <b>Consulte les sources à disposition</b> avant de publier : certains segments ont l'air précis… mais ne correspondent pas à ce que disent les sources. Le rédac chef ne laissera rien passer !</p>
+    <p style="margin-top:10px;" data-i18n-html="brief5">⭐ <b>Le nombre d'étoiles</b> dépend de ta rapidité : 3⭐ si tu réussis dès la 1ère tentative en ayant lu toutes les sources, 2⭐ si tu réussis en 1 ou 2 tentatives, 1⭐ au-delà.</p>
   </div>
   <button class="bigbtn" onclick="startGame()" data-i18n="start">🗞️ Prendre la rédaction</button>
 </div>
@@ -158,7 +166,13 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
   <div id="slots"></div>
   <button id="publish" onclick="publish()" data-i18n="publish">🖨️ Publier la une</button>
 
-  <div id="gauges">
+  <div id="feedback" aria-live="polite">
+    <div id="fb-title"></div>
+    <p id="fb-expl"></p>
+    <div id="fb-stars"></div>
+  </div>
+
+  <div id="gauges" aria-live="polite">
     <div class="gtitle" data-i18n="verdict">🧪 Verdict de l'imprimerie</div>
     <div class="gauge emo">
       <div class="glabels"><span class="gname" data-i18n="emotion">😱 Émotion</span><span class="gval" id="emo-val"></span></div>
@@ -171,12 +185,6 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
       <div class="ghint" data-i18n="precHint">Objectif : dépasser la barre (≥ 70)</div>
     </div>
   </div>
-
-  <div id="feedback">
-    <div id="fb-title"></div>
-    <p id="fb-expl"></p>
-    <div id="fb-stars"></div>
-  </div>
   <button id="nextbtn" onclick="nextLevel()" data-i18n="next">Une suivante ➜</button>
 </div>
 
@@ -184,6 +192,7 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
   <h2 id="end-title"></h2>
   <div class="score-big" id="end-score"></div>
   <p id="end-msg"></p>
+  <div id="end-recap"></div>
   <button class="bigbtn" onclick="location.reload()" data-i18n="replay">🔄 Rejouer</button>
 </div>
 
@@ -197,6 +206,7 @@ I18N.register({
     brief2: `🎯 Ta mission : <b>réécrire chaque titre</b> en choisissant de meilleurs segments, pour faire <b>baisser l'émotion 😱</b> (objectif ≤ 30) et <b>monter la précision & le contexte 🎯</b> (objectif ≥ 70). Attention : certains segments en rajoutent encore dans le dramatique…`,
     brief3: `🙈 <b>Les jauges restent cachées pendant l'écriture</b> : à toi de juger chaque segment avec ton flair de rédac chef. Le verdict ne tombe qu'au moment de publier !`,
     brief4: `🔎 <b>Consulte les sources à disposition</b> avant de publier : certains segments ont l'air précis… mais ne correspondent pas à ce que disent les sources. Le rédac chef ne laissera rien passer !`,
+    brief5: `⭐ <b>Le nombre d'étoiles</b> dépend de ta rapidité : 3⭐ si tu réussis dès la 1ère tentative en ayant lu toutes les sources, 2⭐ si tu réussis en 1 ou 2 tentatives, 1⭐ au-delà.`,
     start: "🗞️ Prendre la rédaction", une: "Une",
     tabloidName: "⚡ LE CRI DU WEB", tabloidMeta: "Édition spéciale — 0,99 €", tabloidTag: "😱 La une du stagiaire",
     sourcesTitle: "🗂️ Sources à disposition (clique pour lire)", draftTitle: "✏️ Ta réécriture",
@@ -212,6 +222,7 @@ I18N.register({
     brief2: `🎯 Your mission: <b>rewrite each headline</b> by choosing better segments, to <b>bring the emotion down 😱</b> (target ≤ 30) and <b>push precision & context up 🎯</b> (target ≥ 70). Watch out: some segments pile on even more drama…`,
     brief3: `🙈 <b>The gauges stay hidden while you write</b>: it's up to you to judge each segment with your editor's instinct. The verdict only drops when you publish!`,
     brief4: `🔎 <b>Check the available sources</b> before publishing: some segments look precise… but don't match what the sources say. The editor won't let anything slip through!`,
+    brief5: `⭐ <b>The number of stars</b> depends on your speed: 3⭐ if you succeed on the 1st try after reading all the sources, 2⭐ if you succeed within 1 or 2 tries, 1⭐ beyond that.`,
     start: "🗞️ Take over the newsroom", une: "Headline",
     tabloidName: "⚡ THE WEB SCREAM", tabloidMeta: "Special edition — €0.99", tabloidTag: "😱 The intern's headline",
     sourcesTitle: "🗂️ Available sources (click to read)", draftTitle: "✏️ Your rewrite",
