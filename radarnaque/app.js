@@ -76,8 +76,8 @@
         'Pas de piège technique&nbsp;: on apprend à repérer les bons réflexes.</p>' +
         '<div class="how">' +
           '<div class="step"><div class="n">1</div><div>Lisez le message affiché (SMS, e-mail, appel…).</div></div>' +
-          '<div class="step"><div class="n">2</div><div>Choisissez&nbsp;: <b>« C’est une arnaque »</b> ou <b>« C’est fiable »</b>.</div></div>' +
-          '<div class="step"><div class="n">3</div><div>Trouvez les indices qui permettent de prouver que l’on peut faire confiance ou qu’il faut se méfier de ce message.</div></div>' +
+          '<div class="step"><div class="n">2</div><div>Trouvez les indices qui permettent de savoir si l’on peut faire confiance ou s’il faut se méfier de ce message.</div></div>' +
+          '<div class="step"><div class="n">3</div><div>Choisissez&nbsp;: <b>« C’est une arnaque »</b> ou <b>« C’est fiable »</b>.</div></div>' +
         '</div>' +
         '<div class="accueil-boutons">' +
           '<button class="btn-start" id="go">Commencer&nbsp;▶</button>' +

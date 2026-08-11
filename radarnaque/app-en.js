@@ -76,8 +76,8 @@
         'No technical traps: you will learn the right reflexes.</p>' +
         '<div class="how">' +
           '<div class="step"><div class="n">1</div><div>Read the message shown (SMS, email, call…).</div></div>' +
-          '<div class="step"><div class="n">2</div><div>Choose: <b>“It’s a scam”</b> or <b>“It’s reliable”</b>.</div></div>' +
-          '<div class="step"><div class="n">3</div><div>Find the clues that prove whether you can trust the message or should be suspicious.</div></div>' +
+          '<div class="step"><div class="n">2</div><div>Find the clues that show whether you can trust the message or should be suspicious.</div></div>' +
+          '<div class="step"><div class="n">3</div><div>Choose: <b>“It’s a scam”</b> or <b>“It’s reliable”</b>.</div></div>' +
         '</div>' +
         '<div class="accueil-boutons">' +
           '<button class="btn-start" id="go">Start&nbsp;▶</button>' +
