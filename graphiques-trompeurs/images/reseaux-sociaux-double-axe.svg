@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 190" font-family="Nunito,Arial,sans-serif">
+  <rect width="280" height="190" fill="#ffffff"/>
+  <text x="140" y="12" font-size="8.4" font-weight="700" text-anchor="middle" fill="#333">Utilisateurs actifs de deux réseaux sociaux (millions)</text>
+
+  <line x1="42" y1="26" x2="42" y2="140" stroke="#c0504d" stroke-width="1.2"/>
+  <line x1="238" y1="26" x2="238" y2="140" stroke="#4a7ebc" stroke-width="1.2"/>
+  <line x1="42" y1="140" x2="238" y2="140" stroke="#888" stroke-width="1.2"/>
+
+  <g font-size="8" text-anchor="end" fill="#c0504d">
+    <text x="38" y="29">60</text>
+    <text x="38" y="140">0</text>
+  </g>
+  <g font-size="8" text-anchor="start" fill="#4a7ebc">
+    <text x="242" y="29">600</text>
+    <text x="242" y="140">0</text>
+  </g>
+
+  <g font-size="7.5" text-anchor="middle" fill="#666">
+    <text x="42" y="153">2019</text><text x="91" y="153">2020</text><text x="140" y="153">2021</text>
+    <text x="189" y="153">2022</text><text x="238" y="153">2023</text>
+  </g>
+
+  <polyline points="42,102 91,86.8 140,73.5 189,54.5 238,35.5" fill="none" stroke="#c0504d" stroke-width="2.2"/>
+  <g fill="#8c3a38">
+    <circle cx="42" cy="102" r="3"/><circle cx="91" cy="86.8" r="3"/><circle cx="140" cy="73.5" r="3"/>
+    <circle cx="189" cy="54.5" r="3"/><circle cx="238" cy="35.5" r="3"/>
+  </g>
+
+  <polyline points="42,102 91,86.8 140,73.5 189,54.5 238,35.5" fill="none" stroke="#4a7ebc" stroke-width="2.2" stroke-dasharray="6,4"/>
+
+  <g font-size="8" font-weight="700">
+    <text x="70" y="175" fill="#c0504d">■ Réseau A (échelle gauche)</text>
+    <text x="70" y="186" fill="#4a7ebc">■ Réseau B (échelle droite)</text>
+  </g>
+</svg>

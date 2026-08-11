@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 200" font-family="Nunito,Arial,sans-serif">
+  <rect width="260" height="200" fill="#ffffff"/>
+  <text x="135" y="12" font-size="9" font-weight="700" text-anchor="middle" fill="#333">Dette publique de la France (% du PIB, données approx.)</text>
+
+  <line x1="40" y1="20" x2="40" y2="150" stroke="#888" stroke-width="1"/>
+  <line x1="40" y1="150" x2="230" y2="150" stroke="#888" stroke-width="1"/>
+
+  <g font-size="8" fill="#666" text-anchor="end">
+    <text x="36" y="23">50 %</text>
+    <text x="36" y="44.7">55 %</text>
+    <text x="36" y="66.3">60 %</text>
+    <text x="36" y="88">65 %</text>
+    <text x="36" y="109.7">70 %</text>
+    <text x="36" y="131.3">75 %</text>
+    <text x="36" y="153">80 %</text>
+  </g>
+
+  <polyline points="40,60.3 71.67,58.57 103.33,49.9 135,77.2 166.67,91.07 198.33,81.53 230,145.67"
+            fill="none" stroke="#c0504d" stroke-width="2.2"/>
+  <g fill="#8c3a38">
+    <circle cx="40" cy="60.3" r="2.8"/><circle cx="71.67" cy="58.57" r="2.8"/><circle cx="103.33" cy="49.9" r="2.8"/>
+    <circle cx="135" cy="77.2" r="2.8"/><circle cx="166.67" cy="91.07" r="2.8"/><circle cx="198.33" cy="81.53" r="2.8"/>
+    <circle cx="230" cy="145.67" r="2.8"/>
+  </g>
+
+  <g font-size="7.5" fill="#666" text-anchor="middle">
+    <text x="40" y="163">1997</text><text x="71.67" y="163">1999</text><text x="103.33" y="163">2001</text>
+    <text x="135" y="163">2003</text><text x="166.67" y="163">2005</text><text x="198.33" y="163">2007</text>
+    <text x="230" y="163">2009</text>
+  </g>
+</svg>

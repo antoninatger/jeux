@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 200" font-family="Nunito,Arial,sans-serif">
+  <rect width="260" height="200" fill="#ffffff"/>
+  <text x="130" y="12" font-size="8.6" font-weight="700" text-anchor="middle" fill="#333">Émissions de CO2 d'une usine (milliers de tonnes/an)</text>
+
+  <line x1="40" y1="20" x2="40" y2="130" stroke="#888" stroke-width="1"/>
+  <line x1="40" y1="130" x2="230" y2="130" stroke="#888" stroke-width="1"/>
+
+  <g font-size="8" fill="#666" text-anchor="end">
+    <text x="36" y="23">115</text>
+    <text x="36" y="53">130</text>
+    <text x="36" y="83">145</text>
+    <text x="36" y="113">160</text>
+    <text x="36" y="133">170</text>
+  </g>
+
+  <polyline points="40,30 87.5,46 135,60 182.5,90 230,126"
+            fill="none" stroke="#c0504d" stroke-width="2.2"/>
+  <g fill="#8c3a38">
+    <circle cx="40" cy="30" r="2.8"/><circle cx="87.5" cy="46" r="2.8"/><circle cx="135" cy="60" r="2.8"/>
+    <circle cx="182.5" cy="90" r="2.8"/><circle cx="230" cy="126" r="2.8"/>
+  </g>
+
+  <g font-size="7.5" fill="#666" text-anchor="middle">
+    <text x="40" y="143">2015</text><text x="87.5" y="143">2017</text><text x="135" y="143">2019</text>
+    <text x="182.5" y="143">2021</text><text x="230" y="143">2023</text>
+  </g>
+</svg>
