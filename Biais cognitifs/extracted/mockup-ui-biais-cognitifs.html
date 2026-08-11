@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Perceptio — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E7EAF0;
+    --bg-deep:#10131C;
+    --surface:#FFFFFF;
+    --border:#C9CEDA;
+    --ink:#10131C;
+    --ink-dim:#565B66;
+    --cobalt:#2B4CFF;
+    --cobalt-soft:#DCE3FF;
+    --lime:#D6FF3F;
+    --wrong:#FF4D6D;
+    --wrong-soft:#FFE1E7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Source Serif 4',serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .disp{font-family:'Space Grotesk',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 24px 100px;}
+
+  /* ---------- hero / illusion ---------- */
+  .hero{
+    background:var(--bg-deep);color:#EDEFF6;border-radius:6px;
+    padding:clamp(28px,5vw,56px);margin-bottom:40px;
+    display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--lime);margin:0 0 14px;
+  }
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(30px,4.2vw,46px);line-height:1.04;margin:0 0 16px;letter-spacing:-.01em;
+  }
+  .hero p.lead{font-size:15.5px;line-height:1.6;color:#B9BECC;max-width:420px;margin:0;}
+
+  .illusion{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
+  .demo-q{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14.5px;color:#EDEFF6;margin:0;max-width:300px;line-height:1.4;}
+  .demo-choices{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .demo-btn{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;background:#232838;color:#D6DAE6;
+    border:1.5px solid #3A4053;padding:8px 12px;border-radius:20px;cursor:pointer;transition:all .15s ease;
+  }
+  .demo-btn:hover{border-color:var(--lime);color:#fff;}
+  .demo-btn:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+  .demo-btn.picked{background:var(--lime);color:#10131C;border-color:var(--lime);}
+  .illusion-caption{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9DA3B4;text-align:center;max-width:320px;line-height:1.5;min-height:0;}
+  .illusion-caption b{color:var(--lime);}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:4px;margin:0 0 28px;}
+  .tab{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;
+    font-size:13px;background:none;border:1.5px solid transparent;color:var(--ink-dim);
+    padding:9px 16px;border-radius:20px;cursor:pointer;transition:all .15s ease;
+  }
+  .tab:hover{border-color:var(--border);}
+  .tab.active{background:var(--cobalt);color:#fff;}
+  .tab:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;}
+
+  section.view{display:none;}
+  section.view.active{display:block;}
+
+  /* ---------- catalogue / swatch grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px;}
+  .card{
+    background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
+    padding:0;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px -12px rgba(16,19,28,.25);}
+  .card:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;}
+  .swatch-top{height:54px;}
+  .card-body{padding:18px 18px 20px;}
+  .card h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;margin:0 0 8px;}
+  .card p{font-size:14px;color:var(--ink-dim);line-height:1.5;margin:0 0 16px;font-style:italic;}
+  .card-foot{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
+
+  .c-croyance{background:#2B4CFF;} .c-memoire{background:#7A5CFA;}
+  .c-social{background:#FF6FA5;} .c-decision{background:#17B890;}
+  .c-confiance{background:#FF9F1C;}
+
+  /* ---------- fiche detail ---------- */
+  .fiche{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+  .fiche-band{height:6px;background:#2B4CFF;}
+  .fiche-inner{padding:40px clamp(20px,4vw,52px);}
+  .fiche-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
+  .fiche-cat{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cobalt);margin-bottom:8px;}
+  .fiche h2{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,4vw,36px);margin:0 0 4px;}
+  .fiche .eng{font-style:italic;color:var(--ink-dim);font-size:14px;margin:0;}
+  .diff-badge{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    background:var(--cobalt-soft);color:var(--cobalt);padding:5px 12px;border-radius:20px;white-space:nowrap;
+  }
+
+  .label{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.03em;
+    color:var(--ink);margin:0 0 12px;display:flex;align-items:center;gap:10px;
+  }
+  .label::after{content:'';flex:1;height:1.5px;background:var(--border);}
+
+  .definition{font-size:16.5px;line-height:1.7;margin:0 0 34px;max-width:640px;}
+
+  .examples{display:grid;gap:10px;margin-bottom:34px;}
+  .example{display:flex;gap:14px;border:1.5px solid var(--border);border-radius:6px;padding:14px 16px;background:#FBFBFD;}
+  .example .mark{width:8px;height:8px;border-radius:50%;background:var(--cobalt);flex-shrink:0;margin-top:7px;}
+  .example strong{font-family:'Space Grotesk',sans-serif;display:block;font-size:14px;margin-bottom:3px;}
+  .example span{font-size:13.5px;color:var(--ink-dim);line-height:1.5;}
+
+  .test-box{border:1.5px solid var(--border);border-radius:8px;padding:22px 22px 20px;margin-bottom:28px;position:relative;background:#FBFBFD;}
+  .test-q{font-size:15px;margin:0 0 16px;font-weight:400;}
+  .choices{display:grid;gap:8px;}
+  .choice{
+    text-align:left;background:#fff;border:1.5px solid var(--border);color:var(--ink);
+    padding:11px 14px;border-radius:6px;font-size:14px;cursor:pointer;font-family:'Source Serif 4',serif;
+    transition:border-color .15s ease;
+  }
+  .choice:hover{border-color:var(--cobalt);}
+  .choice:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;}
+  .choice.correct{border-color:#17B890;background:#E4F9F1;}
+  .choice.wrong{border-color:var(--wrong);background:var(--wrong-soft);}
+  .explain{font-size:13.5px;color:var(--ink-dim);margin-top:14px;line-height:1.55;display:none;}
+  .explain.show{display:block;}
+
+  .scan-ring{
+    position:absolute;top:20px;right:22px;width:34px;height:34px;border-radius:50%;
+    border:3px solid var(--cobalt);display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--cobalt);font-size:16px;
+    transform:scale(0);opacity:0;transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+  }
+  .scan-ring.wrong{border-color:var(--wrong);color:var(--wrong);}
+  .scan-ring.show{transform:scale(1);opacity:1;}
+
+  .sources{display:grid;gap:14px;}
+  .source{font-size:13.5px;color:var(--ink-dim);line-height:1.55;padding-left:16px;border-left:2px solid var(--cobalt);}
+  .source b{color:var(--ink);font-weight:600;font-family:'Space Grotesk',sans-serif;}
+  .source .meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cobalt);display:block;margin-bottom:3px;}
+
+  /* ---------- identification libre ---------- */
+  .id-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;max-width:640px;overflow:hidden;}
+  .id-band{height:6px;background:var(--lime);}
+  .id-inner{padding:38px clamp(20px,4vw,50px);}
+  .id-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 16px;}
+  .id-situation{font-size:16.5px;line-height:1.7;margin:0 0 26px;}
+  .id-row{display:flex;gap:10px;margin-bottom:6px;}
+  .id-input{flex:1;background:#FBFBFD;border:1.5px solid var(--border);color:var(--ink);padding:12px 14px;border-radius:6px;font-size:14.5px;font-family:'Source Serif 4',serif;}
+  .id-input:focus-visible{outline:2px solid var(--cobalt);outline-offset:1px;}
+  .id-btn{background:var(--cobalt);color:#fff;border:none;font-weight:600;padding:0 22px;border-radius:6px;cursor:pointer;font-size:14px;font-family:'Space Grotesk',sans-serif;}
+  .id-btn:hover{background:#1d3add;}
+  .id-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .id-feedback{font-size:13.5px;line-height:1.55;margin-top:16px;padding:14px 16px;border-radius:6px;display:none;font-family:'Source Serif 4',serif;}
+  .id-feedback.hint{display:block;background:var(--cobalt-soft);border:1px solid var(--cobalt);}
+  .id-feedback.correct{display:block;background:#E4F9F1;border:1px solid #17B890;}
+  .id-feedback.reveal{display:block;background:var(--wrong-soft);border:1px solid var(--wrong);}
+  .id-feedback b{font-family:'Space Grotesk',sans-serif;color:var(--cobalt);}
+
+  @media (max-width:640px){
+    .hero{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .card, .scan-ring{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Perceptio — laboratoire des perceptions</p>
+      <h1>Ton cerveau ment.<br>Poliment.</h1>
+      <p class="lead">96 biais cognitifs recensés, expliqués et testés — en commençant par une preuve, pas une définition.</p>
+    </div>
+    <div class="illusion" id="selfdemo">
+      <p class="demo-q">Comment évalues-tu tes compétences de conducteur, par rapport à la moyenne des gens ?</p>
+      <div class="demo-choices" id="demo-choices">
+        <button class="demo-btn" data-v="1">Bien en dessous</button>
+        <button class="demo-btn" data-v="2">En dessous</button>
+        <button class="demo-btn" data-v="3">Dans la moyenne</button>
+        <button class="demo-btn" data-v="4">Au-dessus</button>
+        <button class="demo-btn" data-v="5">Bien au-dessus</button>
+      </div>
+      <p class="illusion-caption" id="demo-result"></p>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-target="view-catalogue">Explorer</button>
+    <button class="tab" data-target="view-fiche">Fiche détaillée</button>
+    <button class="tab" data-target="view-identification">Trouve le biais</button>
+  </nav>
+
+  <!-- ================= CATALOGUE VIEW ================= -->
+  <section id="view-catalogue" class="view active">
+    <div class="grid">
+
+      <div class="card" tabindex="0" onclick="document.querySelector('[data-target=view-fiche]').click()">
+        <div class="swatch-top c-croyance"></div>
+        <div class="card-body">
+          <h3>Biais de confirmation</h3>
+          <p>On ne cherche que ce qui nous donne raison.</p>
+          <div class="card-foot"><span>Croyance</span><span>Facile</span></div>
+        </div>
+      </div>
+
+      <div class="card" tabindex="0">
+        <div class="swatch-top c-decision"></div>
+        <div class="card-body">
+          <h3>Ancrage</h3>
+          <p>Le premier chiffre entendu pèse plus qu'il ne devrait.</p>
+          <div class="card-foot"><span>Décision</span><span>Facile</span></div>
+        </div>
+      </div>
+
+      <div class="card" tabindex="0">
+        <div class="swatch-top c-confiance"></div>
+        <div class="card-body">
+          <h3>Dunning-Kruger</h3>
+          <p>Moins on sait, plus on se croit compétent.</p>
+          <div class="card-foot"><span>Surconfiance</span><span>Intermédiaire</span></div>
+        </div>
+      </div>
+
+      <div class="card" tabindex="0">
+        <div class="swatch-top c-social"></div>
+        <div class="card-body">
+          <h3>Effet de halo</h3>
+          <p>Un trait positif en éclipse d'autres, à tort.</p>
+          <div class="card-foot"><span>Social</span><span>Facile</span></div>
+        </div>
+      </div>
+
+      <div class="card" tabindex="0">
+        <div class="swatch-top c-memoire"></div>
+        <div class="card-body">
+          <h3>Heuristique de disponibilité</h3>
+          <p>Ce qui vient vite à l'esprit paraît plus fréquent.</p>
+          <div class="card-foot"><span>Mémoire</span><span>Intermédiaire</span></div>
+        </div>
+      </div>
+
+      <div class="card" tabindex="0">
+        <div class="swatch-top c-decision"></div>
+        <div class="card-body">
+          <h3>Aversion à la perte</h3>
+          <p>Perdre 10 € fait plus mal que gagner 10 € ne fait plaisir.</p>
+          <div class="card-foot"><span>Décision</span><span>Facile</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= FICHE VIEW ================= -->
+  <section id="view-fiche" class="view">
+    <article class="fiche">
+      <div class="fiche-band"></div>
+      <div class="fiche-inner">
+
+        <div class="fiche-head">
+          <div>
+            <p class="fiche-cat">Croyance et raisonnement</p>
+            <h2>Biais de confirmation</h2>
+            <p class="eng">Confirmation bias</p>
+          </div>
+          <span class="diff-badge">Niveau · Facile</span>
+        </div>
+
+        <p class="label">Définition</p>
+        <p class="definition">Tendance à rechercher, interpréter et retenir en priorité les informations qui confirment nos croyances existantes, tout en négligeant celles qui les contredisent. Ce mécanisme économise de l'énergie mentale et protège l'image que l'on a de soi — au prix d'un raisonnement biaisé.</p>
+
+        <p class="label">Exemples</p>
+        <div class="examples">
+          <div class="example"><span class="mark"></span><div><strong>Débat politique</strong><span>On ne retient que les statistiques qui vont dans le sens de son opinion, en ignorant les autres.</span></div></div>
+          <div class="example"><span class="mark"></span><div><strong>Recrutement</strong><span>Un a priori favorable sur un candidat fait interpréter ses réponses ambiguës de façon positive.</span></div></div>
+          <div class="example"><span class="mark"></span><div><strong>Santé</strong><span>Toute amélioration est attribuée au remède auquel on croit ; toute absence d'effet, à autre chose.</span></div></div>
+        </div>
+
+        <p class="label">Teste-toi</p>
+        <div class="test-box">
+          <div class="scan-ring" id="stamp">✓</div>
+          <p class="test-q">Le biais de confirmation se manifeste principalement par…</p>
+          <div class="choices" id="choices">
+            <button class="choice" data-correct="false">La recherche active d'informations contradictoires</button>
+            <button class="choice" data-correct="true">La recherche et la valorisation d'informations qui confirment une croyance</button>
+            <button class="choice" data-correct="false">L'abandon total d'une croyance après un contre-exemple</button>
+            <button class="choice" data-correct="false">Un raisonnement toujours neutre et rationnel</button>
+          </div>
+          <p class="explain" id="explain">Le biais pousse à privilégier ce qui conforte nos idées — pas à les remettre en question, ni à les abandonner.</p>
+        </div>
+
+        <p class="label">Sources</p>
+        <div class="sources">
+          <div class="source"><span class="meta">Étude fondatrice</span><b>Wason, P. C.</b> (1960). On the failure to eliminate hypotheses in a conceptual task. <i>Quarterly Journal of Experimental Psychology, 12</i>(3), 129–140.</div>
+          <div class="source"><span class="meta">Synthèse</span><b>Nickerson, R. S.</b> (1998). Confirmation bias: A ubiquitous phenomenon in many guises. <i>Review of General Psychology, 2</i>(2), 175–220.</div>
+        </div>
+
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= IDENTIFICATION VIEW ================= -->
+  <section id="view-identification" class="view">
+    <article class="id-card">
+      <div class="id-band"></div>
+      <div class="id-inner">
+        <p class="id-eyebrow">Exercice · sans indice visuel</p>
+        <p class="id-situation">Marc négocie l'achat d'une voiture d'occasion. Le vendeur annonce d'abord un prix de 18 000 €. Même après avoir vu des modèles similaires vendus 12 000 € ailleurs, Marc négocie autour de 15-16 000 € — le premier chiffre continue d'influencer ce qui lui semble « raisonnable ».</p>
+
+        <div class="id-row">
+          <input class="id-input" id="id-input" type="text" placeholder="Tape le nom du biais…" autocomplete="off">
+          <button class="id-btn" id="id-submit">Valider</button>
+        </div>
+
+        <div class="id-feedback" id="id-feedback"></div>
+      </div>
+    </article>
+  </section>
+
+</div>
+
+<script>
+  document.querySelectorAll('.demo-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.demo-btn').forEach(b=>b.classList.remove('picked'));
+      btn.classList.add('picked');
+      const v=parseInt(btn.dataset.v,10);
+      const result=document.getElementById('demo-result');
+      if(v>=4){
+        result.innerHTML='Environ <b>80% des conducteurs</b> se classent au-dessus de la moyenne — statistiquement impossible. Tu viens peut-être de vivre l\'effet de supériorité illusoire (Svenson, 1981).';
+      } else {
+        result.innerHTML='Rassure-toi : la majorité des gens se surestiment sur ce test. Te classer prudemment est déjà rare — mais l\'effet de supériorité illusoire (Svenson, 1981) guette ailleurs.';
+      }
+    });
+  });
+
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  const choices=document.querySelectorAll('#choices .choice');
+  const stamp=document.getElementById('stamp');
+  const explain=document.getElementById('explain');
+  let answered=false;
+  choices.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(answered) return;
+      answered=true;
+      const correct=btn.dataset.correct==='true';
+      choices.forEach(b=>{
+        if(b.dataset.correct==='true') b.classList.add('correct');
+        else if(b===btn) b.classList.add('wrong');
+      });
+      stamp.textContent=correct?'✓':'✕';
+      stamp.classList.toggle('wrong',!correct);
+      requestAnimationFrame(()=>stamp.classList.add('show'));
+      explain.classList.add('show');
+    });
+  });
+
+  const idInput=document.getElementById('id-input');
+  const idSubmit=document.getElementById('id-submit');
+  const idFeedback=document.getElementById('id-feedback');
+  const accepted=['biais d ancrage','ancrage','anchoring bias'];
+  const hint="Pense à ce qui a été dit en premier dans la négociation.";
+  let idAttempts=0;
+
+  function normalize(s){
+    return s.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[’']/g,' ')
+      .replace(/\bbiais\s+(de|du|d)\b/g,'')
+      .replace(/\beffet\b/g,'')
+      .replace(/[^a-z0-9\s]/g,'')
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+  function levenshtein(a,b){
+    const m=[];
+    for(let i=0;i<=b.length;i++){m[i]=[i];}
+    for(let j=0;j<=a.length;j++){m[0][j]=j;}
+    for(let i=1;i<=b.length;i++){
+      for(let j=1;j<=a.length;j++){
+        m[i][j]=b.charAt(i-1)===a.charAt(j-1)
+          ? m[i-1][j-1]
+          : Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+      }
+    }
+    return m[b.length][a.length];
+  }
+  function isCorrect(input){
+    const n=normalize(input);
+    return accepted.some(ans=>{
+      const na=normalize(ans);
+      return n===na || levenshtein(n,na)<=2;
+    });
+  }
+  function submitAnswer(){
+    const val=idInput.value.trim();
+    if(!val) return;
+    idAttempts++;
+    idFeedback.className='id-feedback';
+    if(isCorrect(val)){
+      idFeedback.classList.add('correct');
+      idFeedback.innerHTML='<b>Correct.</b> Il s\'agit bien du biais d\'ancrage : la première valeur reçue sert de point de repère, même quand on sait qu\'elle est arbitraire.';
+      idInput.disabled=true; idSubmit.disabled=true;
+    } else if(idAttempts===1){
+      idFeedback.classList.add('hint');
+      idFeedback.innerHTML='Pas encore. Un indice : <b>'+hint+'</b>';
+    } else {
+      idFeedback.classList.add('reveal');
+      idFeedback.innerHTML='La réponse était : <b>biais d\'ancrage</b>. La première valeur reçue sert de point de repère, même quand on sait qu\'elle est arbitraire.';
+      idInput.disabled=true; idSubmit.disabled=true;
+    }
+  }
+  idSubmit.addEventListener('click',submitAnswer);
+  idInput.addEventListener('keydown',e=>{if(e.key==='Enter') submitAnswer();});
+</script>
+</body>
+</html>
