@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lignes numérotées</title>
+<style>
+  :root{
+    --bg:#0b0c0f;
+    --panel:#111318;
+    --line:#2b2e36;
+    --fg:#e7e7e5;
+    --muted:#84888f;
+    --accent:#c96442;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: ui-monospace, 'SF Mono', 'Consolas', 'Menlo', monospace;
+    background:var(--bg);
+    color:var(--fg);
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{
+    max-width:680px;
+    margin:0 auto;
+  }
+  h1{
+    font-size:16px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin:0 0 4px;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:13px;
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:16px;
+    margin-bottom:16px;
+  }
+  .controls{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .slider-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex:1;
+    min-width:190px;
+  }
+  .slider-group label{
+    font-size:11px;
+    color:var(--muted);
+    white-space:nowrap;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  input[type=range]{
+    flex:1;
+    accent-color:var(--accent);
+    height:2px;
+  }
+  .count-badge{
+    border:1px solid var(--line);
+    padding:3px 8px;
+    font-weight:600;
+    font-size:12px;
+    min-width:34px;
+    text-align:center;
+  }
+  .stepper{
+    display:flex;
+    align-items:center;
+    gap:0;
+  }
+  .stepper-btn{
+    appearance:none;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--fg);
+    width:30px;
+    height:30px;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .12s ease, border-color .12s ease, opacity .12s ease;
+  }
+  .stepper-btn:hover:not(:disabled){ border-color:var(--accent); }
+  .stepper-btn:active:not(:disabled){ background:var(--line); }
+  .stepper-btn:disabled{ opacity:.3; cursor:not-allowed; }
+  .stepper-val{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    height:30px;
+    min-width:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:14px;
+  }
+  .btn-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+  .btn{
+    appearance:none;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--fg);
+    padding:9px 14px;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .12s ease, border-color .12s ease, opacity .12s ease;
+  }
+  .btn:hover:not(:disabled){ border-color:var(--accent); }
+  .btn:active:not(:disabled){ background:var(--line); }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; }
+  .btn-primary{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .btn-primary:hover:not(:disabled){ background:var(--accent); color:#0b0c0f; }
+  .btn.active{ background:var(--accent); border-color:var(--accent); color:#0b0c0f; }
+
+  /* Stage: sequential vertical bar reveal */
+  .stage-wrap{ text-align:center; }
+  .progress{
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-bottom:14px;
+    min-height:14px;
+  }
+  .stage{
+    height:220px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+  }
+  .stage-line{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    opacity:0;
+    transform:scaleY(0.85);
+    transform-origin:bottom;
+    transition:opacity .16s ease, transform .16s ease;
+  }
+  .stage-line.show{
+    opacity:1;
+    transform:scaleY(1);
+  }
+  .stage-idle{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.7;
+    margin:auto;
+  }
+  .stage-idle strong{ color:var(--fg); }
+
+  .vbar{
+    width:34px;
+    background:var(--accent);
+  }
+  .vbar-track{
+    height:180px;
+    width:34px;
+    display:flex;
+    align-items:flex-end;
+  }
+  .vnum{
+    font-size:18px;
+    font-weight:700;
+    border:1px solid var(--line);
+    padding:4px 10px;
+  }
+
+  /* Answer / recap bar chart */
+  .chart{
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:8px;
+    height:150px;
+    padding-top:20px;
+    overflow-x:auto;
+  }
+  .chart-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    min-width:26px;
+    opacity:0;
+    animation:fadeUp .3s ease forwards;
+  }
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .chart-rank{
+    font-size:10px;
+    color:var(--accent);
+    font-weight:700;
+  }
+  .chart-bar-track{
+    height:100px;
+    width:14px;
+    display:flex;
+    align-items:flex-end;
+  }
+  .chart-bar{
+    width:14px;
+    background:var(--muted);
+  }
+  .chart-num{
+    font-size:11px;
+    color:var(--muted);
+    border-top:1px solid var(--line);
+    padding-top:4px;
+    width:100%;
+    text-align:center;
+  }
+  .answer-box{
+    margin-top:16px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    font-size:13px;
+    line-height:1.6;
+  }
+  .answer-box .label{
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:6px;
+  }
+  .answer-seq{
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:.5px;
+    color:var(--accent);
+  }
+  .hint{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:14px;
+    line-height:1.6;
+  }
+  .panel-title{
+    font-size:11px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin:0 0 12px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Lignes numérotées</h1>
+  <p class="subtitle">Les lignes apparaissent une par une. Mémorise leur taille, puis dis à voix haute les numéros dans l'ordre croissant de longueur.</p>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="slider-group">
+        <label>Lignes</label>
+        <div class="stepper">
+          <button class="stepper-btn" id="countMinus">−</button>
+          <div class="stepper-val" id="countVal">8</div>
+          <button class="stepper-btn" id="countPlus">+</button>
+        </div>
+      </div>
+      <div class="slider-group">
+        <label>Mode</label>
+        <div class="btn-row" style="margin-top:0;">
+          <button class="btn active" id="modeAuto">Auto</button>
+          <button class="btn" id="modeManual">Manuel</button>
+        </div>
+      </div>
+      <div class="slider-group" id="speedGroup">
+        <label for="speed">Vitesse</label>
+        <input type="range" id="speed" min="500" max="2500" step="100" value="1200">
+        <span class="count-badge" id="speedVal">1.2s</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="newBtn">Nouvelle grille</button>
+      <button class="btn" id="playBtn">Lancer</button>
+      <button class="btn" id="nextBtn" style="display:none;">Suivant →</button>
+      <button class="btn" id="replayBtn">Revoir</button>
+      <button class="btn" id="answerBtn">Réponse</button>
+    </div>
+  </div>
+
+  <div class="panel stage-wrap">
+    <p class="progress" id="progress">&nbsp;</p>
+    <div class="stage" id="stage">
+      <p class="stage-idle" id="stageIdle">Clique sur <strong>Nouvelle grille</strong> puis sur <strong>Lancer</strong> pour commencer.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="answerPanel" style="display:none;">
+    <p class="panel-title">Réponse</p>
+    <div class="chart" id="chart"></div>
+    <div class="answer-box">
+      <div class="label">Ordre croissant (du plus court au plus long)</div>
+      <div class="answer-seq" id="answerSeq"></div>
+    </div>
+  </div>
+
+  <p class="hint">Une fois la séquence terminée, essaie de te souvenir de l'ordre sans regarder, puis clique sur « Réponse » pour te corriger.</p>
+</div>
+
+<script>
+const countMinus = document.getElementById('countMinus');
+const countPlus = document.getElementById('countPlus');
+const countVal = document.getElementById('countVal');
+const modeAuto = document.getElementById('modeAuto');
+const modeManual = document.getElementById('modeManual');
+const speedGroup = document.getElementById('speedGroup');
+const speedInput = document.getElementById('speed');
+const speedVal = document.getElementById('speedVal');
+const newBtn = document.getElementById('newBtn');
+const playBtn = document.getElementById('playBtn');
+const nextBtn = document.getElementById('nextBtn');
+const replayBtn = document.getElementById('replayBtn');
+const answerBtn = document.getElementById('answerBtn');
+const stage = document.getElementById('stage');
+const stageIdle = document.getElementById('stageIdle');
+const progress = document.getElementById('progress');
+const answerPanel = document.getElementById('answerPanel');
+const chart = document.getElementById('chart');
+const answerSeq = document.getElementById('answerSeq');
+
+let count = 8;
+let mode = 'auto'; // 'auto' | 'manual'
+let round = [];       // {number, length, rank}
+let timers = [];
+let playing = false;
+let hasRound = false;
+let manualIdx = -1;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function clearTimers(){
+  timers.forEach(t => clearTimeout(t));
+  timers = [];
+}
+
+function generate(){
+  clearTimers();
+  playing = false;
+  manualIdx = -1;
+  nextBtn.style.display = 'none';
+  const n = count;
+
+  const minPct = 12;
+  const maxPct = 98;
+  const spacing = (maxPct - minPct) / Math.max(n - 1, 1);
+  const jitterMax = Math.min(1.2, spacing / 3);
+  let lengths = [];
+  for(let i = 0; i < n; i++){
+    const base = minPct + spacing * i;
+    const jitter = (Math.random() * 2 - 1) * jitterMax;
+    lengths.push(Math.max(6, Math.min(100, base + jitter)));
+  }
+  lengths = shuffle(lengths);
+
+  const numbers = shuffle(Array.from({length: n}, (_, i) => i + 1));
+  round = numbers.map((num, i) => ({ number: num, length: lengths[i] }));
+
+  const sortedByLength = round.slice().sort((a, b) => a.length - b.length);
+  sortedByLength.forEach((item, idx) => { item.rank = idx + 1; });
+
+  hasRound = true;
+  answerPanel.style.display = 'none';
+  answerBtn.textContent = 'Réponse';
+  answerBtn.classList.remove('active');
+
+  stage.innerHTML = '';
+  stage.appendChild(stageIdle);
+  stageIdle.textContent = 'Prêt. Clique sur « Lancer ».';
+  progress.textContent = ' ';
+
+  playBtn.disabled = false;
+  replayBtn.disabled = true;
+}
+
+function makeStageLine(item){
+  const row = document.createElement('div');
+  row.className = 'stage-line';
+
+  const track = document.createElement('div');
+  track.className = 'vbar-track';
+  const bar = document.createElement('div');
+  bar.className = 'vbar';
+  bar.style.height = item.length + '%';
+  track.appendChild(bar);
+
+  const num = document.createElement('div');
+  num.className = 'vnum';
+  num.textContent = item.number;
+
+  row.appendChild(track);
+  row.appendChild(num);
+  return row;
+}
+
+function playSequence(){
+  if(!hasRound || playing) return;
+  playing = true;
+  playBtn.disabled = true;
+  replayBtn.disabled = true;
+
+  const speed = parseInt(speedInput.value, 10);
+  const gap = Math.max(120, Math.round(speed * 0.18));
+  stage.innerHTML = '';
+
+  round.forEach((item, idx) => {
+    const showAt = idx * speed;
+    const t1 = setTimeout(() => {
+      stage.innerHTML = '';
+      progress.textContent = `Ligne ${idx + 1} / ${round.length}`;
+      const line = makeStageLine(item);
+      stage.appendChild(line);
+      requestAnimationFrame(() => line.classList.add('show'));
+    }, showAt);
+    timers.push(t1);
+
+    const hideAt = showAt + (speed - gap);
+    const t2 = setTimeout(() => {
+      const line = stage.querySelector('.stage-line');
+      if(line) line.classList.remove('show');
+    }, hideAt);
+    timers.push(t2);
+  });
+
+  const totalTime = round.length * speed;
+  const t3 = setTimeout(() => {
+    stage.innerHTML = '';
+    stage.appendChild(stageIdle);
+    stageIdle.textContent = "À toi de jouer : dis les numéros dans l'ordre croissant de longueur.";
+    progress.textContent = ' ';
+    playing = false;
+    playBtn.disabled = false;
+    replayBtn.disabled = false;
+  }, totalTime);
+  timers.push(t3);
+}
+
+function startManual(){
+  if(!hasRound || playing) return;
+  playing = true;
+  manualIdx = -1;
+  playBtn.disabled = true;
+  replayBtn.disabled = true;
+  nextBtn.style.display = 'inline-block';
+  nextBtn.disabled = false;
+  manualAdvance();
+}
+
+function manualAdvance(){
+  manualIdx++;
+  if(manualIdx >= round.length){
+    stage.innerHTML = '';
+    stage.appendChild(stageIdle);
+    stageIdle.textContent = "À toi de jouer : dis les numéros dans l'ordre croissant de longueur.";
+    progress.textContent = ' ';
+    playing = false;
+    playBtn.disabled = false;
+    replayBtn.disabled = false;
+    nextBtn.style.display = 'none';
+    return;
+  }
+  stage.innerHTML = '';
+  progress.textContent = `Ligne ${manualIdx + 1} / ${round.length}`;
+  const line = makeStageLine(round[manualIdx]);
+  stage.appendChild(line);
+  requestAnimationFrame(() => line.classList.add('show'));
+  nextBtn.textContent = manualIdx === round.length - 1 ? 'Terminer' : 'Suivant →';
+}
+
+function play(){
+  if(mode === 'auto') playSequence();
+  else startManual();
+}
+
+function setMode(m){
+  mode = m;
+  modeAuto.classList.toggle('active', m === 'auto');
+  modeManual.classList.toggle('active', m === 'manual');
+  speedGroup.style.display = m === 'auto' ? 'flex' : 'none';
+  generate();
+}
+
+function renderAnswer(){
+  chart.innerHTML = '';
+  round.forEach((item, idx) => {
+    const col = document.createElement('div');
+    col.className = 'chart-col';
+    col.style.animationDelay = (idx * 0.03) + 's';
+
+    const rank = document.createElement('div');
+    rank.className = 'chart-rank';
+    rank.textContent = '#' + item.rank;
+
+    const track = document.createElement('div');
+    track.className = 'chart-bar-track';
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    bar.style.height = item.length + '%';
+    track.appendChild(bar);
+
+    const num = document.createElement('div');
+    num.className = 'chart-num';
+    num.textContent = item.number;
+
+    col.appendChild(rank);
+    col.appendChild(track);
+    col.appendChild(num);
+    chart.appendChild(col);
+  });
+
+  const ordered = round.slice().sort((a, b) => a.length - b.length).map(i => i.number);
+  answerSeq.textContent = ordered.join('  →  ');
+}
+
+function toggleAnswer(){
+  if(!hasRound) return;
+  const showing = answerPanel.style.display !== 'none';
+  if(showing){
+    answerPanel.style.display = 'none';
+    answerBtn.textContent = 'Réponse';
+    answerBtn.classList.remove('active');
+  } else {
+    renderAnswer();
+    answerPanel.style.display = 'block';
+    answerBtn.textContent = 'Masquer';
+    answerBtn.classList.add('active');
+  }
+}
+
+function setCount(n){
+  count = Math.max(2, Math.min(20, n));
+  countVal.textContent = count;
+  countMinus.disabled = count <= 2;
+  countPlus.disabled = count >= 20;
+  generate();
+}
+
+countMinus.addEventListener('click', () => setCount(count - 1));
+countPlus.addEventListener('click', () => setCount(count + 1));
+modeAuto.addEventListener('click', () => setMode('auto'));
+modeManual.addEventListener('click', () => setMode('manual'));
+speedInput.addEventListener('input', () => {
+  speedVal.textContent = (speedInput.value / 1000).toFixed(1) + 's';
+});
+newBtn.addEventListener('click', generate);
+playBtn.addEventListener('click', play);
+nextBtn.addEventListener('click', manualAdvance);
+replayBtn.addEventListener('click', play);
+answerBtn.addEventListener('click', toggleAnswer);
+
+replayBtn.disabled = true;
+setCount(8);
+</script>
+</body>
+</html>
