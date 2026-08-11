@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title data-i18n="pageTitle">Signaux — jeu de sensibilisation aux mécanismes d'emprise</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="sample-watermark" data-i18n="watermark">FICTION — conversation fictive pour sensibiliser aux mécanismes de contrôle dans le couple</div>
+
+  <a href="#" id="resourcesLink" class="resources-persistent-link" data-i18n="needHelp">Besoin d'aide ?</a>
+
+  <!-- Avertissement initial -->
+  <div id="warningModal" class="modal-overlay">
+    <div class="modal-box">
+      <h1 data-i18n="warningTitle">Avant de commencer</h1>
+      <p data-i18n-html="warningP1">Ce jeu met en scène une conversation <strong>fictive</strong> entre deux personnages, Sophie et Lucas. Elle illustre, de façon réaliste, des mécanismes de contrôle et d'emprise qui peuvent apparaître dans une relation de couple.</p>
+      <p data-i18n-html="warningP2">Cette histoire peut faire écho à un vécu personnel, le vôtre ou celui d'une personne de votre entourage. Vous pouvez arrêter à tout moment ; les ressources d'aide restent accessibles en permanence via le lien « Besoin d'aide ? » en haut de la page.</p>
+      <p data-i18n-html="warningP3">Au fil de la conversation, le jeu s'arrêtera à des moments clés pour vous demander : <em>« qu'est-ce qui se joue ici ? »</em> Vous répondrez avec vos propres mots.</p>
+      <div class="modal-actions">
+        <button id="startNormalBtn" class="btn-primary" data-i18n="startNormal">Commencer</button>
+        <button id="startFreeReadBtn" class="btn-secondary" data-i18n="startFreeRead">Lecture libre (sans les questions)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal ressources -->
+  <div id="resourcesModal" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <button id="resourcesModalClose" class="modal-close">✕</button>
+      <div id="resourcesModalContent"></div>
+    </div>
+  </div>
+
+  <div id="gameArea" style="display:none">
+    <div class="gauge-bar">
+      <div class="gauge-track"><div id="gaugeFill" class="gauge-fill"></div></div>
+      <div id="gaugeLabel" class="gauge-label" data-i18n="gaugeDefault">Signaux repérés : 0 / 10</div>
+      <a href="#" id="skipQuestionsLink" class="skip-link" data-i18n="skipQuestions">Passer les questions restantes ›</a>
+    </div>
+
+    <div class="frame" id="chatFrame" role="region" aria-label="Conversation">
+      <header>
+        <div class="avatar" aria-hidden="true"></div>
+        <div>
+          <div class="title" id="headerTitle">Lucas 💬</div>
+          <div class="subtitle" data-i18n="online">en ligne</div>
+        </div>
+      </header>
+
+      <div class="messages" id="messages"></div>
+
+      <div id="questionPanel" class="question-panel" style="display:none"></div>
+
+      <div class="controls" id="controlsBar">
+        <button id="nextBtn" class="small" data-i18n="next">Suivant ▸</button>
+        <button id="exportBtn" class="small btn-export" data-i18n="exportBtn">Exporter en PNG</button>
+      </div>
+    </div>
+
+    <div id="recapScreen" class="recap-screen" style="display:none"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="../i18n.js"></script>
+  <script>
+  I18N.register({
+    fr: {
+      pageTitle: "Signaux — jeu de sensibilisation aux mécanismes d'emprise",
+      watermark: "FICTION — conversation fictive pour sensibiliser aux mécanismes de contrôle dans le couple",
+      needHelp: "Besoin d'aide ?",
+      warningTitle: "Avant de commencer",
+      warningP1: `Ce jeu met en scène une conversation <strong>fictive</strong> entre deux personnages, Sophie et Lucas. Elle illustre, de façon réaliste, des mécanismes de contrôle et d'emprise qui peuvent apparaître dans une relation de couple.`,
+      warningP2: `Cette histoire peut faire écho à un vécu personnel, le vôtre ou celui d'une personne de votre entourage. Vous pouvez arrêter à tout moment ; les ressources d'aide restent accessibles en permanence via le lien « Besoin d'aide ? » en haut de la page.`,
+      warningP3: `Au fil de la conversation, le jeu s'arrêtera à des moments clés pour vous demander : <em>« qu'est-ce qui se joue ici ? »</em> Vous répondrez avec vos propres mots.`,
+      startNormal: "Commencer",
+      startFreeRead: "Lecture libre (sans les questions)",
+      online: "en ligne",
+      gaugeDefault: "Signaux repérés : 0 / 10",
+      skipQuestions: "Passer les questions restantes ›",
+      next: "Suivant ▸",
+      exportBtn: "Exporter en PNG"
+    },
+    en: {
+      pageTitle: "Warning Signs — a game raising awareness about coercive control",
+      watermark: "FICTION — a fictional conversation to raise awareness about coercive control in relationships",
+      needHelp: "Need help?",
+      warningTitle: "Before you start",
+      warningP1: `This game portrays a <strong>fictional</strong> conversation between two characters, Sophie and Lucas. It realistically illustrates control and coercion mechanisms that can appear in a romantic relationship.`,
+      warningP2: `This story may resonate with something you, or someone close to you, has experienced. You can stop at any time; help resources stay available at all times via the "Need help?" link at the top of the page.`,
+      warningP3: `As the conversation unfolds, the game will pause at key moments to ask you: <em>"what's going on here?"</em> You'll answer in your own words.`,
+      startNormal: "Start",
+      startFreeRead: "Free read (no questions)",
+      online: "online",
+      gaugeDefault: "Signals spotted: 0 / 10",
+      skipQuestions: "Skip remaining questions ›",
+      next: "Next ▸",
+      exportBtn: "Export as PNG"
+    }
+  });
+  document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
+  document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
+  </script>
+</body>
+</html>

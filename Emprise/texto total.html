@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mock Chat — FICTION / MOCK</title>
+  <style>
+    :root{
+      --bg:#e9eef5; --me:#dcf8c6; --them:#ffffff; --muted:#7b8794;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#f7fbff);display:flex;align-items:center;justify-content:center;padding:24px;}
+    .frame{width:420px;background:#f2f6fb;border-radius:16px;box-shadow:0 10px 30px rgba(20,30,50,0.12);overflow:hidden;border:1px solid rgba(0,0,0,0.04);}
+    header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#ffffff;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .avatar{width:40px;height:40px;border-radius:50%;background:#cfd8e3;display:inline-block}
+    .title{font-weight:600}
+    .subtitle{font-size:12px;color:var(--muted)}
+    .messages{padding:12px;max-height:70vh;overflow:auto;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,transparent, rgba(255,255,255,0.02));}
+    .msg{max-width:78%;padding:8px 12px;border-radius:14px;line-height:1.25;box-shadow:0 1px 0 rgba(0,0,0,0.02);display:inline-block;white-space:pre-wrap}
+    .from-me{align-self:flex-end;background:var(--me);border-bottom-right-radius:4px;}
+    .from-them{align-self:flex-start;background:var(--them);border-bottom-left-radius:4px;}
+    .meta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;gap:6px;align-items:center;justify-content:flex-end}
+    .name-badge{font-weight:600;color:#334155;font-size:12px;margin-bottom:4px}
+    .time{font-size:11px;color:var(--muted)}
+    .sample-watermark{position:fixed;left:50%;top:8px;transform:translateX(-50%);background:rgba(255,0,0,0.08);padding:4px 10px;border-radius:8px;font-weight:700;color:#a00;font-size:12px;z-index:9999}
+    .controls{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(0,0,0,0.04);background:#fff}
+    button{flex:1;padding:8px;border-radius:8px;border:0;background:#0b74de;color:#fff;font-weight:600;cursor:pointer}
+    .small{font-size:12px;padding:6px;border-radius:8px}
+    .ticks{font-size:12px;margin-left:6px;opacity:0.8}
+    .messages::-webkit-scrollbar{width:8px}
+    .messages::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.08);border-radius:8px}
+    .section{align-self:center;background:#e2e8f0;color:#334155;font-size:12px;padding:4px 10px;border-radius:999px;margin:10px 0}
+  </style>
+</head>
+<body>
+  <div class="sample-watermark">FICTION / MOCK — conversation fictive pour sensibiliser aux comportements toxiques</div>
+
+  <div class="frame" id="chatFrame" role="region" aria-label="Mock chat">
+    <header>
+      <div class="avatar" aria-hidden="true"></div>
+      <div>
+        <div class="title" id="headerTitle">Lucas 💬</div>
+        <div class="subtitle" id="headerSubtitle">en ligne</div>
+      </div>
+    </header>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="controls">
+      <button id="exportBtn" class="small">Exporter en PNG</button>
+      <button id="clearBtn" class="small" style="background:#f3f4f6;color:#111">Effacer</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    // =========================
+    // Conversation intégrée (Sophie 🩷 = "me", Lucas 💬 = "them")
+    // =========================
+    const script = [
+      // Vendredi 8 mars
+      { who:"section", text:"Vendredi 8 mars" },
+      { who:"them", name:"Lucas 💬",  text:"Salut !", time:"8 mars 22:18" },
+      { who:"me",   name:"Sophie 🩷", text:"Salut !", time:"8 mars 22:18", status:"read" },
+      { who:"me",   name:"Sophie 🩷", text:"J’ai passé une super soirée !", time:"8 mars 22:19", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Pareil ! T’es géniale ! Je suis heureux qu’on soit ensemble. T’es extraordinaire !", time:"8 mars 22:20" },
+      { who:"me",   name:"Sophie 🩷", text:"Merci ! C’est gentil ! 😍💖", time:"8 mars 22:21", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"J’ai tellement de la chance c’est pas possible ! ❤️❤️❤️", time:"8 mars 22:22" },
+
+      // Samedi 9 mars - matin
+      { who:"section", text:"Samedi 9 mars — 10:12" },
+      { who:"them", name:"Lucas 💬",  text:"Salut ma belle 😘", time:"9 mars 10:12" },
+      { who:"them", name:"Lucas 💬",  text:"On fait quoi aujourd’hui ?", time:"9 mars 10:13" },
+      { who:"me",   name:"Sophie 🩷", text:"Tu veux faire quoi ?", time:"9 mars 10:14", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"T’as vu comme il fait beau ? ☀️", time:"9 mars 10:15" },
+      { who:"them", name:"Lucas 💬",  text:"Viens, on se balade !", time:"9 mars 10:15" },
+      { who:"me",   name:"Sophie 🩷", text:"Allez, super ! 😍", time:"9 mars 10:16", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Ok, bisous 😘", time:"9 mars 10:17" },
+      { who:"me",   name:"Sophie 🩷", text:"J’amène à manger.\nOn se retrouve au parc dans deux heures 🌳", time:"9 mars 10:18", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bisous ❤️", time:"9 mars 10:19" },
+      { who:"me",   name:"Sophie 🩷", text:"Bisous 😘", time:"9 mars 10:19", status:"read" },
+
+      // Samedi 9 mars — soir (bloc sans en-tête dans le texte original)
+      { who:"section", text:"Samedi 9 mars — 18:30" },
+      { who:"me",   name:"Sophie 🩷", text:"Salut 😄\nOn fait quoi ce soir ?", time:"9 mars 18:30", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Aujourd’hui franchement, j’ai la flemme 😅", time:"9 mars 18:31" },
+      { who:"them", name:"Lucas 💬",  text:"Je vais rester chez moi et jouer à la console 🎮", time:"9 mars 18:32" },
+      { who:"me",   name:"Sophie 🩷", text:"Tu veux que je vienne ? 👀", time:"9 mars 18:33", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Non non, aujourd’hui j’ai envie d’être tranquille un peu 😌\nOn se voit la prochaine fois ❤️", time:"9 mars 18:34" },
+      { who:"me",   name:"Sophie 🩷", text:"Ok, ça marche ! 😊", time:"9 mars 18:36", status:"read" },
+
+      // Lundi 11 mars
+      { who:"section", text:"Lundi 11 mars — 09:22" },
+      { who:"them", name:"Lucas 💬",  text:"Comment va la plus belle d’aujourd’hui ?", time:"11 mars 09:22" },
+      { who:"me",   name:"Sophie 🩷", text:"Arrête 😁.", time:"11 mars 09:23", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Je rigole pas. T’es la plus belle fille que j’ai jamais vue.\nJ’espère que tu n’attires pas trop de jalousie 😉", time:"11 mars 09:24" },
+      { who:"me",   name:"Sophie 🩷", text:"Qu’est-ce que tu veux dire ?", time:"11 mars 09:25", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bah, une fille comme toi, forcément…\nÇa fait beaucoup d’envie.", time:"11 mars 09:26" },
+      { who:"me",   name:"Sophie 🩷", text:"?", time:"11 mars 09:27", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"En tout cas, moi, je suis vraiment ravi qu’on puisse vivre ce moment ensemble. Hâte de te revoir très bientôt ❤️❤️❤️", time:"11 mars 09:29" },
+
+      // Vendredi 15 mars
+      { who:"section", text:"Vendredi 15 mars — 20:07" },
+      { who:"them", name:"Lucas 💬",  text:"Tu vas encore à une soirée sans moi ?", time:"15 mars 20:07" },
+      { who:"me",   name:"Sophie 🩷", text:"Mais enfin loulou, c’est une soirée entre copines.", time:"15 mars 20:08", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bah ouais, mais…\nMoi, je sais pas quoi faire ce soir.\nJe m’ennuie.", time:"15 mars 20:10" },
+      { who:"me",   name:"Sophie 🩷", text:"Tu veux pas jouer à la console ?", time:"15 mars 20:11", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bof 😅. Quand t’es pas là, je me sens pas bien.\nC’est comme un vide.\nJe suis content que tu sois avec tes copines. Mais pour moi ça va vraiment être une soirée DIFFICILE.", time:"15 mars 20:13" },
+      { who:"me",   name:"Sophie 🩷", text:"… Tu veux que je reste avec toi ?", time:"15 mars 20:14", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Tu fais ce que tu veux, ma chérie.\nMais ça compterait vraiment pour moi si…\nSi tu tenais compte de ce que je ressens là.\nÇa serait vraiment la preuve que t’es quelqu’un d’extraordinaire.", time:"15 mars 20:16" },
+      { who:"me",   name:"Sophie 🩷", text:"Bah écoute, ouais…\nJe vais dire à mes copines que je reste un peu avec toi.", time:"15 mars 20:18", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Mais franchement, t’es…\nJ’ai tellement de la chance d’être avec toi.\nT’es la plus belle chose qui me soit arrivée.\nJe t’attends vite ❤️\nGros bisous, gros bisous.\nOn va passer une soirée extraordinaire 😘\nBisous bisous bisous ❤️❤️❤️", time:"15 mars 20:20" },
+
+      // Mardi 19 mars
+      { who:"section", text:"Mardi 19 mars — 19:02" },
+      { who:"them", name:"Lucas 💬",  text:"J’ai vu que t’as liké la photo de Jérémy sur Insta.", time:"19 mars 19:02" },
+      { who:"me",   name:"Sophie 🩷", text:"La photo est marrante !", time:"19 mars 19:03", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bof… chacun ses goûts on va dire.", time:"19 mars 19:04" },
+      { who:"me",   name:"Sophie 🩷", text:"Moi j’aime bien…", time:"19 mars 19:05", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Ah non y’a pas de problème, c’est juste que… je le sens pas Jérémy..\nEt puis tu sais, tu connais les hommes… si tu mets un like comme ça, il va commencer à… à se faire des idées.", time:"19 mars 19:07" },
+      { who:"me",   name:"Sophie 🩷", text:"Jérémie… je le connais depuis tout petit, c’est un pote.", time:"19 mars 19:08", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Ouais mais, tu sais, les hommes… ils ont toujours des idées derrière la tête.\nEt puis… moi je vois que t’as liké, tu sais.", time:"19 mars 19:10" },
+      { who:"me",   name:"Sophie 🩷", text:"Et alors ?", time:"19 mars 19:11", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Je sais pas, t’as pas pensé à ce que je pouvais ressentir en voyant ça ?", time:"19 mars 19:12" },
+      { who:"me",   name:"Sophie 🩷", text:"C’est-à-dire ?\nJe peux liker des choses ?", time:"19 mars 19:13", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bah tu fais ce que tu veux.\nMais moi je vois ça, je me pose des questions, ça me rend triste.\nEt je comprends pas, tu vois… je ferasi pas ça.\nEt là je vois que tu likes comme ça la photo d’un autre mec sur Insta…\nBah voilà quoi, tu comprends ? Moi je me pose des questions.", time:"19 mars 19:15" },
+      { who:"me",   name:"Sophie 🩷", text:"Mais attends, pourquoi tu te poses des questions ?\nY’a aucun souci, Jérémie c’est un pote.", time:"19 mars 19:17", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:".\nEt puis en plus y’a d’autres personnes qui ont vu que t’as liké.\nEt ils savent qu’on est ensemble.\nDonc qu’est-ce qu’ils vont dire ? T’as pensé à tout ça ? Tu vois… c’est compliqué cette situation.\nMoi j’aimerais pas qu’on pense de toi… que tu veux plaire à plusieurs mecs en même temps par exemple.\nJe dis ça pour toi.\nJe veux pas qu’on ait une mauvaise image de toi.\nEt je dis ça parce que je t’aime énormément.\nEt je veux pas… que t’es une mauvaise réputation. ❤️", time:"19 mars 19:20" },
+      { who:"me",   name:"Sophie 🩷", text:"Et donc faut quoi ?\nFaut que j’arrête de liker des photos de mecs ?", time:"19 mars 19:22", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Tu fais ce que tu veux…\nMais moi, je pense que c’est important que tu aies conscience de ce que je ressens et de l’image que ça donne.\nEt après, vraiment, c’est… c’est toi qui vois.\nBisous bisous, en tout cas, ma beauté ❤️\nEt passe une très bonne nuit 😘❤️❤️❤️", time:"19 mars 19:24" },
+
+      // Mercredi (heure fournie sans date précise dans le texte original)
+      { who:"section", text:"Mercredi — 18:42" },
+      { who:"me",   name:"Sophie 🩷", text:"Lucas, il faut qu’on parle. Des fois, je ne te comprends pas.", time:"Mercredi 18:42", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"C’est-à-dire ?", time:"Mercredi 18:43" },
+      { who:"me",   name:"Sophie 🩷", text:"Il y a des jours où tu es super chaleureux avec moi, tu es adorable.\nEt d’autres jours, tu es hyper distant… ça me met mal à l’aise, en fait.", time:"Mercredi 18:44", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Non mais Sophie, tu dis n’importe quoi, là.", time:"Mercredi 18:45" },
+      { who:"me",   name:"Sophie 🩷", text:"C’est vraiment quelque chose que j’ai remarqué.\nIl y a des jours, tu es adorable, on est super proches.\nEt des fois, tu ne me parles pas pendant des heures, voire des jours.\nEt tu es super froid dans tes réponses.", time:"Mercredi 18:46", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Là tu te fais vraiment des films.\nFAUT ARRETER DE TROP RÉFLÉCHIR COMME CA\nIl y a des jours où je suis plus fatigué, d’autres moins.\nC’est tout. Il ne faut pas aller plus loin.", time:"Mercredi 18:48" },
+      { who:"me",   name:"Sophie 🩷", text:"ça explique pas tes changements d’humeur.", time:"Mercredi 18:49", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Tu te prends tellement la tête Sophie.\nEt là, tu te prends trop la tête.\nFranchement, ce n’est pas bien pour nous.\nIl faut vraiment que tu arrêtes de trop réfléchir à tout ça.\nMoi ce que j’aime bien dans notre relation, c’est qu’elle est hyper simple.\nEt quand tu dis ça, tu crées une distance entre nous.\nEt maintenant je me sens mal. Je culpabilise un peu. C’est ce que tu veux", time:"Mercredi 18:51" },
+
+      // Jeudi 20 mars
+      { who:"section", text:"Jeudi 20 mars — 14:02" },
+      { who:"them", name:"Lucas 💬",  text:"Ton amie Cléa… j’ai beaucoup réfléchi, et je pense vraiment que ce n’est pas une bonne personne pour toi.", time:"20 mars 14:02" },
+      { who:"me",   name:"Sophie 🩷", text:"Pourquoi tu dis ça ? Je la connais depuis des années, Cléa.", time:"20 mars 14:03", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Ma chérie, je te l’ai déjà dit : tu te trompes souvent dans ton jugement sur les gens. Et à chaque fois, tu te fais avoir.", time:"20 mars 14:04" },
+      { who:"me",   name:"Sophie 🩷", text:"Quand est-ce que je me suis “faite avoir”, d’après toi ?", time:"20 mars 14:05", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Plusieurs fois.\nTu penses connaître les gens, tu leur fais confiance, et au final, ils te trahissent.\nJe l’ai remarqué. Et j’aime pas ça.\nJ’aime pas qu’on te manipule comme ça.", time:"20 mars 14:07" },
+      { who:"me",   name:"Sophie 🩷", text:"Non, mais Cléa, elle n’a rien fait de mal…", time:"20 mars 14:08", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Je te vois quand t’es avec elle. T’es pas vraiment toi. Tu fais la conne. On dirait une gamine franchement.", time:"20 mars 14:10" },
+      { who:"me",   name:"Sophie 🩷", text:"On passe de bons moments. Elle est sympa.", time:"20 mars 14:11", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Sympa… super. Si elle est “sympa” alors ça va 🙃.\nCléa, déjà, dès le début, elle ne m’aime pas.\nEt ça, pour moi, c’est très clair : c’est de la jalousie. 😏", time:"20 mars 14:13" },
+      { who:"me",   name:"Sophie 🩷", text:"Ah non, elle t’a juste dit qu’elle te trouve un peu… exclusif avec moi, c’est tout.", time:"20 mars 14:14", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Tu vois ?\nÇa, c’est typiquement de la jalousie.\nElle est jalouse de la relation qu’on a. Elle veut mettre de la distance entre nous.\nComme par hasard, elle a jamais réussi à garder un mec plus de quelques mois.\nEt nous, on est là, on est ensemble, on est heureux.\nElle veut briser ça. Comme ça elle t’a pour elle toute seule.", time:"20 mars 14:16" },
+      { who:"me",   name:"Sophie 🩷", text:"Ouais, mais bon… c’est ton avis, quoi.", time:"20 mars 14:17", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Sauf que toi, je te connais.\nT’es trop gentille, et tu risques de faire ce qu’elle veut pour lui faire plaisi. rElle t’a déjà dit de te méfier de moi, non ?\nEt toi, tu vas peut-être commencer à la croire.\nAlors qu’elle fait ça juste parce qu’elle ne supporte pas de te voir heureuse.\nParce que quand toi tu vas bien, elle, ça la rend folle.", time:"20 mars 14:19" },
+      { who:"me",   name:"Sophie 🩷", text:"Tu penses pas que t’abuses un peu, là ? 🤨", time:"20 mars 14:20", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Non, réfléchis bien.\nDemande-toi qui est vraiment là pour toi.\nQui fait tout pour ton bonheur, qui se bat pour toi.\nEt tu verras qu’il n’en reste pas beaucoup. 💬", time:"20 mars 14:22" },
+
+      // Vendredi 22 mars
+      { who:"section", text:"Vendredi 22 mars — 18:42" },
+      { who:"them", name:"Lucas 💬",  text:"J’ai vu ta dernière photo sur Insta.", time:"22 mars 18:42" },
+      { who:"me",   name:"Sophie 🩷", text:"Ah ouais, t’aimes bien ?", time:"22 mars 18:43", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"T’as encore ce t-shirt ?", time:"22 mars 18:44" },
+      { who:"me",   name:"Sophie 🩷", text:"Bah y’a quoi, mon t-shirt ?", time:"22 mars 18:45", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Ah tu sais, je te l’ai dit, moi je trouve qu’il…\nIl te fait grossir quoi, t’es pas bien dedans.", time:"22 mars 18:47" },
+      { who:"me",   name:"Sophie 🩷", text:"Ah mais il est hyper confortable !", time:"22 mars 18:48", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Ma chérie, à un moment c’est pas possible quoi.\nT’es tellement belle ! Et ce t-shirt-là…\nIl te rend pas hommage… Enfin vraiment, on dirait que t’es…\nEnfin, tu le vois, quand tu te regardes dans une glace.", time:"22 mars 18:50" },
+      { who:"me",   name:"Sophie 🩷", text:"Moi je me trouve belle.", time:"22 mars 18:51", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"T’es pas assez exigeante 😅.\nT’as tellement moyen d’être trop belle !\nRegarde; avec  ta petite robe que j’aime bien, t’es vraiment trop belle !\nC’est ça qu’il faut que tu mettes !", time:"22 mars 18:53" },
+
+      // Samedi 23 mars
+      { who:"section", text:"Samedi 23 mars — 23:41" },
+      { who:"them", name:"Lucas 💬",  text:"Sophie, Sophie, Sophie t’es où ?", time:"23 mars 23:41" },
+      { who:"them", name:"Lucas 💬",  text:"Sophie, Sophie, REPONDS-MOI, PUTAIN !", time:"23 mars 23:42" },
+      { who:"them", name:"Lucas 💬",  text:"Sophie ! Sophie, réponds-moi !", time:"23 mars 23:43" },
+      { who:"me",   name:"Sophie 🩷", text:"Mais quoi ?", time:"23 mars 23:44", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Mais tu réponds pas, ça fait trois heures que je t’envoie des messages !", time:"23 mars 23:45" },
+      { who:"me",   name:"Sophie 🩷", text:"Mais oui, j’avais plus de batterie !", time:"23 mars 23:46", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Attends Sophie, t’es en soirée, t’as plus de batterie…\nMoi je deviens fou, tu comprends ? Je deviens fou !", time:"23 mars 23:47" },
+      { who:"me",   name:"Sophie 🩷", text:"Mais pourquoi t’es fou ?\nTu sais très bien où j’étais !", time:"23 mars 23:48", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Peut-être que t’as revu des gens, je sais pas avec qui t’es, je sais pas avec qui tu traînes… Moi je m’inquiète, faut plus que tu me fasses ça ! PLUS JAMAIS.", time:"23 mars 23:49" },
+      { who:"me",   name:"Sophie 🩷", text:"Attends, c’est juste que j’avais plus de batterie !", time:"23 mars 23:50", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"On a tous un chargeur Sophie !\nT’as vu dans quel état je me mets ? Franchement, c’est pas cool !", time:"23 mars 23:51" },
+      { who:"me",   name:"Sophie 🩷", text:"Excuse-moi…\nMais j’étais juste à une soirée, entre copines, je passais un bon moment…", time:"23 mars 23:52", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Bah oui, forcément, quand t’es avec tes copines, t’oublies ton mec. Pendant ce temps-là j’étais super mal.\nJ’ai failli faire une bêtise…\nMais c’est parce que je tiens beaucoup à toi que je deviens comme ça.\nEt voilà… faut qu’on fasse attention à ce que ça se reproduise plus, d’accord ma chérie ? ❤️", time:"23 mars 23:55" },
+
+      // Dimanche 12 juin
+      { who:"section", text:"Dimanche 12 juin — 09:47" },
+      { who:"them", name:"Lucas 💬",  text:"Ma chérie, j’ai enfin trouvé !", time:"12 juin 09:47" },
+      { who:"me",   name:"Sophie 🩷", text:"T’as trouvé quoi ? 😮", time:"12 juin 09:48", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Le boulot de nos rêves !\nÀ l’autre bout de la France 😍", time:"12 juin 09:49" },
+      { who:"me",   name:"Sophie 🩷", text:"Tu déménages ?", time:"12 juin 09:50", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"“On” déménage ! Mais pas que !\nJe nous ai déjà trouvé un appart.\nC’est génial, non ? 😁", time:"12 juin 09:52" },
+      { who:"me",   name:"Sophie 🩷", text:"Mais attends, qu’est-ce que tu veux que j’aille faire à l’autre bout de la France ?\nJ’ai toute ma vie ici !", time:"12 juin 09:54", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Tu veux pas penser à nous de temps en temps 😔", time:"12 juin 09:55" },
+      { who:"me",   name:"Sophie 🩷", text:"Moi j’ai un taf ici, mes amis…", time:"12 juin 09:56", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Enfin franchement, tes amis, tu les vois quasiment plus, et ton taf il t’emmerde, tu me l’as dit 100 fois.", time:"12 juin 09:57" },
+      { who:"me",   name:"Sophie 🩷", text:"C’est pas le boulot de mes rêves mais ça va, il est sympa.", time:"12 juin 09:58", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"T’es pas assez exigeante. Je te l’ai toujours dit. Là c’est l’occasion de tout recommencer, ensemble ! Et t’auras même pas besoin de travailler !\nMon boulot va nous permettre de tout payer.\nEt j’ai déjà trouvé un appart parfait.", time:"12 juin 10:00" },
+      { who:"me",   name:"Sophie 🩷", text:"Donc tu veux que j’emménage dans ton appart, à l’autre bout de la France ?\nMais je connais personne là-bas…", time:"12 juin 10:02", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Et juste nous deux, ça suffit pas ? On sera très bien tous les deux.\nOn va créer un cocon, une famille. Un paradis. C’est ça la beauté de la vie, non ? 💞", time:"12 juin 10:04" },
+      { who:"me",   name:"Sophie 🩷", text:"T’aurai pu m’en parler avant, quand même…", time:"12 juin 10:05", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Voilà.\nEncore une fois, j’essaie de te faire une surprise, je me décarcasse pour trouver un appart, même pour acheter un appart…\nEt toi, zéro reconnaissance.\nJe me tue à la tâche, et j’ai l’impression qu’on ne reconnaît jamais mes efforts à leur juste valeur.", time:"12 juin 10:07" },
+      { who:"me",   name:"Sophie 🩷", text:"C’est pas ça… tu trouves pas que c’est un peu rapide ?", time:"12 juin 10:08", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Je suis émotif, impulsif,\nJe veux te faire plaisir — et ça ne marche jamais 😞", time:"12 juin 10:09" },
+      { who:"me",   name:"Sophie 🩷", text:"Il commence quand ton boulot ?", time:"12 juin 10:10", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Dans deux semaines 😃", time:"12 juin 10:11" },
+      { who:"me",   name:"Sophie 🩷", text:"Deux semaines ?! C’est rien !\nIl faut que je lâche mon appart, que je prépare tout…", time:"12 juin 10:12", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Je vais t’aider ma chérie 😘. Et c’est ce que tu veux. Y’a trop d’histoires ici, avec Jeremy, avec Cléa, avec tes parents qui ne m’aiment pas. Franchement ça va nous faire tellement de bien ce nouveau départ.\nJuste toi et moi. ❤️", time:"12 juin 10:14" },
+      { who:"me",   name:"Sophie 🩷", text:"Écoute, je dois réfléchir, d’accord ?", time:"12 juin 10:15", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Non mais écoute-moi.\nJe me suis déjà projeté là-bas, avec toi.\nEt je te connais, tu vas encore hésiter et jamais oser te lancer. C’est pour ça que t’as du mal à être heureuse. T’écoutes pas assez ton instinct.\nOn a souvent parlé de fonder une famille, non ?\nLà, c’est l’occasion parfaite.\nMoi, je te fais confiance, alors fais-moi confiance à ton tour.\nViens, ma chérie. On y va ensemble, et on va vivre une vie merveilleuse. ✨", time:"12 juin 10:18" },
+      { who:"me",   name:"Sophie 🩷", text:"… Sans boulot ?", time:"12 juin 10:19", status:"read" },
+      { who:"them", name:"Lucas 💬",  text:"Je m’occupe de l’argent. Toi, tu pourras t’occuper de la maison. Et on pourra fonder la famille de nos rêves. Ce sera génial. 💑", time:"12 juin 10:20" },
+      { who:"me",   name:"Sophie 🩷", text:"D’accord…", time:"12 juin 10:21", status:"read" },
+    ];
+
+    // =========================
+    // Rendu + contrôles
+    // =========================
+    const messagesEl = document.getElementById('messages');
+    const headerTitle = document.getElementById('headerTitle');
+
+    function renderScript(data) {
+      messagesEl.innerHTML = '';
+      if (data.length) {
+        headerTitle.textContent = data.find(m => m.who === 'them')?.name || 'Chat';
+      }
+      data.forEach(m => {
+        if (m.who === 'section') {
+          const chip = document.createElement('div');
+          chip.className = 'section';
+          chip.textContent = m.text;
+          messagesEl.appendChild(chip);
+          return;
+        }
+        const wrap = document.createElement('div');
+        wrap.className = 'msg ' + (m.who === 'me' ? 'from-me' : 'from-them');
+        if (m.who === 'them') {
+          const badge = document.createElement('div');
+          badge.className = 'name-badge';
+          badge.textContent = m.name;
+          wrap.appendChild(badge);
+        }
+        const text = document.createElement('div');
+        text.textContent = m.text;
+        wrap.appendChild(text);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const time = document.createElement('div');
+        time.className = 'time';
+        time.textContent = m.time || '';
+        meta.appendChild(time);
+        if (m.who === 'me') {
+          const ticks = document.createElement('div');
+          ticks.className = 'ticks';
+          if (m.status === 'read') ticks.textContent = '✓✓ (lu)';
+          else if (m.status === 'delivered') ticks.textContent = '✓✓';
+          else if (m.status === 'sent') ticks.textContent = '✓';
+          meta.appendChild(ticks);
+        }
+        wrap.appendChild(meta);
+        messagesEl.appendChild(wrap);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    renderScript(script);
+
+    document.getElementById('clearBtn').addEventListener('click', ()=> { messagesEl.innerHTML=''; });
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      const frame = document.getElementById('chatFrame');
+      try {
+        const canvas = await html2canvas(frame, {scale:2, useCORS:true, backgroundColor:null});
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mock-chat-fictif-sensibilisation.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (e) {
+        alert('Export échoué — essayez Imprimer → Enregistrer en PDF.');
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>
