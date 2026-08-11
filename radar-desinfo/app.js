@@ -46,6 +46,16 @@ const ITEMS = [
    a:"doute", e:"L'usage politique du mot « fake news » : crier au mensonge face à une <b>vraie info</b> dérangeante. Le but n'est pas de convaincre, mais de semer le doute sur les médias en général. C'est ainsi que Trump a popularisé le terme en 2016."},
   {t:"Vous recevez un email : « Bonjour, je suis Sébastien, 72 ans, gravement malade, et je souhaite vous léguer 3 millions d'euros. »",
    a:"fake", e:"Si une info est <b>trop belle pour être vraie</b>, elle est généralement fausse. C'est une arnaque classique qui joue sur l'espoir… et un bon réflexe d'esprit critique permet de l'éviter."},
+  {t:"En 2013, un avion de la Malaysia Airlines (vol MH370) disparaît sans laisser de trace : plusieurs chaînes américaines lui consacrent des dizaines d'heures d'antenne en direct. Au même moment, une guerre civile éclate au Soudan du Sud et fait des milliers de morts… sans qu'aucun flash spécial n'interrompe les programmes.",
+   a:"mute", e:"La <b>mute news</b> : ce n'est pas qu'on ment sur le Soudan du Sud, c'est qu'on n'en parle presque pas. Le choix de ce qu'on couvre — et de ce qu'on ignore — façonne autant notre vision du monde qu'un mensonge."},
+  {t:"En mars 2020, des photos de rayons de supermarché entièrement vides sont prises pendant les premières heures du confinement. Ces mêmes photos ressurgissent régulièrement depuis, recyclées à chaque nouvelle inquiétude, avec la légende « Pénurie généralisée en France, en ce moment ! ».",
+   a:"ctx", e:"Les photos sont <b>authentiques</b>, mais leur date a disparu en chemin. Une image vraie, réutilisée hors de son contexte d'origine, peut désinformer pendant des années après l'évènement réel."},
+  {t:"Dans les villes où l'on vend le plus de glaces, on recense aussi davantage de noyades en piscine.",
+   a:"corr", e:"Les glaces ne font pas se noyer ! Un <b>facteur caché</b> explique les deux à la fois : la chaleur. Quand il fait chaud, on mange plus de glaces ET on va plus se baigner. Corrélation n'est toujours pas causalité."},
+  {t:"En une seule nuit, un petit restaurant de quartier reçoit 200 nouveaux avis 5 étoiles sur une plateforme, tous rédigés dans un français approximatif et publiés à la même heure.",
+   a:"astro", e:"Un vrai afflux de clients satisfaits ne se produit pas en une nuit, ni avec un style aussi uniforme : c'est de l'<b>astroturfing</b> commercial — des faux avis achetés en masse pour simuler une popularité qui n'existe pas."},
+  {t:"Une étude montre qu'un médicament « double le risque » d'un effet secondaire rare. En réalité, ce risque passe de 1 personne sur 1 million à 2 personnes sur 1 million.",
+   a:"cadr", e:"« Doubler un risque » sonne alarmant, alors que le risque réel reste minuscule : c'est l'<b>effet de cadrage</b> version chiffres. Toujours regarder le risque absolu, pas seulement le pourcentage de variation."},
 ];
 
 let deck=[], idx=0, score=0, lives=3, streak=0, best=0;
