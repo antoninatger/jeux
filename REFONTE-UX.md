@@ -8,8 +8,8 @@
 > + ouverture de 44 pages dans Chromium en 1440 px et 390 px avec relevé des erreurs
 > console). **Chantiers 01 et 04 appliqués et commités.**
 >
-> Dernière mise à jour : 14 août, après relecture du chantier 04 et trois arbitrages
-> d'Antonin (fins de ligne, portée du design system, famille « Sensibilisation »).
+> Dernière mise à jour : 14 août — relecture de la tranche 1 du chantier 05 et **plan
+> d'exécution de la tranche 2 (§7 bis)**, qui est la prochaine étape.
 
 ---
 
@@ -48,13 +48,22 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
 ```
 01 Correctifs express      ✅ FAIT (commit 65f8b5d)
 04 La pédagogie d'abord    ✅ FAIT (commit f0fcb93)
-05 Design system           🔸 EN COURS (fb97b44) — socle + polices faits,
-                              4 pages migrées sur 59, §5.3/5.4/5.5 à faire
-02 Socle d'accessibilité    puis                ≈ 6 j
-03 Tactile & mobile         puis                ≈ 8 j
-06 Industrialisation        puis                ≈ 10 j
-07 Vitrine & catégories     puis                ≈ 3 j
+05 Design system           🔸 EN COURS
+   ├ tranche 1  ✅ FAIT (fb97b44) — socle, polices, 4 pages migrées
+   └ tranche 2  ← COMMENCER ICI — plan détaillé au §7 bis
+02 Socle d'accessibilité    puis (à relire d'abord) ≈ 6 j
+03 Tactile & mobile         puis (à relire d'abord) ≈ 8 j
+06 Industrialisation        puis                    ≈ 10 j
+07 Vitrine & catégories     puis                    ≈ 3 j
 ```
+
+**Tranche 2 du chantier 05 — l'ordre est important**, il est détaillé au **§7 bis** :
+1. combler les deux trous du socle (Emprise, Mine) ≈ 1 j
+2. les 10 illusions, dont `adelson.html` à écrire ≈ 2 j
+3. composants intro/fin et gabarit, **extraits** de l'étape 2 ≈ 2 j
+4. migration en 3 lots (arcade, catalogues, le reste) ≈ 6 j
+
+Ne pas commencer par la migration de masse : le socle n'est pas encore complet.
 
 Le chantier 08 (« amener 3 jeux phares au niveau produit ») n'a **pas** été retenu.
 
@@ -477,6 +486,85 @@ applications. Après, il en coûte une.
 > des violences dans le couple, c'est précisément le lien qui ne doit ni gêner
 > ni être gêné. Il est aussi la cible tactile la plus petite de la page
 > (§9.4 le signalait déjà comme prioritaire).
+
+---
+
+## 7 bis. Tranche 2 du chantier 05 — plan d'exécution
+
+> **Principe : finir de définir le socle avant de s'en servir 55 fois.**
+> Les deux réserves ci-dessus ne sont pas des retouches cosmétiques, ce sont deux
+> trous dans l'API du socle. Migrer les 55 pages avant d'y avoir répondu revient à
+> inscrire une recette incomplète 55 fois. L'ordre ci-dessous met les décisions
+> structurantes au début et garde l'enveloppe de 12 jours.
+
+### Étape 1 — Combler les deux trous du socle ≈ 1 j
+
+**1a. Emprise : un emplacement libre dans l'en-tête.**
+Le lien « Besoin d'aide ? » ne doit plus être un élément flottant. La question qu'il
+pose dépasse Emprise : **comment l'en-tête accueille-t-il un troisième élément ?** —
+un lien d'aide aujourd'hui, demain un bouton son, un chrono, un compteur de vies.
+La grille actuelle est figée à `retour | titre | langue`.
+
+À faire : ouvrir un emplacement déclaratif (par exemple un `<slot>`/conteneur
+`data-col-entete-extra`, ou une zone `col-entete__extra` que la page remplit), puis
+y déplacer « Besoin d'aide ? » — qui gagne au passage sa cible de 44 px et cesse de
+recouvrir le bandeau « FICTION » en 390 px. Si le socle ne sait pas accueillir un
+troisième élément, mieux vaut le découvrir ici qu'à la 40ᵉ page.
+
+**1b. Mine : la première adoption réelle de l'échelle typographique.**
+⚠️ **Ce n'est pas un remplacement de valeurs, c'est une reprise de mise en page.**
+`Press Start 2P` est une police très large : passer `.lt` de 5,8 px à `--fs-100`
+(12,8 px) fera déborder les cartouches « EXTRACTION FACILE / DIFFICILE », et le même
+effet touchera `.stit`, `.sbtn`, `.click-hint`, `.slot-n` et le HUD. Prévoir de
+reprendre les conteneurs, pas seulement les `font-size`. C'est un jeu destiné au
+primaire : c'est la page de la collection où l'enjeu de lisibilité est le plus fort.
+
+**Livrable de l'étape :** la recette de migration du §7 est complétée d'une étape
+« reprendre les tailles sur les jetons », sans quoi le plancher à 12,8 px restera une
+intention que personne n'applique.
+
+### Étape 2 — Les 10 illusions, §5.4 ≈ 2 j
+
+Meilleur premier lot : dix pages quasi identiques, sans identité visuelle forte à
+préserver, et déjà dotées de la pastille de retour du chantier 01.
+
+- Les faire converger sur un gabarit unique (elles ont aujourd'hui dix jeux de classes
+  différents : `.exp-panel` ici, `#explication` là, `.page-hint` vs `#question`).
+- **`adelson.html` est à écrire entièrement** — ni titre, ni consigne, ni explication.
+  C'est l'occasion de définir le composant **« énoncé + panneau pédagogique »** que les
+  neuf autres réimplémentent chacune à sa façon. Ce composant servira bien au-delà des
+  illusions.
+- Aucune de ces pages n'a de `<h1>` : vérifier que `data-col-titre-cle` (introduit en
+  tranche 1) couvre bien le cas, et en profiter pour leur donner une vraie hiérarchie.
+
+### Étape 3 — §5.3 composants intro/fin et §5.5 gabarit ≈ 2 j
+
+**À faire après l'étape 2, pas avant.** Les composants doivent être extraits de ce que
+le lot d'illusions aura révélé, pas devinés à l'avance : un gabarit écrit sur du vécu
+vaut mieux qu'un gabarit écrit sur une intention.
+
+### Étape 4 — Migration en lots ≈ 6 j
+
+Trois lots cohérents plutôt que 55 cas particuliers :
+
+| Lot | Pages | Ce qu'elles partagent |
+|---|---|---|
+| **Arcade** | les 11 pages d'`Arcade quizz/` | même HUD SCORE/VIES, même structure de canvas, mêmes chevauchements en 390 px (§9.3) |
+| **Catalogues** | Perceptio, Cobaye, Rhetor | gabarit strictement identique — ce qui est corrigé sur l'un se transpose tel quel |
+| **Le reste** | les ~30 pages restantes | à traiter par proximité (jeux de scénario, pages racine, modules) |
+
+Traiter un lot = régler une fois un défaut partagé par 11 pages. C'est le retour sur
+investissement du socle, et le moment où il devient visible.
+
+### Après le chantier 05 — relire 02 et 03 avant de les lancer
+
+Une bonne partie du contenu des chantiers **02** (contrastes, `:focus-visible`, cibles
+44 px) et **03** (chevauchements en 390 px) sera **absorbée par la migration
+elle-même**. Ne pas les exécuter tels qu'ils sont écrits : faire une passe de
+vérification à l'issue du 05 pour ne garder que ce qui reste réellement à faire —
+notamment ce que le socle ne peut pas régler seul : `aria-live`, opérabilité clavier
+de l'échiquier, du curseur du FakeMètre et des pastilles d'Exploration, alternatives
+textuelles des graphiques trompeurs, contrôles tactiles des jeux d'arcade.
 
 ### 5.1 — Créer `collection.css` et `collection.js` à la racine
 
