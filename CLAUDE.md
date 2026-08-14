@@ -26,6 +26,31 @@ détail fichier par fichier de ce qui reste à faire. **Le chantier en cours est
   reformatage rendrait la revue impossible.
 - Commentaires et messages de commit **en français**.
 
+## Quel modèle pour cette session — à signaler à Antonin
+
+Antonin veut être **prévenu en début de session** quand la tâche demandée justifie de
+basculer sur **Fable 5** (`/model claude-fable-5`) plutôt que le modèle courant. Ne pas
+basculer soi-même : le signaler en une phrase, il décide.
+
+**Le signaler quand la session correspond à au moins deux de ces critères :**
+
+- migration ou refactorisation **de masse** — plus d'une dizaine de fichiers à
+  transformer de la même façon dans une seule session (typiquement l'étape 4 de la
+  tranche 2 : les 11 pages d'arcade, puis les 3 catalogues, puis ~30 pages) ;
+- la difficulté n'est pas de savoir quoi faire, mais de **rester cohérent du premier
+  au dernier fichier** ;
+- travail autonome long, sans point de contrôle intermédiaire ;
+- besoin de tenir beaucoup de fichiers volumineux en contexte simultanément
+  (`fakemetre/index.html` fait 3 900 lignes, `questions_fr.js` 407 Ko).
+
+**Ne pas le signaler pour :** le travail de précision sur un ou deux fichiers, la
+rédaction de contenu, les passes de relecture, la correction d'un bug identifié. Le
+modèle courant y suffit largement — la qualité livrée sur le chantier 04 et la
+tranche 1 du chantier 05 le montre.
+
+Fable 5 coûte 10 $/M en entrée et 50 $/M en sortie : le signalement doit rester
+l'exception, pas un réflexe.
+
 ## Tester
 
 Pas de build. Mais `file://` casse les scripts et l'i18n — il faut un serveur :

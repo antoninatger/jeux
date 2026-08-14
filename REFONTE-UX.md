@@ -545,6 +545,13 @@ vaut mieux qu'un gabarit écrit sur une intention.
 
 ### Étape 4 — Migration en lots ≈ 6 j
 
+> ⚙️ **C'est l'étape à signaler à Antonin comme candidate à Fable 5** (voir la section
+> « Quel modèle pour cette session » de `CLAUDE.md`). Les étapes 1 à 3 sont du travail
+> de précision sur un ou deux fichiers : le modèle courant suffit. L'étape 4 est une
+> migration de masse où la difficulté est de rester cohérent du premier au dernier
+> fichier — c'est exactement le profil annoncé pour Fable. Le signaler, ne pas basculer
+> soi-même.
+
 Trois lots cohérents plutôt que 55 cas particuliers :
 
 | Lot | Pages | Ce qu'elles partagent |
