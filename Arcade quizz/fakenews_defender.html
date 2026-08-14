@@ -174,7 +174,8 @@
       Des réponses tombent du ciel.<br>
       <strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>
       ⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>
-      ⚠️ Laisse la bonne réponse passer — elle ne doit pas s'échapper !<br><br>
+      ⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>
+      ✅ La bonne réponse, elle, peut passer sans risque.<br><br>
       ← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
@@ -198,16 +199,22 @@
 <script>
 I18N.register({
   fr: {
-    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Laisse la bonne réponse passer — elle ne doit pas s'échapper !<br><br>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>✅ La bonne réponse, elle, peut passer sans risque.<br><br>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>MISSION ACCOMPLIE !", loseTitle: "GAME OVER",
-    winMsg: "Tu es un vrai chasseur de Fake News !", loseMsg: "Continue à développer ton esprit critique !"
+    winMsg: "Tu es un vrai chasseur de Fake News !", loseMsg: "Continue à développer ton esprit critique !",
+    shotGood: "❌ Tu as tiré sur la BONNE réponse ! -1 vie",
+    wrongEscaped: "💨 Une fausse réponse s'est échappée ! -1 vie",
+    goodPassed: "✅ Bonne réponse laissée passer"
   },
   en: {
-    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br>⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Let the correct answer pass — it must not escape!<br><br>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br>⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Don't let a FALSE answer reach the bottom — you'll lose a life!<br>✅ The correct answer, though, can safely pass through.<br><br>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>MISSION ACCOMPLISHED!", loseTitle: "GAME OVER",
-    winMsg: "You're a real fake-news hunter!", loseMsg: "Keep developing your critical thinking!"
+    winMsg: "You're a real fake-news hunter!", loseMsg: "Keep developing your critical thinking!",
+    shotGood: "❌ You shot the CORRECT answer! -1 life",
+    wrongEscaped: "💨 A false answer escaped! -1 life",
+    goodPassed: "✅ Correct answer let through"
   }
 });
 </script>
@@ -309,6 +316,24 @@ function shuffleColors() {
     [c[i],c[j]] = [c[j],c[i]];
   }
   return c;
+}
+
+// Chantier 04 : mélange l'ordre des OPTIONS, pas seulement leurs couleurs.
+// Sans ça, toutes les questions ayant answer:0 font tomber la bonne réponse
+// dans la même colonne — le joueur gagne sans lire.
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function withShuffledOptions(list) {
+  return list.map(q => {
+    const idx = shuffleArr(Array.from({length:q.options.length}, (_,i) => i));
+    return { ...q, options: idx.map(i => q.options[i]), answer: idx.indexOf(q.answer) };
+  });
 }
 
 function spawnAnswers() {
@@ -423,11 +448,18 @@ function playSound(freq,dur,type='sine',vol=0.15) {
 }
 
 // ── FEEDBACK ─────────────────────────────────────────────────
-function showFeedback(msg, type) {
+// Chantier 04 : durée réglable — une explication a besoin de plus de 2,8 s pour être lue.
+function showFeedback(msg, type, ms) {
   const el=document.getElementById('feedback');
   el.textContent=msg; el.className='show '+type;
   clearTimeout(feedbackTimer);
-  feedbackTimer=setTimeout(()=>{ el.className=''; }, 2800);
+  feedbackTimer=setTimeout(()=>{ el.className=''; }, ms || 2800);
+}
+
+// Message d'erreur + l'explication pédagogique de la question en cours.
+function feedbackKO(msg) {
+  const expl = currentQ && currentQ.expl;
+  showFeedback(expl ? msg + ' — ' + expl : msg, 'ko', expl ? 6000 : 2800);
 }
 
 // ── CHECK ALL WRONG ANSWERS GONE ─────────────────────────────
@@ -438,9 +470,10 @@ function checkAllWrongGone() {
     score += 100;
     updateUI();
     playSound(660, .3, 'sine');
-    showFeedback(currentQ.expl, 'ok');
+    // Chantier 04 : 900 ms ne suffisent pas à lire une explication.
+    showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
     const correct = answers.find(a => a.isCorrect);
-    setTimeout(() => { if (correct) correct.dead = true; nextQuestion(); }, 900);
+    setTimeout(() => { if (correct) correct.dead = true; nextQuestion(); }, currentQ.expl ? 3000 : 900);
   }
 }
 
@@ -498,6 +531,7 @@ function startDefaultGame() {
 
 function startGame() {
   document.getElementById('overlay').style.display='none';
+  activeQCM = withShuffledOptions(activeQCM);
   score=0; lives=3; qIndex=0; bullets=[]; answers=[]; particles=[];
   plane.x=W/2; shootCooldown=0; feedbackTimer=null; paused=false;
   makeStars(); updateUI();
@@ -513,11 +547,17 @@ function endGame(win) {
   document.getElementById('question-banner').style.display='none';
   const ov=document.getElementById('overlay');
   ov.style.display='flex';
+  // Chantier 04 : sur une défaite, la question en cours reste sans réponse —
+  // on affiche son explication plutôt que de laisser le joueur sur son erreur.
+  const lastExpl = (!win && currentQ && currentQ.expl)
+    ? `<div class="sub" style="color:#ffd479;border-left:3px solid #ffaa00;padding-left:12px;text-align:left">💡 ${currentQ.expl}</div>`
+    : '';
   ov.innerHTML=`
     <h1 style="color:${win?'#00ffcc':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
     <div class="sub">${I18N.t('finalScore')} <strong style="color:#00ffcc">${score}</strong><br>
     ${win?I18N.t('winMsg'):I18N.t('loseMsg')}
     </div>
+    ${lastExpl}
     <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
       <button onclick="startDefaultGame()">${I18N.t('replay')}</button>
       <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menu')}</button>
@@ -583,8 +623,10 @@ function gameLoop() {
             lives--;
             updateUI();
             playSound(150,.3,'sawtooth');
-            showFeedback('❌ Tu as tiré sur la BONNE réponse ! -1 vie','ko');
-            if(lives<=0){ setTimeout(()=>endGame(false),600); return; }
+            // Chantier 04 : c'est LE moment pédagogique — le joueur vient d'abattre
+            // la bonne réponse, on lui dit pourquoi c'était la bonne.
+            feedbackKO(I18N.t('shotGood'));
+            if(lives<=0){ setTimeout(()=>endGame(false),2600); return; }
           }
         }
       });
@@ -606,20 +648,23 @@ function gameLoop() {
           lives--;
           updateUI();
           playSound(150,.4,'sawtooth');
-          showFeedback('💨 Une fausse réponse s\'est échappée ! -1 vie','ko');
-          if(lives<=0){ setTimeout(()=>endGame(false),600); return; }
+          showFeedback(I18N.t('wrongEscaped'),'ko');
+          if(lives<=0){ feedbackKO(I18N.t('wrongEscaped')); setTimeout(()=>endGame(false),2600); return; }
           // Si toutes les mauvaises réponses sont parties (tirées ou échappées), avancer sans bonus
           if(questionActive && answers.filter(a=>!a.isCorrect&&!a.dead).length===0){
             questionActive=false;
-            setTimeout(()=>{ qIndex++; loadQuestion(); }, 1200);
+            // Chantier 04 : ne pas enchaîner sans avoir expliqué la question.
+            showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
+            setTimeout(()=>{ qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1200);
           }
         } else {
-          lives--;
-          updateUI();
-          playSound(150,.4,'sawtooth');
-          showFeedback('💨 La bonne réponse s\'est échappée ! -1 vie','ko');
-          if(lives<=0){ setTimeout(()=>endGame(false),600); return; }
-          nextQuestion();
+          // Chantier 04 (§4.5) : la consigne dit de laisser passer la bonne réponse —
+          // la pénaliser ici punissait le joueur pour avoir suivi la règle. Plus de -1 vie.
+          playSound(660,.25,'sine');
+          showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
+          questionActive = false;
+          qIndex++;
+          setTimeout(loadQuestion, currentQ.expl ? 4200 : 1200);
         }
       }
       drawAnswer(a);

@@ -87,6 +87,11 @@ header{text-align:center;}
 #verdict{display:none;border-radius:18px;padding:18px 20px;margin-bottom:12px;animation:slidein .4s ease;background:rgba(201,160,255,.08);border:2px solid var(--acc);}
 #verdict h3{font-family:'Abril Fatface',serif;font-size:1.2rem;color:var(--acc);margin-bottom:6px;}
 #verdict .vstars{font-size:1.5rem;margin-bottom:8px;}
+/* Chantier 04 : le barème des étoiles n'était expliqué nulle part. */
+#verdict .vscale{font-size:.78rem;font-weight:700;color:var(--mu);margin-bottom:10px;line-height:1.5;}
+/* Chantier 04 : la restitution durait 4,2 s sans pouvoir être écourtée. */
+#skipbtn{display:none;width:100%;background:transparent;color:var(--acc);border:2px solid var(--acc);border-radius:50px;padding:11px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;margin-bottom:12px;min-height:44px;transition:background .2s;}
+#skipbtn:hover{background:rgba(201,160,255,.12);}
 #verdict p{font-size:.9rem;font-weight:600;line-height:1.55;}
 #verdict p b{color:var(--acc);}
 #nextbtn{display:none;width:100%;background:linear-gradient(135deg,#b07cff,#7c3aed);color:#fff;border:none;border-radius:50px;padding:14px;font-family:'Abril Fatface',serif;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 20px rgba(168,85,247,.35);}
@@ -168,9 +173,11 @@ header{text-align:center;}
     <div class="dstep ethos" id="step0"><div class="dreg" data-i18n="yourEthos">🏛️ Ton ethos</div><div class="dsaid"></div><div class="dreact"></div></div>
     <div class="dstep pathos" id="step1"><div class="dreg" data-i18n="yourPathos">💔 Ton pathos</div><div class="dsaid"></div><div class="dreact"></div></div>
     <div class="dstep logos" id="step2"><div class="dreg" data-i18n="yourLogos">🧮 Ton logos</div><div class="dsaid"></div><div class="dreact"></div></div>
+    <button id="skipbtn" onclick="skipDelivery()" data-i18n="skip">⏭️ Passer à la réaction de l'auditoire</button>
     <div id="verdict">
       <h3 id="v-title"></h3>
       <div class="vstars" id="v-stars"></div>
+      <p class="vscale" id="v-scale"></p>
       <p id="v-lesson"></p>
     </div>
     <button id="nextbtn" onclick="nextMission()" data-i18n="next">Mission suivante ➜</button>
@@ -199,7 +206,10 @@ I18N.register({
     subPathos: "Convaincre par l'émotion", subLogos: "Convaincre par la logique et les faits",
     tribune: "🎙️ À la tribune…", conviction: "Conviction de l'auditoire",
     yourEthos: "🏛️ Ton ethos", yourPathos: "💔 Ton pathos", yourLogos: "🧮 Ton logos",
-    next: "Mission suivante ➜", replay: "🔄 Rejouer"
+    next: "Mission suivante ➜", replay: "🔄 Rejouer",
+    skip: "⏭️ Passer à la réaction de l'auditoire",
+    scale: "Barème : chaque argument vaut 0, 1 ou 2 points (6 au maximum). ⭐⭐⭐ = 6 · ⭐⭐ = 4 ou 5 · ⭐ = 2 ou 3 · en dessous, aucune étoile.",
+    scaleGot: "Ton total :"
   },
   en: {
     back: "← Back to games", h1: "🎤 The Grand Oral",
@@ -213,7 +223,10 @@ I18N.register({
     subPathos: "Convince through emotion", subLogos: "Convince through logic and facts",
     tribune: "🎙️ At the podium…", conviction: "Audience conviction",
     yourEthos: "🏛️ Your ethos", yourPathos: "💔 Your pathos", yourLogos: "🧮 Your logos",
-    next: "Next mission ➜", replay: "🔄 Play again"
+    next: "Next mission ➜", replay: "🔄 Play again",
+    skip: "⏭️ Skip to the audience's reaction",
+    scale: "Scoring: each argument is worth 0, 1 or 2 points (6 maximum). ⭐⭐⭐ = 6 · ⭐⭐ = 4 or 5 · ⭐ = 2 or 3 · below that, no star.",
+    scaleGot: "Your total:"
   }
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');

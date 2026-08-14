@@ -736,6 +736,320 @@ const SCENARIOS = [
     ],
     reflexe: 'Sur une plateforme d’annonces, le paiement doit toujours passer par le système sécurisé du site. Aucun « acompte » par virement direct, jamais.',
     explication: 'C’est l’inverse exact du scénario "vente Leboncoin sécurisée" : ici, dès qu’on vous fait sortir du système protégé, vous perdez toute garantie. Le prétexte (« éviter les frais ») est presque toujours signe d’arnaque.'
+  },
+
+  /* ======================================================================
+     Chantier 04 (§4.9) — rééquilibrage du corpus : 23 arnaques pour
+     9 messages fiables entraînait la méfiance générale plutôt que le
+     discernement. Les 14 cas ci-dessous sont légitimes mais imitent
+     volontairement la forme d'une arnaque déjà présente dans le jeu :
+     le joueur doit lire les indices, pas reconnaître un gabarit.
+     ====================================================================== */
+
+  /* ---------- 33. Avis d’impôt disponible — FIABLE */
+  {
+    id: 'email-impots-ok',
+    canal: 'email',
+    entete: 'E-mail reçu après votre déclaration en ligne',
+    de: 'impots.gouv.fr',
+    deAdresse: 'ne-pas-repondre@dgfip.finances.gouv.fr',
+    objet: 'Votre avis d’impôt 2026 est disponible',
+    date: 'Lun. 03/08, 07:12',
+    corps: 'Bonjour,<br><br>Votre avis d’impôt sur le revenu est consultable dans votre espace particulier sur impots.gouv.fr, rubrique « Mes documents ».<br><br>Aucune démarche n’est nécessaire si vous êtes mensualisé.<br><br>La Direction générale des Finances publiques',
+    verdict: 'fiable',
+    categorie: 'Message légitime — mise à disposition d’un document',
+    indices: [
+      'Adresse en @dgfip.finances.gouv.fr : un vrai domaine de l’État (.gouv.fr).',
+      'Aucun lien de paiement, aucun remboursement promis, aucune coordonnée bancaire demandée.',
+      'On vous renvoie vers VOTRE espace, que vous ouvrez vous-même.',
+      'Aucune menace ni délai couperet.'
+    ],
+    reflexe: 'Les impôts vous prient de consulter votre espace ; ils ne vous envoient jamais de lien pour « encaisser un remboursement ».',
+    explication: 'À comparer avec le faux SMS de remboursement d’impôts du jeu : celui-ci ne promet rien, ne presse personne et ne demande aucun RIB. Le réflexe reste le même — tapez vous-même impots.gouv.fr plutôt que de cliquer.'
+  },
+
+  /* ---------- 34. SMS de livraison attendu — FIABLE */
+  {
+    id: 'sms-livraison-ok',
+    canal: 'sms',
+    entete: 'SMS reçu le jour où vous attendez une commande',
+    expediteur: 'Colissimo',
+    messages: [
+      'Votre colis 6A21847755841 sera livré aujourd’hui entre 14h et 16h. Suivi disponible dans l’application La Poste ou sur laposte.fr avec votre numéro de colis.'
+    ],
+    verdict: 'fiable',
+    categorie: 'Message légitime — information de livraison',
+    indices: [
+      'Vous attendez effectivement ce colis : le message correspond à votre vie réelle.',
+      'Aucun lien cliquable, aucun « frais de 2 € » à régler.',
+      'On vous renvoie vers l’application ou le site officiel, que vous ouvrez vous-même.',
+      'Expéditeur nommé (Colissimo), pas un numéro de portable personnel.'
+    ],
+    reflexe: 'Un vrai transporteur informe. Il ne réclame jamais de petits frais par carte pour « libérer » un colis.',
+    explication: 'C’est le jumeau honnête du SMS de colis piégé. La différence tient à trois détails : pas de lien, pas de paiement, et vous attendiez vraiment ce colis. Un colis que vous n’avez pas commandé reste toujours suspect.'
+  },
+
+  /* ---------- 35. Appel de la banque qui ne demande aucun code — FIABLE */
+  {
+    id: 'appel-banque-fraude-ok',
+    canal: 'appel',
+    afficheur: 'CIC — service fraude',
+    numero: 'appel reçu en journée',
+    transcript: [
+      { qui: 'lui', texte: 'Bonjour, service surveillance des paiements du CIC. Un achat de 780 € en Espagne a été bloqué sur votre carte. Le reconnaissez-vous ?' },
+      { qui: 'vous', texte: 'Non, pas du tout.' },
+      { qui: 'lui', texte: 'Nous l’avons donc refusé et votre carte est suspendue. Je ne vous demanderai aucun code : rendez-vous en agence ou rappelez le numéro au dos de votre carte pour la commande d’une nouvelle.' }
+    ],
+    verdict: 'fiable',
+    categorie: 'Message légitime — alerte de fraude sans demande sensible',
+    indices: [
+      'On ne vous demande ni code, ni mot de passe, ni de valider quoi que ce soit dans l’appli.',
+      'On ne vous demande pas de « transférer vos fonds sur un compte sûr ».',
+      'L’opération a déjà été bloquée : il n’y a rien à faire dans l’urgence.',
+      'On vous renvoie vers l’agence ou le numéro au dos de la carte.'
+    ],
+    reflexe: 'Une vraie banque bloque d’abord, informe ensuite. Elle ne vous fait jamais agir pendant l’appel.',
+    explication: 'Le numéro affiché ne prouve jamais rien (spoofing). Ce qui distingue cet appel du faux conseiller, c’est qu’il ne vous demande RIEN. Au moindre doute : raccrochez et rappelez vous-même le numéro au dos de votre carte — un vrai conseiller ne s’en vexera jamais.'
+  },
+
+  /* ---------- 36. Notification Ameli — FIABLE */
+  {
+    id: 'notif-ameli-ok',
+    canal: 'notif',
+    app: 'ameli',
+    appIcon: '🩺',
+    fond: 'info',
+    titre: 'Un nouveau remboursement est disponible',
+    texte: 'Le détail de vos derniers remboursements est consultable dans l’onglet « Mes paiements » de l’application.',
+    verdict: 'fiable',
+    categorie: 'Message légitime — notification de l’application ameli',
+    indices: [
+      'La notification vient de l’application officielle installée sur votre téléphone.',
+      'Aucun montant « à réclamer », aucun RIB demandé.',
+      'Aucun lien externe : tout se passe dans l’application.',
+      'Aucune menace de suspension de droits.'
+    ],
+    reflexe: 'L’Assurance maladie verse directement sur le compte qu’elle connaît déjà. Elle ne demande jamais de RIB par SMS ou par mail.',
+    explication: 'Le faux SMS Ameli du jeu, lui, promet un remboursement et réclame vos coordonnées bancaires. Ici, rien n’est demandé : c’est une simple information dans l’appli. Consultez toujours vos remboursements depuis l’application, jamais depuis un lien reçu.'
+  },
+
+  /* ---------- 37. Confirmation d’une commande que vous avez passée — FIABLE */
+  {
+    id: 'email-commande-ok',
+    canal: 'email',
+    entete: 'E-mail reçu dix minutes après votre achat',
+    de: 'Nature & Découvertes',
+    deAdresse: 'commandes@natureetdecouvertes.com',
+    objet: 'Votre commande n° 4471902 est confirmée',
+    date: 'Aujourd’hui, 16:42',
+    corps: 'Bonjour Madame Renard,<br><br>Merci pour votre commande du 14 août : 1 carillon à vent, 39,90 €.<br><br>Livraison prévue sous 3 à 5 jours ouvrés à l’adresse enregistrée dans votre compte. Le suivi apparaîtra dans votre espace client.<br><br>Bonne journée,<br>Le service clients',
+    verdict: 'fiable',
+    categorie: 'Message légitime — confirmation de commande',
+    indices: [
+      'Vous venez de passer cette commande : montant, article et date correspondent.',
+      'Adresse d’expéditeur cohérente avec l’enseigne.',
+      'On vous nomme correctement, sans « Cher client » générique.',
+      'Aucun paiement supplémentaire, aucun code, aucune urgence.'
+    ],
+    reflexe: 'Une confirmation de commande récapitule ; elle ne redemande jamais de payer ni de « valider » vos coordonnées bancaires.',
+    explication: 'Le piège courant est le faux « problème de paiement » reçu après un achat réel, qui profite du fait que vous attendez un mail. Ici, tout concorde et rien n’est demandé : c’est légitime.'
+  },
+
+  /* ---------- 38. SMS de la pharmacie — FIABLE */
+  {
+    id: 'sms-pharmacie-ok',
+    canal: 'sms',
+    entete: 'SMS de votre pharmacie de quartier',
+    expediteur: 'PharmacieCentrale',
+    messages: [
+      'Bonjour, votre traitement commandé mardi est arrivé. Vous pouvez le retirer aux horaires d’ouverture, du lundi au samedi 9h-19h30. À bientôt !'
+    ],
+    verdict: 'fiable',
+    categorie: 'Message légitime — mise à disposition en pharmacie',
+    indices: [
+      'Le message correspond à une démarche que vous avez vous-même engagée.',
+      'Aucun lien, aucune pièce jointe, aucun paiement en ligne.',
+      'Aucune donnée personnelle ni médicale n’est demandée en retour.',
+      'On vous invite à vous déplacer, sans aucune urgence.'
+    ],
+    reflexe: 'Un professionnel de santé vous informe ; il ne vous demande jamais de payer ou de vous identifier par un lien reçu par SMS.',
+    explication: 'Tout n’est pas une arnaque, et se méfier de tout finit par coûter cher en tranquillité. Ici : commande réelle, aucun lien, aucun paiement. Rien à signaler.'
+  },
+
+  /* ---------- 39. Message du petit-fils sur son numéro habituel — FIABLE */
+  {
+    id: 'chat-petitfils-ok',
+    canal: 'chat',
+    messages: [
+      { from: 'eux', texte: 'Salut Mamie ! J’ai eu mes résultats, je suis pris à la fac de Rennes 🎉' },
+      { from: 'eux', texte: 'Je passe te raconter tout ça dimanche, tu me feras ton gratin ? 😋' }
+    ],
+    plateforme: 'WhatsApp',
+    contact: 'Théo (petit-fils)',
+    avatar: '',
+    verdict: 'fiable',
+    categorie: 'Message légitime — nouvelles d’un proche',
+    indices: [
+      'Le message arrive sur la conversation habituelle, pas depuis un nouveau numéro.',
+      'Aucune demande d’argent, de virement ni de code.',
+      'Le contenu est personnel et vérifiable auprès de la famille.',
+      'Aucun lien, aucune urgence, aucun changement de numéro annoncé.'
+    ],
+    reflexe: 'L’arnaque au faux proche commence presque toujours par « j’ai changé de numéro ». Ici, rien de tel.',
+    explication: 'C’est le contre-exemple direct du faux proche présent dans le jeu : même ton affectueux, mais numéro habituel et aucune demande d’argent. Le seul signal qui compte vraiment reste celui-là : dès qu’on parle d’argent en urgence, on appelle la personne sur son ancien numéro.'
+  },
+
+  /* ---------- 40. Relevé de la mutuelle — FIABLE */
+  {
+    id: 'email-mutuelle-ok',
+    canal: 'email',
+    entete: 'E-mail mensuel de votre mutuelle',
+    de: 'Harmonie Mutuelle',
+    deAdresse: 'info@harmonie-mutuelle.fr',
+    objet: 'Votre relevé de prestations du mois de juillet',
+    date: 'Ven. 01/08, 06:05',
+    corps: 'Bonjour,<br><br>Votre relevé de prestations est disponible dans votre espace adhérent.<br><br>Vous n’avez aucune démarche à effectuer : les remboursements sont versés automatiquement sur votre compte habituel.<br><br>Votre conseiller reste joignable au numéro figurant sur votre carte de tiers payant.',
+    verdict: 'fiable',
+    categorie: 'Message légitime — relevé mensuel',
+    indices: [
+      'Adresse d’expéditeur cohérente avec l’organisme.',
+      '« Aucune démarche à effectuer » : personne ne vous presse.',
+      'On vous renvoie au numéro figurant sur VOTRE carte, pas à un numéro donné dans le mail.',
+      'Aucun RIB, aucun identifiant, aucune pièce jointe à ouvrir.'
+    ],
+    reflexe: 'Un organisme qui vous verse déjà de l’argent connaît déjà votre RIB : s’il vous le redemande, c’est louche.',
+    explication: 'La forme ressemble beaucoup à celle d’un hameçonnage, et c’est précisément ce qui rend l’exercice utile. Les différences sont réelles : rien n’est demandé, rien n’est urgent, et le canal de rappel est celui que vous détenez déjà.'
+  },
+
+  /* ---------- 41. Notification de mise à jour — FIABLE */
+  {
+    id: 'notif-maj-appli-ok',
+    canal: 'notif',
+    app: 'Play Store',
+    appIcon: '⚙️',
+    fond: 'info',
+    titre: '3 applications ont été mises à jour',
+    texte: 'Ma Banque, Météo France et Ameli ont été mises à jour automatiquement. Aucune action n’est requise.',
+    verdict: 'fiable',
+    categorie: 'Message légitime — mise à jour automatique',
+    indices: [
+      'La notification vient du magasin d’applications du téléphone.',
+      '« Aucune action n’est requise » : rien à cliquer, rien à installer soi-même.',
+      'Aucune alerte de virus, aucun compte à bloquer, aucun numéro à appeler.',
+      'Aucun paiement ni abonnement proposé.'
+    ],
+    reflexe: 'Les vraies mises à jour passent par le magasin d’applications, jamais par une fenêtre surgissante qui crie au virus.',
+    explication: 'À opposer au faux support technique du jeu, qui affiche une alerte alarmante et un numéro à appeler. Une vraie mise à jour est discrète, déjà faite, et ne demande rien.'
+  },
+
+  /* ---------- 42. Avis de renouvellement d’abonnement — FIABLE */
+  {
+    id: 'email-abonnement-ok',
+    canal: 'email',
+    entete: 'E-mail reçu avant le prélèvement annuel',
+    de: 'Le Monde',
+    deAdresse: 'abonnements@lemonde.fr',
+    objet: 'Votre abonnement sera renouvelé le 12 septembre',
+    date: 'Jeu. 13/08, 10:20',
+    corps: 'Bonjour,<br><br>Votre abonnement numérique sera reconduit le 12 septembre pour 12 mois, au tarif de 99 €.<br><br>Vous pouvez modifier ou résilier votre abonnement à tout moment depuis votre compte, rubrique « Mon abonnement ».<br><br>Aucune action n’est nécessaire si vous souhaitez poursuivre.',
+    verdict: 'fiable',
+    categorie: 'Message légitime — information de reconduction',
+    indices: [
+      'On vous prévient à l’avance : un mois de délai, pas 24 heures.',
+      'Aucun bouton « mettre à jour votre carte », aucun formulaire de paiement.',
+      'On vous rappelle que vous pouvez résilier, depuis votre compte que vous ouvrez vous-même.',
+      'Adresse d’expéditeur cohérente avec le journal.'
+    ],
+    reflexe: 'Un vrai avis de reconduction prévient à l’avance et n’a jamais besoin de vos coordonnées bancaires.',
+    explication: 'Le faux mail Prime Video du jeu, lui, annonce un « échec de paiement » et pousse à ressaisir sa carte en urgence. C’est exactement la différence à retenir : information à l’avance contre urgence de paiement.'
+  },
+
+  /* ---------- 43. Appel de la mairie — FIABLE */
+  {
+    id: 'appel-mairie-ok',
+    canal: 'appel',
+    afficheur: 'Mairie de Saint-Aubin',
+    numero: '02 96 41 12 08',
+    transcript: [
+      { qui: 'lui', texte: 'Bonjour Madame, service des aînés de la mairie. Nous organisons le repas de fin d’année le 14 décembre. Souhaitez-vous y participer ?' },
+      { qui: 'vous', texte: 'Volontiers ! Il faut payer quelque chose ?' },
+      { qui: 'lui', texte: 'C’est offert par la commune. Vous recevrez une invitation par courrier, avec un coupon à nous retourner. Rien à régler, rien à signer aujourd’hui.' }
+    ],
+    verdict: 'fiable',
+    categorie: 'Message légitime — invitation municipale',
+    indices: [
+      'Aucune donnée bancaire, aucun numéro de sécurité sociale demandé.',
+      'Une confirmation écrite est annoncée par courrier : vous gardez la main.',
+      'On ne vous fait rien signer ni payer pendant l’appel.',
+      'Aucune pression, aucun « il ne reste que deux places, décidez maintenant ».'
+    ],
+    reflexe: 'Un service public confirme toujours par écrit. On peut sans risque dire « je vous rappelle » et vérifier le numéro de la mairie soi-même.',
+    explication: 'Les démarchages abusifs visant les personnes âgées imitent souvent les services publics, mais ils demandent une décision immédiate, une signature ou un acompte. Ici : rien de tout cela. Vous pouvez malgré tout rappeler le standard de la mairie pour confirmer — c’est gratuit et toujours légitime.'
+  },
+
+  /* ---------- 44. Rappel de rendez-vous médical — FIABLE */
+  {
+    id: 'sms-rdv-ok',
+    canal: 'sms',
+    entete: 'SMS reçu la veille d’un rendez-vous que vous avez pris',
+    expediteur: 'Doctolib',
+    messages: [
+      'Rappel : rendez-vous avec Dr Nguyen (cardiologie) demain 15/08 à 10h30, 4 rue des Lilas. Pour annuler, connectez-vous à votre compte Doctolib.'
+    ],
+    verdict: 'fiable',
+    categorie: 'Message légitime — rappel de rendez-vous',
+    indices: [
+      'Le rendez-vous existe : c’est vous qui l’avez pris.',
+      'Praticien, date, heure et adresse sont précis et vérifiables.',
+      'Aucun paiement, aucun acompte, aucune « confirmation » par carte.',
+      'Pour annuler, on vous renvoie à votre compte, pas à un lien du message.'
+    ],
+    reflexe: 'Un rappel de rendez-vous ne coûte rien. Dès qu’on vous demande de payer pour « confirmer », c’est une arnaque.',
+    explication: 'Il existe de faux rappels médicaux réclamant des « frais de dossier » par carte. Le détail qui tranche : un vrai rappel se contente d’informer et vous renvoie à votre propre compte.'
+  },
+
+  /* ---------- 45. Convocation à l’assemblée générale — FIABLE */
+  {
+    id: 'email-syndic-ok',
+    canal: 'email',
+    entete: 'E-mail du syndic de votre immeuble',
+    de: 'Cabinet Berthier — syndic',
+    deAdresse: 'copropriete@cabinet-berthier.fr',
+    objet: 'Convocation à l’assemblée générale du 22 septembre',
+    date: 'Mer. 12/08, 14:55',
+    corps: 'Madame, Monsieur,<br><br>Vous trouverez en pièce jointe la convocation à l’assemblée générale des copropriétaires du 22 septembre, ainsi que l’ordre du jour et les devis reçus pour la réfection du hall.<br><br>Le même dossier vous parviendra par courrier recommandé, comme le prévoit la loi.<br><br>Cordialement,<br>Cabinet Berthier',
+    verdict: 'fiable',
+    categorie: 'Message légitime — convocation de copropriété',
+    indices: [
+      'Le même document vous parvient aussi par courrier recommandé : vous pourrez recouper.',
+      'Aucun paiement demandé par ce message, aucun RIB à « mettre à jour ».',
+      'Expéditeur identifié, correspondant à votre syndic connu.',
+      'Aucune urgence : la réunion a lieu dans plus d’un mois.'
+    ],
+    reflexe: 'Une pièce jointe attendue d’un expéditeur connu est normale. Une pièce jointe inattendue qui réclame un paiement ne l’est jamais.',
+    explication: 'L’arnaque classique ici s’appelle la « fraude au changement de RIB » : un faux syndic annonce un nouveau compte pour les charges. Le signal fiable de ce message-ci : il ne demande aucun versement, et le courrier recommandé permet de tout vérifier.'
+  },
+
+  /* ---------- 46. Facture d’électricité disponible — FIABLE */
+  {
+    id: 'email-facture-energie-ok',
+    canal: 'email',
+    entete: 'E-mail mensuel de votre fournisseur d’électricité',
+    de: 'EDF',
+    deAdresse: 'contact@edf.fr',
+    objet: 'Votre facture du mois d’août est disponible',
+    date: 'Lun. 11/08, 05:40',
+    corps: 'Bonjour,<br><br>Votre facture de 61,20 € est consultable dans votre espace client EDF.<br><br>Elle sera prélevée le 20 du mois sur le compte habituel, conformément à votre mensualisation. Vous n’avez aucune démarche à effectuer.',
+    verdict: 'fiable',
+    categorie: 'Message légitime — mise à disposition d’une facture',
+    indices: [
+      'Montant cohérent avec vos consommations habituelles.',
+      'Prélèvement sur le compte déjà connu : aucun nouveau RIB n’est annoncé.',
+      'Aucun lien de paiement, aucune menace de coupure.',
+      '« Aucune démarche à effectuer » : le message informe, il ne réclame pas.'
+    ],
+    reflexe: 'Une vraie facture s’ouvre depuis votre espace client. Une facture qui menace de coupure sous 24h est une arnaque.',
+    explication: 'Les faux mails d’énergie jouent sur la peur de la coupure et sur un lien de paiement immédiat. Ici, ni menace ni lien : simplement une facture déjà prévue, prélevée sur un compte que vous connaissez.'
   }
 
 ];

@@ -727,6 +727,325 @@ const SCENARIOS = [
     ],
     "reflexe": "On a classifieds platform, payment should always go through the site’s secure system. Never a “deposit” by direct transfer.",
     "explication": "This is the exact opposite of the “secure classifieds sale” scenario: here, as soon as you’re pushed outside the protected system, you lose every guarantee. The excuse (“avoid the fees”) is almost always a sign of a scam."
+  },
+
+  /* Chantier 04 (§4.9) — 14 cas fiables ajoutés pour rééquilibrer le corpus
+     (23 arnaques / 23 fiables). Voir le commentaire détaillé dans scenarios.js. */
+
+  {
+    "id": "email-impots-ok",
+    "canal": "email",
+    "entete": "Email received after your online tax return",
+    "de": "impots.gouv.fr",
+    "deAdresse": "ne-pas-repondre@dgfip.finances.gouv.fr",
+    "objet": "Your 2026 tax notice is available",
+    "date": "Mon 03/08, 07:12",
+    "corps": "Hello,<br><br>Your income tax notice can be viewed in your personal area on impots.gouv.fr, under “My documents”.<br><br>No action is required if you pay monthly.<br><br>The French public finances directorate",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — a document has been made available",
+    "indices": [
+      "Address at @dgfip.finances.gouv.fr: a genuine government domain (.gouv.fr).",
+      "No payment link, no promised refund, no bank details requested.",
+      "You are pointed to YOUR own account area, which you open yourself.",
+      "No threat and no hard deadline."
+    ],
+    "reflexe": "The tax office asks you to check your account area; it never sends a link to “claim a refund”.",
+    "explication": "Compare it with the fake tax-refund SMS elsewhere in this game: this one promises nothing, rushes no one and asks for no bank details. The habit stays the same — type impots.gouv.fr yourself rather than clicking."
+  },
+
+  {
+    "id": "sms-livraison-ok",
+    "canal": "sms",
+    "entete": "SMS received on the day you are expecting an order",
+    "expediteur": "Colissimo",
+    "messages": [
+      "Your parcel 6A21847755841 will be delivered today between 2pm and 4pm. Tracking available in the La Poste app or on laposte.fr using your parcel number."
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — delivery information",
+    "indices": [
+      "You really are expecting this parcel: the message matches your actual life.",
+      "No clickable link and no “€2 fee” to pay.",
+      "You are pointed to the official app or website, which you open yourself.",
+      "A named sender (Colissimo), not a personal mobile number."
+    ],
+    "reflexe": "A real carrier informs you. It never asks for a small card payment to “release” a parcel.",
+    "explication": "This is the honest twin of the booby-trapped parcel SMS. Three details separate them: no link, no payment, and you genuinely were expecting this parcel. A parcel you never ordered always stays suspicious."
+  },
+
+  {
+    "id": "appel-banque-fraude-ok",
+    "canal": "appel",
+    "afficheur": "CIC — fraud team",
+    "numero": "call received during the day",
+    "transcript": [
+      {
+        "qui": "lui",
+        "texte": "Hello, CIC payment monitoring. A €780 purchase in Spain was blocked on your card. Do you recognise it?"
+      },
+      {
+        "qui": "vous",
+        "texte": "No, not at all."
+      },
+      {
+        "qui": "lui",
+        "texte": "We declined it and your card is suspended. I will not ask you for any code: go to a branch or call the number on the back of your card to order a new one."
+      }
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — fraud alert with no sensitive request",
+    "indices": [
+      "You are asked for no code, no password, and to approve nothing in the app.",
+      "You are not asked to “move your money to a safe account”.",
+      "The payment has already been blocked: nothing needs doing urgently.",
+      "You are pointed to the branch or the number on the back of your card."
+    ],
+    "reflexe": "A real bank blocks first and informs afterwards. It never makes you act during the call.",
+    "explication": "A displayed number proves nothing (spoofing). What separates this call from the fake adviser is that it asks for NOTHING. If in any doubt: hang up and call the number on the back of your card yourself — a real adviser will never take offence."
+  },
+
+  {
+    "id": "notif-ameli-ok",
+    "canal": "notif",
+    "app": "ameli",
+    "appIcon": "🩺",
+    "fond": "info",
+    "titre": "A new reimbursement is available",
+    "texte": "Details of your latest reimbursements can be viewed under “My payments” in the app.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — notification from the ameli app",
+    "indices": [
+      "The notification comes from the official app installed on your phone.",
+      "No amount to “claim” and no bank details requested.",
+      "No external link: everything happens inside the app.",
+      "No threat to suspend your entitlements."
+    ],
+    "reflexe": "The health service pays into the account it already holds. It never asks for bank details by text or email.",
+    "explication": "The fake Ameli text elsewhere in this game promises a refund and asks for your bank details. Here nothing is requested: it is simply information inside the app. Always check reimbursements from the app, never from a link you received."
+  },
+
+  {
+    "id": "email-commande-ok",
+    "canal": "email",
+    "entete": "Email received ten minutes after your purchase",
+    "de": "Nature & Découvertes",
+    "deAdresse": "commandes@natureetdecouvertes.com",
+    "objet": "Your order no. 4471902 is confirmed",
+    "date": "Today, 16:42",
+    "corps": "Hello Mrs Renard,<br><br>Thank you for your order of 14 August: 1 wind chime, €39.90.<br><br>Delivery expected within 3 to 5 working days to the address saved in your account. Tracking will appear in your customer area.<br><br>Have a good day,<br>Customer service",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — order confirmation",
+    "indices": [
+      "You have just placed this order: amount, item and date all match.",
+      "Sender address consistent with the retailer.",
+      "You are addressed by name, not with a generic “Dear customer”.",
+      "No extra payment, no code, no urgency."
+    ],
+    "reflexe": "An order confirmation summarises; it never asks you to pay again or to “confirm” your card details.",
+    "explication": "The usual trap is a fake “payment problem” arriving after a real purchase, exploiting the fact that you are expecting an email. Here everything matches and nothing is requested: it is legitimate."
+  },
+
+  {
+    "id": "sms-pharmacie-ok",
+    "canal": "sms",
+    "entete": "SMS from your local pharmacy",
+    "expediteur": "PharmacieCentrale",
+    "messages": [
+      "Hello, the medicine you ordered on Tuesday has arrived. You can collect it during opening hours, Monday to Saturday 9am-7.30pm. See you soon!"
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — collection at the pharmacy",
+    "indices": [
+      "The message matches something you set in motion yourself.",
+      "No link, no attachment, no online payment.",
+      "No personal or medical data is requested in return.",
+      "You are invited to call in, with no urgency at all."
+    ],
+    "reflexe": "A health professional informs you; they never ask you to pay or identify yourself through a link sent by text.",
+    "explication": "Not everything is a scam, and suspecting everything eventually costs you your peace of mind. Here: a real order, no link, no payment. Nothing to flag."
+  },
+
+  {
+    "id": "chat-petitfils-ok",
+    "canal": "chat",
+    "messages": [
+      {
+        "from": "eux",
+        "texte": "Hi Grandma! I got my results, I'm in at Rennes university 🎉"
+      },
+      {
+        "from": "eux",
+        "texte": "I'll come round on Sunday and tell you all about it, will you make me your gratin? 😋"
+      }
+    ],
+    "plateforme": "WhatsApp",
+    "contact": "Théo (grandson)",
+    "avatar": "",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — news from a relative",
+    "indices": [
+      "The message arrives in the usual conversation, not from a new number.",
+      "No request for money, transfers or codes.",
+      "The content is personal and can be checked with the family.",
+      "No link, no urgency, no announced change of number."
+    ],
+    "reflexe": "The fake-relative scam almost always starts with “I've changed my number”. Nothing like that here.",
+    "explication": "This is the direct counter-example to the fake relative in this game: same affectionate tone, but the usual number and no request for money. The one signal that really matters stays the same — as soon as urgent money comes up, call the person on their old number."
+  },
+
+  {
+    "id": "email-mutuelle-ok",
+    "canal": "email",
+    "entete": "Monthly email from your health insurer",
+    "de": "Harmonie Mutuelle",
+    "deAdresse": "info@harmonie-mutuelle.fr",
+    "objet": "Your July benefits statement",
+    "date": "Fri 01/08, 06:05",
+    "corps": "Hello,<br><br>Your benefits statement is available in your member area.<br><br>You need to do nothing: reimbursements are paid automatically into your usual account.<br><br>Your adviser can be reached on the number shown on your insurance card.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — monthly statement",
+    "indices": [
+      "Sender address consistent with the organisation.",
+      "“You need to do nothing”: nobody is rushing you.",
+      "You are pointed to the number on YOUR card, not one given in the email.",
+      "No bank details, no login, no attachment to open."
+    ],
+    "reflexe": "An organisation that already pays you money already has your bank details: if it asks for them again, something is wrong.",
+    "explication": "The form looks a lot like phishing, and that is exactly what makes the exercise useful. The differences are real: nothing is requested, nothing is urgent, and the callback channel is one you already hold."
+  },
+
+  {
+    "id": "notif-maj-appli-ok",
+    "canal": "notif",
+    "app": "Play Store",
+    "appIcon": "⚙️",
+    "fond": "info",
+    "titre": "3 apps have been updated",
+    "texte": "Ma Banque, Météo France and Ameli were updated automatically. No action is required.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — automatic update",
+    "indices": [
+      "The notification comes from the phone's app store.",
+      "“No action is required”: nothing to click, nothing to install yourself.",
+      "No virus alert, no account to unblock, no number to call.",
+      "No payment or subscription offered."
+    ],
+    "reflexe": "Real updates come through the app store, never through a pop-up shouting about a virus.",
+    "explication": "Set this against the fake tech support in this game, with its alarming alert and a number to call. A real update is quiet, already done, and asks for nothing."
+  },
+
+  {
+    "id": "email-abonnement-ok",
+    "canal": "email",
+    "entete": "Email received before the annual payment",
+    "de": "Le Monde",
+    "deAdresse": "abonnements@lemonde.fr",
+    "objet": "Your subscription renews on 12 September",
+    "date": "Thu 13/08, 10:20",
+    "corps": "Hello,<br><br>Your digital subscription will renew on 12 September for 12 months at €99.<br><br>You can change or cancel your subscription at any time from your account, under “My subscription”.<br><br>No action is needed if you wish to continue.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — renewal information",
+    "indices": [
+      "You are warned in advance: a month's notice, not 24 hours.",
+      "No “update your card” button and no payment form.",
+      "You are reminded you can cancel, from the account you open yourself.",
+      "Sender address consistent with the newspaper."
+    ],
+    "reflexe": "A real renewal notice warns you in advance and never needs your card details.",
+    "explication": "The fake Prime Video email in this game announces a “payment failure” and pushes you to re-enter your card urgently. That is exactly the difference to remember: advance information versus payment urgency."
+  },
+
+  {
+    "id": "appel-mairie-ok",
+    "canal": "appel",
+    "afficheur": "Saint-Aubin town hall",
+    "numero": "02 96 41 12 08",
+    "transcript": [
+      {
+        "qui": "lui",
+        "texte": "Hello, this is the town hall's older residents service. We are holding the end-of-year lunch on 14 December. Would you like to come?"
+      },
+      {
+        "qui": "vous",
+        "texte": "Gladly! Is there anything to pay?"
+      },
+      {
+        "qui": "lui",
+        "texte": "It is offered by the council. You will get an invitation by post, with a slip to return to us. Nothing to pay and nothing to sign today."
+      }
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — council invitation",
+    "indices": [
+      "No bank details and no social security number requested.",
+      "A written confirmation by post is announced: you stay in control.",
+      "Nothing to sign and nothing to pay during the call.",
+      "No pressure, no “only two places left, decide now”."
+    ],
+    "reflexe": "A public service always confirms in writing. You can safely say “I'll call you back” and look up the town hall number yourself.",
+    "explication": "Aggressive doorstep selling aimed at older people often imitates public services, but it demands an immediate decision, a signature or a deposit. None of that here. You can still ring the town hall switchboard to confirm — it costs nothing and is always reasonable."
+  },
+
+  {
+    "id": "sms-rdv-ok",
+    "canal": "sms",
+    "entete": "SMS received the day before an appointment you booked",
+    "expediteur": "Doctolib",
+    "messages": [
+      "Reminder: appointment with Dr Nguyen (cardiology) tomorrow 15/08 at 10:30, 4 rue des Lilas. To cancel, sign in to your Doctolib account."
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — appointment reminder",
+    "indices": [
+      "The appointment exists: you booked it yourself.",
+      "Practitioner, date, time and address are precise and checkable.",
+      "No payment, no deposit, no card “confirmation”.",
+      "To cancel you are sent to your account, not to a link in the message."
+    ],
+    "reflexe": "An appointment reminder costs nothing. The moment you are asked to pay to “confirm”, it is a scam.",
+    "explication": "Fake medical reminders demanding “administrative fees” by card do exist. The detail that settles it: a real reminder simply informs you and sends you to your own account."
+  },
+
+  {
+    "id": "email-syndic-ok",
+    "canal": "email",
+    "entete": "Email from your building's managing agent",
+    "de": "Cabinet Berthier — managing agent",
+    "deAdresse": "copropriete@cabinet-berthier.fr",
+    "objet": "Notice of the owners' meeting on 22 September",
+    "date": "Wed 12/08, 14:55",
+    "corps": "Dear owner,<br><br>Attached you will find the notice for the owners' meeting of 22 September, together with the agenda and the quotes received for refurbishing the entrance hall.<br><br>The same file will also reach you by registered post, as the law requires.<br><br>Kind regards,<br>Cabinet Berthier",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — owners' meeting notice",
+    "indices": [
+      "The same document also arrives by registered post: you will be able to cross-check.",
+      "No payment requested in this message, no bank details to “update”.",
+      "Identified sender, matching your known managing agent.",
+      "No urgency: the meeting is more than a month away."
+    ],
+    "reflexe": "An expected attachment from a known sender is normal. An unexpected attachment demanding payment never is.",
+    "explication": "The classic scam here is “bank detail change fraud”: a fake agent announces a new account for service charges. The reassuring signal in this message: it asks for no payment, and the registered letter lets you check everything."
+  },
+
+  {
+    "id": "email-facture-energie-ok",
+    "canal": "email",
+    "entete": "Monthly email from your electricity supplier",
+    "de": "EDF",
+    "deAdresse": "contact@edf.fr",
+    "objet": "Your August bill is available",
+    "date": "Mon 11/08, 05:40",
+    "corps": "Hello,<br><br>Your bill of €61.20 can be viewed in your EDF customer area.<br><br>It will be debited on the 20th of the month from the usual account, in line with your monthly payment plan. You need do nothing.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — a bill has been made available",
+    "indices": [
+      "Amount consistent with your usual consumption.",
+      "Debited from the account already on file: no new bank details announced.",
+      "No payment link and no threat of disconnection.",
+      "“You need do nothing”: the message informs, it does not demand."
+    ],
+    "reflexe": "A real bill opens from your customer area. A bill threatening disconnection within 24 hours is a scam.",
+    "explication": "Fake energy emails play on fear of disconnection and an immediate payment link. Here there is neither threat nor link: simply an expected bill, debited from an account you know."
   }
 ];
 

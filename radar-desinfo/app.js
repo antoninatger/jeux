@@ -1,12 +1,22 @@
+// Chantier 04 : `def` alimente le lexique affiché AVANT la partie. On demandait
+// jusqu'ici de choisir parmi 8 catégories qui n'étaient définies nulle part.
 const CATS = [
-  {id:"fake",  emoji:"🚫", name:"Fake news",            desc:"info fausse pure et dure"},
-  {id:"ctx",   emoji:"✂️", name:"Décontextualisation",  desc:"vraie info, faux contexte"},
-  {id:"corr",  emoji:"🔗", name:"Corrélation ≠ causalité", desc:"deux faits vrais, lien imaginé"},
-  {id:"astro", emoji:"🤖", name:"Astroturfing",         desc:"faux mouvement populaire"},
-  {id:"doute", emoji:"🌫️", name:"Fabrique du doute",    desc:"semer la confusion exprès"},
-  {id:"mute",  emoji:"🔇", name:"Mute news",            desc:"taire ou noyer une info"},
-  {id:"cadr",  emoji:"🖼️", name:"Effet de cadrage",     desc:"angle choisi pour orienter"},
-  {id:"ok",    emoji:"✅", name:"Info fiable",          desc:"rien à signaler !"},
+  {id:"fake",  emoji:"🚫", name:"Fake news",            desc:"info fausse pure et dure",
+   def:"Une information purement inventée, ou en contradiction avec l'état des connaissances. C'est la forme la plus connue de désinformation… et la plus rare."},
+  {id:"ctx",   emoji:"✂️", name:"Décontextualisation",  desc:"vraie info, faux contexte",
+   def:"Une information authentique (photo, vidéo, citation) qu'on détache de sa date, de son lieu ou de sa situation d'origine. Rien n'est truqué : c'est le contexte qui ment."},
+  {id:"corr",  emoji:"🔗", name:"Corrélation ≠ causalité", desc:"deux faits vrais, lien imaginé",
+   def:"Deux faits exacts présentés côte à côte pour suggérer que l'un cause l'autre. Souvent, un troisième facteur caché explique les deux."},
+  {id:"astro", emoji:"🤖", name:"Astroturfing",         desc:"faux mouvement populaire",
+   def:"Fabriquer l'illusion d'un élan spontané : faux comptes, faux avis, messages payés. On exploite notre réflexe « si tant de gens le disent, c'est sûrement vrai »."},
+  {id:"doute", emoji:"🌫️", name:"Fabrique du doute",    desc:"semer la confusion exprès",
+   def:"Il ne s'agit pas de convaincre, mais de brouiller. En multipliant les versions contradictoires, on décourage le public de se faire un avis — et on gagne du temps."},
+  {id:"mute",  emoji:"🔇", name:"Mute news",            desc:"taire ou noyer une info",
+   def:"Désinformer par omission : ne pas traiter un sujet, ou le noyer sous un autre. Aucun mensonge n'est prononcé, mais notre vision du monde est orientée."},
+  {id:"cadr",  emoji:"🖼️", name:"Effet de cadrage",     desc:"angle choisi pour orienter",
+   def:"La même information vraie, présentée sous un angle qui change ce qu'on ressent : « 64 % gardent leur budget » ou « 36 % doivent le baisser » — même étude."},
+  {id:"ok",    emoji:"✅", name:"Info fiable",          desc:"rien à signaler !",
+   def:"Tout n'est pas manipulation ! Une info sourcée, recoupée ou issue d'un consensus scientifique peut être surprenante et rester parfaitement fiable."},
 ];
 
 const ITEMS = [
@@ -59,13 +69,29 @@ const ITEMS = [
 ];
 
 let deck=[], idx=0, score=0, lives=3, streak=0, best=0;
+// Chantier 04 : mode entraînement — après la perte des 3 vies, le joueur peut
+// finir le paquet sans score plutôt que d'être coupé du contenu pédagogique.
+let training=false;
 const $ = id => document.getElementById(id);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
+// Lexique des 8 techniques, affiché dans l'intro avant la première dépêche.
+function renderLexicon(){
+  const box=$("lexlist"); if(!box) return;
+  box.innerHTML="";
+  CATS.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="lex";
+    d.innerHTML=`<span class="cemoji">${c.emoji}</span><span><span class="lex-name">${c.name}</span><span class="lex-def">${c.def}</span></span>`;
+    box.appendChild(d);
+  });
+}
+renderLexicon();
+
 function startGame(){
   deck = shuffle([...ITEMS]).slice(0,12);
-  idx=0; score=0; lives=3; streak=0; best=0;
+  idx=0; score=0; lives=3; streak=0; best=0; training=false;
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
@@ -81,6 +107,7 @@ function renderQ(){
   $("dtxt").textContent=it.t;
   $("feedback").style.display="none";
   $("nextbtn").style.display="none";
+  $("trainbtn").style.display="none";
   const cats=$("cats"); cats.innerHTML="";
   CATS.forEach(c=>{
     const b=document.createElement("button");
@@ -98,23 +125,33 @@ function answer(id,btn){
   const goodBtn=[...document.querySelectorAll(".cat")][CATS.findIndex(c=>c.id===it.a)];
   goodBtn.classList.remove("dim"); goodBtn.classList.add("good");
   if(ok){
-    streak++; best=Math.max(best,streak);
-    score += 10 + (streak>=3?5:0);
-    $("fb-title").textContent = streak>=3 ? `✔ Bien vu ! (+15, série de ${streak} 🔥)` : "✔ Bien vu ! (+10)";
+    // En mode entraînement, plus de score ni de série : on lit, on n'est plus noté.
+    if(training){
+      $("fb-title").textContent="✔ Bien vu ! (entraînement, sans score)";
+    } else {
+      streak++; best=Math.max(best,streak);
+      score += 10 + (streak>=3?5:0);
+      $("fb-title").textContent = streak>=3 ? `✔ Bien vu ! (+15, série de ${streak} 🔥)` : "✔ Bien vu ! (+10)";
+    }
   } else {
     btn.classList.remove("dim"); btn.classList.add("bad");
-    streak=0; lives--;
+    streak=0;
+    if(!training) lives--;
     $("fb-title").textContent="✘ Raté ! La bonne réponse : "+CATS.find(c=>c.id===it.a).name;
   }
-  $("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);
+  $("lives").textContent = training ? "📚 entraînement" : "❤️".repeat(lives)+"🖤".repeat(3-lives);
   $("score").textContent=score;
   $("streak").textContent = streak>=2 ? `🔥 ${streak}` : "";
   const fb=$("feedback");
   fb.className = ok ? "ok" : "ko";
   fb.style.display="block";
   $("fb-expl").innerHTML=it.e;
-  if(lives<=0 || idx===deck.length-1){
+  const last = idx===deck.length-1;
+  if(gameOver() || last){
     $("nextbtn").textContent = "Voir mon bilan ➜";
+    // Chantier 04 : plus de vies mais des dépêches encore à voir → on propose
+    // de continuer sans score au lieu de couper l'accès au contenu.
+    if(!last) $("trainbtn").style.display="block";
   } else {
     $("nextbtn").textContent = "Dépêche suivante ➜";
   }
@@ -122,21 +159,56 @@ function answer(id,btn){
   $("nextbtn").scrollIntoView({behavior:"smooth",block:"end"});
 }
 
+function gameOver(){ return lives<=0 && !training; }
+
+function continueTraining(){
+  training=true;
+  $("trainbtn").style.display="none";
+  $("lives").textContent="📚 entraînement";
+  nextQ();
+}
+
 function nextQ(){
-  if(lives<=0 || idx===deck.length-1){ endGame(); return; }
+  if(gameOver() || idx===deck.length-1){ endGame(); return; }
   idx++; renderQ();
   window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Chantier 04 : les dépêches jamais atteintes, avec leur technique et leur
+// explication. Sans ça, une partie perdue au bout de 4 dépêches masquait
+// définitivement les deux tiers du contenu pédagogique.
+function renderRecap(){
+  const box=$("recap"); if(!box) return;
+  box.innerHTML="";
+  const restants = deck.slice(idx+1);
+  if(!restants.length) return;
+  const h=document.createElement("h3");
+  h.textContent="📂 Les "+restants.length+" dépêche"+(restants.length>1?"s":"")+" que tu n'as pas vue"+(restants.length>1?"s":"");
+  box.appendChild(h);
+  restants.forEach(it=>{
+    const cat=CATS.find(c=>c.id===it.a);
+    const d=document.createElement("div");
+    d.className="rc";
+    const t=document.createElement("p"); t.className="rc-t"; t.textContent=it.t;
+    const a=document.createElement("p"); a.className="rc-a"; a.textContent=cat.emoji+" "+cat.name;
+    const e=document.createElement("p"); e.className="rc-e"; e.innerHTML=it.e;
+    d.appendChild(t); d.appendChild(a); d.appendChild(e);
+    box.appendChild(d);
+  });
 }
 
 function endGame(){
   $("game").style.display="none";
   $("nextbtn").style.display="none";
+  $("trainbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
   $("end-score").textContent=score+" pts";
+  renderRecap();
   const ratio = score/(deck.length*10);
   let title,msg;
-  if(lives<=0){ title="📡 Radar grillé…"; msg="Tu as épuisé tes 3 vies. La désinformation est subtile : rejoue pour affûter ton radar !"; }
+  if(training){ title="📚 Fin du parcours"; msg="Tu as terminé le paquet en entraînement, sans score. L'essentiel est ailleurs : chaque dépêche t'a montré une technique. Rejoue pour te noter."; }
+  else if(lives<=0){ title="📡 Radar grillé…"; msg="Tu as épuisé tes 3 vies. La désinformation est subtile : lis les dépêches que tu n'as pas vues ci-dessous, puis rejoue pour affûter ton radar !"; }
   else if(ratio>=0.9){ title="🏆 Fact-checker d'élite !"; msg="Presque rien ne t'échappe. Tu as compris que la fake news n'est que l'arbre qui cache la forêt."; }
   else if(ratio>=0.6){ title="🕵️ Bon enquêteur !"; msg="Tu repères déjà bien les techniques. Souviens-toi : décontextualiser, cadrer, taire une info… on peut désinformer sans mentir."; }
   else { title="🔍 Apprenti radar"; msg="C'est un bon début ! Les techniques sont nombreuses : décontextualisation, astroturfing, fabrique du doute, mute news, cadrage… Rejoue pour les ancrer."; }

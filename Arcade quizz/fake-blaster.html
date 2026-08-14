@@ -20,7 +20,9 @@ I18N.register({
     replayPrompt: "▶  ESPACE ou CLIC pour rejouer  ◀",
     winTitle: "MISSION ACCOMPLIE !", winMsg: "Tu as démasqué toutes les fausses infos de la série !",
     isTrue: "✅ VRAIE !", advance: "AVANCE !",
-    inGameControls: "← → bouger  |  ↑ sauter  |  SOURIS viser  |  CLIC / ESPACE tirer"
+    inGameControls: "← → bouger  |  ↑ sauter  |  SOURIS viser  |  CLIC / ESPACE tirer",
+    explLabel: "💡 POURQUOI :", explDefault: "La bonne réponse est celle restée en vert.",
+    explWaiting: "L'explication s'affichera ici après chaque question."
   },
   en: {
     subtitle: "CRITICAL THINKING", menu: "← MENU",
@@ -34,7 +36,9 @@ I18N.register({
     replayPrompt: "▶  SPACE or CLICK to replay  ◀",
     winTitle: "MISSION ACCOMPLISHED!", winMsg: "You unmasked all the false claims in the set!",
     isTrue: "✅ TRUE!", advance: "GO!",
-    inGameControls: "← → move  |  ↑ jump  |  MOUSE aim  |  CLICK / SPACE shoot"
+    inGameControls: "← → move  |  ↑ jump  |  MOUSE aim  |  CLICK / SPACE shoot",
+    explLabel: "💡 WHY:", explDefault: "The correct answer is the one left in green.",
+    explWaiting: "The explanation will appear here after each question."
   }
 });
 </script>
@@ -64,6 +68,17 @@ body{
 }
 #qlabel{font-size:10px;color:#ff7700;white-space:nowrap;flex-shrink:0;}
 #qtext{font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:#e0d0ff;flex:1;}
+/* Chantier 04 : bandeau d'explication — le jeu n'en affichait aucune, jamais. */
+#explbar{
+  background:#09040f;border:2px solid #c8440a;border-top:none;
+  padding:10px 18px;display:flex;align-items:flex-start;gap:12px;
+  line-height:1.5;transition:background .2s,border-color .2s;
+}
+#expllabel{font-size:10px;color:#ffcc44;white-space:nowrap;flex-shrink:0;padding-top:2px;}
+#expltext{font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:#ffe9b0;flex:1;}
+#explbar.ko{border-color:#ff3355;background:#170209;}
+#explbar.ko #expllabel{color:#ff8098;}
+#explbar.idle #expltext{color:#8a6ab0;font-weight:600;font-style:italic;}
 #menubar{
   background:#09040f;border:2px solid #c8440a;border-top:none;
   padding:10px 18px;display:flex;align-items:center;justify-content:space-between;
@@ -88,6 +103,10 @@ body{
     <span id="qlabel">❓ QUESTION :</span>
     <span id="qtext">Appuie sur ESPACE ou clique pour commencer !</span>
   </div>
+  <div id="explbar" class="idle" aria-live="polite">
+    <span id="expllabel" data-i18n="explLabel">💡 POURQUOI :</span>
+    <span id="expltext" data-i18n="explWaiting">L'explication s'affichera ici après chaque question.</span>
+  </div>
   <div id="menubar">
     <a id="menu-link" href="index.html" data-i18n="menu">← MENU</a>
     <span id="set-label"></span>
@@ -100,61 +119,77 @@ body{
 var QUESTIONS = [
   {q:"Qu'est-ce qu'une Fake News ?",
    good:["Une information fausse"],
-   bad:["Une vraie information","Un fait prouvé","Un avis personnel"]},
+   bad:["Une vraie information","Un fait prouvé","Un avis personnel"],
+   expl:"Une Fake News, c'est une information fausse !"},
   {q:"Comment vérifier une information ?",
    good:["Vérifier la source"],
-   bad:["La partager immédiatement","Faire confiance aux réseaux","Croire si ça semble sympa"]},
+   bad:["La partager immédiatement","Faire confiance aux réseaux","Croire si ça semble sympa"],
+   expl:"Il faut toujours vérifier la source avant de partager."},
   {q:"Qu'est-ce qu'un FAIT ?",
    good:["Une info prouvée, la même pour tous"],
-   bad:["Un avis personnel","Les gâteaux choco sont meilleurs","La glace vanille est délicieuse"]},
+   bad:["Un avis personnel","Les gâteaux choco sont meilleurs","La glace vanille est délicieuse"],
+   expl:"Un fait est une information prouvée, identique pour tout le monde."},
   {q:"Qu'est-ce qu'une OPINION ?",
    good:["Un avis personnel"],
-   bad:["Une info prouvée","Le soleil est une étoile","Paris est en France"]},
+   bad:["Une info prouvée","Le soleil est une étoile","Paris est en France"],
+   expl:"Une opinion est un avis personnel, pas un fait vérifiable."},
   {q:"Les paréidolies, c'est quoi ?",
    good:["Des illusions créées par le cerveau"],
-   bad:["Des faits scientifiques","De vrais visages cachés","Un type de Fake News"]},
+   bad:["Des faits scientifiques","De vrais visages cachés","Un type de Fake News"],
+   expl:"Les paréidolies sont des illusions créées par notre cerveau."},
   {q:"C'est quoi le système INTUITIF ?",
    good:["Rapide mais peut se tromper"],
-   bad:["Lent et très rationnel","Toujours fiable","Consomme beaucoup d'énergie"]},
+   bad:["Lent et très rationnel","Toujours fiable","Consomme beaucoup d'énergie"],
+   expl:"Le système intuitif est rapide mais peut nous induire en erreur."},
   {q:"C'est quoi le système ANALYTIQUE ?",
    good:["Lent mais plus rationnel"],
-   bad:["Fonctionne très vite","Fait souvent des erreurs","Consomme peu d'énergie"]},
+   bad:["Fonctionne très vite","Fait souvent des erreurs","Consomme peu d'énergie"],
+   expl:"Le système analytique est lent mais plus fiable et rationnel."},
   {q:"C'est quoi un BIAIS COGNITIF ?",
    good:["Une distorsion du traitement d'une info"],
-   bad:["Une information vraie","Un fait scientifique","Une méthode de vérif."]},
+   bad:["Une information vraie","Un fait scientifique","Une méthode de vérif."],
+   expl:"Un biais cognitif est une distorsion dans la façon dont on traite l'information."},
   {q:"Que faire face à une info en ligne ?",
    good:["Vérifier le contexte"],
-   bad:["La partager sans vérifier","Faire confiance aux likes","Croire si c'est spectaculaire"]},
+   bad:["La partager sans vérifier","Faire confiance aux likes","Croire si c'est spectaculaire"],
+   expl:"Il faut toujours vérifier le contexte avant de croire ou partager."},
   {q:"Le biais de CONFIRMATION, c'est ?",
    good:["Croire les infos qui confirment nos idées"],
-   bad:["Vérifier toutes les informations","Accepter d'avoir tort","Chercher des preuves contraires"]},
+   bad:["Vérifier toutes les informations","Accepter d'avoir tort","Chercher des preuves contraires"],
+   expl:"Le biais de confirmation nous pousse à croire ce qui conforte nos opinions."},
   {q:"Si une info semble trop belle pour être vraie…",
    good:["Il faut la vérifier"],
-   bad:["C'est forcément vrai","Il faut la partager vite","C'est toujours fiable"]},
+   bad:["C'est forcément vrai","Il faut la partager vite","C'est toujours fiable"],
+   expl:"Si c'est trop beau pour être vrai, il faut vérifier !"},
   {q:"Que boit une vache ?",
    good:["De l'eau"],
-   bad:["Du lait","Du jus de fruit","Du café"]},
+   bad:["Du lait","Du jus de fruit","Du café"],
+   expl:"Une vache boit de l'eau, c'est elle qui produit le lait !"},
   {q:"L'étoile du Berger, c'est…",
    good:["Une planète (Vénus)"],
-   bad:["Une étoile","Le Soleil","Mars"]},
+   bad:["Une étoile","Le Soleil","Mars"],
+   expl:"L'étoile du Berger est en réalité la planète Vénus !"},
   {q:"Quelle attitude face aux Fake News ?",
    good:["Être modeste, accepter de se tromper"],
-   bad:["Faire confiance à son instinct","Partager sans réfléchir","Ne jamais douter de soi"]},
+   bad:["Faire confiance à son instinct","Partager sans réfléchir","Ne jamais douter de soi"],
+   expl:"L'humilité et l'esprit critique sont nos meilleurs alliés."},
 ];
 
 // ── Construction de la session (série du hub + longueur 5/10/30) ──
 function buildSession(){
   var src = (typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions() : null;
   if(src && src.length && src[0].options){
+    // Chantier 04 : `expl` était perdu ici — le champ n'arrivait jamais jusqu'au jeu.
     return src.map(function(item){
-      return {q:item.q, opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
+      return {q:item.q, expl:item.expl,
+              opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
     });
   }
   // Secours : format good/bad local, mélangé puis coupé
   var list = QUESTIONS.map(function(item){
     var opts=[{text:item.good[0],bad:false}];
     item.bad.slice(0,3).forEach(function(b){opts.push({text:b,bad:true});});
-    return {q:item.q, opts:opts};
+    return {q:item.q, expl:item.expl, opts:opts};
   });
   for(var i=list.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=list[i];list[i]=list[j];list[j]=t;}
   var n=(typeof QCMStore!=='undefined')?QCMStore.loadSessionCount():10;
@@ -269,7 +304,22 @@ function loadQ(){
   cleared=false;
   bullets=[];
   document.getElementById('qtext').textContent='('+(qIdx+1)+'/'+SESSION.length+') '+curQ.q;
+  resetExpl();
   spawnBubbles();
+}
+
+// ── Chantier 04 : explication pédagogique, à l'erreur comme à la réussite ──
+function showExpl(type){
+  var bar=document.getElementById('explbar');
+  bar.className=(type==='ko'?'ko':'');
+  document.getElementById('expllabel').textContent=I18N.t('explLabel');
+  document.getElementById('expltext').textContent=(curQ&&curQ.expl)||I18N.t('explDefault');
+}
+function resetExpl(){
+  var bar=document.getElementById('explbar');
+  bar.className='idle';
+  document.getElementById('expllabel').textContent=I18N.t('explLabel');
+  document.getElementById('expltext').textContent=I18N.t('explWaiting');
 }
 
 // ── Bulles flottantes : une par option, réparties dans le ciel ──
@@ -395,6 +445,9 @@ function update(){
           boom(bb.x,by,'#44ff88',10);
           flashCol='rgba(220,0,50,1)';flashT=24;
           loseLife('C\'EST LA VRAIE ! −1 VIE',bb.x,by-35);
+          // Chantier 04 : c'est LE moment pédagogique — le joueur vient de tirer
+          // sur la bonne réponse, on lui dit pourquoi c'était la bonne.
+          showExpl('ko');
         }
         break;
       }
@@ -431,6 +484,9 @@ function checkCleared(){
     if(!bubbles[j].bad) bubbles[j].revealed=true;
   }
   addFloat(hero.x,hero.y-90,'+100 ! AVANCE ➡','#44ffcc');
+  // Chantier 04 : explication aussi à la réussite. Elle reste affichée tant que
+  // le joueur n'a pas avancé jusqu'à la question suivante — pas de minuteur.
+  showExpl('ok');
 }
 
 // ══════════════════════════════════════════════

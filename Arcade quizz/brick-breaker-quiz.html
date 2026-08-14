@@ -11,13 +11,19 @@ I18N.register({
     intro: `🧱 Une question s'affiche en haut — les réponses sont des briques.<br><strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br>⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>⚠️ La balle qui tombe = −1 vie<br><br>← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>TOUTES<br>CASSÉES !", loseTitle: "GAME<br>OVER",
-    winMsg: "Tu as détruit toutes les fausses réponses !", loseMsg: "Continue à développer ton esprit critique !"
+    winMsg: "Tu as détruit toutes les fausses réponses !", loseMsg: "Continue à développer ton esprit critique !",
+    hitGold: "❌ Brique DORÉE touchée ! −1 vie", ballLost: "💥 La balle est tombée ! −1 vie",
+    allBroken: "✅ Toutes les fausses réponses détruites !",
+    firstHint: "🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !"
   },
   en: {
     intro: `🧱 A question appears at the top — the answers are bricks.<br><strong style="color:#ffaa00">Break all the FALSE answers!</strong><br>⚠️ Read the bricks — hitting the <strong style="color:#ffcc00">correct answer</strong> costs a life!<br>⚠️ A falling ball = −1 life<br><br>← → or <strong style="color:#00ffcc">Mouse</strong> for the paddle &nbsp;|&nbsp; <strong style="color:#00ffcc">SPACE</strong> to launch &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>ALL<br>BROKEN!", loseTitle: "GAME<br>OVER",
-    winMsg: "You destroyed all the false answers!", loseMsg: "Keep developing your critical thinking!"
+    winMsg: "You destroyed all the false answers!", loseMsg: "Keep developing your critical thinking!",
+    hitGold: "❌ You hit the GOLDEN brick! −1 life", ballLost: "💥 The ball fell! −1 life",
+    allBroken: "✅ All the false answers destroyed!",
+    firstHint: "🧱 Destroy all the FALSE answers — the correct one must stay!"
   }
 });
 </script>
@@ -286,6 +292,24 @@ function shuffleColors() {
   return c;
 }
 
+// Chantier 04 : mélange l'ordre des OPTIONS, pas seulement leurs couleurs.
+// Sans ça, toutes les questions ayant answer:0 mettent la bonne réponse
+// dans la première brique — le joueur gagne sans lire.
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i=a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function withShuffledOptions(list) {
+  return list.map(q => {
+    const idx = shuffleArr(Array.from({length:q.options.length}, (_,i) => i));
+    return { ...q, options: idx.map(i => q.options[i]), answer: idx.indexOf(q.answer) };
+  });
+}
+
 // ── BRICKS ───────────────────────────────────────────────────
 function spawnBricks() {
   bricks = [];
@@ -393,9 +417,11 @@ function checkBrickCollisions() {
       lives--;
       updateUI();
       playSound(110, 0.45, 'sawtooth');
-      showFeedback('❌ Brique DORÉE touchée ! −1 vie', 'ko');
+      // Chantier 04 : c'est LE moment pédagogique — le joueur vient de détruire
+      // la bonne réponse, on lui dit pourquoi c'était la bonne.
+      feedbackKO(I18N.t('hitGold'));
       ballLaunched = false;
-      if (lives <= 0) setTimeout(() => endGame(false), 600);
+      if (lives <= 0) setTimeout(() => endGame(false), 2600);
     } else {
       b.hitting = true;
       b.flash = 14;
@@ -416,8 +442,9 @@ function checkAllWrongGone() {
   playSound(660, 0.35, 'sine');
   const correct = bricks.find(b => b.isCorrect);
   if (correct) spawnParticles(correct.x+correct.w/2, correct.y+correct.h/2, '#ffcc00', 32);
-  showFeedback(currentQ.expl || '✅ Toutes les fausses réponses détruites !', 'ok');
-  setTimeout(() => { qIndex++; loadQuestion(); }, 1700);
+  // Chantier 04 : 1,7 s ne suffit pas à lire une explication.
+  showFeedback(currentQ.expl || I18N.t('allBroken'), 'ok', currentQ.expl ? 4200 : 2000);
+  setTimeout(() => { qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1700);
 }
 
 // ── STARS / UI ───────────────────────────────────────────────
@@ -433,11 +460,18 @@ function updateUI() {
   document.getElementById('lives-display').textContent = h[Math.max(0,lives)] || '💀';
 }
 
-function showFeedback(msg, type) {
+// Chantier 04 : durée réglable — une explication a besoin de plus de 2,8 s pour être lue.
+function showFeedback(msg, type, ms) {
   const el = document.getElementById('feedback');
   el.textContent = msg; el.className = 'show '+type;
   clearTimeout(feedbackTimer);
-  feedbackTimer = setTimeout(() => el.className='', 2800);
+  feedbackTimer = setTimeout(() => el.className='', ms || 2800);
+}
+
+// Message d'erreur + l'explication pédagogique de la question en cours.
+function feedbackKO(msg) {
+  const expl = currentQ && currentQ.expl;
+  showFeedback(expl ? msg + ' — ' + expl : msg, 'ko', expl ? 6000 : 2800);
 }
 
 // ── QUESTION ─────────────────────────────────────────────────
@@ -451,7 +485,7 @@ function loadQuestion() {
   spawnBricks();
   resetBall();
   questionActive = true;
-  if (qIndex === 0) showFeedback('🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !', 'ok');
+  if (qIndex === 0) showFeedback(I18N.t('firstHint'), 'ok');
 }
 
 // ── START / END ───────────────────────────────────────────────
@@ -467,6 +501,7 @@ function startDefaultGame() {
 
 function startGame() {
   document.getElementById('overlay').style.display = 'none';
+  activeQCM = withShuffledOptions(activeQCM);
   score=0; lives=3; qIndex=0; particles=[]; ballLaunched=false; paused=false;
   paddle.x=W/2; paddle.w=PADDLE_W0; ball.spd=BALL_SPD;
   makeStars(); updateUI(); gameRunning=true;
@@ -480,10 +515,16 @@ function endGame(win) {
   document.getElementById('question-banner').classList.remove('visible');
   const ov = document.getElementById('overlay');
   ov.style.display = 'flex';
+  // Chantier 04 : sur une défaite, la question en cours reste sans réponse —
+  // on affiche son explication plutôt que de laisser le joueur sur son erreur.
+  const lastExpl = (!win && currentQ && currentQ.expl)
+    ? `<div class="sub" style="color:#ffd479;border-left:3px solid #ffaa00;padding-left:12px;text-align:left">💡 ${currentQ.expl}</div>`
+    : '';
   ov.innerHTML = `
     <h1 style="color:${win?'#00ffcc':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
     <div class="sub">${I18N.t('finalScore')} <strong style="color:#00ffcc">${score}</strong><br>
     ${win?I18N.t('winMsg'):I18N.t('loseMsg')}</div>
+    ${lastExpl}
     <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
       <button onclick="startDefaultGame()">${I18N.t('replay')}</button>
       <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menu')}</button>
@@ -594,8 +635,11 @@ function gameLoop() {
     if (ball.y - ball.r > H+10) {
       lives--; updateUI();
       playSound(150,.5,'sawtooth');
-      showFeedback('💥 La balle est tombée ! −1 vie', 'ko');
-      if (lives <= 0) { setTimeout(()=>endGame(false),600); return; }
+      // Chantier 04 : la balle perdue est un raté d'adresse, pas de compréhension —
+      // on ne divulgue pas la réponse tant que la question continue. En revanche,
+      // si c'est la dernière vie, c'est la dernière occasion d'expliquer.
+      if (lives <= 0) { feedbackKO(I18N.t('ballLost')); setTimeout(()=>endGame(false),2600); return; }
+      showFeedback(I18N.t('ballLost'), 'ko');
       ballLaunched = false;
     }
 

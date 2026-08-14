@@ -1,12 +1,22 @@
+// Chantier 04 : `def` alimente le lexique affiché AVANT la partie. On demandait
+// jusqu'ici de choisir parmi 8 catégories qui n'étaient définies nulle part.
 const CATS = [
-  {id:"fake",  emoji:"🚫", name:"Fake news",            desc:"plain false information"},
-  {id:"ctx",   emoji:"✂️", name:"Decontextualization",  desc:"true info, false context"},
-  {id:"corr",  emoji:"🔗", name:"Correlation ≠ causation", desc:"two true facts, imagined link"},
-  {id:"astro", emoji:"🤖", name:"Astroturfing",         desc:"fake grassroots movement"},
-  {id:"doute", emoji:"🌫️", name:"Manufacturing doubt",    desc:"deliberately sowing confusion"},
-  {id:"mute",  emoji:"🔇", name:"Mute news",            desc:"hiding or drowning out information"},
-  {id:"cadr",  emoji:"🖼️", name:"Framing effect",     desc:"chosen angle to steer interpretation"},
-  {id:"ok",    emoji:"✅", name:"Reliable information",          desc:"nothing to flag!"},
+  {id:"fake",  emoji:"🚫", name:"Fake news",            desc:"plain false information",
+   def:"Information that is simply invented, or that contradicts the state of knowledge. It is the best-known form of disinformation… and the rarest."},
+  {id:"ctx",   emoji:"✂️", name:"Decontextualization",  desc:"true info, false context",
+   def:"Genuine material (a photo, a video, a quote) cut off from its date, place or original situation. Nothing is faked: it is the context that lies."},
+  {id:"corr",  emoji:"🔗", name:"Correlation ≠ causation", desc:"two true facts, imagined link",
+   def:"Two accurate facts placed side by side to suggest that one causes the other. Often a hidden third factor explains both."},
+  {id:"astro", emoji:"🤖", name:"Astroturfing",         desc:"fake grassroots movement",
+   def:"Manufacturing the illusion of a spontaneous groundswell: fake accounts, fake reviews, paid posts. It exploits our reflex that “if so many people say it, it must be true”."},
+  {id:"doute", emoji:"🌫️", name:"Manufacturing doubt",    desc:"deliberately sowing confusion",
+   def:"The aim is not to convince but to blur. Multiplying contradictory versions discourages the public from forming a view — and buys time."},
+  {id:"mute",  emoji:"🔇", name:"Mute news",            desc:"hiding or drowning out information",
+   def:"Disinformation by omission: not covering a subject, or burying it under another. Not a word is untrue, yet our view of the world is steered."},
+  {id:"cadr",  emoji:"🖼️", name:"Framing effect",     desc:"chosen angle to steer interpretation",
+   def:"The same true information, presented from an angle that changes how it feels: “64% keep their budget” or “36% have to cut it” — same study."},
+  {id:"ok",    emoji:"✅", name:"Reliable information",          desc:"nothing to flag!",
+   def:"Not everything is manipulation! Information that is sourced, cross-checked or backed by scientific consensus can be surprising and still be perfectly reliable."},
 ];
 
 const ITEMS = [
@@ -59,13 +69,29 @@ const ITEMS = [
 ];
 
 let deck=[], idx=0, score=0, lives=3, streak=0, best=0;
+// Chantier 04 : mode entraînement — après la perte des 3 vies, le joueur peut
+// finir le paquet sans score plutôt que d'être coupé du contenu pédagogique.
+let training=false;
 const $ = id => document.getElementById(id);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
+// Lexique des 8 techniques, affiché dans l'intro avant la première dépêche.
+function renderLexicon(){
+  const box=$("lexlist"); if(!box) return;
+  box.innerHTML="";
+  CATS.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="lex";
+    d.innerHTML=`<span class="cemoji">${c.emoji}</span><span><span class="lex-name">${c.name}</span><span class="lex-def">${c.def}</span></span>`;
+    box.appendChild(d);
+  });
+}
+renderLexicon();
+
 function startGame(){
   deck = shuffle([...ITEMS]).slice(0,12);
-  idx=0; score=0; lives=3; streak=0; best=0;
+  idx=0; score=0; lives=3; streak=0; best=0; training=false;
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
@@ -81,6 +107,7 @@ function renderQ(){
   $("dtxt").textContent=it.t;
   $("feedback").style.display="none";
   $("nextbtn").style.display="none";
+  $("trainbtn").style.display="none";
   const cats=$("cats"); cats.innerHTML="";
   CATS.forEach(c=>{
     const b=document.createElement("button");
@@ -98,23 +125,33 @@ function answer(id,btn){
   const goodBtn=[...document.querySelectorAll(".cat")][CATS.findIndex(c=>c.id===it.a)];
   goodBtn.classList.remove("dim"); goodBtn.classList.add("good");
   if(ok){
-    streak++; best=Math.max(best,streak);
-    score += 10 + (streak>=3?5:0);
-    $("fb-title").textContent = streak>=3 ? `✔ Good catch! (+15, streak of ${streak} 🔥)` : "✔ Good catch! (+10)";
+    // En mode entraînement, plus de score ni de série : on lit, on n'est plus noté.
+    if(training){
+      $("fb-title").textContent="✔ Good catch! (practice, not scored)";
+    } else {
+      streak++; best=Math.max(best,streak);
+      score += 10 + (streak>=3?5:0);
+      $("fb-title").textContent = streak>=3 ? `✔ Good catch! (+15, streak of ${streak} 🔥)` : "✔ Good catch! (+10)";
+    }
   } else {
     btn.classList.remove("dim"); btn.classList.add("bad");
-    streak=0; lives--;
+    streak=0;
+    if(!training) lives--;
     $("fb-title").textContent="✘ Missed it! The right answer: "+CATS.find(c=>c.id===it.a).name;
   }
-  $("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);
+  $("lives").textContent = training ? "📚 practice" : "❤️".repeat(lives)+"🖤".repeat(3-lives);
   $("score").textContent=score;
   $("streak").textContent = streak>=2 ? `🔥 ${streak}` : "";
   const fb=$("feedback");
   fb.className = ok ? "ok" : "ko";
   fb.style.display="block";
   $("fb-expl").innerHTML=it.e;
-  if(lives<=0 || idx===deck.length-1){
+  const last = idx===deck.length-1;
+  if(gameOver() || last){
     $("nextbtn").textContent = "See my final result ➜";
+    // Chantier 04 : plus de vies mais des dépêches encore à voir → on propose
+    // de continuer sans score au lieu de couper l'accès au contenu.
+    if(!last) $("trainbtn").style.display="block";
   } else {
     $("nextbtn").textContent = "Next news item ➜";
   }
@@ -122,21 +159,56 @@ function answer(id,btn){
   $("nextbtn").scrollIntoView({behavior:"smooth",block:"end"});
 }
 
+function gameOver(){ return lives<=0 && !training; }
+
+function continueTraining(){
+  training=true;
+  $("trainbtn").style.display="none";
+  $("lives").textContent="📚 practice";
+  nextQ();
+}
+
 function nextQ(){
-  if(lives<=0 || idx===deck.length-1){ endGame(); return; }
+  if(gameOver() || idx===deck.length-1){ endGame(); return; }
   idx++; renderQ();
   window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Chantier 04 : les dépêches jamais atteintes, avec leur technique et leur
+// explication. Sans ça, une partie perdue au bout de 4 dépêches masquait
+// définitivement les deux tiers du contenu pédagogique.
+function renderRecap(){
+  const box=$("recap"); if(!box) return;
+  box.innerHTML="";
+  const restants = deck.slice(idx+1);
+  if(!restants.length) return;
+  const h=document.createElement("h3");
+  h.textContent="📂 The "+restants.length+" dispatch"+(restants.length>1?"es":"")+" you did not see";
+  box.appendChild(h);
+  restants.forEach(it=>{
+    const cat=CATS.find(c=>c.id===it.a);
+    const d=document.createElement("div");
+    d.className="rc";
+    const t=document.createElement("p"); t.className="rc-t"; t.textContent=it.t;
+    const a=document.createElement("p"); a.className="rc-a"; a.textContent=cat.emoji+" "+cat.name;
+    const e=document.createElement("p"); e.className="rc-e"; e.innerHTML=it.e;
+    d.appendChild(t); d.appendChild(a); d.appendChild(e);
+    box.appendChild(d);
+  });
 }
 
 function endGame(){
   $("game").style.display="none";
   $("nextbtn").style.display="none";
+  $("trainbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
   $("end-score").textContent=score+" pts";
+  renderRecap();
   const ratio = score/(deck.length*10);
   let title,msg;
-  if(lives<=0){ title="📡 Radar fried…"; msg="You have used up your 3 lives. Disinformation is subtle: play again to sharpen your radar!"; }
+  if(training){ title="📚 End of the run"; msg="You finished the deck in practice mode, without a score. That is not the point: each dispatch showed you a technique. Play again to be scored."; }
+  else if(lives<=0){ title="📡 Radar fried…"; msg="You have used up your 3 lives. Disinformation is subtle: read the dispatches you did not see below, then play again to sharpen your radar!"; }
   else if(ratio>=0.9){ title="🏆 Elite fact-checker!"; msg="Almost nothing gets past you. You understand that fake news is only the tree hiding the forest."; }
   else if(ratio>=0.6){ title="🕵️ Good investigator!"; msg="You already spot the techniques well. Remember: decontextualizing, framing, burying information… you can misinform without lying."; }
   else { title="🔍 Radar apprentice"; msg="This is a good start! There are many techniques: decontextualization, astroturfing, manufacturing doubt, mute news, framing… Play again to make them stick."; }

@@ -157,6 +157,13 @@
   .feedback-box.good { background: rgba(105,240,174,0.1); border-color: var(--green); color: var(--green); }
   .feedback-box.bad  { background: rgba(255,82,82,0.1);   border-color: var(--red);   color: var(--red);   }
   .feedback-box.idle { background: rgba(79,195,247,0.05); border-color: rgba(79,195,247,0.2); color: var(--dim); }
+  /* Chantier 04 : le panneau accueille désormais l'explication de la question,
+     qui est plus longue qu'un simple « ✅ / ❌ » et doit rester lisible. */
+  .feedback-box.with-expl { text-align: left; align-items: flex-start; }
+  .feedback-box .fb-expl {
+    display: block; margin-top: 6px; font-weight: 600; font-size: 13px;
+    line-height: 1.5; color: #d8d8f0;
+  }
 
   /* Overlay */
   .overlay {
@@ -290,7 +297,8 @@ I18N.register({
     hudScore: "SCORE:", hudLives: "VIE:", hudLevel: "NIVEAU:", replay: "REJOUER",
     subtitle: "Fake News & Esprit Critique", best: "MEILLEUR:",
     speedVerySlow: "TRÈS LENTE", speedSlow: "LENTE", speedNormal: "NORMALE", speedFast: "RAPIDE", speedTurbo: "TURBO",
-    eatRight: "Mange la bonne réponse !", goodA: "✅ Bonne réponse ! +", goodB: " pts", wrongFb: "❌ Fausse réponse ! -1 vie"
+    eatRight: "Mange la bonne réponse !", goodA: "✅ Bonne réponse ! +", goodB: " pts", wrongFb: "❌ Fausse réponse ! -1 vie",
+    noLives: "Plus de vies !", selfCollision: "Auto-collision !"
   },
   en: {
     pageTitle: "Snake - Fake News & Critical Thinking", qLabel: "❓ QUESTION",
@@ -305,7 +313,8 @@ I18N.register({
     hudScore: "SCORE:", hudLives: "LIVES:", hudLevel: "LEVEL:", replay: "REPLAY",
     subtitle: "Fake News & Critical Thinking", best: "BEST:",
     speedVerySlow: "VERY SLOW", speedSlow: "SLOW", speedNormal: "NORMAL", speedFast: "FAST", speedTurbo: "TURBO",
-    eatRight: "Eat the correct answer!", goodA: "✅ Correct! +", goodB: " pts", wrongFb: "❌ Wrong answer! -1 life"
+    eatRight: "Eat the correct answer!", goodA: "✅ Correct! +", goodB: " pts", wrongFb: "❌ Wrong answer! -1 life",
+    noLives: "Out of lives!", selfCollision: "You ran into yourself!"
   }
 });
 const canvas = document.getElementById('c');
@@ -329,96 +338,111 @@ const ALL_QUESTIONS_FR = [
   {
     question: "Qu'est-ce qu'une Fake News ?",
     correct: ["Une information fausse", "Une info inventée"],
-    wrong: ["Une vraie information", "Un fait prouvé", "Un avis personnel"]
+    wrong: ["Une vraie information", "Un fait prouvé", "Un avis personnel"],
+    expl: "Une Fake News, c'est une information fausse !"
   },
   {
     question: "Comment vérifier une information ?",
     correct: ["Vérifier la source", "Chercher des preuves", "Voir si d'autres journaux en parlent"],
-    wrong: ["La partager immédiatement", "Faire confiance aux réseaux sociaux", "Croire si ça semble sympa"]
+    wrong: ["La partager immédiatement", "Faire confiance aux réseaux sociaux", "Croire si ça semble sympa"],
+    expl: "Il faut toujours vérifier la source avant de partager."
   },
   {
     question: "Qu'est-ce qu'un FAIT ?",
     correct: ["Une info prouvée, la même pour tous"],
-    wrong: ["Un avis personnel", "Les gâteaux au chocolat sont meilleurs", "La glace vanille est délicieuse"]
+    wrong: ["Un avis personnel", "Les gâteaux au chocolat sont meilleurs", "La glace vanille est délicieuse"],
+    expl: "Un fait est une information prouvée, identique pour tout le monde."
   },
   {
     question: "Qu'est-ce qu'une OPINION ?",
     correct: ["Un avis personnel"],
-    wrong: ["Une information prouvée", "Le soleil est une étoile", "Paris est en France"]
+    wrong: ["Une information prouvée", "Le soleil est une étoile", "Paris est en France"],
+    expl: "Une opinion est un avis personnel, pas un fait vérifiable."
   },
   {
     question: "Les paréidolies, c'est quoi ?",
     correct: ["Des illusions créées par le cerveau"],
-    wrong: ["Des faits scientifiques prouvés", "Des vrais visages cachés", "Un type de Fake News vérifiée"]
+    wrong: ["Des faits scientifiques prouvés", "Des vrais visages cachés", "Un type de Fake News vérifiée"],
+    expl: "Les paréidolies sont des illusions créées par notre cerveau."
   },
   {
     question: "C'est quoi le système INTUITIF ?",
     correct: ["Un système de pensée rapide mais qui peut faire des erreurs"],
-    wrong: ["Lent et très rationnel", "Toujours fiable", "Consomme beaucoup d'énergie"]
+    wrong: ["Lent et très rationnel", "Toujours fiable", "Consomme beaucoup d'énergie"],
+    expl: "Le système intuitif est rapide mais peut nous induire en erreur."
   },
   {
     question: "C'est quoi le système ANALYTIQUE ?",
     correct: ["Système lent mais plus rationnel"],
-    wrong: ["Fonctionne très vite", "Fait souvent des erreurs", "Consomme peu d'énergie"]
+    wrong: ["Fonctionne très vite", "Fait souvent des erreurs", "Consomme peu d'énergie"],
+    expl: "Le système analytique est lent mais plus fiable et rationnel."
   },
   {
     question: "C'est quoi un BIAIS COGNITIF ?",
     correct: ["Une distorsion dans le traitement d'une info"],
-    wrong: ["Une information vraie", "Un fait scientifique", "Une méthode de vérification"]
+    wrong: ["Une information vraie", "Un fait scientifique", "Une méthode de vérification"],
+    expl: "Un biais cognitif est une distorsion dans la façon dont on traite l'information."
   },
   {
     question: "Exemple de FAIT ?",
     correct: ["Les pommes sont des fruits", "Paris est la capitale de la France"],
-    wrong: ["Le rap est meilleur que le rock", "Les gâteaux sont délicieux", "C'est mon sportif préféré"]
+    wrong: ["Le rap est meilleur que le rock", "Les gâteaux sont délicieux", "C'est mon sportif préféré"],
+    expl: "\"Les pommes sont des fruits\" est un fait vérifiable et universel."
   },
   {
     question: "Que faut-il faire face à une info en ligne ?",
     correct: ["Vérifier le contexte", "Chercher la source originale", "Croiser plusieurs sources"],
-    wrong: ["La partager sans vérifier", "Faire confiance aux likes", "Croire si c'est spectaculaire"]
+    wrong: ["La partager sans vérifier", "Faire confiance aux likes", "Croire si c'est spectaculaire"],
+    expl: "Il faut toujours vérifier le contexte avant de croire ou partager."
   },
   {
     question: "Le biais de CONFIRMATION, c'est ?",
     correct: ["Croire les infos qui confirment nos idées", "Rejeter les infos qui contredisent nos croyances"],
-    wrong: ["Vérifier toutes les informations", "Accepter d'avoir tort", "Chercher des preuves contraires"]
+    wrong: ["Vérifier toutes les informations", "Accepter d'avoir tort", "Chercher des preuves contraires"],
+    expl: "Le biais de confirmation nous pousse à croire ce qui conforte nos opinions."
   },
   {
     question: "Si une info semble trop belle pour être vraie…",
     correct: ["Elle est probablement fausse", "Il faut la vérifier"],
-    wrong: ["C'est forcément vrai", "Il faut la partager vite", "C'est toujours fiable"]
+    wrong: ["C'est forcément vrai", "Il faut la partager vite", "C'est toujours fiable"],
+    expl: "Si c'est trop beau pour être vrai, il faut vérifier !"
   },
   {
     question: "Que boit une vache ?",
     correct: ["De l'eau"],
-    wrong: ["Du lait", "Du jus", "Du café"]
+    wrong: ["Du lait", "Du jus", "Du café"],
+    expl: "Une vache boit de l'eau, c'est elle qui produit le lait !"
   },
   {
     question: "L'étoile du Berger, c'est…",
     correct: ["Une planète (Vénus)", "Pas une étoile"],
-    wrong: ["Une étoile", "Le Soleil", "Mars"]
+    wrong: ["Une étoile", "Le Soleil", "Mars"],
+    expl: "L'étoile du Berger est en réalité la planète Vénus !"
   },
   {
     question: "Quelle attitude adopter face aux Fake News ?",
     correct: ["Être modeste et accepter de se tromper", "Faire confiance aux experts"],
-    wrong: ["Toujours faire confiance à son instinct", "Partager sans réfléchir", "Ne jamais douter de soi"]
+    wrong: ["Toujours faire confiance à son instinct", "Partager sans réfléchir", "Ne jamais douter de soi"],
+    expl: "L'humilité et l'esprit critique sont nos meilleurs alliés."
   },
 ];
 
 const ALL_QUESTIONS_EN = [
-  { question: "What is a fake news story?", correct: ["A false piece of information", "Made-up information"], wrong: ["A true piece of information", "A proven fact", "A personal opinion"] },
-  { question: "How do you check a piece of information?", correct: ["Check the source", "Look for evidence", "See if other outlets report it"], wrong: ["Share it immediately", "Trust social media", "Believe it if it seems nice"] },
-  { question: "What is a FACT?", correct: ["Proven information, the same for everyone"], wrong: ["A personal opinion", "Chocolate cakes are better", "Vanilla ice cream is delicious"] },
-  { question: "What is an OPINION?", correct: ["A personal view"], wrong: ["Proven information", "The sun is a star", "Paris is in France"] },
-  { question: "What is pareidolia?", correct: ["Illusions created by the brain"], wrong: ["Proven scientific facts", "Real hidden faces", "A type of verified fake news"] },
-  { question: "What is the INTUITIVE system?", correct: ["A fast thinking system that can make mistakes"], wrong: ["Slow and very rational", "Always reliable", "Uses a lot of energy"] },
-  { question: "What is the ANALYTICAL system?", correct: ["A slow but more rational system"], wrong: ["Works very fast", "Often makes mistakes", "Uses little energy"] },
-  { question: "What is a COGNITIVE BIAS?", correct: ["A distortion in how we process information"], wrong: ["A true piece of information", "A scientific fact", "A checking method"] },
-  { question: "Example of a FACT?", correct: ["Apples are fruit", "Paris is the capital of France"], wrong: ["Rap is better than rock", "Cakes are delicious", "He's my favourite athlete"] },
-  { question: "What should you do with information online?", correct: ["Check the context", "Find the original source", "Cross-check several sources"], wrong: ["Share it without checking", "Trust the likes", "Believe it if it's spectacular"] },
-  { question: "What is CONFIRMATION bias?", correct: ["Believing info that confirms our ideas", "Rejecting info that contradicts our beliefs"], wrong: ["Checking all information", "Accepting being wrong", "Looking for contrary evidence"] },
-  { question: "If information seems too good to be true…", correct: ["It's probably false", "You should check it"], wrong: ["It must be true", "You should share it quickly", "It's always reliable"] },
-  { question: "What does a cow drink?", correct: ["Water"], wrong: ["Milk", "Juice", "Coffee"] },
-  { question: "The Evening Star is…", correct: ["A planet (Venus)", "Not a star"], wrong: ["A star", "The Sun", "Mars"] },
-  { question: "What attitude should you have toward fake news?", correct: ["Be humble and accept being wrong", "Trust the experts"], wrong: ["Always trust your instinct", "Share without thinking", "Never doubt yourself"] }
+  { question: "What is a fake news story?", correct: ["A false piece of information", "Made-up information"], wrong: ["A true piece of information", "A proven fact", "A personal opinion"], expl: "Fake news is information that is false." },
+  { question: "How do you check a piece of information?", correct: ["Check the source", "Look for evidence", "See if other outlets report it"], wrong: ["Share it immediately", "Trust social media", "Believe it if it seems nice"], expl: "Always check the source before sharing." },
+  { question: "What is a FACT?", correct: ["Proven information, the same for everyone"], wrong: ["A personal opinion", "Chocolate cakes are better", "Vanilla ice cream is delicious"], expl: "A fact is proven information, the same for everyone." },
+  { question: "What is an OPINION?", correct: ["A personal view"], wrong: ["Proven information", "The sun is a star", "Paris is in France"], expl: "An opinion is a personal view, not a verifiable fact." },
+  { question: "What is pareidolia?", correct: ["Illusions created by the brain"], wrong: ["Proven scientific facts", "Real hidden faces", "A type of verified fake news"], expl: "Pareidolias are illusions created by our brain." },
+  { question: "What is the INTUITIVE system?", correct: ["A fast thinking system that can make mistakes"], wrong: ["Slow and very rational", "Always reliable", "Uses a lot of energy"], expl: "The intuitive system is fast, but it can lead us into error." },
+  { question: "What is the ANALYTICAL system?", correct: ["A slow but more rational system"], wrong: ["Works very fast", "Often makes mistakes", "Uses little energy"], expl: "The analytical system is slow, but more reliable and more rational." },
+  { question: "What is a COGNITIVE BIAS?", correct: ["A distortion in how we process information"], wrong: ["A true piece of information", "A scientific fact", "A checking method"], expl: "A cognitive bias is a distortion in the way we process information." },
+  { question: "Example of a FACT?", correct: ["Apples are fruit", "Paris is the capital of France"], wrong: ["Rap is better than rock", "Cakes are delicious", "He's my favourite athlete"], expl: "\"Apples are fruit\" is a verifiable, universal fact." },
+  { question: "What should you do with information online?", correct: ["Check the context", "Find the original source", "Cross-check several sources"], wrong: ["Share it without checking", "Trust the likes", "Believe it if it's spectacular"], expl: "Always check the context before believing or sharing." },
+  { question: "What is CONFIRMATION bias?", correct: ["Believing info that confirms our ideas", "Rejecting info that contradicts our beliefs"], wrong: ["Checking all information", "Accepting being wrong", "Looking for contrary evidence"], expl: "Confirmation bias pushes us to believe whatever supports our existing opinions." },
+  { question: "If information seems too good to be true…", correct: ["It's probably false", "You should check it"], wrong: ["It must be true", "You should share it quickly", "It's always reliable"], expl: "If it seems too good to be true, check it!" },
+  { question: "What does a cow drink?", correct: ["Water"], wrong: ["Milk", "Juice", "Coffee"], expl: "A cow drinks water — it is the cow that produces the milk!" },
+  { question: "The Evening Star is…", correct: ["A planet (Venus)", "Not a star"], wrong: ["A star", "The Sun", "Mars"], expl: "The Evening Star is in fact the planet Venus!" },
+  { question: "What attitude should you have toward fake news?", correct: ["Be humble and accept being wrong", "Trust the experts"], wrong: ["Always trust your instinct", "Share without thinking", "Never doubt yourself"], expl: "Humility and critical thinking are our best allies." }
 ];
 
 const ALL_QUESTIONS = (window.I18N && I18N.lang === 'en') ? ALL_QUESTIONS_EN : ALL_QUESTIONS_FR;
@@ -431,6 +455,7 @@ let currentQuestion = null;
 let feedbackTimeout = null;
 let highScore = 0;
 let revealed = false; // true = show green/red after wrong answer
+let resolving = false; // true pendant l'affichage de l'explication : plus rien n'est mangeable
 let revealTimeout = null;
 
 const ITEM_COUNT_CORRECT = 1;
@@ -515,6 +540,8 @@ function init() {
   level = 1;
   particles = [];
   revealed = false;
+  resolving = false;
+  clearTimeout(revealTimeout);
   currentQuestion = pickQuestion();
   spawnItems();
   updateHUD();
@@ -560,12 +587,15 @@ function tick() {
   head.y = (head.y + ROWS) % ROWS;
 
   // Self collision
-  if (snake.some(s => s.x === head.x && s.y === head.y)) return die('auto-collision !');
+  if (snake.some(s => s.x === head.x && s.y === head.y)) return die(I18N.t('selfCollision'));
 
   snake.unshift(head);
 
   // Check item collision
-  const hitIdx = items.findIndex(it => it.x === head.x && it.y === head.y);
+  // Chantier 04 : `resolving` verrouille la question pendant qu'on affiche son
+  // explication — sans ça, allonger le délai de lecture laisserait le serpent
+  // manger une seconde réponse de la question déjà résolue.
+  const hitIdx = resolving ? -1 : items.findIndex(it => it.x === head.x && it.y === head.y);
   if (hitIdx !== -1) {
     const item = items[hitIdx];
     if (item.good) {
@@ -573,34 +603,36 @@ function tick() {
       score += 10 * level;
       if (score > highScore) highScore = score;
       spawnParticles(head.x, head.y, '#69f0ae');
-      setFeedback('good', I18N.t('goodA') + (10*level) + I18N.t('goodB'));
+      setFeedback('good', I18N.t('goodA') + (10*level) + I18N.t('goodB'), currentQuestion.expl);
       if (score % 50 === 0) {
         level++;
         clearInterval(gameLoop);
         gameLoop = setInterval(tick, getSpeed());
       }
       revealed = true;
+      resolving = true;
       clearTimeout(revealTimeout);
       revealTimeout = setTimeout(() => {
-        revealed = false;
+        revealed = false; resolving = false;
         currentQuestion = pickQuestion();
         spawnItems();
-      }, 1200);
+      }, currentQuestion.expl ? 4500 : 1200);
     } else {
       // Wrong!
       lives--;
       spawnParticles(head.x, head.y, '#ff5252');
-      setFeedback('bad', I18N.t('wrongFb'));
+      setFeedback('bad', I18N.t('wrongFb'), currentQuestion.expl);
       snake.pop();
       // Reveal all items (green/red)
       revealed = true;
+      resolving = true;
       clearTimeout(revealTimeout);
-      if (lives <= 0) return die('Plus de vies !');
+      if (lives <= 0) return die(I18N.t('noLives'));
       revealTimeout = setTimeout(() => {
-        revealed = false;
+        revealed = false; resolving = false;
         currentQuestion = pickQuestion();
         spawnItems();
-      }, 2000);
+      }, currentQuestion.expl ? 5000 : 2000);
     }
     updateHUD();
   } else {
@@ -610,15 +642,23 @@ function tick() {
   draw();
 }
 
-function setFeedback(type, msg) {
+// Chantier 04 : `expl` n'existait pas dans ce Snake — aucune explication, jamais.
+// On l'affiche à l'erreur comme à la réussite, avec le temps de la lire.
+function setFeedback(type, msg, expl) {
   clearTimeout(feedbackTimeout);
-  feedbackEl.className = 'feedback-box ' + type;
+  feedbackEl.className = 'feedback-box ' + type + (expl ? ' with-expl' : '');
   feedbackEl.textContent = msg;
+  if (expl) {
+    const e = document.createElement('span');
+    e.className = 'fb-expl';
+    e.textContent = '💡 ' + expl;
+    feedbackEl.appendChild(e);
+  }
   if (type !== 'idle') {
     feedbackTimeout = setTimeout(() => {
       feedbackEl.className = 'feedback-box idle';
       feedbackEl.textContent = I18N.t('eatRight');
-    }, 2000);
+    }, expl ? 4500 : 2000);
   }
 }
 
@@ -639,11 +679,17 @@ function die(reason) {
   running = false;
   draw();
   overlay.classList.remove('hidden');
+  // Chantier 04 : la question en cours reste sans réponse — on affiche son
+  // explication plutôt que de laisser le joueur sur son erreur.
+  const expl = (currentQuestion && currentQuestion.expl)
+    ? `<p style="font-size:14px;color:#ffe9b0;max-width:420px;line-height:1.55">💡 ${currentQuestion.expl}</p>`
+    : '';
   overlay.innerHTML = `
     <div class="game-over-title">GAME OVER</div>
     <div class="score-display">${I18N.t('hudScore')} ${score}<br>${I18N.t('best')} ${highScore}</div>
-    <p style="font-size:11px;color:#888">💡 ${reason}</p>
-    <button class="btn" id="startBtn" data-i18n="replay">REJOUER</button>
+    <p style="font-size:11px;color:#888">${reason}</p>
+    ${expl}
+    <button class="btn" id="startBtn">${I18N.t('replay')}</button>
   `;
   document.getElementById('startBtn').addEventListener('click', startGame);
 }

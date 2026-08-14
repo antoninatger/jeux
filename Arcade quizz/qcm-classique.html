@@ -157,14 +157,18 @@ body::before{
 .feedback{
   margin-top:12px;padding:12px 14px;border-radius:8px;
   font-size:.9375rem;line-height:1.55;
-  opacity:0;max-height:0;overflow:hidden;
-  transition:opacity .25s ease, max-height .25s ease, padding .25s ease;
+  opacity:0;overflow:hidden;
+  /* Chantier 04 : plus de max-height fixe — grid 0fr→1fr s'anime sans plafond,
+     les explications longues ne sont plus coupées en silence. */
+  display:grid;grid-template-rows:0fr;
+  transition:opacity .25s ease, grid-template-rows .25s ease, padding .25s ease;
   padding-top:0;padding-bottom:0;
 }
+.feedback > *{min-height:0}
 .feedback.show{
-  display:flex;gap:8px;align-items:flex-start;
-  opacity:1;max-height:120px;padding-top:12px;padding-bottom:12px;
+  opacity:1;grid-template-rows:1fr;padding-top:12px;padding-bottom:12px;
 }
+.feedback.show .fb-inner{display:flex;gap:8px;align-items:flex-start}
 .feedback.ok{background:rgba(105,240,174,.08);border-left:3px solid var(--green);color:var(--green)}
 .feedback.ko{background:rgba(255,82,82,.08);border-left:3px solid var(--red);color:#ffaabb}
 
@@ -388,12 +392,12 @@ function pick(i, correct, expl, cat) {
     score++;
     if (cat) catStats[cat].c++;
     fb.className = 'feedback ok show';
-    fb.innerHTML = '✅ ' + (expl || I18N.t('goodAnswer'));
+    fb.innerHTML = '<div class="fb-inner">✅ ' + (expl || I18N.t('goodAnswer')) + '</div>';
   } else {
     btns[i].classList.add('wrong');
     btns[correct].classList.add('correct');
     fb.className = 'feedback ko show';
-    fb.innerHTML = '❌ ' + (expl || I18N.t('badAnswer'));
+    fb.innerHTML = '<div class="fb-inner">❌ ' + (expl || I18N.t('badAnswer')) + '</div>';
   }
 
   document.getElementById('score-live').textContent = score;

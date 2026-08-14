@@ -168,6 +168,13 @@
   .feedback-box.good { background: rgba(105,240,174,0.1); border-color: var(--green); color: var(--green); }
   .feedback-box.bad  { background: rgba(255,82,82,0.1);   border-color: var(--red);   color: var(--red);   }
   .feedback-box.idle { background: rgba(79,195,247,0.05); border-color: rgba(79,195,247,0.2); color: var(--dim); }
+  /* Chantier 04 : le panneau accueille désormais l'explication de la question,
+     qui est plus longue qu'un simple « ✅ / ❌ » et doit rester lisible. */
+  .feedback-box.with-expl { text-align: left; align-items: flex-start; }
+  .feedback-box .fb-expl {
+    display: block; margin-top: 6px; font-weight: 600; font-size: 13px;
+    line-height: 1.5; color: #d8d8f0;
+  }
 
   /* Overlay */
   .overlay {
@@ -357,6 +364,7 @@ let currentQuestion = null;
 let feedbackTimeout = null;
 let highScore = 0;
 let revealed = false; // true = show green/red after wrong answer
+let resolving = false; // true pendant l'affichage de l'explication : plus rien n'est mangeable
 let revealTimeout = null;
 
 const ITEM_COUNT_CORRECT = 1;
@@ -442,6 +450,8 @@ function init() {
   correctCount = 0;
   particles = [];
   revealed = false;
+  resolving = false;
+  clearTimeout(revealTimeout);
   currentQuestion = pickQuestion();
   spawnItems();
   updateHUD();
@@ -497,7 +507,10 @@ function tick() {
   snake.unshift(head);
 
   // Check item collision
-  const hitIdx = items.findIndex(it => it.x === head.x && it.y === head.y);
+  // Chantier 04 : `resolving` verrouille la question pendant qu'on affiche son
+  // explication — sans ça, allonger le délai de lecture laisserait le serpent
+  // manger une seconde réponse de la question déjà résolue.
+  const hitIdx = resolving ? -1 : items.findIndex(it => it.x === head.x && it.y === head.y);
   if (hitIdx !== -1) {
     const item = items[hitIdx];
     if (item.good) {
@@ -506,34 +519,36 @@ function tick() {
       if (score > highScore) highScore = score;
       correctCount++;
       spawnParticles(head.x, head.y, '#69f0ae');
-      setFeedback('good', I18N.t('goodA') + (10*level) + I18N.t('goodB'));
+      setFeedback('good', I18N.t('goodA') + (10*level) + I18N.t('goodB'), currentQuestion.expl);
       if (correctCount % 5 === 0) {
         level++;
         clearInterval(gameLoop);
         gameLoop = setInterval(tick, getSpeed());
       }
       revealed = true;
+      resolving = true;
       clearTimeout(revealTimeout);
       revealTimeout = setTimeout(() => {
-        revealed = false;
+        revealed = false; resolving = false;
         currentQuestion = pickQuestion();
         spawnItems();
-      }, 1200);
+      }, currentQuestion.expl ? 4500 : 1200);
     } else {
       // Wrong!
       lives--;
       spawnParticles(head.x, head.y, '#ff5252');
-      setFeedback('bad', I18N.t('wrongFb'));
+      setFeedback('bad', I18N.t('wrongFb'), currentQuestion.expl);
       snake.pop();
       // Reveal all items (green/red)
       revealed = true;
+      resolving = true;
       clearTimeout(revealTimeout);
       if (lives <= 0) return die(I18N.t('noLives'));
       revealTimeout = setTimeout(() => {
-        revealed = false;
+        revealed = false; resolving = false;
         currentQuestion = pickQuestion();
         spawnItems();
-      }, 2000);
+      }, currentQuestion.expl ? 5000 : 2000);
     }
     updateHUD();
   } else {
@@ -543,15 +558,23 @@ function tick() {
   draw();
 }
 
-function setFeedback(type, msg) {
+// Chantier 04 : `expl` existait dans les questions mais n'était jamais affiché.
+// On le montre à l'erreur comme à la réussite, et on laisse le temps de le lire.
+function setFeedback(type, msg, expl) {
   clearTimeout(feedbackTimeout);
-  feedbackEl.className = 'feedback-box ' + type;
+  feedbackEl.className = 'feedback-box ' + type + (expl ? ' with-expl' : '');
   feedbackEl.textContent = msg;
+  if (expl) {
+    const e = document.createElement('span');
+    e.className = 'fb-expl';
+    e.textContent = '💡 ' + expl;
+    feedbackEl.appendChild(e);
+  }
   if (type !== 'idle') {
     feedbackTimeout = setTimeout(() => {
       feedbackEl.className = 'feedback-box idle';
       feedbackEl.textContent = I18N.t('eatOnly');
-    }, 2000);
+    }, expl ? 4500 : 2000);
   }
 }
 
@@ -572,10 +595,16 @@ function die(reason) {
   running = false;
   draw();
   overlay.classList.remove('hidden');
+  // Chantier 04 : la question en cours reste sans réponse — on affiche son
+  // explication plutôt que de laisser le joueur sur son erreur.
+  const expl = (currentQuestion && currentQuestion.expl)
+    ? `<p style="font-size:14px;color:#ffe9b0;max-width:420px;line-height:1.55">💡 ${currentQuestion.expl}</p>`
+    : '';
   overlay.innerHTML = `
     <div class="game-over-title">GAME OVER</div>
     <div class="score-display">${I18N.t('hudScore')} ${score}<br>${I18N.t('best')} ${highScore}</div>
-    <p style="font-size:14px;color:#b9b9e0">💡 ${reason}</p>
+    <p style="font-size:14px;color:#b9b9e0">${reason}</p>
+    ${expl}
     <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
       <button class="btn" id="startBtn">${I18N.t('replay')}</button>
       <button class="btn-menu" onclick="location.href='index.html'">${I18N.t('menuQ')}</button>
