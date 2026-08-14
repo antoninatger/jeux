@@ -98,11 +98,14 @@ svg {
 
 /* a11y collection */
 :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
+.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
 <body>
 
+<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
 <p id="question">
   <strong data-i18n="q">Les deux barres rouges ont-elles la même longueur ?</strong><br>
   <span style="font-size:13px;color:#999;" data-i18n="qSub">Glissez les barres pour les comparer côte à côte.</span>
@@ -186,6 +189,7 @@ svg {
 <script>
 I18N.register({
   fr: {
+    back: "← Retour aux illusions",
     pageTitle: "Illusion de Ponzo",
     q: "Les deux barres rouges ont-elles la même longueur ?",
     qSub: "Glissez les barres pour les comparer côte à côte.",
@@ -198,6 +202,7 @@ I18N.register({
     p4: `Ce biais est universel mais son intensité varie selon l'exposition culturelle à la perspective linéaire (architecture, photographie…). Des études ont montré que des personnes vivant dans des environnements sans lignes droites ni perspectives artificielles sont moins sensibles à cette illusion — preuve que notre perception est en partie <span class="highlight">apprise, pas innée</span>.`
   },
   en: {
+    back: "← Back to illusions",
     pageTitle: "Ponzo Illusion",
     q: "Are the two red bars the same length?",
     qSub: "Drag the bars to compare them side by side.",

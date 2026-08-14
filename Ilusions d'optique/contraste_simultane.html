@@ -99,11 +99,14 @@ svg {
 
 /* a11y collection */
 :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
+.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
 <body>
 
+<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
 <p id="question">
   <strong data-i18n="q">Les deux petits carrés sont-ils du même gris ?</strong><br>
   <span style="font-size:13px;color:#999;" data-i18n="qSub">Glissez les carrés gris pour les comparer côte à côte, ou isolez-les.</span>
@@ -177,6 +180,7 @@ svg {
 <script>
 I18N.register({
   fr: {
+    back: "← Retour aux illusions",
     pageTitle: "Contraste simultané de luminosité",
     q: "Les deux petits carrés sont-ils du même gris ?",
     qSub: "Glissez les carrés gris pour les comparer côte à côte, ou isolez-les.",
@@ -189,6 +193,7 @@ I18N.register({
     p4: `Ce mécanisme est fondamental pour la survie : il permet de distinguer des objets dans des conditions d'éclairage très variables. Mais il nous rend aussi systématiquement trompés par les contextes de luminosité. Les peintres (Rubens, Rembrandt) l'exploitaient intuitivement pour faire "vibrer" leurs couleurs. Aujourd'hui, il guide la conception des interfaces numériques et des éclairages scéniques.`
   },
   en: {
+    back: "← Back to illusions",
     pageTitle: "Simultaneous Brightness Contrast",
     q: "Are the two small squares the same grey?",
     qSub: "Drag the grey squares to compare them side by side, or isolate them.",

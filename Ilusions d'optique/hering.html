@@ -99,11 +99,14 @@ svg {
 
 /* a11y collection */
 :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
+.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
 <body>
 
+<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
 <p id="question">
   <strong data-i18n="q">Les deux lignes rouges sont-elles droites et parallèles ?</strong><br>
   <span style="font-size:13px;color:#999;" data-i18n="qSub">Glissez les lignes rouges horizontalement, masquez les rayons pour vérifier.</span>
@@ -170,6 +173,7 @@ svg {
 <script>
 I18N.register({
   fr: {
+    back: "← Retour aux illusions",
     pageTitle: "Illusion de Hering",
     q: "Les deux lignes rouges sont-elles droites et parallèles ?",
     qSub: "Glissez les lignes rouges horizontalement, masquez les rayons pour vérifier.",
@@ -182,6 +186,7 @@ I18N.register({
     p4: `Il existe une version miroir de cette illusion, dite de <strong>Wundt</strong>, où les lignes rayonnent de l'extérieur vers l'intérieur et font paraître des droites courbées vers l'intérieur. Les deux illusions démontrent que notre cerveau ne perçoit pas les lignes isolément : il les <span class="highlight">réinterprète en permanence dans leur contexte géométrique global</span>.`
   },
   en: {
+    back: "← Back to illusions",
     pageTitle: "Hering Illusion",
     q: "Are the two red lines straight and parallel?",
     qSub: "Drag the red lines horizontally, hide the rays to check.",

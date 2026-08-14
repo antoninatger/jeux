@@ -118,11 +118,14 @@ svg {
 
 /* a11y collection */
 :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
+.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
 <body>
 
+<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
 <!-- ── Question ── -->
 <p id="question">
   <strong data-i18n="q">À votre avis, les deux cercles du centre sont-ils de la même taille ?</strong><br>
@@ -208,6 +211,7 @@ svg {
 <script>
 I18N.register({
   fr: {
+    back: "← Retour aux illusions",
     pageTitle: "Illusion d'Ebbinghaus",
     q: "À votre avis, les deux cercles du centre sont-ils de la même taille ?",
     qSub: "Amusez-vous avec la figure pour le trouver.",
@@ -221,6 +225,7 @@ I18N.register({
     p5: `Ce phénomène s'appelle l'<strong>illusion d'Ebbinghaus</strong> (ou cercles de Titchener). Il a été décrit dès la fin du XIX<sup>e</sup> siècle par le psychologue allemand Hermann Ebbinghaus. Elle illustre une vérité fondamentale de la perception : <span class="highlight">nos yeux ne mesurent pas, ils comparent</span>. C'est le contexte qui dicte le verdict — pas la réalité.`
   },
   en: {
+    back: "← Back to illusions",
     pageTitle: "Ebbinghaus Illusion",
     q: "Do you think the two central circles are the same size?",
     qSub: "Play with the figure to find out.",

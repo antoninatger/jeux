@@ -30,3 +30,6 @@ desktop.ini
 
 # === Boutons perso Windows (outils locaux, ne pas publier) ===
 *.bat
+
+# === Brouillons et notes internes (ne pas publier) ===
+/_prive/

@@ -264,7 +264,7 @@
 
 <footer>
   <p><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
-  <p class="mono" data-i18n="footerTag">Perceptio — 10 biais recensés à ce jour, sources scientifiques vérifiées une à une.</p>
+  <p class="mono" data-i18n="footerTag">Perceptio — {n} biais recensés à ce jour, sources scientifiques vérifiées une à une.</p>
 </footer>
 
 <script src="../i18n.js"></script>
@@ -275,18 +275,27 @@ I18N.register({
     tabExplore: "Explorer", tabCategories: "Catégories", tabQuiz: "Quiz",
     tabIdentification: "Trouve le biais", tabAbout: "À propos",
     randomBtn: "🎲 Biais aléatoire", by: "par",
-    footerTag: "Perceptio — 10 biais recensés à ce jour, sources scientifiques vérifiées une à une."
+    footerTag: "Perceptio — {n} biais recensés à ce jour, sources scientifiques vérifiées une à une."
   },
   en: {
     back: "← Back to games", nav: "Main navigation",
     tabExplore: "Explore", tabCategories: "Categories", tabQuiz: "Quiz",
     tabIdentification: "Spot the bias", tabAbout: "About",
     randomBtn: "🎲 Random bias", by: "by",
-    footerTag: "Perceptio — 10 biases catalogued so far, scientific sources verified one by one."
+    footerTag: "Perceptio — {n} biases catalogued so far, scientific sources verified one by one."
   }
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
+</script>
+<script>
+/* Compteur de contenu : le pied de page reflete le nombre reel d'entrees. */
+window.addEventListener('load', function () {
+  var el = document.querySelector('[data-i18n="footerTag"]');
+  if (!el) return;
+  var n = (typeof BIAIS !== 'undefined' && BIAIS.length) || 0;
+  if (n) el.textContent = el.textContent.replace('{n}', n);
+});
 </script>
 </body>
 </html>

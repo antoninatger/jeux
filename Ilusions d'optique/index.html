@@ -28,7 +28,7 @@
 <body>
   <header>
     <h1 data-i18n="h1">👁️ Illusions d'optique</h1>
-    <p data-i18n="sub">Onze illusions classiques à explorer</p>
+    <p data-i18n="sub">{n} illusions classiques à explorer</p>
     <p class="cred-atger" style="margin:6px 0 0;font-size:.82rem;font-weight:600;color:var(--doux);">par <a href="https://antoninatger.com" target="_blank" style="color:var(--acc);text-decoration:none;">Antonin Atger</a></p>
     <a class="back" href="../index.html" data-i18n="back">← Retour à tous les jeux</a>
   </header>
@@ -49,7 +49,7 @@
   I18N.register({
     fr: {
       pageTitle: "Illusions d'optique", h1: "👁️ Illusions d'optique",
-      sub: "Onze illusions classiques à explorer", back: "← Retour à tous les jeux",
+      sub: "{n} illusions classiques à explorer", back: "← Retour à tous les jeux",
       nContraste: "Contraste simultané", nAdelson: "Échiquier d'Adelson",
       d1: "Les flèches trompeuses", d2: "La perspective qui ment", d3: "Le cercle central",
       d4: "Taille et entourage", d5: "Les lignes courbées", d6: "Les parallèles penchées",
@@ -57,7 +57,7 @@
     },
     en: {
       pageTitle: "Optical Illusions", h1: "👁️ Optical Illusions",
-      sub: "Eleven classic illusions to explore", back: "← Back to all games",
+      sub: "{n} classic illusions to explore", back: "← Back to all games",
       nContraste: "Simultaneous Contrast", nAdelson: "Adelson's Checkerboard",
       d1: "The deceptive arrows", d2: "The lying perspective", d3: "The central circle",
       d4: "Size and surroundings", d5: "The bent lines", d6: "The leaning parallels",
@@ -65,5 +65,13 @@
     }
   });
   </script>
+<script>
+/* Compteur de contenu : le sous-titre reflete le nombre reel d'illusions. */
+window.addEventListener('load', function () {
+  var el = document.querySelector('[data-i18n="sub"]');
+  var n = document.querySelectorAll('.grid a.card').length;
+  if (el && n) el.textContent = el.textContent.replace('{n}', n);
+});
+</script>
 </body>
 </html>

@@ -73,7 +73,7 @@
     b.style.cssText =
       'position:fixed;top:12px;right:12px;z-index:99999;' +
       "font:700 .8rem/1 'Nunito',system-ui,sans-serif;" +
-      'display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:50px;cursor:pointer;' +
+      'display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:0 15px;border-radius:50px;cursor:pointer;' +
       'background:rgba(15,20,30,.72);color:#fff;border:1px solid rgba(255,255,255,.28);' +
       'backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:transform .15s;';
     b.addEventListener('mouseenter', function () { b.style.transform = 'scale(1.06)'; });
@@ -86,6 +86,28 @@
       location.search = p.toString();
     });
     document.body.appendChild(b);
+    placeToggle(b);
+    window.addEventListener('resize', function () { placeToggle(b); });
+    window.addEventListener('load', function () { placeToggle(b); });
+  }
+
+  /* i18n-clearance : sur petit ecran, le bouton flottant et la pastille de retour
+     recouvraient le titre. On reserve la hauteur necessaire en tete de page.
+     Les pages sans <header> (echiquier, Terre ronde/plate, Emprise, Mine,
+     illusions) gardent leur mise en page : elles sont traitees au chantier 03. */
+  function placeToggle(b) {
+    try {
+      if (!window.matchMedia || !window.matchMedia('(max-width:680px)').matches) {
+        b.style.top = '12px'; b.style.bottom = 'auto';
+        return;
+      }
+      b.style.top = '12px'; b.style.bottom = 'auto';
+      var hd = document.querySelector('body > header') || document.querySelector('header');
+      if (hd && hd !== document.body) {
+        var cur = parseFloat(getComputedStyle(hd).paddingTop) || 0;
+        if (cur < 56) hd.style.paddingTop = '56px';
+      }
+    } catch (e) {}
   }
 
   window.I18N = {
