@@ -27,8 +27,8 @@
 
 ```
 01 Correctifs express      ✅ FAIT (commit 65f8b5d)
-04 La pédagogie d'abord    ← COMMENCER ICI      ≈ 3 j
-05 Design system            puis                ≈ 12 j
+04 La pédagogie d'abord    ✅ FAIT (commit f0fcb93)
+05 Design system            ← COMMENCER ICI     ≈ 12 j
 02 Socle d'accessibilité    puis                ≈ 6 j
 03 Tactile & mobile         puis                ≈ 8 j
 06 Industrialisation        puis                ≈ 10 j
@@ -162,10 +162,31 @@ Contenu du commit `65f8b5d` :
 
 ---
 
-## 6. Chantier 04 — La pédagogie d'abord ≈ 3 j
+## 6. Chantier 04 — La pédagogie d'abord — ✅ FAIT (commit `f0fcb93`)
 
 **L'enjeu :** dans 5 jeux d'arcade sur 6, l'élève se trompe et n'apprend rien. C'est le
 moment où il est le plus disponible pour apprendre, et il est perdu.
+
+> **Appliqué le 14 août 2026.** Les neuf points ci-dessous sont traités. Trois écarts
+> par rapport au brief initial, à connaître :
+>
+> - **§4.4 — `fake-blaster` et les deux Snake mélangeaient déjà correctement.**
+>   `fake-blaster` mélange `opts` dans `spawnBubbles()`, les Snake placent les réponses
+>   à des positions aléatoires. Seuls **brick-breaker** et **fakenews_defender** avaient
+>   besoin du correctif.
+> - **§4.9 — le calcul « 72 % de réussite » était faux.** `radarnaque/app.js` (l. 97-104)
+>   tire déjà un paquet **équilibré** (7 arnaques / 7 fiables sur 14). Répondre
+>   « arnaque » systématiquement donnait donc 50 %, pas 72 %. Le rééquilibrage reste
+>   utile pour une autre raison : avec seulement 9 fiables, les **mêmes 7 revenaient à
+>   chaque partie** pendant que les arnaques tournaient parmi 23.
+> - **§4.5 — arbitrage rendu :** la pénalité de la ligne 617 est **supprimée**, et la
+>   consigne réécrite pour dire la vraie règle (ne pas laisser passer une *fausse*
+>   réponse).
+>
+> **Hors brief, corrigé au passage :** `Arcade quizz/questions-en.js` contenait des
+> explications de traduction automatique inutilisables (« Fake news, it is A information
+> false! ») et des options restées à moitié en français. Elles ont été réécrites — sans
+> quoi les correctifs ci-dessus les auraient rendues visibles partout en anglais.
 
 ### 4.1 — `Arcade quizz/fake-blaster.html` : aucune explication, jamais
 
@@ -577,15 +598,17 @@ d'un enseignant qui découvre la collection.
 
 ### 12.1 — Les 9 problèmes bloquants, par ordre de gravité
 
-1. `fake-blaster` et les deux `snake` : aucune explication pédagogique, jamais (**04**)
+1. ~~`fake-blaster` et les deux `snake` : aucune explication pédagogique, jamais~~ ✅ (**04**)
 2. `snake-fakenews.html` racine : aucune media query, déborde de tout téléphone (**03**)
 3. `mine.html` : `cursor:none` + textes à 4,5 px, sur un jeu pour le primaire (**03**, **05**)
-4. `fakenews_defender` : la règle affichée contredit le code (**04**)
+4. ~~`fakenews_defender` : la règle affichée contredit le code~~ ✅ (**04**)
 5. `graphiques-trompeurs` : injouable sans la vue, le graphique est la question (**02**)
 6. `fakemetre` : le curseur central inopérable au clavier (**02**)
 7. `echecs` : mode Exercice injouable sans souris (**02**, **03**)
 8. `adelson.html` : ni titre, ni consigne, ni explication (**05**)
-9. `radar-desinfo` : la partie coupe avant de montrer le contenu restant (**04**)
+9. ~~`radar-desinfo` : la partie coupe avant de montrer le contenu restant~~ ✅ (**04**)
+
+Restent donc **6 bloquants sur 9**, tous couverts par les chantiers 02, 03 et 05.
 
 ### 12.2 — Ce qui est déjà bon — ne pas casser
 
