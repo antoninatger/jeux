@@ -117,11 +117,11 @@ vérifié que les polices ont bien chargé. (C'est traité au chantier 05.)
 
 | Sujet | Décision |
 |---|---|
-| **Catégorisation** | **Quatre familles par nature** : **Jeux**, **Illusions & démonstrations**, **Sensibilisation**, **Interventions**. Plus un **marqueur transversal « utilisable en conférence »** posable sur n'importe quelle carte — une illusion d'optique reste dans sa famille mais ressort quand on filtre « pour animer une intervention ». Aucun jeu n'est dupliqué dans deux familles. Détail de l'affectation au §11.1. |
+| **Catégorisation** | **Quatre familles par nature** : **Jeux**, **Illusions & démonstrations**, **Sensibilisation** (Emprise uniquement), **Interventions**. Plus un **marqueur transversal « utilisable en conférence »** posable sur n'importe quelle carte — une illusion d'optique reste dans sa famille mais ressort quand on filtre « pour animer une intervention ». Aucun jeu n'est dupliqué dans deux familles. Affectation complète et arrêtée au §11.1. |
 | **Portée du design system** | **Structure commune, identités préservées.** Le socle impose l'en-tête, le focus, les espacements, l'échelle typographique, les cibles 44 px et l'accessibilité. **Chaque jeu garde sa palette et ses polices** : l'arcade reste néon, Perceptio reste sobre en sérif, Radar'naque reste clair, Emprise reste doux. On ne converge pas la direction artistique. Voir §7. |
 | **Fins de ligne** | ✅ Réglé : `.gitattributes` ajouté et vérifié (commit `dab242e`). Voir §1. |
 | **Arborescence** | **Rien ne bouge sur le disque.** La catégorisation est purement à l'écran (portail). Les URL existantes ont été partagées à des enseignants, des favoris et des QR codes pointent dessus. |
-| **`Emprise/texto total.html`** | **Publié**, dans la nouvelle famille **Sensibilisation**. Ne pas le déplacer dans `_prive/`. |
+| **`Emprise/texto total.html`** | **Publié**, dans la famille **Sensibilisation**, aux côtés d'Emprise. Ne pas le déplacer dans `_prive/`. |
 | **Chantier 08** | Écarté. |
 | **Périmètre** | Le dossier `Obso/` et les supports `.pptx`/`.pdf`/`Collège Lycée/` sont hors sujet. |
 
@@ -597,29 +597,31 @@ C'est aussi la seule page de l'arcade non traduite.
 
 **Quatre** sections. Un jeu n'apparaît que dans **une** section.
 
-**🎮 Jeux** — ce à quoi on joue, avec un score et une partie qui se termine
-> FakeMètre · Radar de la désinfo · Més·Dés·Mal · Répare la Une · Arène rhétorique ·
-> Le Grand Oral · Chasse aux biais · Arcade quizz (hub) · Planète Connaissance ·
-> Mine la planète · Snake · Échecs · Biais de confirmation CM1
+**🎮 Jeux** — ce à quoi on joue
+> FakeMètre · **Radar'naque** · Radar de la désinfo · Més·Dés·Mal · Répare la Une ·
+> Arène rhétorique · Le Grand Oral · Chasse aux biais · **RÉSO · Alberte** ·
+> Arcade quizz (hub) · Planète Connaissance · Mine la planète · Snake · Échecs ·
+> Biais de confirmation CM1
 
 **👁️ Illusions & démonstrations** — ce qu'on montre, sans gagner ni perdre
 > Les 10 illusions d'optique (via leur hub) · Terre ronde ou plate ? ·
 > Graphiques trompeurs · Notes Google
 
-**🫂 Sensibilisation** — sujets sensibles, sans score, où l'on se reconnaît plutôt qu'on ne joue
-> Emprise · `Emprise/texto total.html` · RÉSO · Alberte · Radar'naque
+**🫂 Sensibilisation** — la seule famille où l'on ne joue pas
+> Emprise · `Emprise/texto total.html`
 
 **🎤 Interventions** — ce qui sert à animer devant un public
 > Recrutement de Mehdi · Lignes numérotées · Éditeur de questions ·
 > Exploration (parcours + avatar)
 
-> **Note pour Claude Code :** la famille « Sensibilisation » a été créée par Antonin le
-> 14 août ; l'affectation ci-dessus est une proposition fondée sur la nature des
-> contenus (violences dans le couple, protection des données d'une résistante, arnaques
-> visant souvent des personnes vulnérables — trois sujets où l'on ne « marque pas de
-> points »). **La faire confirmer avant d'implémenter le portail.** Le cas le plus
-> discutable est Radar'naque, qui a un score et une fin de partie et pourrait donc
-> rester dans « Jeux ».
+> **Affectation arrêtée par Antonin le 14 août.** « Sensibilisation » ne contient
+> **qu'Emprise** (le jeu et sa conversation `texto total.html`). Radar'naque et
+> RÉSO · Alberte sont des **jeux** et restent dans la famille « Jeux » — j'avais proposé
+> de les basculer, c'était à tort.
+>
+> La famille peut donc n'afficher qu'une ou deux cartes au lancement : c'est assumé, elle
+> existe parce que le registre est différent, pas parce qu'il y a du volume à ranger.
+> Prévoir une mise en page qui reste digne avec une seule carte.
 
 **Marqueur transversal :** un badge « 🎤 utilisable en conférence » posable sur
 n'importe quelle carte des quatre sections, avec un filtre correspondant. Une illusion
