@@ -429,6 +429,55 @@ applications. Après, il en coûte une.
 > `--bg`, `--txt`, `--txt-secondaire` (≥ 4,5:1 sur `--bg`), `--acc`,
 > `--font-texte`, `--font-titre` — et retirer le `<link>` Google Fonts.
 
+> ### ✅ Relecture indépendante de la tranche 1 — conforme, deux réserves
+>
+> Contrôlé au navigateur en 1440 px et 390 px, par test de collision réel
+> (`elementFromPoint` sur trois points du `<h1>`), pas à l'œil.
+>
+> **Ce qui est confirmé :**
+>
+> - **Le chevauchement est réellement réglé** sur `echecs.html` et
+>   `terre_ronde_plate.html` — les deux pages où il était avéré. Titre non
+>   recouvert aux deux largeurs, aucun débordement horizontal. L'en-tête
+>   d'échecs est net et lisible là où le titre était écrasé auparavant, et le
+>   voile en dégradé fait bien son travail sur le canvas de « Terre ».
+> - **Zéro appel à `fonts.googleapis.com`** sur les 4 pages migrées ; les
+>   `.woff2` locaux répondent en 200.
+> - **Aucune régression sur les pages non migrées** : `chasse-aux-biais`,
+>   `Biais cognitifs`, `radarnaque` et `ponzo` contrôlées — pas de
+>   chevauchement, pas de débordement, comportement inchangé.
+>
+> **Réserve 1 — l'échelle typographique n'est adoptée nulle part.**
+> `collection.css` déclare `--fs-100: 0.8rem` comme « plancher », mais aucune
+> page migrée ne consomme les jetons : `echecs.html` **0** occurrence de
+> `--fs-`, `mine.html` **1**, `terre_ronde_plate.html` **0**,
+> `Emprise/index.html` **0**, `echecs.css` **0**, `Emprise/style.css` **0**.
+> Conséquence mesurée sur `mine.html`, la page que le §5.1 cite nommément :
+> **11 éléments sont encore sous 12,8 px**, dont
+>
+> | Taille rendue | Classe | Texte |
+> |---|---|---|
+> | **4,5 px** | `.slot-n` | `0` |
+> | **5,1 px** | `.click-hint` | ⛏ CLIQUE POUR MINER |
+> | **5,1 px** | `.sbtn` | 📋 VOIR LES MOTS AJOUTÉS |
+> | **5,8 px** | `.lt` | EXTRACTION FACILE / DIFFICILE |
+> | **8,8 px** | `.stit` | MINE LA PLANÈTE |
+>
+> `mine.html` garde `.lt{font-size:.36rem}` en dur. Le socle **offre** l'échelle,
+> il ne l'**impose** pas — c'est cohérent avec « identités préservées », mais il
+> faut alors une étape explicite de reprise des tailles à chaque migration,
+> sinon le plancher ne servira jamais. **À traiter :** reprendre les tailles de
+> `mine.html` sur les jetons (c'est un jeu destiné au primaire), et ajouter
+> l'étape à la recette de migration ci-dessus.
+>
+> **Réserve 2 — Emprise a encore un chevauchement en 390 px.** Ce n'est plus
+> celui du titre : c'est le lien **« Besoin d'aide ? »** (fixe, en haut à
+> gauche, **12 px de haut**) qui recouvre le bandeau rouge « FICTION —
+> conversation fictive… », lequel se retrouve tronqué. Sur un jeu qui traite
+> des violences dans le couple, c'est précisément le lien qui ne doit ni gêner
+> ni être gêné. Il est aussi la cible tactile la plus petite de la page
+> (§9.4 le signalait déjà comme prioritaire).
+
 ### 5.1 — Créer `collection.css` et `collection.js` à la racine
 
 `collection.css` doit fournir, en variables CSS surchargeables par jeu :
