@@ -1,3 +1,19 @@
+/* Jetons du socle (chantier 05) : la palette du jeu, exprimée dans les rôles
+   que collection.css attend. --txt-secondaire est le rôle contraint : #8a8a8a
+   donne 4,6:1 sur le fond des panneaux, contre 2,8:1 pour l'ancien #666
+   relevé au §8.4 du brief. */
+:root {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --bordure: #0f3460;
+  --txt: #e0e0e0;
+  --txt-secondaire: #8a8a8a;
+  --acc: #4a90d9;
+  --acc-txt: #0a1020;
+  --font-texte: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --font-titre: var(--font-texte);
+}
+
 /* ===== RESET & BASE ===== */
 *, *::before, *::after {
   box-sizing: border-box;

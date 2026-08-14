@@ -4,8 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">La Terre ronde ou plate ?</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="collection.css">
 <style>
+  /* Identité de la page, surchargée sur le socle (chantier 05).
+     Le socle impose la structure et le contraste ; la palette et la typo
+     restent celles du jeu. */
+  :root {
+    --bg:             #0a0e1a;
+    --surface:        #161d31;
+    --txt:            #ffffff;
+    --txt-secondaire: #aab8d4;   /* 8,2:1 sur --bg */
+    --acc:            #4361ee;
+    --acc-txt:        #ffffff;
+    --font-texte:     'Baloo 2', system-ui, sans-serif;
+    --font-titre:     'Baloo 2', system-ui, sans-serif;
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
@@ -224,7 +239,7 @@
   <div id="space-label" data-i18n-html="spaceLabel">Recul<br>spatial</div>
 </div>
 
-<div id="title" data-i18n="mainTitle">🌍 La Terre : ronde ou plate ?</div>
+<div id="title" data-i18n="mainTitle" data-col-titre-source>🌍 La Terre : ronde ou plate ?</div>
 
 <div id="info-box">
   <strong id="info-title">👣 Échelle humaine</strong>
@@ -252,6 +267,7 @@
 </div>
 
 <script src="i18n.js"></script>
+<script src="collection.js"></script>
 <script>
 I18N.register({
   fr: {

@@ -64,6 +64,7 @@
   }
 
   function buildToggle() {
+    if (collectionPresente()) return;   // l'en-tete unifie fournit la bascule
     if (document.querySelector('.i18n-toggle')) return;
     var b = document.createElement('button');
     b.className = 'i18n-toggle';
@@ -94,8 +95,19 @@
   /* i18n-clearance : sur petit ecran, le bouton flottant et la pastille de retour
      recouvraient le titre. On reserve la hauteur necessaire en tete de page.
      Les pages sans <header> (echiquier, Terre ronde/plate, Emprise, Mine,
-     illusions) gardent leur mise en page : elles sont traitees au chantier 03. */
+     illusions) gardent leur mise en page : elles sont traitees au chantier 03.
+
+     Chantier 05 : cette rustine est remplacee par l'en-tete unifie de
+     collection.js, qui met retour / titre / langue dans une grille en flux
+     normal. Quand collection.js est charge, on ne construit plus le bouton
+     flottant du tout : sans ce garde-fou, placeToggle ajouterait 56 px de
+     padding en tete du nouvel en-tete (qui est lui aussi un <header>). */
+  function collectionPresente() {
+    return !!window.__COLLECTION_ENTETE__;
+  }
+
   function placeToggle(b) {
+    if (collectionPresente()) return;
     try {
       if (!window.matchMedia || !window.matchMedia('(max-width:680px)').matches) {
         b.style.top = '12px'; b.style.bottom = 'auto';
