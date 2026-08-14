@@ -6,22 +6,47 @@
 >
 > Rédigé le 14 août 2026 après un audit complet (lecture du HTML/CSS/JS des 34 jeux
 > + ouverture de 44 pages dans Chromium en 1440 px et 390 px avec relevé des erreurs
-> console). Le chantier 01 est déjà appliqué et commité.
+> console). **Chantiers 01 et 04 appliqués et commités.**
+>
+> Dernière mise à jour : 14 août, après relecture du chantier 04 et trois arbitrages
+> d'Antonin (fins de ligne, portée du design system, famille « Sensibilisation »).
 
 ---
 
 ## 1. Où en est le dépôt
 
 - **Branche de travail : `refonte-ux`** (créée depuis `main` au commit `9fe6f98`).
-- **Commit déjà en place : `65f8b5d`** — « Chantier 01 - correctifs express », 30 fichiers.
+- **Commits en place :** `65f8b5d` (chantier 01), `0df38b2` (ce brief), `f0fcb93` +
+  `afb08fe` (chantier 04).
 - `recrutement-de-mehdi/` et `fakemetre/` sont des **dépôts git indépendants**
   (ignorés par le `.gitignore` racine). Un commit y a déjà été fait :
   `recrutement-de-mehdi@d157de8` (zoom rétabli). Toute modification dans ces deux
   dossiers doit être commitée **dans leur propre dépôt**, pas dans celui de la racine.
 - Un dossier `_prive/` a été créé et ajouté au `.gitignore` : il reçoit les brouillons
   et fichiers non destinés à la publication.
-- À supprimer quand tu passes : `_to_delete/` (deux zips de transfert) et
-  `.git/_locks/` (verrous résiduels d'une session précédente). Sans risque.
+
+### ⚠️ À faire en tout premier : normaliser les fins de ligne
+
+**Arbitré par Antonin le 14 août.** Trois fichiers (`snake-fakenews.html`,
+`Emprise/texto total.html`, `graphiques-trompeurs/app.js`) apparaissent en permanence
+comme entièrement modifiés alors que leur contenu est identique : c'est un conflit
+CRLF/LF (vérifié — `git diff --ignore-all-space` est vide, 865 lignes ajoutées pour 865
+supprimées). Chaque passage d'outil relance le phénomène et rend les diffs illisibles,
+ce qui est incompatible avec la règle « ne pas reformater » et avec un chantier 05 qui
+va toucher une soixantaine de fichiers.
+
+Un fichier **`.gitattributes` a été préparé à la racine** (non commité). Première action
+de la session, avant toute autre chose :
+
+```bash
+git add .gitattributes
+git add --renormalize .
+git status            # doit ne montrer QUE des changements de fins de ligne
+git commit -m "Normalise les fins de ligne (.gitattributes, * text=auto)"
+```
+
+`--renormalize` ne touche que les fichiers **déjà suivis** : il n'ajoutera pas les
+binaires non suivis présents à la racine. Faire ce commit **seul**, sans rien d'autre.
 
 ### Ordre des chantiers décidé avec Antonin
 
@@ -83,9 +108,10 @@ vérifié que les polices ont bien chargé. (C'est traité au chantier 05.)
 ### Git — deux pièges
 
 1. Le dossier contient des fichiers pré-modifiés sans rapport avec la refonte
-   (`Arcade quizz/.agents/skills/impeccable/**`, `Emprise/texto total.html`,
-   `graphiques-trompeurs/app.js`, quelques binaires à la racine). **Ne jamais faire
-   `git add -A`** : commit toujours avec une liste de chemins explicite.
+   (`Arcade quizz/.agents/skills/impeccable/**`, quelques binaires à la racine).
+   **Ne jamais faire `git add -A`** : commit toujours avec une liste de chemins
+   explicite. Seule exception : le `git add --renormalize .` du commit de fins de
+   ligne décrit au §1, qui ne touche que les fichiers déjà suivis.
 2. Un commit par chantier, avec le détail en corps de message. Ne pas pousser sur
    `main` sans relecture d'Antonin.
 
@@ -97,8 +123,11 @@ vérifié que les polices ont bien chargé. (C'est traité au chantier 05.)
 
 | Sujet | Décision |
 |---|---|
-| **Catégorisation** | Trois familles par nature : **Jeux**, **Illusions & démonstrations**, **Interventions**. Plus un **marqueur transversal « utilisable en conférence »** posable sur n'importe quelle carte — une illusion d'optique reste dans sa famille mais ressort quand on filtre « pour animer une intervention ». Aucun jeu n'est dupliqué dans deux familles. |
+| **Catégorisation** | **Quatre familles par nature** : **Jeux**, **Illusions & démonstrations**, **Sensibilisation**, **Interventions**. Plus un **marqueur transversal « utilisable en conférence »** posable sur n'importe quelle carte — une illusion d'optique reste dans sa famille mais ressort quand on filtre « pour animer une intervention ». Aucun jeu n'est dupliqué dans deux familles. Détail de l'affectation au §11.1. |
+| **Portée du design system** | **Structure commune, identités préservées.** Le socle impose l'en-tête, le focus, les espacements, l'échelle typographique, les cibles 44 px et l'accessibilité. **Chaque jeu garde sa palette et ses polices** : l'arcade reste néon, Perceptio reste sobre en sérif, Radar'naque reste clair, Emprise reste doux. On ne converge pas la direction artistique. Voir §7. |
+| **Fins de ligne** | Normalisation immédiate via `.gitattributes` (`* text=auto`), en un commit isolé, **avant** le chantier 05. Voir §1. |
 | **Arborescence** | **Rien ne bouge sur le disque.** La catégorisation est purement à l'écran (portail). Les URL existantes ont été partagées à des enseignants, des favoris et des QR codes pointent dessus. |
+| **`Emprise/texto total.html`** | **Publié**, dans la nouvelle famille **Sensibilisation**. Ne pas le déplacer dans `_prive/`. |
 | **Chantier 08** | Écarté. |
 | **Périmètre** | Le dossier `Obso/` et les supports `.pptx`/`.pdf`/`Collège Lycée/` sont hors sujet. |
 
@@ -187,6 +216,21 @@ moment où il est le plus disponible pour apprendre, et il est perdu.
 > explications de traduction automatique inutilisables (« Fake news, it is A information
 > false! ») et des options restées à moitié en français. Elles ont été réécrites — sans
 > quoi les correctifs ci-dessus les auraient rendues visibles partout en anglais.
+
+> **Relecture indépendante du 14 août — conforme.** Contrôlé au navigateur, pas
+> seulement lu : `expl` bien transporté dans `fake-blaster` (0 → 39 occurrences) avec le
+> bandeau `#explbar` ; consigne de Defender réécrite et `lives--` de la ligne 617
+> supprimé ; QCM Classique testé avec une explication de 530 caractères →
+> `max-height: none`, `clientHeight === scrollHeight`, **plus de troncature**, et les 4
+> boutons passent bien en `disabled` ; Radar'naque à **46 scénarios, 23 arnaques /
+> 23 fiables**, avec **FR et EN strictement synchronisés** (mêmes 46 `id`, glossaire de
+> 17 entrées des deux côtés) ; accordéon « Les 8 techniques » présent dans Radar désinfo.
+> Les 10 jeux touchés ouverts en 1440 px et 390 px : **0 erreur console, 0 `pageerror`**.
+>
+> **Constaté au passage, pour le chantier 03 :** en 390 px, le titre de
+> **Brick Breaker**, **Defender** et **Whac-a-Quiz** est écrasé par le HUD SCORE/VIES et
+> leur bouton « JOUER » est recouvert par la barre du bas ; **Snake racine** a son
+> panneau latéral coupé. Ce ne sont pas des régressions du chantier 04 — c'est le §9.3.
 
 ### 4.1 — `Arcade quizz/fake-blaster.html` : aucune explication, jamais
 
@@ -314,6 +358,29 @@ supprimer d'arnaques existantes. Appliquer à `scenarios-en.js`.
 **L'enjeu :** c'est la cause racine. Chaque jeu réimplémente son en-tête, son bouton
 retour, son focus, sa typo. Tant que ce socle n'existe pas, chaque correctif coûte 34
 applications. Après, il en coûte une.
+
+> ### ⚖️ Périmètre arbitré par Antonin — lire avant de commencer
+>
+> **Structure commune, identités visuelles préservées.**
+>
+> Le socle prend en charge **ce qui est cassé partout** : en-tête (retour / titre /
+> langue), focus, `prefers-reduced-motion`, échelle typographique, espacements, cibles
+> 44 px, écrans d'intro et de fin, comportement responsive.
+>
+> Le socle **ne touche pas** à la palette ni aux polices de chaque jeu. L'arcade reste
+> néon sur fond noir, Perceptio reste sobre en sérif, Radar'naque reste clair et
+> rassurant, Emprise reste doux, Recrutement de Mehdi garde sa direction artistique en
+> `oklch`. Ce sont des choix délibérés et réussis, ils font partie de la valeur de la
+> collection.
+>
+> **En pratique :** `collection.css` définit des variables avec des valeurs *par défaut*,
+> et chaque jeu surcharge celles qui portent son identité (`--bg`, `--acc`, `--font-*`).
+> Il définit aussi les **rôles** (`--txt-secondaire` garanti ≥ 4,5:1 sur `--bg`) que le
+> jeu doit renseigner — c'est le socle qui impose la *contrainte*, pas la *couleur*.
+>
+> Le test de réussite : après le chantier, une capture de chaque jeu doit rester
+> reconnaissable, mais l'en-tête, le focus et les espacements doivent être identiques
+> partout.
 
 ### 5.1 — Créer `collection.css` et `collection.js` à la racine
 
@@ -534,24 +601,34 @@ C'est aussi la seule page de l'arcade non traduite.
 
 ### 11.1 — La taxonomie à implémenter dans `index.html`
 
-Trois sections. Un jeu n'apparaît que dans **une** section.
+**Quatre** sections. Un jeu n'apparaît que dans **une** section.
 
-**🎮 Jeux** — ce à quoi on joue
-> FakeMètre · Radar'naque · Radar de la désinfo · Més·Dés·Mal · Répare la Une ·
-> Arène rhétorique · Le Grand Oral · Chasse aux biais · Emprise · RÉSO · Alberte ·
-> Arcade quizz (hub) · Planète Connaissance · Mine la planète · Snake · Échecs ·
-> Biais de confirmation CM1
+**🎮 Jeux** — ce à quoi on joue, avec un score et une partie qui se termine
+> FakeMètre · Radar de la désinfo · Més·Dés·Mal · Répare la Une · Arène rhétorique ·
+> Le Grand Oral · Chasse aux biais · Arcade quizz (hub) · Planète Connaissance ·
+> Mine la planète · Snake · Échecs · Biais de confirmation CM1
 
-**👁️ Illusions & démonstrations** — ce qu'on montre
+**👁️ Illusions & démonstrations** — ce qu'on montre, sans gagner ni perdre
 > Les 10 illusions d'optique (via leur hub) · Terre ronde ou plate ? ·
 > Graphiques trompeurs · Notes Google
 
-**🎤 Interventions** — ce qui sert à animer
-> Recrutement de Mehdi · Lignes numérotées · Éditeur de questions · Exploration
-> (parcours + avatar) · éventuellement `Emprise/texto total.html`
+**🫂 Sensibilisation** — sujets sensibles, sans score, où l'on se reconnaît plutôt qu'on ne joue
+> Emprise · `Emprise/texto total.html` · RÉSO · Alberte · Radar'naque
+
+**🎤 Interventions** — ce qui sert à animer devant un public
+> Recrutement de Mehdi · Lignes numérotées · Éditeur de questions ·
+> Exploration (parcours + avatar)
+
+> **Note pour Claude Code :** la famille « Sensibilisation » a été créée par Antonin le
+> 14 août ; l'affectation ci-dessus est une proposition fondée sur la nature des
+> contenus (violences dans le couple, protection des données d'une résistante, arnaques
+> visant souvent des personnes vulnérables — trois sujets où l'on ne « marque pas de
+> points »). **La faire confirmer avant d'implémenter le portail.** Le cas le plus
+> discutable est Radar'naque, qui a un score et une fin de partie et pourrait donc
+> rester dans « Jeux ».
 
 **Marqueur transversal :** un badge « 🎤 utilisable en conférence » posable sur
-n'importe quelle carte des trois sections, avec un filtre correspondant. Une illusion
+n'importe quelle carte des quatre sections, avec un filtre correspondant. Une illusion
 d'optique reste dans sa famille mais ressort quand on filtre « pour animer ».
 
 **Filtres à prévoir** : famille · durée · niveau scolaire · support (clavier / tactile) ·

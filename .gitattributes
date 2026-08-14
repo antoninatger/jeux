@@ -1,0 +1,48 @@
+# Normalisation des fins de ligne.
+# Sans ce fichier, les allers-retours entre Windows et les outils en ligne
+# faisaient apparaitre des fichiers entierement modifies alors que leur contenu
+# etait identique (865 lignes ajoutees pour 865 supprimees). Les diffs
+# devenaient illisibles et la regle « ne pas reformater » impossible a tenir.
+#
+# `text=auto` : git stocke tout en LF dans l'historique et restitue les fins de
+# ligne natives dans le dossier de travail. Rien a changer dans les editeurs.
+
+* text=auto
+
+# Sources : LF explicite, ce sont des fichiers servis tels quels par GitHub Pages.
+*.html   text eol=lf
+*.htm    text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+*.svg    text eol=lf
+
+# Scripts Windows : CRLF obligatoire, sinon ils ne s'executent plus.
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+*.ps1    text eol=crlf
+
+# Binaires : ne jamais toucher.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.mp3    binary
+*.mp4    binary
+*.mov    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.eot    binary
+*.pdf    binary
+*.pptx   binary
+*.docx   binary
+*.xlsx   binary
+*.zip    binary
+*.epub   binary
