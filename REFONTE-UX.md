@@ -25,28 +25,23 @@
 - Un dossier `_prive/` a été créé et ajouté au `.gitignore` : il reçoit les brouillons
   et fichiers non destinés à la publication.
 
-### ⚠️ À faire en tout premier : normaliser les fins de ligne
+### Fins de ligne — traité, rien à faire
 
-**Arbitré par Antonin le 14 août.** Trois fichiers (`snake-fakenews.html`,
-`Emprise/texto total.html`, `graphiques-trompeurs/app.js`) apparaissent en permanence
-comme entièrement modifiés alors que leur contenu est identique : c'est un conflit
-CRLF/LF (vérifié — `git diff --ignore-all-space` est vide, 865 lignes ajoutées pour 865
-supprimées). Chaque passage d'outil relance le phénomène et rend les diffs illisibles,
-ce qui est incompatible avec la règle « ne pas reformater » et avec un chantier 05 qui
-va toucher une soixantaine de fichiers.
+**Arbitré par Antonin le 14 août, et déjà appliqué (commit `dab242e`).** Trois fichiers
+(`snake-fakenews.html`, `Emprise/texto total.html`, `graphiques-trompeurs/app.js`)
+apparaissaient en permanence comme entièrement modifiés alors que leur contenu était
+identique : conflit CRLF/LF (865 lignes ajoutées pour 865 supprimées,
+`git diff --ignore-all-space` vide). Chaque passage d'outil relançait le phénomène.
 
-Un fichier **`.gitattributes` a été préparé à la racine** (non commité). Première action
-de la session, avant toute autre chose :
+Un **`.gitattributes`** (`* text=auto`, LF pour les sources, CRLF pour les `.bat`,
+`binary` pour les médias) a été ajouté et commité. **Effet vérifié : `git status` ne
+signale plus aucun fichier modifié**, et `git add --renormalize .` ne produit plus
+aucun changement — l'index était déjà propre, aucun commit de normalisation n'est
+nécessaire.
 
-```bash
-git add .gitattributes
-git add --renormalize .
-git status            # doit ne montrer QUE des changements de fins de ligne
-git commit -m "Normalise les fins de ligne (.gitattributes, * text=auto)"
-```
-
-`--renormalize` ne touche que les fichiers **déjà suivis** : il n'ajoutera pas les
-binaires non suivis présents à la racine. Faire ce commit **seul**, sans rien d'autre.
+Il reste seulement 4 éléments **non suivis** à la racine, antérieurs à la refonte et
+sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_delete/`
+(à supprimer). Les laisser tels quels, ou demander à Antonin.
 
 ### Ordre des chantiers décidé avec Antonin
 
@@ -110,8 +105,7 @@ vérifié que les polices ont bien chargé. (C'est traité au chantier 05.)
 1. Le dossier contient des fichiers pré-modifiés sans rapport avec la refonte
    (`Arcade quizz/.agents/skills/impeccable/**`, quelques binaires à la racine).
    **Ne jamais faire `git add -A`** : commit toujours avec une liste de chemins
-   explicite. Seule exception : le `git add --renormalize .` du commit de fins de
-   ligne décrit au §1, qui ne touche que les fichiers déjà suivis.
+   explicite.
 2. Un commit par chantier, avec le détail en corps de message. Ne pas pousser sur
    `main` sans relecture d'Antonin.
 
@@ -125,7 +119,7 @@ vérifié que les polices ont bien chargé. (C'est traité au chantier 05.)
 |---|---|
 | **Catégorisation** | **Quatre familles par nature** : **Jeux**, **Illusions & démonstrations**, **Sensibilisation**, **Interventions**. Plus un **marqueur transversal « utilisable en conférence »** posable sur n'importe quelle carte — une illusion d'optique reste dans sa famille mais ressort quand on filtre « pour animer une intervention ». Aucun jeu n'est dupliqué dans deux familles. Détail de l'affectation au §11.1. |
 | **Portée du design system** | **Structure commune, identités préservées.** Le socle impose l'en-tête, le focus, les espacements, l'échelle typographique, les cibles 44 px et l'accessibilité. **Chaque jeu garde sa palette et ses polices** : l'arcade reste néon, Perceptio reste sobre en sérif, Radar'naque reste clair, Emprise reste doux. On ne converge pas la direction artistique. Voir §7. |
-| **Fins de ligne** | Normalisation immédiate via `.gitattributes` (`* text=auto`), en un commit isolé, **avant** le chantier 05. Voir §1. |
+| **Fins de ligne** | ✅ Réglé : `.gitattributes` ajouté et vérifié (commit `dab242e`). Voir §1. |
 | **Arborescence** | **Rien ne bouge sur le disque.** La catégorisation est purement à l'écran (portail). Les URL existantes ont été partagées à des enseignants, des favoris et des QR codes pointent dessus. |
 | **`Emprise/texto total.html`** | **Publié**, dans la nouvelle famille **Sensibilisation**. Ne pas le déplacer dans `_prive/`. |
 | **Chantier 08** | Écarté. |
