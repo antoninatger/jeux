@@ -48,7 +48,8 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
 ```
 01 Correctifs express      ✅ FAIT (commit 65f8b5d)
 04 La pédagogie d'abord    ✅ FAIT (commit f0fcb93)
-05 Design system            ← COMMENCER ICI     ≈ 12 j
+05 Design system           🔸 EN COURS (fb97b44) — socle + polices faits,
+                              4 pages migrées sur 59, §5.3/5.4/5.5 à faire
 02 Socle d'accessibilité    puis                ≈ 6 j
 03 Tactile & mobile         puis                ≈ 8 j
 06 Industrialisation        puis                ≈ 10 j
@@ -375,6 +376,58 @@ applications. Après, il en coûte une.
 > Le test de réussite : après le chantier, une capture de chaque jeu doit rester
 > reconnaissable, mais l'en-tête, le focus et les espacements doivent être identiques
 > partout.
+
+> ### ▶ Avancement — première tranche appliquée (commit `fb97b44`)
+>
+> | Point | État |
+> |---|---|
+> | **5.1 `collection.css` / `collection.js`** | ✅ Écrits et branchés |
+> | **5.2 Polices locales** | ✅ 17 familles, 36 `.woff2`, 1,1 Mo, latin + latin-ext |
+> | **5.3 Composants intro / fin** | ⬜ à faire |
+> | **5.4 Les 10 illusions (+ `adelson.html`)** | ⬜ à faire |
+> | **5.5 `_gabarit/`** | ⬜ à faire |
+> | **Migration des pages** | 🔸 4 sur 59 |
+>
+> **Pages migrées :** `terre_ronde_plate.html`, `mine.html`, `Emprise/index.html`,
+> `echecs.html` — c'est-à-dire exactement les quatre restes du chantier 01 (§5).
+> Le chevauchement en 390 px y est **structurellement** réglé : les trois zones
+> se partagent une grille au lieu de se superposer.
+>
+> **Trois pièges rencontrés en branchant le socle, déjà corrigés — à connaître
+> avant de migrer les 55 pages restantes :**
+>
+> 1. **Un titre sans fond disparaît sur les pages à canvas plein écran.** Le
+>    décor de « La Terre ronde ou plate ? » passe du bleu nuit au blanc pendant
+>    le jeu : un titre blanc s'y effaçait complètement. Réglé par un voile en
+>    dégradé `--entete-voile` → transparent, pleine largeur de fenêtre —
+>    invisible sur une page à fond uni, indispensable sur média.
+> 2. **Un `<h1>` enfermé dans une modale n'est pas le titre de la page.**
+>    Emprise n'a que « Avant de commencer », dans son avertissement. Le
+>    reprendre affichait le mauvais titre, le masquer cassait la modale.
+>    `collection.js` ignore désormais les `<h1>` sous `.modal`, `[role=dialog]`,
+>    `[hidden]`. Les pages sans `<h1>` exploitable déclarent
+>    `data-col-titre-cle="…"` (clé i18n, donc titre traduit) sur `<body>`.
+> 3. **`header { … }` au sélecteur de type retombe sur l'en-tête unifié**, qui
+>    est lui aussi un `<header>` (echecs y posait un fond et une bordure).
+>
+> **Deux facilités fournies aux pages :** `--entete-h` est publié par
+> `collection.js` avec la hauteur réelle de l'en-tête (les HUD en
+> `position:fixed; top:0` s'y adossent au lieu de le recouvrir), et la bascule
+> de langue n'est rendue que si `I18N` existe — inutile de promettre une
+> traduction absente, comme sur `echecs.html`.
+>
+> **Recette de migration d'une page**, telle qu'appliquée aux quatre premières :
+> ```html
+> <link rel="stylesheet" href="fonts/fonts.css">   <!-- ../ en sous-dossier -->
+> <link rel="stylesheet" href="collection.css">
+> <link rel="stylesheet" href="le-jeu.css">        <!-- APRÈS : il surcharge -->
+> …
+> <script src="i18n.js"></script>
+> <script src="collection.js"></script>
+> ```
+> puis déclarer dans le `:root` du jeu ses jetons d'identité — au minimum
+> `--bg`, `--txt`, `--txt-secondaire` (≥ 4,5:1 sur `--bg`), `--acc`,
+> `--font-texte`, `--font-titre` — et retirer le `<link>` Google Fonts.
 
 ### 5.1 — Créer `collection.css` et `collection.js` à la racine
 
