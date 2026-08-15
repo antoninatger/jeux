@@ -26,6 +26,29 @@ détail fichier par fichier de ce qui reste à faire. **Le chantier en cours est
   reformatage rendrait la revue impossible.
 - Commentaires et messages de commit **en français**.
 
+## En début de session : régénérer le panneau de commande
+
+```bash
+python3 outils/etat-refonte.py
+```
+
+Écrit `_prive/etat.html` et affiche un résumé dans le terminal : pages migrées sur le
+socle, bloquants levés, pages encore sur Google Fonts, tailles en dur sous le plancher,
+avancement par lot, derniers commits. **Lis le résumé avant de commencer** — c'est
+l'état réel du dépôt, pas un souvenir.
+
+Le rejouer **après chaque livraison** : c'est ainsi qu'on vérifie qu'un chantier a
+bougé les chiffres qu'il prétendait bouger.
+
+Tout y est mesuré. Le statut d'un bloquant est obtenu en **rejouant son test** sur le
+code (présence d'un champ, d'un attribut, d'une media query), jamais en cochant une
+case : un bloquant se ferme quand le code le ferme. Si un test devient faux parce que
+le code a été écrit autrement, corrige le test dans `outils/etat-refonte.py` — ne
+contourne pas.
+
+Le panneau est un tableau de bord, pas une source de vérité : pour la suite des travaux
+et les décisions produit, la référence reste `REFONTE-UX.md`.
+
 ## Quel modèle pour cette session — à signaler à Antonin
 
 Antonin veut être **prévenu en début de session** quand la tâche demandée justifie de
