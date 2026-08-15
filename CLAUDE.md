@@ -26,27 +26,36 @@ détail fichier par fichier de ce qui reste à faire. **Le chantier en cours est
   reformatage rendrait la revue impossible.
 - Commentaires et messages de commit **en français**.
 
-## En début de session : régénérer le panneau de commande
+## 👉 En début de session : lire `_prive/ETAT.md`
+
+C'est l'état **mesuré** du dépôt : pages migrées sur le socle, bloquants encore
+ouverts, pages restées sur Google Fonts, tailles en dur sous le plancher, avancement
+par lot, liste nominative des pages non migrées, derniers commits.
+
+**Lis-le avant de commencer.** C'est l'état réel, pas un souvenir — et il évite de
+reposer des questions dont la réponse est dans le code.
+
+Il est **régénéré automatiquement** après chaque commit, merge et changement de
+branche, par un hook git. Rien à lancer à la main. Deux sorties, même source :
+
+- `_prive/ETAT.md` — pour les agents (Claude Code et Claude dans Cowork), 3 Ko ;
+- `_prive/etat.html` — pour Antonin, le même contenu en tableau de bord.
+
+Si `_prive/ETAT.md` est absent ou visiblement périmé, c'est que les hooks ne sont pas
+installés sur ce clone (ils vivent dans `.git/hooks/`, qui n'est pas versionné) :
 
 ```bash
-python3 outils/etat-refonte.py
+python3 outils/installer-hook.py     # une fois par clone
+python3 outils/etat-refonte.py       # régénère à la demande
 ```
-
-Écrit `_prive/etat.html` et affiche un résumé dans le terminal : pages migrées sur le
-socle, bloquants levés, pages encore sur Google Fonts, tailles en dur sous le plancher,
-avancement par lot, derniers commits. **Lis le résumé avant de commencer** — c'est
-l'état réel du dépôt, pas un souvenir.
-
-Le rejouer **après chaque livraison** : c'est ainsi qu'on vérifie qu'un chantier a
-bougé les chiffres qu'il prétendait bouger.
 
 Tout y est mesuré. Le statut d'un bloquant est obtenu en **rejouant son test** sur le
 code (présence d'un champ, d'un attribut, d'une media query), jamais en cochant une
 case : un bloquant se ferme quand le code le ferme. Si un test devient faux parce que
 le code a été écrit autrement, corrige le test dans `outils/etat-refonte.py` — ne
-contourne pas.
+contourne pas, et ne modifie jamais `ETAT.md` à la main, il sera écrasé.
 
-Le panneau est un tableau de bord, pas une source de vérité : pour la suite des travaux
+L'état est un tableau de bord, pas une source de vérité : pour la suite des travaux
 et les décisions produit, la référence reste `REFONTE-UX.md`.
 
 ## Quel modèle pour cette session — à signaler à Antonin
