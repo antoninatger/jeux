@@ -437,6 +437,36 @@ applications. Après, il en coûte une.
 > puis déclarer dans le `:root` du jeu ses jetons d'identité — au minimum
 > `--bg`, `--txt`, `--txt-secondaire` (≥ 4,5:1 sur `--bg`), `--acc`,
 > `--font-texte`, `--font-titre` — et retirer le `<link>` Google Fonts.
+>
+> **⚠️ Étape 4 — reprendre les tailles sur les jetons.** *(ajoutée après
+> l'étape 1 de la tranche 2 ; sans elle le plancher de 12,8 px reste une
+> intention que personne n'applique — c'était le cas des 4 premières pages.)*
+>
+> Remplacer chaque `font-size` en dur par le jeton correspondant, **plancher à
+> `--fs-100`**. Ce n'est pas un chercher-remplacer :
+>
+> 1. **Mesurer d'abord.** Un audit `getComputedStyle` sur tous les nœuds
+>    porteurs de texte donne la liste exacte des éléments sous 12,8 px. Le faire
+>    **écrans ouverts** (menu, tutoriel, fin de partie), sinon on rate la moitié
+>    des cas.
+> 2. **Trier par longueur de texte, pas par classe.** Une police d'affichage
+>    large (`Press Start 2P` ≈ 2× `VT323`) tient pour un libellé court et
+>    déborde pour une phrase. Sur Mine : libellés courts (HUD, titres d'écran,
+>    boutons d'un mot) gardés en Press Start 2P à `--fs-100` ; phrases
+>    (consignes, indices, descriptions) basculées en VT323 à `--fs-300`/`400`
+>    — **plus grandes ET plus étroites**. L'identité rétro est intacte dans les
+>    deux cas, parce que les deux polices sont déjà celles du jeu.
+> 3. **Reprendre les conteneurs.** Le texte grossit, les boîtes doivent suivre :
+>    HUD passé en `flex-wrap`, cartouches réélargies, cases de la hotbar rendues
+>    responsives. Vérifier le débordement **élément par élément**, pas via
+>    `scrollWidth` : `body{overflow:hidden}` le masque (c'est ce qui a failli
+>    laisser passer une hotbar de 412 px sur un écran de 390).
+> 4. **Ne pas appliquer les 44 px à ce qui n'est pas cliquable.** Les 9 cases de
+>    la hotbar de Mine sont décoratives : les passer à 44 px faisait 412 px de
+>    large. La cible tactile vaut pour les contrôles, le plancher typographique
+>    vaut pour le texte — ce sont deux règles distinctes.
+> 5. **Re-mesurer après.** Objectif : **0 élément sous 12,8 px**, 0 hors cadre,
+>    aux deux largeurs et dans les deux langues.
 
 > ### ✅ Relecture indépendante de la tranche 1 — conforme, deux réserves
 >
@@ -497,7 +527,35 @@ applications. Après, il en coûte une.
 > inscrire une recette incomplète 55 fois. L'ordre ci-dessous met les décisions
 > structurantes au début et garde l'enveloppe de 12 jours.
 
-### Étape 1 — Combler les deux trous du socle ≈ 1 j
+### Étape 1 — Combler les deux trous du socle ≈ 1 j — ✅ FAITE
+
+> **Appliquée le 15 août.** Les deux réserves de la relecture sont levées.
+>
+> **1a — l'en-tête accepte un troisième élément.** Emplacement déclaratif
+> `data-col-entete-extra` : la page marque l'élément, `collection.js` le
+> **déplace** dans une zone `col-entete__extra` (déplacé, pas copié — les
+> écouteurs, l'`id` et la clé i18n suivent). La grille passe à quatre colonnes,
+> et sous 440 px le titre monte sur une ligne à lui pour que la rangée
+> d'actions reste entière. `data-col-extra-fort` donne à l'extra la couleur
+> d'accent du jeu. « Besoin d'aide ? » y est passé : 12 px → **44 px**, il ne
+> recouvre plus le bandeau « FICTION » à aucune largeur.
+>
+> **1b — Mine adopte l'échelle.** **0 élément sous 12,8 px** (contre 11 avant),
+> aux deux largeurs et dans les deux langues. La règle appliquée est écrite en
+> tête de la feuille de `mine.html` et reprise en étape 4 de la recette
+> ci-dessus. Trois conteneurs ont dû suivre : HUD en `flex-wrap`, panneau de
+> phrase vraiment masqué au repos (on y lisait un « OPIN » tronqué sous la
+> hotbar — invisible tant que la consigne faisait 6 px), et cases de hotbar
+> rendues responsives.
+>
+> **Corrigé au passage, hors périmètre de l'étape :** Emprise débordait
+> horizontalement de 22 px de chaque côté en 390 px — `#gameArea` n'avait
+> aucune contrainte de largeur, donc le `max-width:100%` de `.frame` se
+> résolvait contre 420 px et ne clampait rien. Défaut **préexistant**, sans
+> rapport avec la reprise typographique. Les 14 tailles en dur d'Emprise (11 à
+> 12,5 px) sont également passées sur `--fs-100`.
+
+
 
 **1a. Emprise : un emplacement libre dans l'en-tête.**
 Le lien « Besoin d'aide ? » ne doit plus être un élément flottant. La question qu'il
