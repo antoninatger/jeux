@@ -697,11 +697,60 @@ préserver, et déjà dotées de la pastille de retour du chantier 01.
 - Aucune de ces pages n'a de `<h1>` : vérifier que `data-col-titre-cle` (introduit en
   tranche 1) couvre bien le cas, et en profiter pour leur donner une vraie hiérarchie.
 
-### Étape 3 — §5.3 composants intro/fin et §5.5 gabarit ≈ 2 j
+> ### ✅ Relecture indépendante des étapes « points ouverts » + 2 — conforme, un oubli
+>
+> Contrôlé en **320, 360, 390 et 1440 px** sur les 14 pages migrées et 2 témoins non
+> migrés : tailles de police réellement rendues, intersections de rectangles,
+> débordements, erreurs console.
+>
+> **Les trois points ouverts sont fermés, et bien fermés :**
+>
+> - **Bandeau « FICTION » :** remis dans le flux (`position: static`, `order:-1`).
+>   Recouvrement mesuré à 360 px : **0**. Le choix de sortir de `position:fixed`
+>   plutôt que de mesurer sa hauteur est le bon — il n'y a plus de valeur à tenir
+>   à jour, la hauteur réelle est juste par construction.
+> - **« Besoin d'aide ? » :** la question n'avait pas besoin d'arbitrage, la mesure
+>   y a répondu — la rangée occupe 230 px sur 296 en 320 px, parce que le retour et
+>   la langue passent en icône seule sous 560 px. Le libellé est conservé. Bonne
+>   règle posée au passage : le socle ne masque plus le libellé de l'emplacement
+>   extra, dont le contenu est imprévisible, alors que ← et 🌐 sont conventionnels.
+> - **Rattrapage typographique :** `mine.html`, `echecs.html`,
+>   `terre_ronde_plate.html`, `Emprise/index.html` → **0 élément sous 12,8 px** aux
+>   quatre largeurs (`echecs.html` en comptait 37).
+>
+> **Les 10 illusions :** les dix pages ont l'en-tête unifié, `.col-enonce`,
+> `.col-savoir` et un `<details>` **natif**. **0 élément sous le plancher, 0
+> collision, 0 débordement, 0 erreur console, aux quatre largeurs, sur les dix.**
+> 1 171 lignes supprimées pour 851 ajoutées, dix toggles maison remplacés par un
+> élément natif qui est opérable au clavier et annoncé aux lecteurs d'écran sans
+> une ligne de JS. `adelson.html`, qui n'avait ni titre ni consigne ni explication,
+> a désormais un texte qui atterrit exactement où une collection sur l'esprit
+> critique doit atterrir : « la perception est une reconstruction, pas un
+> enregistrement ».
+>
+> **Aucune régression** sur les témoins non migrés (`chasse-aux-biais`,
+> `radarnaque`).
+>
+> **Deux faux positifs écartés après vérification** — à ne pas rouvrir : le
+> `.sr-only` de `terre_ronde_plate.html` (1 × 1 px, `clip: inset(50%)`, donc
+> invisible) et la modale d'Emprise qui recouvre l'en-tête, ce qui est son rôle.
+>
+> **⚠️ Oubli — le hub des illusions n'est pas migré.** `Ilusions d'optique/index.html`
+> n'a **ni `collection.css`, ni en-tête unifié, et charge encore Google Fonts**,
+> alors que les dix pages qu'il liste sont migrées. Le visiteur arrive donc sur
+> l'ancien design puis bascule sur le nouveau en cliquant. C'est le seul écart du
+> lot, et il est à 10 minutes. **À faire au début de l'étape 3.**
 
-**À faire après l'étape 2, pas avant.** Les composants doivent être extraits de ce que
-le lot d'illusions aura révélé, pas devinés à l'avance : un gabarit écrit sur du vécu
-vaut mieux qu'un gabarit écrit sur une intention.
+### Étape 3 — §5.3 composants intro/fin et §5.5 gabarit ≈ 2 j — ← PROCHAINE ÉTAPE
+
+**Commencer par migrer `Ilusions d'optique/index.html`** (voir l'oubli ci-dessus),
+pour que le lot des illusions soit cohérent de bout en bout.
+
+**Puis les composants — après l'étape 2, pas avant.** Ils doivent être extraits de ce
+que le lot d'illusions a révélé, pas devinés : un gabarit écrit sur du vécu vaut mieux
+qu'un gabarit écrit sur une intention. Le composant `.col-enonce` / `.col-savoir` sorti
+de l'étape 2 en est la preuve — il dépasse largement les illusions, toute page qui pose
+une question puis livre le savoir derrière obéit au même schéma.
 
 ### Étape 4 — Migration en lots ≈ 6 j
 
