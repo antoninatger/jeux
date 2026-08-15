@@ -16,6 +16,7 @@ import os, re, io, sys, json, subprocess, datetime
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SORTIE = os.path.join(RACINE, "_prive", "etat.html")
+SORTIE_MD = os.path.join(RACINE, "_prive", "ETAT.md")
 IGNORE = {"Obso", ".git", ".agents", "_prive", "_to_delete", "Collège Lycée",
           "node_modules", ".claude", "fonts", "extracted"}
 
@@ -115,6 +116,7 @@ def mesurer():
         if dedans:
             lots.append((nom, len(faits), len(dedans)))
     m["lots"] = lots
+    m["nonmigrees"] = sorted(p for p, _ in pages if p not in m["migrees"])
 
     # bloquants : chaque test est rejoué, aucun statut n'est saisi
     bl = []
@@ -183,6 +185,67 @@ def rendre(m):
         gfonts=len(m["gfonts"]), arialive=len(m["arialive"]),
         description=len(m["description"]), souspalier=souspalier,
         lignes_lots=lignes_lots, lignes_bl=lignes_bl, journal=journal)
+
+
+
+def rendre_md(m):
+    """Version courte et lisible par un agent. C'est CE fichier que Claude Code et
+    Claude (Cowork) lisent en debut de session — pas le HTML, qui est pour l'humain."""
+    n_pages, n_mig = m["pages"], len(m["migrees"])
+    pct = round(n_mig * 100.0 / n_pages) if n_pages else 0
+    date = datetime.date.today().strftime("%d/%m/%Y")
+    L = []
+    a = L.append
+    a(u"# État de la refonte — %s" % date)
+    a(u"")
+    a(u"> Fichier **généré** par `outils/etat-refonte.py`, régénéré à chaque commit par")
+    a(u"> le hook `post-commit`. Ne pas le modifier à la main : toute correction se fait")
+    a(u"> dans le script. Pour la suite des travaux et les décisions produit, la")
+    a(u"> référence reste `REFONTE-UX.md` — ce fichier ne dit que l'état mesuré.")
+    a(u"")
+    a(u"Branche `%s` — %s." % (m["branche"], u"arbre propre" if m["propre"] else u"modifications non commitées"))
+    a(u"")
+    a(u"## Chiffres")
+    a(u"")
+    a(u"| Mesure | Valeur |")
+    a(u"|---|---|")
+    a(u"| Pages sur le socle commun | **%d / %d** (%d %%) |" % (n_mig, n_pages, pct))
+    a(u"| Bloquants levés | **%d / %d** (%d à moitié) |" % (
+        sum(1 for _, e in m["bloquants"] if e == "ok"), len(m["bloquants"]),
+        sum(1 for _, e in m["bloquants"] if e == "part")))
+    a(u"| Pages encore sur Google Fonts | %d |" % len(m["gfonts"]))
+    a(u"| Fichiers avec une taille en dur sous 12,8 px | %d |" % len(m["souspalier"]))
+    a(u"| Pages avec `aria-live` | %d / %d |" % (len(m["arialive"]), n_pages))
+    a(u"| Pages avec une `meta description` | %d / %d |" % (len(m["description"]), n_pages))
+    a(u"")
+    a(u"## Migration par lot")
+    a(u"")
+    a(u"| Lot | Fait | Total |")
+    a(u"|---|---|---|")
+    for nom, f, t in m["lots"]:
+        a(u"| %s | %d | %d |" % (nom, f, t))
+    a(u"")
+    a(u"## Bloquants")
+    a(u"")
+    sym = {"ok": u"✅ levé", "part": u"🟠 à moitié", "non": u"🔴 ouvert"}
+    for lib, e in m["bloquants"]:
+        a(u"- %s — %s" % (sym[e], lib))
+    a(u"")
+    if m["nonmigrees"]:
+        a(u"## Pages non encore migrées (%d)" % len(m["nonmigrees"]))
+        a(u"")
+        for chemin in m["nonmigrees"]:
+            a(u"- `%s`" % chemin)
+        a(u"")
+    a(u"## Derniers commits")
+    a(u"")
+    if m["journal"]:
+        for l in m["journal"][:10]:
+            a(u"- `%s`" % l)
+    else:
+        a(u"- _git n'a pas répondu._")
+    a(u"")
+    return u"\n".join(L)
 
 
 TEMPLATE = u"""<!DOCTYPE html>
@@ -320,10 +383,12 @@ def main():
     if not os.path.isdir(dossier):
         os.makedirs(dossier)
     io.open(SORTIE, "w", encoding="utf-8").write(html)
+    io.open(SORTIE_MD, "w", encoding="utf-8").write(rendre_md(m))
 
     ok = sum(1 for _, e in m["bloquants"] if e == "ok")
     part = sum(1 for _, e in m["bloquants"] if e == "part")
-    print(u"Panneau écrit : %s" % os.path.relpath(SORTIE, RACINE))
+    print(u"Panneau écrit  : %s" % os.path.relpath(SORTIE, RACINE))
+    print(u"État pour agent : %s" % os.path.relpath(SORTIE_MD, RACINE))
     print(u"  branche              : %s (%s)" % (m["branche"], "propre" if m["propre"] else "modifiée"))
     print(u"  pages sur le socle   : %d / %d" % (len(m["migrees"]), m["pages"]))
     print(u"  bloquants levés      : %d / %d  (%d à moitié)" % (ok, len(m["bloquants"]), part))
