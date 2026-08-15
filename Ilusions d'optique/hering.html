@@ -4,114 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">Illusion de Hering</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<link rel="stylesheet" href="illusion.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: system-ui, sans-serif;
-  background: #fff;
-  padding: 24px 20px;
-  user-select: none;
-  -webkit-user-select: none;
-  max-width: 680px;
-}
-
-#question {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-#question strong {
-  color: #111;
-  font-size: 16px;
-}
-
-svg {
-  display: block;
-  max-width: 650px;
-  width: 100%;
-}
-
-.droite { cursor: grab; }
+.droite { cursor: grab; touch-action: none; }
 .droite.dragging { cursor: grabbing; }
 
-#controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-  max-width: 650px;
-  flex-wrap: wrap;
-}
-#btn-reset {
-  font-size: 13px;
-  color: #888;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
-#btn-reset:hover { color: #444; }
-#btn-rayons {
-  font-size: 13px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 4px 10px;
-  cursor: pointer;
-}
-#btn-rayons:hover { background: #f5f5f5; }
-
-#btn-explain {
-  display: block;
-  margin-top: 22px;
-  font-size: 14px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 7px 14px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-#btn-explain:hover { background: #f5f5f5; color: #111; }
-
-#explication {
-  display: none;
-  margin-top: 18px;
-  max-width: 650px;
-  background: #f8f8f8;
-  border-left: 3px solid #E67F39;
-  border-radius: 0 8px 8px 0;
-  padding: 18px 20px;
-  user-select: text;
-  -webkit-user-select: text;
-}
-#explication.visible { display: block; }
-#explication h2 { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 12px; }
-#explication p { font-size: 14px; color: #444; line-height: 1.65; margin-bottom: 10px; }
-#explication p:last-child { margin-bottom: 0; }
-#explication .highlight { color: #E67F39; font-weight: 600; }
-#explication .answer { font-weight: 700; color: #111; }
-
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
-.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
-.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html" data-col-retour-cle="back">
 
-<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
-<p id="question">
-  <strong data-i18n="q">Les deux lignes rouges sont-elles droites et parallèles ?</strong><br>
-  <span style="font-size:13px;color:#999;" data-i18n="qSub">Glissez les lignes rouges horizontalement, masquez les rayons pour vérifier.</span>
-</p>
+<main class="illusion">
 
+  <h1 data-i18n="pageTitle">Illusion de Hering</h1>
+
+<p class="col-enonce">
+    <strong data-i18n="q">Les deux lignes rouges sont-elles droites et parallèles ?</strong>
+    <span class="col-enonce__aide" data-i18n="qSub">Glissez les lignes rouges horizontalement, masquez les rayons pour vérifier.</span>
+  </p>
+
+<div class="illusion__scene">
 <svg id="svg" viewBox="0 0 650 440" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Lignes rayonnantes générées par JS (72 rayons, tous les 5°) -->
@@ -127,19 +41,20 @@ svg {
     fill="#D0312D" opacity="0.85" rx="2"/>
 
 </svg>
+  </div>
 
-<div id="controls">
-  <button id="btn-reset" data-i18n="reset">↺ Remettre à neuf</button>
-  <button id="btn-rayons" data-i18n="raysHide">Masquer les rayons</button>
+<div class="illusion__commandes">
+  <button type="button" id="btn-reset" class="illusion__btn illusion__btn--discret" data-i18n="reset">↺ Remettre à neuf</button>
+  <button type="button" id="btn-rayons" class="illusion__btn" data-i18n="raysHide">Masquer les rayons</button>
 </div>
 
-<button id="btn-explain" data-i18n="explShow">▼ Voir l'explication</button>
-
-<div id="explication">
+<details class="col-savoir">
+    <summary data-i18n="explShow">Voir l'explication</summary>
+    <div class="col-savoir__corps">
   <h2 data-i18n="explTitle">L'illusion de Hering — ce que fait votre cerveau</h2>
 
   <p data-i18n-html="p1">
-    <span class="answer">Oui, les deux lignes rouges sont parfaitement droites et parallèles.</span>
+    <span class="reponse">Oui, les deux lignes rouges sont parfaitement droites et parallèles.</span>
     Masquez les rayons et leur rigidité est évidente. Avec les rayons, elles semblent
     bombées vers l'extérieur, comme si elles étaient repoussées du centre.
   </p>
@@ -148,7 +63,7 @@ svg {
     Cette illusion a été décrite en 1861 par le physiologiste allemand
     <strong>Ewald Hering</strong>. Elle appartient à la famille des illusions de courbure
     induites par le contexte. Les lignes rayonnantes créent une impression puissante de
-    <span class="highlight">perspective radiale</span>, comme si le regard plongeait vers
+    <span class="cle">perspective radiale</span>, comme si le regard plongeait vers
     un point central lumineux ou un tunnel.
   </p>
 
@@ -156,7 +71,7 @@ svg {
     Dans ce contexte, le cerveau applique une correction de perspective : dans la réalité,
     deux droites parallèles semblent converger vers un point de fuite lorsqu'elles
     s'éloignent. Le cerveau compense en les "redressant" mentalement. Mais ici, les lignes
-    sont déjà droites — la <span class="highlight">correction inverse</span> les fait
+    sont déjà droites — la <span class="cle">correction inverse</span> les fait
     paraître courbées vers l'extérieur.
   </p>
 
@@ -164,12 +79,14 @@ svg {
     Il existe une version miroir de cette illusion, dite de <strong>Wundt</strong>, où
     les lignes rayonnent de l'extérieur vers l'intérieur et font paraître des droites
     courbées vers l'intérieur. Les deux illusions démontrent que notre cerveau ne perçoit
-    pas les lignes isolément : il les <span class="highlight">réinterprète en permanence
+    pas les lignes isolément : il les <span class="cle">réinterprète en permanence
     dans leur contexte géométrique global</span>.
   </p>
-</div>
+    </div>
+  </details>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
@@ -178,12 +95,12 @@ I18N.register({
     q: "Les deux lignes rouges sont-elles droites et parallèles ?",
     qSub: "Glissez les lignes rouges horizontalement, masquez les rayons pour vérifier.",
     reset: "↺ Remettre à neuf", raysHide: "Masquer les rayons", raysShow: "Afficher les rayons",
-    explShow: "▼ Voir l'explication", explHide: "▲ Masquer l'explication",
+    explShow: "Voir l'explication", explHide: "Masquer l'explication",
     explTitle: "L'illusion de Hering — ce que fait votre cerveau",
-    p1: `<span class="answer">Oui, les deux lignes rouges sont parfaitement droites et parallèles.</span> Masquez les rayons et leur rigidité est évidente. Avec les rayons, elles semblent bombées vers l'extérieur, comme si elles étaient repoussées du centre.`,
-    p2: `Cette illusion a été décrite en 1861 par le physiologiste allemand <strong>Ewald Hering</strong>. Elle appartient à la famille des illusions de courbure induites par le contexte. Les lignes rayonnantes créent une impression puissante de <span class="highlight">perspective radiale</span>, comme si le regard plongeait vers un point central lumineux ou un tunnel.`,
-    p3: `Dans ce contexte, le cerveau applique une correction de perspective : dans la réalité, deux droites parallèles semblent converger vers un point de fuite lorsqu'elles s'éloignent. Le cerveau compense en les "redressant" mentalement. Mais ici, les lignes sont déjà droites — la <span class="highlight">correction inverse</span> les fait paraître courbées vers l'extérieur.`,
-    p4: `Il existe une version miroir de cette illusion, dite de <strong>Wundt</strong>, où les lignes rayonnent de l'extérieur vers l'intérieur et font paraître des droites courbées vers l'intérieur. Les deux illusions démontrent que notre cerveau ne perçoit pas les lignes isolément : il les <span class="highlight">réinterprète en permanence dans leur contexte géométrique global</span>.`
+    p1: `<span class="reponse">Oui, les deux lignes rouges sont parfaitement droites et parallèles.</span> Masquez les rayons et leur rigidité est évidente. Avec les rayons, elles semblent bombées vers l'extérieur, comme si elles étaient repoussées du centre.`,
+    p2: `Cette illusion a été décrite en 1861 par le physiologiste allemand <strong>Ewald Hering</strong>. Elle appartient à la famille des illusions de courbure induites par le contexte. Les lignes rayonnantes créent une impression puissante de <span class="cle">perspective radiale</span>, comme si le regard plongeait vers un point central lumineux ou un tunnel.`,
+    p3: `Dans ce contexte, le cerveau applique une correction de perspective : dans la réalité, deux droites parallèles semblent converger vers un point de fuite lorsqu'elles s'éloignent. Le cerveau compense en les "redressant" mentalement. Mais ici, les lignes sont déjà droites — la <span class="cle">correction inverse</span> les fait paraître courbées vers l'extérieur.`,
+    p4: `Il existe une version miroir de cette illusion, dite de <strong>Wundt</strong>, où les lignes rayonnent de l'extérieur vers l'intérieur et font paraître des droites courbées vers l'intérieur. Les deux illusions démontrent que notre cerveau ne perçoit pas les lignes isolément : il les <span class="cle">réinterprète en permanence dans leur contexte géométrique global</span>.`
   },
   en: {
     back: "← Back to illusions",
@@ -191,12 +108,12 @@ I18N.register({
     q: "Are the two red lines straight and parallel?",
     qSub: "Drag the red lines horizontally, hide the rays to check.",
     reset: "↺ Reset", raysHide: "Hide the rays", raysShow: "Show the rays",
-    explShow: "▼ See the explanation", explHide: "▲ Hide the explanation",
+    explShow: "See the explanation", explHide: "Hide the explanation",
     explTitle: "The Hering illusion — what your brain is doing",
-    p1: `<span class="answer">Yes, the two red lines are perfectly straight and parallel.</span> Hide the rays and their rigidity is obvious. With the rays, they seem to bulge outward, as if pushed away from the centre.`,
-    p2: `This illusion was described in 1861 by the German physiologist <strong>Ewald Hering</strong>. It belongs to the family of curvature illusions induced by context. The radiating lines create a powerful impression of <span class="highlight">radial perspective</span>, as if the gaze were plunging toward a bright central point or a tunnel.`,
-    p3: `In this context, the brain applies a perspective correction: in reality, two parallel lines seem to converge toward a vanishing point as they recede. The brain compensates by mentally "straightening" them. But here the lines are already straight — the <span class="highlight">reverse correction</span> makes them appear curved outward.`,
-    p4: `There is a mirror version of this illusion, known as the <strong>Wundt</strong> illusion, where the lines radiate from the outside inward and make straight lines appear curved inward. Both illusions show that our brain does not perceive lines in isolation: it <span class="highlight">constantly reinterprets them within their overall geometric context</span>.`
+    p1: `<span class="reponse">Yes, the two red lines are perfectly straight and parallel.</span> Hide the rays and their rigidity is obvious. With the rays, they seem to bulge outward, as if pushed away from the centre.`,
+    p2: `This illusion was described in 1861 by the German physiologist <strong>Ewald Hering</strong>. It belongs to the family of curvature illusions induced by context. The radiating lines create a powerful impression of <span class="cle">radial perspective</span>, as if the gaze were plunging toward a bright central point or a tunnel.`,
+    p3: `In this context, the brain applies a perspective correction: in reality, two parallel lines seem to converge toward a vanishing point as they recede. The brain compensates by mentally "straightening" them. But here the lines are already straight — the <span class="cle">reverse correction</span> makes them appear curved outward.`,
+    p4: `There is a mirror version of this illusion, known as the <strong>Wundt</strong> illusion, where the lines radiate from the outside inward and make straight lines appear curved inward. Both illusions show that our brain does not perceive lines in isolation: it <span class="cle">constantly reinterprets them within their overall geometric context</span>.`
   }
 });
 const SVG_EL = document.getElementById('svg');
@@ -285,12 +202,15 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   document.getElementById('btn-rayons').textContent = I18N.t('raysHide');
 });
 
-const btnEx = document.getElementById('btn-explain');
-const divEx = document.getElementById('explication');
-btnEx.addEventListener('click', () => {
-  const visible = divEx.classList.toggle('visible');
-  btnEx.textContent = I18N.t(visible ? 'explHide' : 'explShow');
+/* Le panneau est un <details> : l'ouverture, l'etat expose aux lecteurs
+   d'ecran et l'acces clavier sont natifs. On ne met a jour que le libelle. */
+const panneau = document.querySelector('.col-savoir');
+panneau.addEventListener('toggle', () => {
+  panneau.querySelector('summary').textContent =
+    I18N.t(panneau.open ? 'explHide' : 'explShow');
 });
 </script>
+</main>
+
 </body>
 </html>

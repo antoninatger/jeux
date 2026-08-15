@@ -4,135 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">Illusion d'Ebbinghaus</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<link rel="stylesheet" href="illusion.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: system-ui, sans-serif;
-  background: #fff;
-  padding: 24px 20px;
-  user-select: none;
-  -webkit-user-select: none;
-  max-width: 680px;
-}
 
 /* ── Question ── */
-#question {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-#question strong {
-  color: #111;
-  font-size: 16px;
-}
 
 /* ── SVG ── */
-svg {
-  display: block;
-  max-width: 650px;
-  width: 100%;
-}
+
 .blue {
   cursor: pointer;
   transition: opacity 0.12s;
 }
 .blue:hover { opacity: 0.72; }
-.orange { cursor: grab; }
+.orange { cursor: grab; touch-action: none; }
 .orange.dragging { cursor: grabbing; }
 
 /* ── Contrôles ── */
-#controls {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-top: 10px;
-  max-width: 650px;
-}
-#btn-reset {
-  font-size: 13px;
-  color: #888;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
-#btn-reset:hover { color: #444; }
+
 #hint {
   font-size: 12px;
   color: #bbb;
 }
 
 /* ── Bouton explication ── */
-#btn-explain {
-  display: block;
-  margin-top: 22px;
-  font-size: 14px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 7px 14px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-#btn-explain:hover { background: #f5f5f5; color: #111; }
 
 /* ── Explication ── */
-#explication {
-  display: none;
-  margin-top: 18px;
-  max-width: 650px;
-  background: #f8f8f8;
-  border-left: 3px solid #E67F39;
-  border-radius: 0 8px 8px 0;
-  padding: 18px 20px;
-  user-select: text;
-  -webkit-user-select: text;
-}
-#explication.visible { display: block; }
 
-#explication h2 {
-  font-size: 15px;
-  font-weight: 700;
-  color: #111;
-  margin-bottom: 12px;
-}
-#explication p {
-  font-size: 14px;
-  color: #444;
-  line-height: 1.65;
-  margin-bottom: 10px;
-}
-#explication p:last-child { margin-bottom: 0; }
-#explication .highlight {
-  color: #E67F39;
-  font-weight: 600;
-}
-#explication .answer {
-  font-weight: 700;
-  color: #111;
-}
-
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
-.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
-.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html" data-col-retour-cle="back">
 
-<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
+<main class="illusion">
+
+  <h1 data-i18n="pageTitle">Illusion d'Ebbinghaus</h1>
+
 <!-- ── Question ── -->
-<p id="question">
-  <strong data-i18n="q">À votre avis, les deux cercles du centre sont-ils de la même taille ?</strong><br>
-  <span style="font-size:13px;color:#999;" data-i18n="qSub">Amusez-vous avec la figure pour le trouver.</span>
-</p>
+<p class="col-enonce">
+    <strong data-i18n="q">À votre avis, les deux cercles du centre sont-ils de la même taille ?</strong>
+    <span class="col-enonce__aide" data-i18n="qSub">Amusez-vous avec la figure pour le trouver.</span>
+  </p>
 
 <!-- ── Illusion ── -->
+<div class="illusion__scene">
 <svg id="svg" viewBox="0 0 650 400" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Cercles bleus gauche (r=64, dist=135, centre 215,200) -->
@@ -158,27 +73,28 @@ svg {
   <circle class="orange" id="o-right" cx="545" cy="200" r="32" fill="#E67F39"/>
 
 </svg>
+  </div>
 
 <!-- ── Contrôles ── -->
-<div id="controls">
-  <button id="btn-reset" data-i18n="reset">↺ Remettre à neuf</button>
+<div class="illusion__commandes">
+  <button type="button" id="btn-reset" class="illusion__btn illusion__btn--discret" data-i18n="reset">↺ Remettre à neuf</button>
 </div>
 
 <!-- ── Voir l'explication ── -->
-<button id="btn-explain" data-i18n="explShow">👁 Voir l'explication</button>
-
-<div id="explication">
+<details class="col-savoir">
+    <summary data-i18n="explShow">Voir l'explication</summary>
+    <div class="col-savoir__corps">
   <h2 data-i18n="explTitle">L'illusion d'Ebbinghaus — ce que fait votre cerveau</h2>
 
   <p data-i18n-html="p1">
-    <span class="answer">Oui, ils sont exactement identiques.</span>
+    <span class="reponse">Oui, ils sont exactement identiques.</span>
     Les deux cercles oranges ont rigoureusement le même diamètre. Et pourtant, celui de gauche
     paraît plus <em>petit</em> et celui de droite plus <em>grand</em>. Pourquoi ?
   </p>
 
   <p data-i18n-html="p2">
     Tout se passe dans la façon dont notre cerveau évalue les tailles.
-    Il ne perçoit pas un objet de manière isolée : il le <span class="highlight">compare en permanence
+    Il ne perçoit pas un objet de manière isolée : il le <span class="cle">compare en permanence
     à ce qui l'entoure</span>. C'est un raccourci très efficace dans la vie quotidienne —
     estimer si un fruit est gros ou petit, si un animal est proche ou lointain — mais ici,
     ce mécanisme nous joue un tour.
@@ -192,7 +108,7 @@ svg {
   </p>
 
   <p data-i18n-html="p4">
-    Un second mécanisme renforce l'illusion : la <span class="highlight">proximité</span>
+    Un second mécanisme renforce l'illusion : la <span class="cle">proximité</span>
     des cercles voisins. Les petits cercles de droite sont collés au centre, formant
     un halo serré qui le fait paraître plus grand par contraste. Les grands cercles de gauche,
     eux, laissent de l'espace autour, ce qui écrase visuellement le cercle central.
@@ -202,12 +118,14 @@ svg {
     Ce phénomène s'appelle l'<strong>illusion d'Ebbinghaus</strong> (ou cercles de Titchener).
     Il a été décrit dès la fin du XIX<sup>e</sup> siècle par le psychologue allemand
     Hermann Ebbinghaus. Elle illustre une vérité fondamentale de la perception :
-    <span class="highlight">nos yeux ne mesurent pas, ils comparent</span>.
+    <span class="cle">nos yeux ne mesurent pas, ils comparent</span>.
     C'est le contexte qui dicte le verdict — pas la réalité.
   </p>
-</div>
+    </div>
+  </details>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
@@ -216,13 +134,13 @@ I18N.register({
     q: "À votre avis, les deux cercles du centre sont-ils de la même taille ?",
     qSub: "Amusez-vous avec la figure pour le trouver.",
     reset: "↺ Remettre à neuf",
-    explShow: "👁 Voir l'explication", explHide: "▲ Masquer l'explication",
+    explShow: "👁 Voir l'explication", explHide: "Masquer l'explication",
     explTitle: "L'illusion d'Ebbinghaus — ce que fait votre cerveau",
-    p1: `<span class="answer">Oui, ils sont exactement identiques.</span> Les deux cercles oranges ont rigoureusement le même diamètre. Et pourtant, celui de gauche paraît plus <em>petit</em> et celui de droite plus <em>grand</em>. Pourquoi ?`,
-    p2: `Tout se passe dans la façon dont notre cerveau évalue les tailles. Il ne perçoit pas un objet de manière isolée : il le <span class="highlight">compare en permanence à ce qui l'entoure</span>. C'est un raccourci très efficace dans la vie quotidienne — estimer si un fruit est gros ou petit, si un animal est proche ou lointain — mais ici, ce mécanisme nous joue un tour.`,
+    p1: `<span class="reponse">Oui, ils sont exactement identiques.</span> Les deux cercles oranges ont rigoureusement le même diamètre. Et pourtant, celui de gauche paraît plus <em>petit</em> et celui de droite plus <em>grand</em>. Pourquoi ?`,
+    p2: `Tout se passe dans la façon dont notre cerveau évalue les tailles. Il ne perçoit pas un objet de manière isolée : il le <span class="cle">compare en permanence à ce qui l'entoure</span>. C'est un raccourci très efficace dans la vie quotidienne — estimer si un fruit est gros ou petit, si un animal est proche ou lointain — mais ici, ce mécanisme nous joue un tour.`,
     p3: `À gauche, le cercle orange est cerné de <strong>grands</strong> cercles bleus. Mis en regard de ces géants, le cerveau le juge… modeste. À droite, il est entouré de <strong>petits</strong> cercles bleus. Cette fois, il paraît imposant en comparaison. Même taille réelle, jugements opposés.`,
-    p4: `Un second mécanisme renforce l'illusion : la <span class="highlight">proximité</span> des cercles voisins. Les petits cercles de droite sont collés au centre, formant un halo serré qui le fait paraître plus grand par contraste. Les grands cercles de gauche, eux, laissent de l'espace autour, ce qui écrase visuellement le cercle central.`,
-    p5: `Ce phénomène s'appelle l'<strong>illusion d'Ebbinghaus</strong> (ou cercles de Titchener). Il a été décrit dès la fin du XIX<sup>e</sup> siècle par le psychologue allemand Hermann Ebbinghaus. Elle illustre une vérité fondamentale de la perception : <span class="highlight">nos yeux ne mesurent pas, ils comparent</span>. C'est le contexte qui dicte le verdict — pas la réalité.`
+    p4: `Un second mécanisme renforce l'illusion : la <span class="cle">proximité</span> des cercles voisins. Les petits cercles de droite sont collés au centre, formant un halo serré qui le fait paraître plus grand par contraste. Les grands cercles de gauche, eux, laissent de l'espace autour, ce qui écrase visuellement le cercle central.`,
+    p5: `Ce phénomène s'appelle l'<strong>illusion d'Ebbinghaus</strong> (ou cercles de Titchener). Il a été décrit dès la fin du XIX<sup>e</sup> siècle par le psychologue allemand Hermann Ebbinghaus. Elle illustre une vérité fondamentale de la perception : <span class="cle">nos yeux ne mesurent pas, ils comparent</span>. C'est le contexte qui dicte le verdict — pas la réalité.`
   },
   en: {
     back: "← Back to illusions",
@@ -230,13 +148,13 @@ I18N.register({
     q: "Do you think the two central circles are the same size?",
     qSub: "Play with the figure to find out.",
     reset: "↺ Reset",
-    explShow: "👁 See the explanation", explHide: "▲ Hide the explanation",
+    explShow: "👁 See the explanation", explHide: "Hide the explanation",
     explTitle: "The Ebbinghaus illusion — what your brain is doing",
-    p1: `<span class="answer">Yes, they are exactly identical.</span> The two orange circles have precisely the same diameter. And yet the left one looks <em>smaller</em> and the right one <em>larger</em>. Why?`,
-    p2: `It all comes down to how our brain judges sizes. It never perceives an object in isolation: it <span class="highlight">constantly compares it to its surroundings</span>. This is a very efficient shortcut in everyday life — estimating whether a fruit is big or small, whether an animal is near or far — but here that mechanism plays a trick on us.`,
+    p1: `<span class="reponse">Yes, they are exactly identical.</span> The two orange circles have precisely the same diameter. And yet the left one looks <em>smaller</em> and the right one <em>larger</em>. Why?`,
+    p2: `It all comes down to how our brain judges sizes. It never perceives an object in isolation: it <span class="cle">constantly compares it to its surroundings</span>. This is a very efficient shortcut in everyday life — estimating whether a fruit is big or small, whether an animal is near or far — but here that mechanism plays a trick on us.`,
     p3: `On the left, the orange circle is ringed by <strong>large</strong> blue circles. Next to these giants, the brain judges it… modest. On the right, it is surrounded by <strong>small</strong> blue circles. This time it looks imposing by comparison. Same real size, opposite judgements.`,
-    p4: `A second mechanism reinforces the illusion: the <span class="highlight">proximity</span> of the neighbouring circles. The small circles on the right are packed close to the centre, forming a tight halo that makes it look bigger by contrast. The large circles on the left leave space around it, visually shrinking the central circle.`,
-    p5: `This phenomenon is called the <strong>Ebbinghaus illusion</strong> (or Titchener circles). It was described as early as the late 19<sup>th</sup> century by the German psychologist Hermann Ebbinghaus. It illustrates a fundamental truth about perception: <span class="highlight">our eyes don't measure, they compare</span>. It is the context that dictates the verdict — not reality.`
+    p4: `A second mechanism reinforces the illusion: the <span class="cle">proximity</span> of the neighbouring circles. The small circles on the right are packed close to the centre, forming a tight halo that makes it look bigger by contrast. The large circles on the left leave space around it, visually shrinking the central circle.`,
+    p5: `This phenomenon is called the <strong>Ebbinghaus illusion</strong> (or Titchener circles). It was described as early as the late 19<sup>th</sup> century by the German psychologist Hermann Ebbinghaus. It illustrates a fundamental truth about perception: <span class="cle">our eyes don't measure, they compare</span>. It is the context that dictates the verdict — not reality.`
   }
 });
 const SVG_EL = document.getElementById('svg');
@@ -305,12 +223,15 @@ document.getElementById('btn-reset').addEventListener('click', () => {
 });
 
 /* ── Bouton explication ── */
-const btnEx = document.getElementById('btn-explain');
-const divEx = document.getElementById('explication');
-btnEx.addEventListener('click', () => {
-  const visible = divEx.classList.toggle('visible');
-  btnEx.textContent = I18N.t(visible ? 'explHide' : 'explShow');
+/* Le panneau est un <details> : l'ouverture, l'etat expose aux lecteurs
+   d'ecran et l'acces clavier sont natifs. On ne met a jour que le libelle. */
+const panneau = document.querySelector('.col-savoir');
+panneau.addEventListener('toggle', () => {
+  panneau.querySelector('summary').textContent =
+    I18N.t(panneau.open ? 'explHide' : 'explShow');
 });
 </script>
+</main>
+
 </body>
 </html>

@@ -4,114 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">Illusion de Delboeuf</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<link rel="stylesheet" href="illusion.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: system-ui, sans-serif;
-  background: #fff;
-  padding: 24px 20px;
-  user-select: none;
-  -webkit-user-select: none;
-  max-width: 680px;
-}
-
-#question {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-#question strong {
-  color: #111;
-  font-size: 16px;
-}
-
-svg {
-  display: block;
-  max-width: 650px;
-  width: 100%;
-}
-
-.orange-c { cursor: grab; }
+.orange-c { cursor: grab; touch-action: none; }
 .orange-c.dragging { cursor: grabbing; }
 
-#controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-  max-width: 650px;
-  flex-wrap: wrap;
-}
-#btn-reset {
-  font-size: 13px;
-  color: #888;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
-#btn-reset:hover { color: #444; }
-#btn-anneaux {
-  font-size: 13px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 4px 10px;
-  cursor: pointer;
-}
-#btn-anneaux:hover { background: #f5f5f5; }
-
-#btn-explain {
-  display: block;
-  margin-top: 22px;
-  font-size: 14px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 7px 14px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-#btn-explain:hover { background: #f5f5f5; color: #111; }
-
-#explication {
-  display: none;
-  margin-top: 18px;
-  max-width: 650px;
-  background: #f8f8f8;
-  border-left: 3px solid #E67F39;
-  border-radius: 0 8px 8px 0;
-  padding: 18px 20px;
-  user-select: text;
-  -webkit-user-select: text;
-}
-#explication.visible { display: block; }
-#explication h2 { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 12px; }
-#explication p { font-size: 14px; color: #444; line-height: 1.65; margin-bottom: 10px; }
-#explication p:last-child { margin-bottom: 0; }
-#explication .highlight { color: #E67F39; font-weight: 600; }
-#explication .answer { font-weight: 700; color: #111; }
-
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
-.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
-.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html" data-col-retour-cle="back">
 
-<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
-<p id="question">
-  <strong data-i18n="q">Les deux cercles orange sont-ils de la même taille ?</strong><br>
-  <span style="font-size:13px;color:#999;" data-i18n="qSub">Glissez les cercles orange pour les superposer, ou masquez les anneaux.</span>
-</p>
+<main class="illusion">
 
+  <h1 data-i18n="pageTitle">Illusion de Delboeuf</h1>
+
+<p class="col-enonce">
+    <strong data-i18n="q">Les deux cercles orange sont-ils de la même taille ?</strong>
+    <span class="col-enonce__aide" data-i18n="qSub">Glissez les cercles orange pour les superposer, ou masquez les anneaux.</span>
+  </p>
+
+<div class="illusion__scene">
 <svg id="svg" viewBox="0 0 650 420" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Côté gauche : grand anneau extérieur r=130, cercle orange central r=40 -->
@@ -127,19 +41,20 @@ svg {
     cx="472" cy="210" r="40" fill="#E67F39"/>
 
 </svg>
+  </div>
 
-<div id="controls">
-  <button id="btn-reset" data-i18n="reset">↺ Remettre à neuf</button>
-  <button id="btn-anneaux" data-i18n="ringsHide">Masquer les anneaux</button>
+<div class="illusion__commandes">
+  <button type="button" id="btn-reset" class="illusion__btn illusion__btn--discret" data-i18n="reset">↺ Remettre à neuf</button>
+  <button type="button" id="btn-anneaux" class="illusion__btn" data-i18n="ringsHide">Masquer les anneaux</button>
 </div>
 
-<button id="btn-explain" data-i18n="explShow">▼ Voir l'explication</button>
-
-<div id="explication">
+<details class="col-savoir">
+    <summary data-i18n="explShow">Voir l'explication</summary>
+    <div class="col-savoir__corps">
   <h2 data-i18n="explTitle">L'illusion de Delboeuf — ce que fait votre cerveau</h2>
 
   <p data-i18n-html="p1">
-    <span class="answer">Oui, les deux cercles orange sont exactement identiques.</span>
+    <span class="reponse">Oui, les deux cercles orange sont exactement identiques.</span>
     Ils ont tous les deux un rayon de 40 unités. Et pourtant, le cercle de gauche
     (entouré du grand anneau) paraît plus petit, et celui de droite (dans le petit anneau)
     paraît plus grand. Superposez-les ou masquez les anneaux pour vous en convaincre.
@@ -148,7 +63,7 @@ svg {
   <p data-i18n-html="p2">
     Cette illusion a été décrite en 1865 par le philosophe et mathématicien belge
     <strong>Joseph Remi Léopold Delboeuf</strong>. Comme l'illusion d'Ebbinghaus, elle
-    repose sur l'<span class="highlight">évaluation relative de la taille</span> :
+    repose sur l'<span class="cle">évaluation relative de la taille</span> :
     le cerveau ne perçoit pas un cercle de manière absolue, il le compare
     à son contexte immédiat.
   </p>
@@ -156,7 +71,7 @@ svg {
   <p data-i18n-html="p3">
     Mais Delboeuf ajoute une subtilité propre aux <em>anneaux concentriques</em> :
     la taille perçue du cercle central dépend de la
-    <span class="highlight">proportion entre le cercle et son anneau</span>.
+    <span class="cle">proportion entre le cercle et son anneau</span>.
     Quand l'anneau est très grand, l'espace entre les deux est ample, et le cercle
     paraît "perdu" — donc petit. Quand l'anneau est juste un peu plus grand,
     le cercle semble remplir presque tout l'espace disponible — donc grand.
@@ -167,12 +82,14 @@ svg {
     servir dans une grande assiette conduit à se servir davantage de nourriture, car
     la portion paraît plus petite dans le grand contenant (effet Delboeuf appliqué à
     la taille des assiettes). De même, un même verre paraît plus rempli s'il est étroit
-    que s'il est large — notre cerveau <span class="highlight">juge toujours par rapport
+    que s'il est large — notre cerveau <span class="cle">juge toujours par rapport
     au contenant, jamais de façon absolue</span>.
   </p>
-</div>
+    </div>
+  </details>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
@@ -181,12 +98,12 @@ I18N.register({
     q: "Les deux cercles orange sont-ils de la même taille ?",
     qSub: "Glissez les cercles orange pour les superposer, ou masquez les anneaux.",
     reset: "↺ Remettre à neuf", ringsHide: "Masquer les anneaux", ringsShow: "Afficher les anneaux",
-    explShow: "▼ Voir l'explication", explHide: "▲ Masquer l'explication",
+    explShow: "Voir l'explication", explHide: "Masquer l'explication",
     explTitle: "L'illusion de Delboeuf — ce que fait votre cerveau",
-    p1: `<span class="answer">Oui, les deux cercles orange sont exactement identiques.</span> Ils ont tous les deux un rayon de 40 unités. Et pourtant, le cercle de gauche (entouré du grand anneau) paraît plus petit, et celui de droite (dans le petit anneau) paraît plus grand. Superposez-les ou masquez les anneaux pour vous en convaincre.`,
-    p2: `Cette illusion a été décrite en 1865 par le philosophe et mathématicien belge <strong>Joseph Remi Léopold Delboeuf</strong>. Comme l'illusion d'Ebbinghaus, elle repose sur l'<span class="highlight">évaluation relative de la taille</span> : le cerveau ne perçoit pas un cercle de manière absolue, il le compare à son contexte immédiat.`,
-    p3: `Mais Delboeuf ajoute une subtilité propre aux <em>anneaux concentriques</em> : la taille perçue du cercle central dépend de la <span class="highlight">proportion entre le cercle et son anneau</span>. Quand l'anneau est très grand, l'espace entre les deux est ample, et le cercle paraît "perdu" — donc petit. Quand l'anneau est juste un peu plus grand, le cercle semble remplir presque tout l'espace disponible — donc grand.`,
-    p4: `Ce phénomène a des applications pratiques inattendues : des études ont montré que servir dans une grande assiette conduit à se servir davantage de nourriture, car la portion paraît plus petite dans le grand contenant (effet Delboeuf appliqué à la taille des assiettes). De même, un même verre paraît plus rempli s'il est étroit que s'il est large — notre cerveau <span class="highlight">juge toujours par rapport au contenant, jamais de façon absolue</span>.`
+    p1: `<span class="reponse">Oui, les deux cercles orange sont exactement identiques.</span> Ils ont tous les deux un rayon de 40 unités. Et pourtant, le cercle de gauche (entouré du grand anneau) paraît plus petit, et celui de droite (dans le petit anneau) paraît plus grand. Superposez-les ou masquez les anneaux pour vous en convaincre.`,
+    p2: `Cette illusion a été décrite en 1865 par le philosophe et mathématicien belge <strong>Joseph Remi Léopold Delboeuf</strong>. Comme l'illusion d'Ebbinghaus, elle repose sur l'<span class="cle">évaluation relative de la taille</span> : le cerveau ne perçoit pas un cercle de manière absolue, il le compare à son contexte immédiat.`,
+    p3: `Mais Delboeuf ajoute une subtilité propre aux <em>anneaux concentriques</em> : la taille perçue du cercle central dépend de la <span class="cle">proportion entre le cercle et son anneau</span>. Quand l'anneau est très grand, l'espace entre les deux est ample, et le cercle paraît "perdu" — donc petit. Quand l'anneau est juste un peu plus grand, le cercle semble remplir presque tout l'espace disponible — donc grand.`,
+    p4: `Ce phénomène a des applications pratiques inattendues : des études ont montré que servir dans une grande assiette conduit à se servir davantage de nourriture, car la portion paraît plus petite dans le grand contenant (effet Delboeuf appliqué à la taille des assiettes). De même, un même verre paraît plus rempli s'il est étroit que s'il est large — notre cerveau <span class="cle">juge toujours par rapport au contenant, jamais de façon absolue</span>.`
   },
   en: {
     back: "← Back to illusions",
@@ -194,12 +111,12 @@ I18N.register({
     q: "Are the two orange circles the same size?",
     qSub: "Drag the orange circles to overlap them, or hide the rings.",
     reset: "↺ Reset", ringsHide: "Hide the rings", ringsShow: "Show the rings",
-    explShow: "▼ See the explanation", explHide: "▲ Hide the explanation",
+    explShow: "See the explanation", explHide: "Hide the explanation",
     explTitle: "The Delboeuf illusion — what your brain is doing",
-    p1: `<span class="answer">Yes, the two orange circles are exactly identical.</span> They both have a radius of 40 units. And yet the left circle (surrounded by the large ring) looks smaller, and the right one (in the small ring) looks bigger. Overlap them or hide the rings to convince yourself.`,
-    p2: `This illusion was described in 1865 by the Belgian philosopher and mathematician <strong>Joseph Remi Léopold Delboeuf</strong>. Like the Ebbinghaus illusion, it relies on <span class="highlight">relative size estimation</span>: the brain does not perceive a circle in absolute terms, it compares it to its immediate context.`,
-    p3: `But Delboeuf adds a subtlety specific to <em>concentric rings</em>: the perceived size of the central circle depends on the <span class="highlight">ratio between the circle and its ring</span>. When the ring is very large, the gap between the two is wide and the circle looks "lost" — hence small. When the ring is only slightly larger, the circle seems to fill almost all the available space — hence large.`,
-    p4: `This phenomenon has unexpected practical applications: studies have shown that serving on a large plate leads people to serve themselves more food, because the portion looks smaller in the large container (the Delboeuf effect applied to plate size). Likewise, the same glass looks fuller when it is narrow than when it is wide — our brain <span class="highlight">always judges relative to the container, never in absolute terms</span>.`
+    p1: `<span class="reponse">Yes, the two orange circles are exactly identical.</span> They both have a radius of 40 units. And yet the left circle (surrounded by the large ring) looks smaller, and the right one (in the small ring) looks bigger. Overlap them or hide the rings to convince yourself.`,
+    p2: `This illusion was described in 1865 by the Belgian philosopher and mathematician <strong>Joseph Remi Léopold Delboeuf</strong>. Like the Ebbinghaus illusion, it relies on <span class="cle">relative size estimation</span>: the brain does not perceive a circle in absolute terms, it compares it to its immediate context.`,
+    p3: `But Delboeuf adds a subtlety specific to <em>concentric rings</em>: the perceived size of the central circle depends on the <span class="cle">ratio between the circle and its ring</span>. When the ring is very large, the gap between the two is wide and the circle looks "lost" — hence small. When the ring is only slightly larger, the circle seems to fill almost all the available space — hence large.`,
+    p4: `This phenomenon has unexpected practical applications: studies have shown that serving on a large plate leads people to serve themselves more food, because the portion looks smaller in the large container (the Delboeuf effect applied to plate size). Likewise, the same glass looks fuller when it is narrow than when it is wide — our brain <span class="cle">always judges relative to the container, never in absolute terms</span>.`
   }
 });
 const SVG_EL = document.getElementById('svg');
@@ -269,12 +186,15 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   document.getElementById('btn-anneaux').textContent = I18N.t('ringsHide');
 });
 
-const btnEx = document.getElementById('btn-explain');
-const divEx = document.getElementById('explication');
-btnEx.addEventListener('click', () => {
-  const visible = divEx.classList.toggle('visible');
-  btnEx.textContent = I18N.t(visible ? 'explHide' : 'explShow');
+/* Le panneau est un <details> : l'ouverture, l'etat expose aux lecteurs
+   d'ecran et l'acces clavier sont natifs. On ne met a jour que le libelle. */
+const panneau = document.querySelector('.col-savoir');
+panneau.addEventListener('toggle', () => {
+  panneau.querySelector('summary').textContent =
+    I18N.t(panneau.open ? 'explHide' : 'explShow');
 });
 </script>
+</main>
+
 </body>
 </html>

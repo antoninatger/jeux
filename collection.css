@@ -158,15 +158,15 @@
    élément flottant dans le coin — c'est-à-dire exactement le défaut que
    l'en-tête unifié vient de supprimer.
    ========================================================================= */
+/* L'en-tête occupe toute la largeur ; c'est la grille intérieure qui est
+   bornée et centrée. Cette séparation existe pour le voile ci-dessous : tant
+   que l'en-tête était lui-même borné à 1100 px, son voile devait déborder en
+   `100vw` — or `100vw` compte la barre de défilement, ce qui ajoutait 8 px de
+   débordement horizontal sur toute page ayant un ascenseur vertical. */
 .col-entete {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--sp-3);
+  display: block;
   width: 100%;
-  max-width: 1100px;
-  margin: 0 auto var(--sp-4);
-  padding: var(--sp-2) var(--sp-3);
+  margin: 0 0 var(--sp-4);
   box-sizing: border-box;
   /* Plusieurs jeux posent un canvas en `position:fixed; inset:0` par-dessus
      toute la page (Terre ronde/plate, Mine…). Sans contexte d'empilement
@@ -179,6 +179,17 @@
      l'emporte sur le sélecteur de type, donc il n'y a rien à faire côté jeu. */
   background: transparent;
   border: 0;
+}
+
+.col-entete__grille {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--sp-2) var(--sp-3);
+  box-sizing: border-box;
 }
 
 /* Voile de lisibilité.
@@ -195,11 +206,8 @@
   content: "";
   position: absolute;
   top: -1px;
-  /* pleine largeur de fenêtre : l'en-tête est centré et borné à 1100 px,
-     un voile borné lui aussi dessinerait un rectangle flottant. */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
+  left: 0;
+  right: 0;
   height: calc(100% + var(--sp-5));
   background: linear-gradient(to bottom, var(--entete-voile, var(--bg)) 40%, transparent);
   pointer-events: none;
@@ -209,7 +217,7 @@
 /* Quand la page a déposé un élément dans l'emplacement extra, la grille passe
    à quatre colonnes. Sans contenu, la colonne n'existe pas : pas d'espace
    fantôme ni de `gap` en trop. */
-.col-entete--extra { grid-template-columns: auto 1fr auto auto; }
+.col-entete--extra .col-entete__grille { grid-template-columns: auto 1fr auto auto; }
 
 .col-entete__extra {
   display: flex;
@@ -288,7 +296,7 @@
 /* En dessous de 560 px, les libellés cèdent la place aux seules icônes :
    on garde les zones sur une ligne sans jamais rogner le titre. */
 @media (max-width: 560px) {
-  .col-entete { gap: var(--sp-2); padding: var(--sp-2); }
+  .col-entete__grille { gap: var(--sp-2); padding: var(--sp-2); }
   .col-entete__retour,
   .col-entete__langue,
   .col-entete__extra > * { padding: 0 var(--sp-3); }
@@ -311,7 +319,7 @@
    ligne de téléphone. Le titre passe alors au-dessus, sur toute la largeur,
    et la rangée d'actions reste complète en dessous. */
 @media (max-width: 440px) {
-  .col-entete--extra {
+  .col-entete--extra .col-entete__grille {
     grid-template-columns: auto 1fr auto;
   }
   .col-entete--extra .col-entete__titre {
@@ -320,6 +328,104 @@
     order: -1;
   }
 }
+
+/* =========================================================================
+   Composant « énoncé + panneau pédagogique »
+   Chantier 05 (§5.3/§5.4). Extrait des 10 pages d'illusions, qui le
+   réimplémentaient chacune à sa façon — `.exp-panel` ici, `#explication` là,
+   `.page-hint` contre `#question`. Il dépasse largement les illusions : toute
+   page qui pose une question puis livre le savoir derrière obéit au même
+   schéma (Terre ronde/plate, Graphiques trompeurs, Notes Google…).
+
+   Deux règles de fond :
+   · l'énoncé vient AVANT la manipulation — on ne demande pas de chercher sans
+     dire quoi chercher ;
+   · le savoir est replié par défaut, pour laisser le temps de se tromper.
+
+   Le panneau est un <details> natif : ouverture au clavier, état exposé aux
+   lecteurs d'écran et bouton lisible sans une ligne de JS. Les pages
+   d'illusions dupliquaient chacune un toggle maison pour un résultat moindre.
+   ========================================================================= */
+
+.col-enonce {
+  max-width: 68ch;
+  margin: 0 0 var(--sp-4);
+  font-family: var(--font-texte);
+  font-size: var(--fs-400);
+  line-height: var(--lh-normal);
+  color: var(--txt);
+}
+.col-enonce strong { font-weight: 700; }
+
+/* La consigne d'interaction : « glissez les barres pour comparer ». Elle est
+   secondaire, jamais illisible — c'est le rôle --txt-secondaire qui le
+   garantit (les illusions l'écrivaient en #999, soit 2,85:1 sur blanc). */
+.col-enonce__aide {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-300);
+  font-weight: 600;
+  color: var(--txt-secondaire);
+}
+
+.col-savoir {
+  max-width: 68ch;
+  margin-top: var(--sp-5);
+  border-left: 3px solid var(--acc);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface);
+}
+
+.col-savoir > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--cible);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  font-weight: 700;
+  color: var(--txt);
+  list-style: none;          /* on remplace le marqueur natif par le nôtre */
+}
+.col-savoir > summary::-webkit-details-marker { display: none; }
+.col-savoir > summary::before {
+  content: "▶";
+  font-size: .8em;
+  color: var(--acc);
+  transition: transform .18s;
+}
+.col-savoir[open] > summary::before { transform: rotate(90deg); }
+.col-savoir > summary:hover { color: var(--acc); }
+
+.col-savoir__corps {
+  padding: 0 var(--sp-4) var(--sp-4);
+  /* Le texte du panneau doit rester sélectionnable même si la page a coupé la
+     sélection pour rendre la manipulation confortable — c'est le seul endroit
+     de la page qu'on peut vouloir copier. */
+  user-select: text;
+  -webkit-user-select: text;
+}
+.col-savoir__corps h2 {
+  font-family: var(--font-titre);
+  font-size: var(--fs-500);
+  line-height: var(--lh-serre);
+  color: var(--txt);
+  margin: 0 0 var(--sp-3);
+}
+.col-savoir__corps p {
+  font-size: var(--fs-300);
+  line-height: var(--lh-normal);
+  color: var(--txt);
+  margin: 0 0 var(--sp-3);
+}
+.col-savoir__corps p:last-child { margin-bottom: 0; }
+
+/* La réponse à la question posée : elle doit sauter aux yeux dans le pavé. */
+.col-savoir .reponse { font-weight: 700; color: var(--txt); }
+/* Les notions clés du paragraphe. */
+.col-savoir .cle { font-weight: 600; color: var(--acc); }
 
 /* =========================================================================
    Utilitaires

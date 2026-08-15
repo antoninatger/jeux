@@ -4,129 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">Illusion du Mur du Café</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<link rel="stylesheet" href="illusion.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: system-ui, sans-serif;
-  background: #fff;
-  padding: 24px 20px;
-  user-select: none;
-  -webkit-user-select: none;
-  max-width: 680px;
-}
-
-#question {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-#question strong {
-  color: #111;
-  font-size: 16px;
-}
-
-svg {
-  display: block;
-  max-width: 650px;
-  width: 100%;
-}
-
-#controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-  max-width: 650px;
-  flex-wrap: wrap;
-}
-#btn-reset {
-  font-size: 13px;
-  color: #888;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
-#btn-reset:hover { color: #444; }
-.ctrl-btn {
-  font-size: 13px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 4px 10px;
-  cursor: pointer;
-}
-.ctrl-btn:hover { background: #f5f5f5; }
-
-#btn-explain {
-  display: block;
-  margin-top: 22px;
-  font-size: 14px;
-  color: #555;
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 7px 14px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-#btn-explain:hover { background: #f5f5f5; color: #111; }
-
-#explication {
-  display: none;
-  margin-top: 18px;
-  max-width: 650px;
-  background: #f8f8f8;
-  border-left: 3px solid #E67F39;
-  border-radius: 0 8px 8px 0;
-  padding: 18px 20px;
-  user-select: text;
-  -webkit-user-select: text;
-}
-#explication.visible { display: block; }
-#explication h2 { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 12px; }
-#explication p { font-size: 14px; color: #444; line-height: 1.65; margin-bottom: 10px; }
-#explication p:last-child { margin-bottom: 0; }
-#explication .highlight { color: #E67F39; font-weight: 600; }
-#explication .answer { font-weight: 700; color: #111; }
-
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
-.back-hub{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 15px;margin:10px 0 4px;background:rgba(255,255,255,.92);border:1px solid rgba(15,23,42,.18);color:#334155;text-decoration:none;font:700 .82rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;border-radius:50px;box-shadow:0 1px 4px rgba(15,23,42,.06);transition:transform .2s;}
-.back-hub:hover{transform:translateX(-2px);}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html" data-col-retour-cle="back">
 
-<a class="back-hub" href="index.html" data-i18n="back">← Retour aux illusions</a>
-<p id="question">
-  <strong data-i18n="q">Les lignes grises entre les rangées sont-elles droites ou inclinées ?</strong><br>
-  <span style="font-size:13px;color:#999;" data-i18n="qSub">Utilisez les boutons pour vérifier par vous-même.</span>
-</p>
+<main class="illusion">
 
+  <h1 data-i18n="pageTitle">Illusion du Mur du Café</h1>
+
+<p class="col-enonce">
+    <strong data-i18n="q">Les lignes grises entre les rangées sont-elles droites ou inclinées ?</strong>
+    <span class="col-enonce__aide" data-i18n="qSub">Utilisez les boutons pour vérifier par vous-même.</span>
+  </p>
+
+<div class="illusion__scene">
 <svg id="svg" viewBox="0 0 650 420" xmlns="http://www.w3.org/2000/svg">
   <g id="tiles"></g>
   <g id="mortier"></g>
 </svg>
+  </div>
 
-<div id="controls">
-  <button id="btn-reset" data-i18n="reset">↺ Remettre à neuf</button>
-  <button id="btn-align" class="ctrl-btn" data-i18n="alignDo">Aligner les rangées</button>
-  <button id="btn-color" class="ctrl-btn" data-i18n="colorDo">Colorier le mortier en rouge</button>
+<div class="illusion__commandes">
+  <button type="button" id="btn-reset" class="illusion__btn illusion__btn--discret" data-i18n="reset">↺ Remettre à neuf</button>
+  <button id="btn-align" class="illusion__btn" data-i18n="alignDo">Aligner les rangées</button>
+  <button id="btn-color" class="illusion__btn" data-i18n="colorDo">Colorier le mortier en rouge</button>
 </div>
 
-<button id="btn-explain" data-i18n="explShow">▼ Voir l'explication</button>
-
-<div id="explication">
+<details class="col-savoir">
+    <summary data-i18n="explShow">Voir l'explication</summary>
+    <div class="col-savoir__corps">
   <h2 data-i18n="explTitle">L'illusion du Mur du Café — ce que fait votre cerveau</h2>
 
   <p data-i18n-html="p1">
-    <span class="answer">Les lignes de mortier sont parfaitement droites et horizontales.</span>
+    <span class="reponse">Les lignes de mortier sont parfaitement droites et horizontales.</span>
     Elles ne penchent ni à gauche ni à droite. Alignez les rangées ou colorez le mortier
     en rouge pour le constater immédiatement.
   </p>
@@ -135,7 +50,7 @@ svg {
     Cette illusion a été documentée en 1979 par le psychologue britannique
     <strong>Richard Gregory</strong> après avoir été observée sur le mur carrelé
     d'un café de Bristol. Son mécanisme repose sur un phénomène appelé
-    <span class="highlight">expansion de contraste de bord</span>. Là où un carreau
+    <span class="cle">expansion de contraste de bord</span>. Là où un carreau
     noir jouxte un carreau blanc de la rangée voisine, la frontière entre eux crée
     une micro-région de contraste intense. Le système visuel interprète cette zone
     comme un bord incliné, et extrapole cette pente sur toute la ligne de mortier.
@@ -146,19 +61,21 @@ svg {
     les paires de carreaux qui l'encadrent. Comme les décalages alternent d'une rangée
     à l'autre, les distorsions perçues s'inversent en direction : certaines lignes
     semblent pencher à gauche, d'autres à droite, renforçant l'impression d'une grille
-    <span class="highlight">en accordéon</span>.
+    <span class="cle">en accordéon</span>.
   </p>
 
   <p data-i18n-html="p4">
     La largeur du mortier est cruciale : trop épais ou trop fin, l'illusion disparaît.
     À l'épaisseur optimale, le gris du mortier est traité comme une zone ambiguë dont
     la luminosité se rapproche trop de celle des carreaux adjacents, ce qui
-    <span class="highlight">empêche le cerveau de délimiter clairement les bords</span>
+    <span class="cle">empêche le cerveau de délimiter clairement les bords</span>
     et laisse l'angle apparent flotter entre plusieurs interprétations.
   </p>
-</div>
+    </div>
+  </details>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
@@ -169,12 +86,12 @@ I18N.register({
     reset: "↺ Remettre à neuf",
     alignDo: "Aligner les rangées", alignUndo: "Restaurer le décalage",
     colorDo: "Colorier le mortier en rouge", colorUndo: "Restaurer le gris du mortier",
-    explShow: "▼ Voir l'explication", explHide: "▲ Masquer l'explication",
+    explShow: "Voir l'explication", explHide: "Masquer l'explication",
     explTitle: "L'illusion du Mur du Café — ce que fait votre cerveau",
-    p1: `<span class="answer">Les lignes de mortier sont parfaitement droites et horizontales.</span> Elles ne penchent ni à gauche ni à droite. Alignez les rangées ou colorez le mortier en rouge pour le constater immédiatement.`,
-    p2: `Cette illusion a été documentée en 1979 par le psychologue britannique <strong>Richard Gregory</strong> après avoir été observée sur le mur carrelé d'un café de Bristol. Son mécanisme repose sur un phénomène appelé <span class="highlight">expansion de contraste de bord</span>. Là où un carreau noir jouxte un carreau blanc de la rangée voisine, la frontière entre eux crée une micro-région de contraste intense. Le système visuel interprète cette zone comme un bord incliné, et extrapole cette pente sur toute la ligne de mortier.`,
-    p3: `Chaque ligne de mortier grise est "tiraillée" dans des directions opposées par les paires de carreaux qui l'encadrent. Comme les décalages alternent d'une rangée à l'autre, les distorsions perçues s'inversent en direction : certaines lignes semblent pencher à gauche, d'autres à droite, renforçant l'impression d'une grille <span class="highlight">en accordéon</span>.`,
-    p4: `La largeur du mortier est cruciale : trop épais ou trop fin, l'illusion disparaît. À l'épaisseur optimale, le gris du mortier est traité comme une zone ambiguë dont la luminosité se rapproche trop de celle des carreaux adjacents, ce qui <span class="highlight">empêche le cerveau de délimiter clairement les bords</span> et laisse l'angle apparent flotter entre plusieurs interprétations.`
+    p1: `<span class="reponse">Les lignes de mortier sont parfaitement droites et horizontales.</span> Elles ne penchent ni à gauche ni à droite. Alignez les rangées ou colorez le mortier en rouge pour le constater immédiatement.`,
+    p2: `Cette illusion a été documentée en 1979 par le psychologue britannique <strong>Richard Gregory</strong> après avoir été observée sur le mur carrelé d'un café de Bristol. Son mécanisme repose sur un phénomène appelé <span class="cle">expansion de contraste de bord</span>. Là où un carreau noir jouxte un carreau blanc de la rangée voisine, la frontière entre eux crée une micro-région de contraste intense. Le système visuel interprète cette zone comme un bord incliné, et extrapole cette pente sur toute la ligne de mortier.`,
+    p3: `Chaque ligne de mortier grise est "tiraillée" dans des directions opposées par les paires de carreaux qui l'encadrent. Comme les décalages alternent d'une rangée à l'autre, les distorsions perçues s'inversent en direction : certaines lignes semblent pencher à gauche, d'autres à droite, renforçant l'impression d'une grille <span class="cle">en accordéon</span>.`,
+    p4: `La largeur du mortier est cruciale : trop épais ou trop fin, l'illusion disparaît. À l'épaisseur optimale, le gris du mortier est traité comme une zone ambiguë dont la luminosité se rapproche trop de celle des carreaux adjacents, ce qui <span class="cle">empêche le cerveau de délimiter clairement les bords</span> et laisse l'angle apparent flotter entre plusieurs interprétations.`
   },
   en: {
     back: "← Back to illusions",
@@ -184,12 +101,12 @@ I18N.register({
     reset: "↺ Reset",
     alignDo: "Align the rows", alignUndo: "Restore the offset",
     colorDo: "Colour the mortar red", colorUndo: "Restore the grey mortar",
-    explShow: "▼ See the explanation", explHide: "▲ Hide the explanation",
+    explShow: "See the explanation", explHide: "Hide the explanation",
     explTitle: "The Café Wall illusion — what your brain is doing",
-    p1: `<span class="answer">The mortar lines are perfectly straight and horizontal.</span> They lean neither left nor right. Align the rows or colour the mortar red to see it at once.`,
-    p2: `This illusion was documented in 1979 by the British psychologist <strong>Richard Gregory</strong> after being spotted on the tiled wall of a café in Bristol. Its mechanism relies on a phenomenon called <span class="highlight">border-contrast expansion</span>. Where a black tile sits next to a white tile in the neighbouring row, the boundary between them creates a micro-region of intense contrast. The visual system reads this zone as a slanted edge and extrapolates that slope along the whole mortar line.`,
-    p3: `Each grey mortar line is "tugged" in opposite directions by the pairs of tiles framing it. Since the offsets alternate from one row to the next, the perceived distortions reverse direction: some lines seem to lean left, others right, reinforcing the impression of an <span class="highlight">accordion-like</span> grid.`,
-    p4: `The width of the mortar is crucial: too thick or too thin and the illusion disappears. At the optimal thickness, the grey of the mortar is treated as an ambiguous zone whose brightness is too close to that of the adjacent tiles, which <span class="highlight">prevents the brain from clearly delimiting the edges</span> and leaves the apparent angle floating between several interpretations.`
+    p1: `<span class="reponse">The mortar lines are perfectly straight and horizontal.</span> They lean neither left nor right. Align the rows or colour the mortar red to see it at once.`,
+    p2: `This illusion was documented in 1979 by the British psychologist <strong>Richard Gregory</strong> after being spotted on the tiled wall of a café in Bristol. Its mechanism relies on a phenomenon called <span class="cle">border-contrast expansion</span>. Where a black tile sits next to a white tile in the neighbouring row, the boundary between them creates a micro-region of intense contrast. The visual system reads this zone as a slanted edge and extrapolates that slope along the whole mortar line.`,
+    p3: `Each grey mortar line is "tugged" in opposite directions by the pairs of tiles framing it. Since the offsets alternate from one row to the next, the perceived distortions reverse direction: some lines seem to lean left, others right, reinforcing the impression of an <span class="cle">accordion-like</span> grid.`,
+    p4: `The width of the mortar is crucial: too thick or too thin and the illusion disappears. At the optimal thickness, the grey of the mortar is treated as an ambiguous zone whose brightness is too close to that of the adjacent tiles, which <span class="cle">prevents the brain from clearly delimiting the edges</span> and leaves the apparent angle floating between several interpretations.`
   }
 });
 const SVG_EL = document.getElementById('svg');
@@ -271,12 +188,15 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   draw();
 });
 
-const btnEx = document.getElementById('btn-explain');
-const divEx = document.getElementById('explication');
-btnEx.addEventListener('click', () => {
-  const visible = divEx.classList.toggle('visible');
-  btnEx.textContent = I18N.t(visible ? 'explHide' : 'explShow');
+/* Le panneau est un <details> : l'ouverture, l'etat expose aux lecteurs
+   d'ecran et l'acces clavier sont natifs. On ne met a jour que le libelle. */
+const panneau = document.querySelector('.col-savoir');
+panneau.addEventListener('toggle', () => {
+  panneau.querySelector('summary').textContent =
+    I18N.t(panneau.open ? 'explHide' : 'explShow');
 });
 </script>
+</main>
+
 </body>
 </html>

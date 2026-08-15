@@ -125,6 +125,11 @@
 
     var entete = document.createElement('header');
     entete.className = 'col-entete';
+    /* Grille intérieure : l'en-tête est pleine largeur (pour son voile), la
+       grille est bornée et centrée. Voir le commentaire dans collection.css. */
+    var grille = document.createElement('div');
+    grille.className = 'col-entete__grille';
+    entete.appendChild(grille);
 
     /* ── Retour ────────────────────────────────────────────────────────── */
     var retour = document.createElement('a');
@@ -134,16 +139,25 @@
                        '<span class="col-entete__label"></span>';
     /* textContent plutôt que innerHTML pour le libellé : il peut venir d'un
        data-* de page, on ne le réinjecte pas en HTML. */
-    retour.querySelector('.col-entete__label').textContent = txt('retour');
-    retour.setAttribute('aria-label', txt('retour'));
+    /* Le libellé du retour est surchargeable par clé i18n : les pages
+       d'illusions reviennent à leur propre index (« Retour aux illusions »),
+       pas au portail. */
+    var cleRetour = document.body.getAttribute('data-col-retour-cle');
+    var libRetour = (cleRetour && window.I18N) ? window.I18N.t(cleRetour) : txt('retour');
+    /* Les dictionnaires existants écrivent « ← Retour aux illusions » : la
+       flèche y était collée au texte faute d'en-tête. C'est l'en-tête qui la
+       dessine maintenant — sans ce nettoyage on lirait « ←← Retour ». */
+    libRetour = libRetour.replace(/^[\s←◀«<]+/, '').trim();
+    retour.querySelector('.col-entete__label').textContent = libRetour;
+    retour.setAttribute('aria-label', libRetour);
 
     /* ── Titre ─────────────────────────────────────────────────────────── */
     var h = document.createElement('h1');
     h.className = 'col-entete__titre';
     h.textContent = titre.texte;
 
-    entete.appendChild(retour);
-    entete.appendChild(h);
+    grille.appendChild(retour);
+    grille.appendChild(h);
 
     /* ── Emplacement extra ───────────────────────────────────────────────
        La page marque `data-col-entete-extra` sur les éléments qu'elle veut
@@ -160,7 +174,7 @@
       var zone = document.createElement('div');
       zone.className = 'col-entete__extra';
       extras.forEach(function (el) { zone.appendChild(el); });
-      entete.appendChild(zone);
+      grille.appendChild(zone);
       entete.classList.add('col-entete--extra');
     }
 
@@ -179,12 +193,12 @@
       langue.setAttribute('aria-label',
         lang() === 'fr' ? LABELS.fr.versEN : LABELS.en.versFR);
       langue.addEventListener('click', bascule);
-      entete.appendChild(langue);
+      grille.appendChild(langue);
     } else {
       var vide = document.createElement('span');
       vide.className = 'col-entete__vide';
       vide.setAttribute('aria-hidden', 'true');
-      entete.appendChild(vide);
+      grille.appendChild(vide);
     }
 
     /* ── Remplacement des anciens éléments ─────────────────────────────── */

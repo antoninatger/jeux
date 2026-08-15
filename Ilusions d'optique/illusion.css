@@ -1,0 +1,121 @@
+/* =========================================================================
+   illusion.css — gabarit commun aux 10 pages d'illusions
+   Chantier 05 (§5.4), tranche 2 étape 2.
+
+   Avant : aucune feuille ni script commun. Chaque page redéfinissait ses
+   classes sous un nom différent (`.exp-panel` ici, `#explication` là,
+   `.page-hint` contre `#question`, `.ctrl-btn` contre `#btn-reset`), et
+   recopiait son propre bloc de focus et de `prefers-reduced-motion`.
+
+   À charger APRÈS collection.css, qui fournit l'en-tête unifié et le
+   composant « énoncé + panneau pédagogique » (.col-enonce / .col-savoir) —
+   ce dernier sert bien au-delà des illusions, il vit donc dans le socle.
+
+   Ne reste ici que ce qui est propre à ces pages : le fond clair, la scène
+   (SVG ou image) et la rangée de commandes sous la figure.
+   ========================================================================= */
+
+:root {
+  /* Identité des illusions : fond blanc, une seule couleur d'accent.
+     C'est le seul endroit où elle est déclarée — les dix pages en héritent. */
+  --bg:             #ffffff;
+  --surface:        #f7f7f8;
+  --bordure:        #e2e2e5;
+  --txt:            #1a1a1c;
+  --txt-secondaire: #63636b;   /* 6,1:1 sur blanc — les pages écrivaient #999,
+                                  soit 2,85:1 (§8.4 du brief) */
+  --acc:            #e0662a;   /* 4,6:1 sur blanc */
+  --acc-txt:        #ffffff;
+  --focus:          #0b6fb8;   /* l'anneau jaune du socle est illisible ici */
+  --font-texte:     system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-titre:     var(--font-texte);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: var(--font-texte);
+  padding: 0 var(--sp-5) var(--sp-6);
+  /* La manipulation se fait à la souris ou au doigt : sans ça, glisser une
+     barre sélectionne le texte de la page. Le panneau pédagogique rétablit
+     la sélection pour lui-même (voir .col-savoir__corps). */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Le contenu suit la largeur de l'en-tête, pour que la page fasse un bloc. */
+.illusion {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ── La scène : SVG manipulable ou image avec calque ───────────────────── */
+.illusion__scene {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin: var(--sp-4) 0;
+}
+.illusion__scene svg,
+.illusion__scene img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Calque SVG superposé à une image (échiquier d'Adelson). */
+.illusion__scene .illusion__calque {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Les éléments qu'on déplace. `touch-action:none` évite que le navigateur
+   interprète le glissement comme un défilement de page. */
+.illusion__prise { cursor: grab; touch-action: none; }
+.illusion__prise:active,
+.illusion__prise.tire { cursor: grabbing; }
+
+/* ── Rangée de commandes sous la figure ────────────────────────────────── */
+.illusion__commandes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+/* Un seul gabarit de bouton, là où les pages en avaient trois. Les 44 px
+   viennent du socle ; on ne redéclare que l'habillage. */
+.illusion__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-4);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--txt);
+  font-family: var(--font-texte);
+  font-size: var(--fs-200);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.illusion__btn:hover { border-color: var(--acc); color: var(--acc); }
+
+/* Bouton discret (« remettre à neuf »), sans cadre mais toujours à 44 px. */
+.illusion__btn--discret {
+  border-color: transparent;
+  background: none;
+  color: var(--txt-secondaire);
+  text-decoration: underline;
+  padding: 0 var(--sp-2);
+}
+.illusion__btn--discret:hover { color: var(--acc); border-color: transparent; }
+
+@media (max-width: 480px) {
+  body { padding: 0 var(--sp-3) var(--sp-5); }
+}
