@@ -555,6 +555,63 @@ applications. Après, il en coûte une.
 > rapport avec la reprise typographique. Les 14 tailles en dur d'Emprise (11 à
 > 12,5 px) sont également passées sur `--fs-100`.
 
+> ### ✅ Relecture indépendante de l'étape 1 — deux réserves levées, trois points ouverts
+>
+> Contrôlé en **360, 390 et 1440 px**, par mesure d'intersection réelle des
+> rectangles et relevé de toutes les tailles de police effectivement rendues.
+>
+> **Confirmé :**
+>
+> - **Mine : 0 élément sous 12,8 px** aux trois largeurs (contre 11 avant, dont
+>   4,5 px). Aucun débordement, aucune cible sous 44 px. La réserve 1 est levée,
+>   et la reprise de mise en page a bien été faite — pas seulement les tailles.
+> - **L'emplacement `data-col-entete-extra` fonctionne** : « Besoin d'aide ? »
+>   mesure **44 px** et vit dans l'en-tête. La réserve 2 est levée sur son objet.
+>
+> **⚠️ Point ouvert 1 — le bandeau « FICTION » recouvre encore le titre en 360 px.**
+> Le lien d'aide, lui, ne recouvre plus rien : le constat porte sur autre chose.
+> `.sample-watermark` est en `position:fixed`, et l'espace réservé au-dessus de
+> l'en-tête est **figé à 70 px** — dimensionné pour le bandeau tel qu'il s'affiche
+> en 1440 px (23 px, une ligne). Quand il passe à 4 puis 5 lignes, il descend
+> jusqu'à 98 px :
+>
+> | Largeur | Hauteur du bandeau | Haut de l'en-tête | Recouvrement |
+> |---|---|---|---|
+> | 1440 px | 23 px | 70 px | aucun |
+> | 390 px | 68 px | 70 px | 6 px — sans effet visible |
+> | **360 px** | **98 px** | 70 px | **36 px — « Signaux » est écrit à travers « contrôle dans le couple »** |
+>
+> À corriger : réserver la hauteur **réelle** du bandeau au lieu d'une constante —
+> le socle publie déjà `--entete-h` sur le même principe, faire de même pour le
+> bandeau (ou le sortir de `position:fixed` et le laisser dans le flux).
+>
+> **⚠️ Point ouvert 2 — le libellé d'aide disparaît sous 390 px.** Le bouton ne
+> montre plus que l'émoji 🆘 ; le texte « Besoin d'aide ? » reste dans le DOM
+> (donc lu par un lecteur d'écran) mais n'est plus visible. La cible fait bien
+> 44 px, mais sur un jeu qui traite des violences dans le couple, une icône seule
+> est une affordance faible pour un utilisateur pressé ou en difficulté.
+> **À arbitrer avec Antonin** : garder le texte visible même étroit (quitte à
+> réduire ailleurs) ou assumer l'icône seule.
+>
+> **⚠️ Point ouvert 3 — l'échelle n'est adoptée que sur les pages retravaillées.**
+> `mine.html` et `Emprise/index.html` sont à 0 élément sous le plancher. Mais les
+> deux autres pages migrées en tranche 1, **avant** que la recette ne comporte
+> l'étape typographique, ne l'ont jamais reçue :
+>
+> | Page migrée | Éléments sous 12,8 px | Détail |
+> |---|---|---|
+> | `mine.html` | **0** | ✅ |
+> | `Emprise/index.html` | **0** | ✅ |
+> | `terre_ronde_plate.html` | **9** | 10,9 à 11,5 px — crédit auteur, `.sbtn` ① à ⑤, légendes du curseur |
+> | `echecs.html` | **37** | 11,2 px — les repères a-h / 1-8 de l'échiquier |
+>
+> Sans passe de rattrapage, « migrée » ne voudra pas dire la même chose pour les
+> quatre premières pages et pour les 55 suivantes. **À traiter au début de
+> l'étape 2**, c'est une demi-heure. Cas particulier à trancher pour `echecs.html` :
+> les 32 repères de l'échiquier sont des étiquettes de grille très denses —
+> soit on les monte à 12,8 px en réduisant les cases, soit on les déclare
+> exception documentée dans `collection.css`. Ne pas laisser le choix implicite.
+
 
 
 **1a. Emprise : un emplacement libre dans l'en-tête.**
@@ -581,7 +638,15 @@ primaire : c'est la page de la collection où l'enjeu de lisibilité est le plus
 « reprendre les tailles sur les jetons », sans quoi le plancher à 12,8 px restera une
 intention que personne n'applique.
 
-### Étape 2 — Les 10 illusions, §5.4 ≈ 2 j
+### Étape 2 — Les 10 illusions, §5.4 ≈ 2 j — ← PROCHAINE ÉTAPE
+
+**Commencer par les trois points ouverts de la relecture ci-dessus** (≈ 1 h) :
+hauteur réelle du bandeau d'Emprise, arbitrage du libellé d'aide, rattrapage
+typographique de `terre_ronde_plate.html` et `echecs.html`. Ce sont les mêmes
+catégories de défauts que ceux qui se répéteront 55 fois : mieux vaut fermer le
+sujet sur 2 pages que le retrouver sur 55.
+
+Puis le lot des illusions.
 
 Meilleur premier lot : dix pages quasi identiques, sans identité visuelle forte à
 préserver, et déjà dotées de la pastille de retour du chantier 01.
