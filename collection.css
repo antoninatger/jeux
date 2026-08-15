@@ -292,9 +292,18 @@
   .col-entete__retour,
   .col-entete__langue,
   .col-entete__extra > * { padding: 0 var(--sp-3); }
+  /* Seuls « retour » et « langue » perdent leur libellé : ← et 🌐 sont des
+     icônes conventionnelles, comprises sans texte. Le contenu de
+     l'emplacement extra le GARDE — il est propre au jeu, donc imprévisible,
+     et une icône seule y serait une affordance faible. Sur Emprise,
+     « Besoin d'aide ? » réduit à 🆘 serait illisible pour quelqu'un en
+     difficulté, alors que la place existe : la rangée occupe 230 px sur les
+     296 disponibles en 320 px, précisément parce que les deux autres
+     pastilles sont passées en icône seule.
+     Une page dont l'extra se suffit d'une icône masque son libellé
+     elle-même. */
   .col-entete__retour .col-entete__label,
-  .col-entete__langue .col-entete__label,
-  .col-entete__extra .col-entete__label { display: none; }
+  .col-entete__langue .col-entete__label { display: none; }
   .col-entete__titre { font-size: var(--fs-400); }
 }
 

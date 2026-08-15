@@ -34,23 +34,31 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 70px 24px 24px;
+  padding: 12px 24px 24px;
 }
 
+/* Le bandeau « FICTION » était en `position:fixed`, et la place réservée
+   au-dessus de l'en-tête était figée à 70 px — la hauteur qu'il fait en
+   1440 px, sur une ligne. À 360 px il en fait cinq, soit 98 px, et il
+   s'écrivait par-dessus le titre « Signaux ».
+
+   Plutôt que de réserver dynamiquement sa hauteur, on le remet simplement
+   dans le flux : la hauteur réelle est alors toujours juste, à n'importe
+   quelle largeur, sans mesure ni variable à tenir à jour. `order: -1` le
+   maintient en tête (<body> est une colonne flex) alors même que
+   collection.js insère l'en-tête en premier enfant du DOM. */
 .sample-watermark {
-  position: fixed;
-  left: 50%;
-  top: 8px;
-  transform: translateX(-50%);
+  order: -1;
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 10px;
   background: rgba(255, 0, 0, 0.08);
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
   font-weight: 700;
   color: #a00;
   font-size: var(--fs-100);
-  z-index: 9999;
   text-align: center;
-  max-width: 90vw;
 }
 
 /* Chantier 05, tranche 2 : ce lien vit désormais dans l'emplacement extra de
