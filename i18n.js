@@ -17,6 +17,7 @@
      data-i18n-title="…"          -> attribut title
      data-i18n-placeholder="…"    -> attribut placeholder
      data-i18n-aria-label="…"     -> attribut aria-label
+     data-i18n-content="…"        -> attribut content (meta description, og:*)
 
    Langue : ?lang=en dans l'URL (défaut = fr), mémorisée en localStorage
    pour rester cohérente d'une page à l'autre. Un bouton 🇬🇧/🇫🇷 fixe est
@@ -59,6 +60,12 @@
     });
     each(root, '[data-i18n-aria-label]', function (el) {
       var v = t(el.getAttribute('data-i18n-aria-label')); if (v != null) el.setAttribute('aria-label', v);
+    });
+    /* Attribut `content` : sert aux <meta name="description"> et aux balises
+       Open Graph. Sans lui, la description d'une page partagee restait en
+       francais en anglais (chantier 07 §11.4 : 4 pages sur 61 en ont une). */
+    each(root, '[data-i18n-content]', function (el) {
+      var v = t(el.getAttribute('data-i18n-content')); if (v != null) el.setAttribute('content', v);
     });
     document.documentElement.lang = lang;
   }

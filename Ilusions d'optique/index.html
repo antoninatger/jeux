@@ -4,72 +4,96 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="pageTitle">Illusions d'optique</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<link rel="stylesheet" href="illusion.css">
 <style>
-  :root{ --bg:#0f172a; --card:#1e293b; --txt:#e2e8f0; --doux:#94a3b8; --acc:#38bdf8; }
-  *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'Nunito',system-ui,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--txt); }
-  header h1{ font-weight:800; }
-  :where(button,a,[tabindex]):focus-visible{ outline:3px solid var(--acc); outline-offset:2px; border-radius:6px; }
-  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.001ms!important; transition-duration:.001ms!important; } }
-  header{ padding:40px 20px 24px; text-align:center; }
-  header h1{ margin:0 0 6px; font-size:1.9em; }
-  header p{ margin:0; color:var(--doux); }
-  .back{ display:inline-block; margin:16px 0 0; color:var(--acc); text-decoration:none; font-size:.9em; }
-  .grid{ max-width:900px; margin:0 auto; padding:24px 20px 60px; display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
-  a.card{ background:var(--card); border-radius:14px; padding:18px 16px; text-decoration:none;
-    color:var(--txt); border:1px solid #334155; transition:.15s; }
-  a.card:hover{ transform:translateY(-3px); border-color:var(--acc); }
-  a.card b{ display:block; font-size:1.05em; }
-  a.card span{ color:var(--doux); font-size:.85em; }
+  /* Le hub était resté seul en thème sombre alors que les dix pages qu'il
+     liste sont claires : on arrivait sur un design et on basculait sur un
+     autre en cliquant. Il prend maintenant l'identité déclarée une fois pour
+     toutes dans illusion.css. */
+  .illusion { max-width: 900px; }
+  .hub-sous {
+    margin: 0 0 var(--sp-5);
+    font-family: var(--font-texte);
+    font-size: var(--fs-300);
+    color: var(--txt-secondaire);
+  }
+  .hub-cred { margin-top: var(--sp-6); font-size: var(--fs-200); color: var(--txt-secondaire); }
+  .hub-cred a { color: var(--acc); }
 </style>
 </head>
-<body>
-  <header>
-    <h1 data-i18n="h1">👁️ Illusions d'optique</h1>
-    <p data-i18n="sub">{n} illusions classiques à explorer</p>
-    <p class="cred-atger" style="margin:6px 0 0;font-size:.82rem;font-weight:600;color:var(--doux);">par <a href="https://antoninatger.com" target="_blank" style="color:var(--acc);text-decoration:none;">Antonin Atger</a></p>
-    <a class="back" href="../index.html" data-i18n="back">← Retour à tous les jeux</a>
-  </header>
-  <div class="grid">
-    <a class="card" href="muller_lyer_illusion.html"><b>Müller-Lyer</b><span data-i18n="d1">Les flèches trompeuses</span></a>
-    <a class="card" href="ponzo.html"><b>Ponzo</b><span data-i18n="d2">La perspective qui ment</span></a>
-    <a class="card" href="ebbinghaus.html"><b>Ebbinghaus</b><span data-i18n="d3">Le cercle central</span></a>
-    <a class="card" href="delboeuf.html"><b>Delbœuf</b><span data-i18n="d4">Taille et entourage</span></a>
-    <a class="card" href="hering.html"><b>Hering</b><span data-i18n="d5">Les lignes courbées</span></a>
-    <a class="card" href="zollner.html"><b>Zöllner</b><span data-i18n="d6">Les parallèles penchées</span></a>
-    <a class="card" href="poggendorff.html"><b>Poggendorff</b><span data-i18n="d7">La ligne interrompue</span></a>
-    <a class="card" href="cafe_wall.html"><b>Café-wall</b><span data-i18n="d8">Le mur du café</span></a>
-    <a class="card" href="contraste_simultane.html"><b data-i18n="nContraste">Contraste simultané</b><span data-i18n="d9">Le gris qui change</span></a>
-    <a class="card" href="adelson.html"><b data-i18n="nAdelson">Échiquier d'Adelson</b><span data-i18n="d10">Les cases A et B</span></a>
+<body data-col-retour="../index.html" data-col-retour-cle="back">
+
+<main class="illusion">
+
+  <h1 data-i18n="h1">👁️ Illusions d'optique</h1>
+  <p class="hub-sous" data-i18n="sub">{n} illusions classiques à explorer</p>
+
+  <div class="col-cartes">
+    <a class="col-carte" href="muller_lyer_illusion.html" style="--c:#e0662a">
+      <span class="col-carte__titre">Müller-Lyer</span>
+      <span class="col-carte__desc" data-i18n="d1">Les flèches trompeuses</span></a>
+    <a class="col-carte" href="ponzo.html" style="--c:#d0312d">
+      <span class="col-carte__titre">Ponzo</span>
+      <span class="col-carte__desc" data-i18n="d2">La perspective qui ment</span></a>
+    <a class="col-carte" href="ebbinghaus.html" style="--c:#0b6fb8">
+      <span class="col-carte__titre">Ebbinghaus</span>
+      <span class="col-carte__desc" data-i18n="d3">Le cercle central</span></a>
+    <a class="col-carte" href="delboeuf.html" style="--c:#7a3ea3">
+      <span class="col-carte__titre">Delbœuf</span>
+      <span class="col-carte__desc" data-i18n="d4">Taille et entourage</span></a>
+    <a class="col-carte" href="hering.html" style="--c:#1a7f5a">
+      <span class="col-carte__titre">Hering</span>
+      <span class="col-carte__desc" data-i18n="d5">Les lignes courbées</span></a>
+    <a class="col-carte" href="zollner.html" style="--c:#b8860b">
+      <span class="col-carte__titre">Zöllner</span>
+      <span class="col-carte__desc" data-i18n="d6">Les parallèles penchées</span></a>
+    <a class="col-carte" href="poggendorff.html" style="--c:#0b6fb8">
+      <span class="col-carte__titre">Poggendorff</span>
+      <span class="col-carte__desc" data-i18n="d7">La ligne interrompue</span></a>
+    <a class="col-carte" href="cafe_wall.html" style="--c:#3e3e3e">
+      <span class="col-carte__titre">Café-wall</span>
+      <span class="col-carte__desc" data-i18n="d8">Le mur du café</span></a>
+    <a class="col-carte" href="contraste_simultane.html" style="--c:#63636b">
+      <span class="col-carte__titre" data-i18n="nContraste">Contraste simultané</span>
+      <span class="col-carte__desc" data-i18n="d9">Le gris qui change</span></a>
+    <a class="col-carte" href="adelson.html" style="--c:#1a7f5a">
+      <span class="col-carte__titre" data-i18n="nAdelson">Échiquier d'Adelson</span>
+      <span class="col-carte__desc" data-i18n="d10">Les cases A et B</span></a>
   </div>
-  <script src="../i18n.js"></script>
-  <script>
-  I18N.register({
-    fr: {
-      pageTitle: "Illusions d'optique", h1: "👁️ Illusions d'optique",
-      sub: "{n} illusions classiques à explorer", back: "← Retour à tous les jeux",
-      nContraste: "Contraste simultané", nAdelson: "Échiquier d'Adelson",
-      d1: "Les flèches trompeuses", d2: "La perspective qui ment", d3: "Le cercle central",
-      d4: "Taille et entourage", d5: "Les lignes courbées", d6: "Les parallèles penchées",
-      d7: "La ligne interrompue", d8: "Le mur du café", d9: "Le gris qui change", d10: "Les cases A et B"
-    },
-    en: {
-      pageTitle: "Optical Illusions", h1: "👁️ Optical Illusions",
-      sub: "{n} classic illusions to explore", back: "← Back to all games",
-      nContraste: "Simultaneous Contrast", nAdelson: "Adelson's Checkerboard",
-      d1: "The deceptive arrows", d2: "The lying perspective", d3: "The central circle",
-      d4: "Size and surroundings", d5: "The bent lines", d6: "The leaning parallels",
-      d7: "The interrupted line", d8: "The café wall", d9: "The grey that shifts", d10: "Squares A and B"
-    }
-  });
-  </script>
+
+  <p class="hub-cred">par <a href="https://antoninatger.com" target="_blank" rel="noopener">Antonin Atger</a></p>
+
+</main>
+
+<script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
-/* Compteur de contenu : le sous-titre reflete le nombre reel d'illusions. */
+I18N.register({
+  fr: {
+    pageTitle: "Illusions d'optique", h1: "👁️ Illusions d'optique",
+    sub: "{n} illusions classiques à explorer", back: "Retour à tous les jeux",
+    nContraste: "Contraste simultané", nAdelson: "Échiquier d'Adelson",
+    d1: "Les flèches trompeuses", d2: "La perspective qui ment", d3: "Le cercle central",
+    d4: "Taille et entourage", d5: "Les lignes courbées", d6: "Les parallèles penchées",
+    d7: "La ligne interrompue", d8: "Le mur du café", d9: "Le gris qui change", d10: "Les cases A et B"
+  },
+  en: {
+    pageTitle: "Optical Illusions", h1: "👁️ Optical Illusions",
+    sub: "{n} classic illusions to explore", back: "Back to all games",
+    nContraste: "Simultaneous Contrast", nAdelson: "Adelson's Checkerboard",
+    d1: "The deceptive arrows", d2: "The lying perspective", d3: "The central circle",
+    d4: "Size and surroundings", d5: "The bent lines", d6: "The leaning parallels",
+    d7: "The interrupted line", d8: "The café wall", d9: "The grey that shifts", d10: "Squares A and B"
+  }
+});
+
+/* Compteur de contenu : le sous-titre reflète le nombre réel d'illusions,
+   pour qu'il ne puisse plus mentir si on en ajoute une. */
 window.addEventListener('load', function () {
   var el = document.querySelector('[data-i18n="sub"]');
-  var n = document.querySelectorAll('.grid a.card').length;
+  var n = document.querySelectorAll('.col-cartes .col-carte').length;
   if (el && n) el.textContent = el.textContent.replace('{n}', n);
 });
 </script>

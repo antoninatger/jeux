@@ -428,6 +428,174 @@
 .col-savoir .cle { font-weight: 600; color: var(--acc); }
 
 /* =========================================================================
+   Boutons d'action
+   Extraits de `.bigbtn` / `.bigbtn.ghost`, présents à l'identique dans
+   radar-desinfo, chasse-aux-biais, grand-oral et radarnaque. Les écrans
+   d'intro et de fin ci-dessous s'en servent ; n'importe quelle page aussi.
+   ========================================================================= */
+.col-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--cible);
+  padding: 0 var(--sp-5);
+  border: 2px solid var(--acc);
+  border-radius: var(--radius-pill);
+  background: var(--acc);
+  color: var(--acc-txt);
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter .15s, transform .15s;
+}
+.col-btn:hover { filter: brightness(1.08); }
+.col-btn:active { transform: scale(.98); }
+
+/* Action secondaire : même poids visuel de contour, sans le remplissage. */
+.col-btn--fantome {
+  background: transparent;
+  color: var(--acc);
+}
+.col-btn--fantome:hover { background: color-mix(in srgb, var(--acc) 12%, transparent); }
+
+/* =========================================================================
+   Écrans d'intro et de fin — §5.3
+   Extraits de l'existant, pas devinés : `#intro > .brief` suivi de
+   `.menu-btns` est déjà le motif de radar-desinfo, chasse-aux-biais,
+   grand-oral et radarnaque, à l'identique. Ce qui manquait partout, et que
+   le composant apporte, c'est la ligne de MÉTA : durée annoncée, niveau,
+   commandes. Un enseignant voyait douze jeux sans savoir lequel dure dix
+   minutes, et un élève démarrait sans savoir sur quoi appuyer.
+   ========================================================================= */
+.col-intro,
+.col-fin {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Le pavé de règles. */
+.col-intro__brief {
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-4);
+  text-align: left;
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  line-height: var(--lh-normal);
+  color: var(--txt);
+}
+.col-intro__brief p + p { margin-top: var(--sp-3); }
+.col-intro__brief b, .col-intro__brief strong { color: var(--acc); }
+
+/* Durée · niveau · commandes. Une liste de puces factuelles, pas une phrase :
+   c'est ce qu'on lit en diagonale avant de se lancer. */
+.col-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-4);
+  padding: 0;
+  list-style: none;
+}
+.col-meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  font-family: var(--font-texte);
+  font-size: var(--fs-200);
+  font-weight: 700;
+  color: var(--txt-secondaire);
+}
+
+/* La rangée d'actions, commune à l'intro et à la fin. */
+.col-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+/* ── Écran de fin ─────────────────────────────────────────────────────── */
+.col-fin__titre {
+  font-family: var(--font-titre);
+  font-size: var(--fs-600);
+  line-height: var(--lh-serre);
+  color: var(--acc);
+  margin: 0 0 var(--sp-3);
+}
+.col-fin__score {
+  font-family: var(--font-titre);
+  font-size: var(--fs-700);
+  line-height: 1;
+  color: var(--txt);
+  margin: 0 0 var(--sp-3);
+}
+.col-fin__msg {
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  line-height: var(--lh-normal);
+  color: var(--txt-secondaire);
+  margin: 0 0 var(--sp-5);
+}
+
+/* =========================================================================
+   Grille de cartes — le hub d'une famille de pages
+   Extraite des quatre hubs qui la réimplémentaient : le portail, l'arcade,
+   les illusions et les trois catalogues. Tous avaient déjà `a.card` avec une
+   couleur d'accent portée par `--c`, un visuel, un titre et une description.
+   ========================================================================= */
+.col-cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--sp-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.col-carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  /* la carte entière est cliquable : la cible dépasse largement les 44 px */
+  padding: var(--sp-4);
+  border: 1px solid var(--bordure);
+  border-left: 3px solid var(--c, var(--acc));
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--txt);
+  text-decoration: none;
+  transition: transform .15s, border-color .15s;
+}
+.col-carte:hover {
+  transform: translateY(-3px);
+  border-color: var(--c, var(--acc));
+}
+.col-carte__icone { font-size: var(--fs-500); line-height: 1; }
+.col-carte__titre {
+  font-family: var(--font-titre);
+  font-size: var(--fs-400);
+  font-weight: 800;
+}
+.col-carte__desc {
+  font-family: var(--font-texte);
+  font-size: var(--fs-200);
+  line-height: var(--lh-normal);
+  color: var(--txt-secondaire);
+}
+
+/* =========================================================================
    Utilitaires
    ========================================================================= */
 

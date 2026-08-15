@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="pageTitle">Gabarit — nouveau jeu</title>
+<meta name="description" data-i18n-content="metaDesc"
+      content="Point de départ pour un nouveau jeu de la collection : en-tête, accessibilité, i18n et responsive déjà en place.">
+
+<!-- ── Le socle, TOUJOURS dans cet ordre ────────────────────────────────
+     1. les polices servies depuis le dépôt (jamais Google Fonts) ;
+     2. collection.css : en-tête, focus, échelle typo, cibles 44 px,
+        composants (.col-enonce, .col-savoir, .col-intro, .col-fin, cartes) ;
+     3. la feuille du jeu, qui surcharge ce qu'elle veut.
+     Depuis un sous-dossier, les deux premiers chemins prennent « ../ ». -->
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<style>
+  /* ── L'IDENTITÉ DU JEU, ET RIEN D'AUTRE ─────────────────────────────
+     Le socle impose la structure et le contraste, pas la direction
+     artistique. On redéfinit ici les rôles ; tout le reste est hérité.
+
+     --txt-secondaire est le seul rôle CONTRAINT : il doit tenir 4,5:1 sur
+     --bg. Vérifier la valeur, ne pas la recopier au hasard — c'est
+     exactement là que la collection échouait avant le chantier 05. */
+  :root {
+    --bg:             #101726;
+    --surface:        #182033;
+    --bordure:        rgba(255, 255, 255, .12);
+    --txt:            #eef2f8;
+    --txt-secondaire: #9fb0c8;   /* 7,1:1 sur --bg */
+    --acc:            #5ec8d8;
+    --acc-txt:        #06121c;
+    --focus:          #ffd54f;
+    --font-texte:     'Nunito', system-ui, sans-serif;
+    --font-titre:     var(--font-texte);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: var(--font-texte);
+    padding: 0 var(--sp-5) var(--sp-6);
+  }
+
+  .jeu { max-width: 700px; margin: 0 auto; }
+
+  /* Les trois écrans du jeu. Un seul est visible à la fois. */
+  .ecran[hidden] { display: none; }
+
+  /* Zone de jeu — à remplacer par le vrai contenu. */
+  .aire {
+    display: grid;
+    place-items: center;
+    min-height: 220px;
+    margin: var(--sp-4) 0;
+    border: 1px dashed var(--bordure);
+    border-radius: var(--radius);
+    color: var(--txt-secondaire);
+  }
+</style>
+</head>
+<body data-col-retour="../index.html">
+
+<main class="jeu">
+
+  <!-- Le <h1> alimente l'en-tête unifié : collection.js le déplace dans la
+       grille « retour | titre | langue » et masque celui-ci. Ne pas ajouter
+       de pastille de retour ni de bouton FR/EN à la main. -->
+  <h1 data-i18n="pageTitle">Gabarit — nouveau jeu</h1>
+
+  <!-- ── ÉCRAN 1 : INTRO ───────────────────────────────────────────────
+       Les règles AVANT la manipulation, jamais après. -->
+  <section class="ecran col-intro" id="ecran-intro">
+    <div class="col-intro__brief">
+      <p data-i18n-html="brief1">Explique ici <b>ce qu'on fait</b> et pourquoi. Deux ou trois phrases suffisent.</p>
+      <p data-i18n-html="brief2">Annonce la règle qui compte vraiment — celle dont l'oubli fait perdre.</p>
+    </div>
+
+    <!-- La ligne de méta : c'est ce que le §5.3 reprochait à toute la
+         collection. Un enseignant doit savoir en un coup d'œil combien de
+         temps ça dure et pour quel niveau ; un élève, sur quoi appuyer. -->
+    <ul class="col-meta">
+      <li>⏱️ <span data-i18n="duree">5 à 10 minutes</span></li>
+      <li>🎓 <span data-i18n="niveau">Cycle 4 · lycée</span></li>
+      <li>⌨️ <span data-i18n="commandes">Souris, doigt ou clavier</span></li>
+    </ul>
+
+    <div class="col-actions">
+      <button type="button" class="col-btn" id="btn-jouer" data-i18n="jouer">Commencer</button>
+    </div>
+  </section>
+
+  <!-- ── ÉCRAN 2 : JEU ─────────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-jeu" hidden>
+    <p class="col-enonce">
+      <strong data-i18n="question">La question posée au joueur.</strong>
+      <span class="col-enonce__aide" data-i18n="consigne">La consigne d'interaction, en une ligne.</span>
+    </p>
+
+    <div class="aire" data-i18n="aire">Zone de jeu — à remplacer.</div>
+
+    <!-- aria-live : le résultat d'une réponse doit être ANNONCÉ, pas
+         seulement affiché. Quatre fichiers sur 61 le faisaient. -->
+    <p class="col-enonce__aide" id="retour" role="status" aria-live="polite"></p>
+
+    <div class="col-actions">
+      <button type="button" class="col-btn" id="btn-suivant" data-i18n="suivant">Valider</button>
+    </div>
+
+    <!-- Le savoir replié : on laisse le temps de se tromper. <details> est
+         natif — clavier et lecteurs d'écran gratuits, zéro JS. -->
+    <details class="col-savoir">
+      <summary data-i18n="explShow">Voir l'explication</summary>
+      <div class="col-savoir__corps">
+        <h2 data-i18n="explTitre">Ce qui se joue ici</h2>
+        <p data-i18n-html="expl1">La <span class="reponse">réponse</span> d'abord, puis le mécanisme en jeu et la <span class="cle">notion clé</span> à retenir.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── ÉCRAN 3 : FIN ─────────────────────────────────────────────── -->
+  <section class="ecran col-fin" id="ecran-fin" hidden>
+    <h2 class="col-fin__titre" id="fin-titre" data-i18n="finTitre">Partie terminée</h2>
+    <p class="col-fin__score" id="fin-score">0 / 0</p>
+    <p class="col-fin__msg" id="fin-msg" data-i18n="finMsg">Le mot de la fin : ce qu'il faut retenir, pas seulement le score.</p>
+    <div class="col-actions">
+      <button type="button" class="col-btn" id="btn-rejouer" data-i18n="rejouer">Rejouer</button>
+      <a class="col-btn col-btn--fantome" href="../index.html" data-i18n="retourJeux">Retour aux jeux</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="../i18n.js"></script>
+<script src="../collection.js"></script>
+<script>
+/* ── Traductions ──────────────────────────────────────────────────────
+   FR et EN dès le départ : les rattraper après coup coûte dix fois plus.
+   Toute chaîne visible passe par une clé, y compris celles injectées en JS. */
+I18N.register({
+  fr: {
+    pageTitle: "Gabarit — nouveau jeu",
+    metaDesc: "Point de départ pour un nouveau jeu de la collection : en-tête, accessibilité, i18n et responsive déjà en place.",
+    brief1: "Explique ici <b>ce qu'on fait</b> et pourquoi. Deux ou trois phrases suffisent.",
+    brief2: "Annonce la règle qui compte vraiment — celle dont l'oubli fait perdre.",
+    duree: "5 à 10 minutes", niveau: "Cycle 4 · lycée", commandes: "Souris, doigt ou clavier",
+    jouer: "Commencer", suivant: "Valider", rejouer: "Rejouer", retourJeux: "Retour aux jeux",
+    question: "La question posée au joueur.",
+    consigne: "La consigne d'interaction, en une ligne.",
+    aire: "Zone de jeu — à remplacer.",
+    explShow: "Voir l'explication", explHide: "Masquer l'explication",
+    explTitre: "Ce qui se joue ici",
+    expl1: `La <span class="reponse">réponse</span> d'abord, puis le mécanisme en jeu et la <span class="cle">notion clé</span> à retenir.`,
+    finTitre: "Partie terminée",
+    finMsg: "Le mot de la fin : ce qu'il faut retenir, pas seulement le score.",
+    bienJoue: "Bien vu !"
+  },
+  en: {
+    pageTitle: "Template — new game",
+    metaDesc: "Starting point for a new game in the collection: header, accessibility, i18n and responsive layout already in place.",
+    brief1: "Explain <b>what the player does</b> and why. Two or three sentences are enough.",
+    brief2: "State the rule that actually matters — the one that costs you the game if missed.",
+    duree: "5 to 10 minutes", niveau: "Ages 12+", commandes: "Mouse, touch or keyboard",
+    jouer: "Start", suivant: "Check", rejouer: "Play again", retourJeux: "Back to games",
+    question: "The question put to the player.",
+    consigne: "The interaction hint, in one line.",
+    aire: "Play area — to be replaced.",
+    explShow: "See the explanation", explHide: "Hide the explanation",
+    explTitre: "What is going on here",
+    expl1: `The <span class="reponse">answer</span> first, then the mechanism at work and the <span class="cle">key idea</span> to remember.`,
+    finTitre: "Game over",
+    finMsg: "The closing word: what to take away, not just the score.",
+    bienJoue: "Good catch!"
+  }
+});
+
+/* ── Enchaînement des écrans ───────────────────────────────────────────
+   Un seul écran visible à la fois, via l'attribut `hidden` : il retire
+   l'élément de l'arbre d'accessibilité, ce qu'un `display:none` en CSS ne
+   garantit pas si une règle du jeu le contredit plus tard. */
+const ecrans = {
+  intro: document.getElementById('ecran-intro'),
+  jeu:   document.getElementById('ecran-jeu'),
+  fin:   document.getElementById('ecran-fin')
+};
+
+function montrer(nom) {
+  Object.keys(ecrans).forEach(k => { ecrans[k].hidden = (k !== nom); });
+  /* Le focus suit l'écran affiché : sans ça, la navigation est muette pour
+     un lecteur d'écran et le clavier repart du haut de la page. */
+  const cible = ecrans[nom].querySelector('h2, .col-enonce strong, button');
+  if (cible) {
+    cible.setAttribute('tabindex', '-1');
+    cible.focus({ preventScroll: false });
+  }
+}
+
+let score = 0, total = 0;
+
+document.getElementById('btn-jouer').addEventListener('click', () => {
+  score = 0; total = 0;
+  montrer('jeu');
+});
+
+document.getElementById('btn-suivant').addEventListener('click', () => {
+  total++; score++;
+  /* Le retour passe par la zone aria-live : il est annoncé, pas seulement
+     affiché. */
+  document.getElementById('retour').textContent = I18N.t('bienJoue');
+  if (total >= 3) finir();
+});
+
+document.getElementById('btn-rejouer').addEventListener('click', () => {
+  document.getElementById('retour').textContent = '';
+  montrer('intro');
+});
+
+function finir() {
+  document.getElementById('fin-score').textContent = score + ' / ' + total;
+  montrer('fin');
+}
+
+/* Le libellé du panneau suit son état ; <details> fait tout le reste. */
+const panneau = document.querySelector('.col-savoir');
+panneau.addEventListener('toggle', () => {
+  panneau.querySelector('summary').textContent =
+    I18N.t(panneau.open ? 'explHide' : 'explShow');
+});
+</script>
+</body>
+</html>
