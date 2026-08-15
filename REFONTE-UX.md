@@ -50,7 +50,11 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
 04 La pédagogie d'abord    ✅ FAIT (commit f0fcb93)
 05 Design system           🔸 EN COURS
    ├ tranche 1  ✅ FAIT (fb97b44) — socle, polices, 4 pages migrées
-   └ tranche 2  ← COMMENCER ICI — plan détaillé au §7 bis
+   └ tranche 2  🔸 EN COURS — plan au §7 bis
+        ├ étape 1  ✅ FAIT (e525a73 + 29e3cfa) — trous du socle, 3 points ouverts
+        ├ étape 2  ✅ FAIT (1be0972) — les 10 illusions, adelson réécrit
+        ├ étape 3  ← ICI — §5.3 composants intro/fin et §5.5 gabarit
+        └ étape 4       — migration en 3 lots (14 pages migrées sur 59)
 02 Socle d'accessibilité    puis (à relire d'abord) ≈ 6 j
 03 Tactile & mobile         puis (à relire d'abord) ≈ 8 j
 06 Industrialisation        puis                    ≈ 10 j
@@ -602,8 +606,8 @@ applications. Après, il en coûte une.
 > |---|---|---|
 > | `mine.html` | **0** | ✅ |
 > | `Emprise/index.html` | **0** | ✅ |
-> | `terre_ronde_plate.html` | **9** | 10,9 à 11,5 px — crédit auteur, `.sbtn` ① à ⑤, légendes du curseur |
-> | `echecs.html` | **37** | 11,2 px — les repères a-h / 1-8 de l'échiquier |
+> | `terre_ronde_plate.html` | ~~9~~ → **0** | ✅ rattrapé (commit `29e3cfa`) |
+> | `echecs.html` | ~~37~~ → **0** | ✅ rattrapé — **choix : repères montés au plancher sans réduire les cases.** 56 px par repère (44 px sous 520 px), gouttière de 18 px pour un chiffre qui en demande 8 : la densité invoquée n'était pas avérée. Raisonnement écrit dans `echecs.css`, aucune exception dans `collection.css`. |
 >
 > Sans passe de rattrapage, « migrée » ne voudra pas dire la même chose pour les
 > quatre premières pages et pour les 55 suivantes. **À traiter au début de
@@ -638,7 +642,40 @@ primaire : c'est la page de la collection où l'enjeu de lisibilité est le plus
 « reprendre les tailles sur les jetons », sans quoi le plancher à 12,8 px restera une
 intention que personne n'applique.
 
-### Étape 2 — Les 10 illusions, §5.4 ≈ 2 j — ← PROCHAINE ÉTAPE
+### Étape 2 — Les 10 illusions, §5.4 — ✅ FAITE (commit `1be0972`)
+
+> **Appliquée le 15 août.** 1 171 lignes supprimées pour 851 ajoutées.
+> 40 contrôles : 10 pages × 2 langues × 360/1440 px — en-tête, énoncé, panneau
+> et scène partout, 0 reste des anciennes classes, 0 élément sous 12,8 px,
+> 0 débordement, 0 erreur console, tabulation et boutons à 44 px vérifiés.
+>
+> **Le composant a été extrait dans `collection.css`**, pas dans le dossier des
+> illusions : il dépasse largement ce lot. `.col-enonce` (question + consigne
+> d'interaction en `--txt-secondaire`) et `.col-savoir` — **un `<details>`
+> natif**. Ouverture clavier, état exposé aux lecteurs d'écran et bouton
+> lisible sans une ligne de JS : **dix toggles maison supprimés**.
+> `Ilusions d'optique/illusion.css` ne garde que ce qui est propre aux
+> illusions et déclare leur identité **une** fois.
+>
+> **`adelson.html` réécrit entièrement.** Énoncé, panneau, et un texte qui
+> explique pourquoi l'illusion résiste à sa propre démonstration : le système
+> visuel n'y échoue pas, il fait son travail. Point d'arrivée choisi pour une
+> collection sur l'esprit critique — la perception est une reconstruction, pas
+> un enregistrement. Les deux cases se déplacent **aussi au clavier** : comparer
+> est le geste central de la page.
+>
+> **Deux ajouts au socle sortis de ce lot :**
+> 1. `data-col-retour-cle` — libellé de retour surchargeable par clé i18n (les
+>    illusions reviennent à *leur* index). Le socle retire la flèche que les
+>    dictionnaires collaient au texte, sinon on lit « ←← Retour ».
+> 2. **L'en-tête est passé pleine largeur avec une grille intérieure bornée.**
+>    Son voile devait déborder en `100vw` — or `100vw` compte la barre de
+>    défilement : **8 px de débordement horizontal sur toute page ayant un
+>    ascenseur vertical**. Invisible sur les 4 premières pages migrées, qui ont
+>    toutes `overflow:hidden` ; trouvé sur adelson. C'est le genre de défaut que
+>    seule une page au gabarit différent révèle.
+
+#### Rédaction d'origine — ← PROCHAINE ÉTAPE
 
 **Commencer par les trois points ouverts de la relecture ci-dessus** (≈ 1 h) :
 hauteur réelle du bandeau d'Emprise, arbitrage du libellé d'aide, rattrapage
