@@ -54,7 +54,9 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
         ├ étape 1  ✅ FAIT (e525a73 + 29e3cfa) — trous du socle, 3 points ouverts
         ├ étape 2  ✅ FAIT (1be0972) — les 10 illusions, adelson réécrit
         ├ étape 3  ✅ FAIT (80e69f7) — hub, composants intro/fin, _gabarit/
-        └ étape 4  ← ICI — migration en 3 lots (16 pages migrées sur 59)
+        └ étape 4  ← ICI — migration en 3 lots (15 pages migrées sur 58 au 15/08 —
+                     compte mesuré, à jour dans `_prive/ETAT.md` ; `_gabarit/` n'est
+                     pas une page publique et n'est pas compté)
                      ⚙️ candidate à Fable 5, voir l'encadré de l'étape 4
 02 Socle d'accessibilité    puis (à relire d'abord) ≈ 6 j
 03 Tactile & mobile         puis (à relire d'abord) ≈ 8 j

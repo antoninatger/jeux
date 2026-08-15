@@ -8,8 +8,9 @@ GitHub Pages, utilisée en classe et en conférence.
 
 Une refonte UX/UI en 7 chantiers est en cours sur la branche `refonte-ux`.
 `REFONTE-UX.md` contient l'état des lieux, les décisions produit déjà arbitrées et le
-détail fichier par fichier de ce qui reste à faire. **Le chantier en cours est le 04
-(« La pédagogie d'abord »).**
+détail fichier par fichier de ce qui reste à faire. **Le chantier en cours n'est pas
+répété ici** (écrit en dur, il se périmait) : il est marqué « ← ICI » dans l'ordre des
+chantiers du §1 de `REFONTE-UX.md`, et l'avancement mesuré est dans `_prive/ETAT.md`.
 
 ## Règles non négociables
 
