@@ -53,8 +53,9 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
    └ tranche 2  🔸 EN COURS — plan au §7 bis
         ├ étape 1  ✅ FAIT (e525a73 + 29e3cfa) — trous du socle, 3 points ouverts
         ├ étape 2  ✅ FAIT (1be0972) — les 10 illusions, adelson réécrit
-        ├ étape 3  ← ICI — §5.3 composants intro/fin et §5.5 gabarit
-        └ étape 4       — migration en 3 lots (14 pages migrées sur 59)
+        ├ étape 3  ✅ FAIT (80e69f7) — hub, composants intro/fin, _gabarit/
+        └ étape 4  ← ICI — migration en 3 lots (16 pages migrées sur 59)
+                     ⚙️ candidate à Fable 5, voir l'encadré de l'étape 4
 02 Socle d'accessibilité    puis (à relire d'abord) ≈ 6 j
 03 Tactile & mobile         puis (à relire d'abord) ≈ 8 j
 06 Industrialisation        puis                    ≈ 10 j
@@ -741,7 +742,44 @@ préserver, et déjà dotées de la pastille de retour du chantier 01.
 > l'ancien design puis bascule sur le nouveau en cliquant. C'est le seul écart du
 > lot, et il est à 10 minutes. **À faire au début de l'étape 3.**
 
-### Étape 3 — §5.3 composants intro/fin et §5.5 gabarit ≈ 2 j — ← PROCHAINE ÉTAPE
+### Étape 3 — §5.3 composants intro/fin et §5.5 gabarit — ✅ FAITE (commit `80e69f7`)
+
+> **Appliquée le 15 août.** L'oubli signalé en relecture est réparé : le hub
+> `Ilusions d'optique/index.html` est migré. Il était aussi le seul en thème
+> **sombre** alors que ses dix pages sont claires — il reprend l'identité
+> déclarée une fois dans `illusion.css`. Le lot est cohérent de bout en bout.
+>
+> **Trois composants, extraits et non devinés :**
+>
+> | Composant | D'où il vient |
+> |---|---|
+> | `.col-cartes` / `.col-carte` | **quatre** hubs la réimplémentaient — portail, arcade, illusions, catalogues — tous avec `a.card`, un accent porté par `--c`, un titre et une description |
+> | `.col-intro` / `.col-fin` | `#intro > .brief` + `.menu-btns` est déjà, **à l'identique**, le motif de radar-desinfo, chasse-aux-biais, grand-oral et radarnaque |
+> | `.col-btn` / `.col-btn--fantome` | extrait de `.bigbtn` / `.bigbtn.ghost`, présent dans les quatre mêmes jeux |
+>
+> **Ce que les composants ajoutent, et qui manquait partout : `.col-meta`** —
+> durée, niveau, commandes. C'est le reproche exact du §5.3. Un enseignant
+> voyait douze jeux sans savoir lequel dure dix minutes ; un élève démarrait
+> sans savoir sur quoi appuyer.
+>
+> **`_gabarit/`** est un jeu vide mais **fonctionnel** : trois écrans, le focus
+> qui suit le changement d'écran, `aria-live` sur le retour au joueur, panneau
+> `<details>`, FR et EN complets. Il sert de référence **et** de démonstration
+> des composants. `_gabarit/LISEZMOI.md` liste ce qui est déjà acquis (donc à
+> ne pas réécrire), les cinq points qui restent à faire à chaque nouveau jeu,
+> et la recette.
+>
+> **Au passage :** `i18n.js` gère `data-i18n-content` pour les
+> `<meta name="description">` et les balises Open Graph — sans quoi la
+> description d'une page partagée restait en français en anglais. Le
+> chantier 07 (§11.4) en aura besoin sur 61 pages.
+>
+> **Recette :** hub et gabarit en 320/360/390/1440 px, FR et EN — 0 collision,
+> 0 élément sous 12,8 px, 0 débordement, 0 erreur console, aucun appel à Google
+> Fonts, aucune clé brute. Parcours du gabarit joué **au clavier seul**.
+> 6 pages déjà migrées recontrôlées, aucune régression.
+
+#### Rédaction d'origine
 
 **Commencer par migrer `Ilusions d'optique/index.html`** (voir l'oubli ci-dessus),
 pour que le lot des illusions soit cohérent de bout en bout.
