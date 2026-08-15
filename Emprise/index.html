@@ -11,7 +11,17 @@
 <body data-col-titre-cle="colTitre">
   <div class="sample-watermark" data-i18n="watermark">FICTION — conversation fictive pour sensibiliser aux mécanismes de contrôle dans le couple</div>
 
-  <a href="#" id="resourcesLink" class="resources-persistent-link" data-i18n="needHelp">Besoin d'aide ?</a>
+  <!-- Chantier 05, tranche 2 : ce lien était flottant en haut à gauche et
+       recouvrait le bandeau « FICTION » en 390 px. Il rejoint l'emplacement
+       extra de l'en-tête unifié, où il gagne sa cible de 44 px. Sur un jeu qui
+       traite des violences dans le couple, c'est le lien qui ne doit ni gêner
+       ni être gêné. -->
+  <a href="#" id="resourcesLink" class="resources-persistent-link"
+     data-col-entete-extra data-col-extra-fort
+     data-i18n-aria-label="needHelp" aria-label="Besoin d'aide ?">
+    <span aria-hidden="true">🆘</span>
+    <span class="col-entete__label" data-i18n="needHelp">Besoin d'aide ?</span>
+  </a>
 
   <!-- Avertissement initial -->
   <div id="warningModal" class="modal-overlay">

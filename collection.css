@@ -146,10 +146,17 @@
 
 /* =========================================================================
    En-tête unifié — voir collection.js
-   Une grille `retour | titre | langue` en flux normal. Elle remplace les
-   trois éléments flottants qui se disputaient le coin supérieur et se
+   Une grille `retour | titre | (extra) | langue` en flux normal. Elle remplace
+   les trois éléments flottants qui se disputaient le coin supérieur et se
    recouvraient en dessous de 680 px (echecs, terre_ronde_plate, Emprise,
    mine — le reste du chantier 01).
+
+   L'emplacement « extra » est ouvert : une page y dépose ce qu'elle veut voir
+   en permanence à côté du titre, en marquant l'élément `data-col-entete-extra`.
+   Emprise y met « Besoin d'aide ? » ; demain ce sera un bouton son, un chrono
+   ou un compteur de vies. Sans cet emplacement, chaque jeu remettrait un
+   élément flottant dans le coin — c'est-à-dire exactement le défaut que
+   l'en-tête unifié vient de supprimer.
    ========================================================================= */
 .col-entete {
   display: grid;
@@ -199,8 +206,24 @@
   z-index: -1;
 }
 
+/* Quand la page a déposé un élément dans l'emplacement extra, la grille passe
+   à quatre colonnes. Sans contenu, la colonne n'existe pas : pas d'espace
+   fantôme ni de `gap` en trop. */
+.col-entete--extra { grid-template-columns: auto 1fr auto auto; }
+
+.col-entete__extra {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+/* Les trois zones d'action partagent le même gabarit de pastille — y compris
+   ce que la page dépose dans l'emplacement extra, qui hérite ainsi de la
+   cible de 44 px sans que le jeu ait à y penser. */
 .col-entete__retour,
-.col-entete__langue {
+.col-entete__langue,
+.col-entete__extra > * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -220,11 +243,25 @@
   transition: color .15s, border-color .15s, transform .15s;
 }
 .col-entete__retour:hover,
-.col-entete__langue:hover {
+.col-entete__langue:hover,
+.col-entete__extra > *:hover {
   color: var(--txt);
   border-color: var(--acc);
 }
 .col-entete__retour:hover { transform: translateX(-2px); }
+
+/* Un extra peut se déclarer prioritaire : il prend alors la couleur d'accent
+   du jeu. Emprise s'en sert pour « Besoin d'aide ? », qui doit rester le
+   deuxième élément lu après le titre. */
+.col-entete__extra > [data-col-extra-fort] {
+  background: var(--acc);
+  border-color: var(--acc);
+  color: var(--acc-txt);
+}
+.col-entete__extra > [data-col-extra-fort]:hover {
+  color: var(--acc-txt);
+  filter: brightness(1.08);
+}
 
 /* Colonne fantôme : sur une page non traduite, elle occupe la place de la
    bascule de langue pour que le titre reste optiquement centré. */
@@ -249,14 +286,30 @@
 }
 
 /* En dessous de 560 px, les libellés cèdent la place aux seules icônes :
-   on garde les trois zones sur une ligne sans jamais rogner le titre. */
+   on garde les zones sur une ligne sans jamais rogner le titre. */
 @media (max-width: 560px) {
   .col-entete { gap: var(--sp-2); padding: var(--sp-2); }
   .col-entete__retour,
-  .col-entete__langue { padding: 0 var(--sp-3); }
+  .col-entete__langue,
+  .col-entete__extra > * { padding: 0 var(--sp-3); }
   .col-entete__retour .col-entete__label,
-  .col-entete__langue .col-entete__label { display: none; }
+  .col-entete__langue .col-entete__label,
+  .col-entete__extra .col-entete__label { display: none; }
   .col-entete__titre { font-size: var(--fs-400); }
+}
+
+/* Avec un extra ET un titre long, quatre colonnes ne tiennent plus sur une
+   ligne de téléphone. Le titre passe alors au-dessus, sur toute la largeur,
+   et la rangée d'actions reste complète en dessous. */
+@media (max-width: 440px) {
+  .col-entete--extra {
+    grid-template-columns: auto 1fr auto;
+  }
+  .col-entete--extra .col-entete__titre {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    order: -1;
+  }
 }
 
 /* =========================================================================

@@ -145,6 +145,25 @@
     entete.appendChild(retour);
     entete.appendChild(h);
 
+    /* ── Emplacement extra ───────────────────────────────────────────────
+       La page marque `data-col-entete-extra` sur les éléments qu'elle veut
+       voir en permanence dans l'en-tête. Ils sont DÉPLACÉS ici (pas copiés) :
+       leurs écouteurs, leur id et leur clé i18n suivent intacts.
+
+       Sans cet emplacement, un jeu qui a un troisième élément persistant n'a
+       d'autre choix que de le poser en `position:fixed` dans un coin — ce qui
+       reproduit exactement le chevauchement que l'en-tête vient de régler.
+       C'était le cas d'Emprise : « Besoin d'aide ? », fixe et haut de 12 px,
+       recouvrait le bandeau « FICTION » en 390 px. */
+    var extras = document.querySelectorAll('[data-col-entete-extra]');
+    if (extras.length) {
+      var zone = document.createElement('div');
+      zone.className = 'col-entete__extra';
+      extras.forEach(function (el) { zone.appendChild(el); });
+      entete.appendChild(zone);
+      entete.classList.add('col-entete--extra');
+    }
+
     /* ── Langue ──────────────────────────────────────────────────────────
        Seulement si la page est traduite. `echecs.html` n'inclut pas i18n.js :
        lui afficher une bascule FR/EN promettrait une traduction inexistante

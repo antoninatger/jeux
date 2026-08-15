@@ -47,26 +47,19 @@ body {
   border-radius: 8px;
   font-weight: 700;
   color: #a00;
-  font-size: 12px;
+  font-size: var(--fs-100);
   z-index: 9999;
   text-align: center;
   max-width: 90vw;
 }
 
-.resources-persistent-link {
-  position: fixed;
-  top: 8px;
-  left: 12px;
-  z-index: 9999;
-  background: #fff;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+/* Chantier 05, tranche 2 : ce lien vit désormais dans l'emplacement extra de
+   l'en-tête unifié (collection.js le déplace au chargement). Il hérite de là
+   son gabarit de pastille et sa cible de 44 px — il faisait 12 px de haut et
+   recouvrait le bandeau « FICTION » en 390 px, alors qu'il est l'élément que
+   ce jeu doit garder le plus atteignable.
+   Ne reste ici que ce qui relève de l'identité d'Emprise. */
+.resources-persistent-link { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
 .resources-persistent-link:hover { text-decoration: underline; }
 
 /* Modals */
@@ -146,9 +139,21 @@ button.btn-secondary { background: #eef2f7; color: #334155; }
   background: var(--accent);
   transition: width 0.4s ease;
 }
-.gauge-label { font-size: 12px; color: #334155; white-space: nowrap; }
-.skip-link { font-size: 12px; color: var(--muted); text-decoration: none; }
+.gauge-label { font-size: var(--fs-100); color: #334155; white-space: nowrap; }
+.skip-link { font-size: var(--fs-100); color: var(--muted); text-decoration: none; }
 .skip-link:hover { text-decoration: underline; }
+
+/* Débordement horizontal en 390 px — préexistant, sans rapport avec la reprise
+   typographique. `#gameArea` n'avait aucune contrainte de largeur : en tant
+   qu'élément flex de <body> il prenait la largeur de son contenu, soit les
+   420 px de .frame. Le `max-width: 100%` de .frame se résolvait donc contre
+   420 px et ne clampait rien : la conversation débordait de 22 px de chaque
+   côté et le lien « Passer les questions » sortait de l'écran.
+   Contraindre le conteneur suffit — .frame et .gauge-bar suivent. */
+#gameArea {
+  width: 100%;
+  max-width: 420px;
+}
 
 /* Chat frame */
 .frame {
@@ -170,7 +175,7 @@ header {
 }
 .avatar { width: 40px; height: 40px; border-radius: 50%; background: #cfd8e3; display: inline-block; }
 .title { font-weight: 600; }
-.subtitle { font-size: 12px; color: var(--muted); }
+.subtitle { font-size: var(--fs-100); color: var(--muted); }
 .messages {
   padding: 12px;
   max-height: 60vh;
@@ -190,17 +195,17 @@ header {
 }
 .from-me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 4px; }
 .from-them { align-self: flex-start; background: var(--them); border-bottom-left-radius: 4px; }
-.meta { font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
-.name-badge { font-weight: 600; color: #334155; font-size: 12px; margin-bottom: 4px; }
-.time { font-size: 11px; color: var(--muted); }
-.ticks { font-size: 12px; margin-left: 6px; opacity: 0.8; }
+.meta { font-size: var(--fs-100); color: var(--muted); margin-top: 6px; display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
+.name-badge { font-weight: 600; color: #334155; font-size: var(--fs-100); margin-bottom: 4px; }
+.time { font-size: var(--fs-100); color: var(--muted); }
+.ticks { font-size: var(--fs-100); margin-left: 6px; opacity: 0.8; }
 .messages::-webkit-scrollbar { width: 8px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.08); border-radius: 8px; }
 .section {
   align-self: center;
   background: #e2e8f0;
   color: #334155;
-  font-size: 12px;
+  font-size: var(--fs-100);
   padding: 4px 10px;
   border-radius: 999px;
   margin: 10px 0;
@@ -227,7 +232,7 @@ header {
   background: #fff;
 }
 button { flex: 1; padding: 8px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
-.small { font-size: 12px; padding: 6px; border-radius: 8px; }
+.small { font-size: var(--fs-100); padding: 6px; border-radius: 8px; }
 .btn-export { background: #f3f4f6; color: #111; }
 
 /* Question panel */
@@ -247,7 +252,7 @@ button { flex: 1; padding: 8px; border-radius: 8px; border: 0; background: var(-
   font-size: 13px;
   resize: vertical;
 }
-.q-hint { margin-top: 8px; font-size: 12.5px; color: var(--warn); background: #fff3d6; border-radius: 8px; padding: 8px; }
+.q-hint { margin-top: 8px; font-size: var(--fs-100); color: var(--warn); background: #fff3d6; border-radius: 8px; padding: 8px; }
 .q-note { font-size: 13px; color: #334155; margin-bottom: 10px; }
 .q-btn-row { margin-top: 10px; display: flex; }
 .q-validate, .q-continue { background: var(--accent); color: #fff; }
@@ -293,8 +298,8 @@ button { flex: 1; padding: 8px; border-radius: 8px; border: 0; background: var(-
   padding: 10px 14px;
 }
 .recap-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.recap-date { font-size: 12px; color: var(--muted); font-weight: 600; }
-.recap-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.recap-date { font-size: var(--fs-100); color: var(--muted); font-weight: 600; }
+.recap-badge { font-size: var(--fs-100); font-weight: 700; padding: 2px 8px; border-radius: 999px; }
 .badge-ok { background: #e6f4ea; color: #1e4620; }
 .badge-miss { background: #fdecea; color: #7a1f1f; }
 .badge-neutral { background: transparent; }
@@ -307,7 +312,7 @@ button { flex: 1; padding: 8px; border-radius: 8px; border: 0; background: var(-
 .resource-item { background: #f8fafc; border-radius: 8px; padding: 10px 12px; }
 .resource-item a { color: var(--accent); text-decoration: none; font-size: 14px; }
 .resource-item a:hover { text-decoration: underline; }
-.resource-item p { margin: 4px 0 0; font-size: 12.5px; color: #334155; line-height: 1.4; }
+.resource-item p { margin: 4px 0 0; font-size: var(--fs-100); color: #334155; line-height: 1.4; }
 
 .recap-actions { margin-top: 20px; display: flex; gap: 10px; }
 .recap-actions button { flex: none; background: var(--accent); color: #fff; }
