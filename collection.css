@@ -312,6 +312,14 @@
      elle-même. */
   .col-entete__retour .col-entete__label,
   .col-entete__langue .col-entete__label { display: none; }
+  /* Sans libellé, la largeur ne tenait plus que du glyphe et du padding :
+     38–40 px pour 44 de haut, sous le seuil WCAG 2.5.5 sur les DEUX
+     dimensions à la fois. Le plancher vertical existait (`min-height`), pas
+     l'horizontal — il ne manquait qu'en mode icône, puisque c'est le seul
+     mode où le texte ne remplit plus la pastille. Le coût en 320 px est de
+     12 px sur les 304 disponibles : la rangée reste entière. */
+  .col-entete__retour,
+  .col-entete__langue { min-width: var(--cible); }
   .col-entete__titre { font-size: var(--fs-400); }
 }
 
