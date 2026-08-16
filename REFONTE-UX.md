@@ -54,9 +54,13 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
         ├ étape 1  ✅ FAIT (e525a73 + 29e3cfa) — trous du socle, 3 points ouverts
         ├ étape 2  ✅ FAIT (1be0972) — les 10 illusions, adelson réécrit
         ├ étape 3  ✅ FAIT (80e69f7) — hub, composants intro/fin, _gabarit/
-        └ étape 4  ← ICI — migration en 3 lots (15 pages migrées sur 58 au 15/08 —
-                     compte mesuré, à jour dans `_prive/ETAT.md` ; `_gabarit/` n'est
-                     pas une page publique et n'est pas compté)
+        └ étape 4  ← ICI — migration en 3 lots
+                     ├ lot Arcade      ✅ FAIT (a6b8b62) + relu, voir la relecture
+                     ├ lot Catalogues  ⬜ à faire (3 pages)
+                     └ lot « le reste »⬜ à faire (~16 pages)
+                     (26 pages migrées sur 58 au 16/08 — compte mesuré, à jour dans
+                     `_prive/ETAT.md` ; `_gabarit/` n'est pas une page publique et
+                     n'est pas compté)
                      ⚙️ candidate à Fable 5, voir l'encadré de l'étape 4
 02 Socle d'accessibilité    puis (à relire d'abord) ≈ 6 j
 03 Tactile & mobile         puis (à relire d'abord) ≈ 8 j
@@ -811,6 +815,50 @@ Trois lots cohérents plutôt que 55 cas particuliers :
 
 Traiter un lot = régler une fois un défaut partagé par 11 pages. C'est le retour sur
 investissement du socle, et le moment où il devient visible.
+
+> ### ✅ Relecture indépendante du lot Arcade (a6b8b62) — conforme, une réserve socle
+>
+> Contrôlé au navigateur (Chromium headless) en **320, 360, 390 et 1440 px**, FR **et**
+> EN, par mesure réelle : tailles de police effectivement rendues, recouvrement du
+> titre par `elementFromPoint`, débordement élément par élément, relevé console et
+> `pageerror`, requêtes réseau. **Écrans de jeu ouverts**, pas seulement les menus
+> (démarrage cliqué sur QCM, Brick, Defender, Snake, Whac ; ESPACE sur Fake Blaster).
+> 72 combinaisons de base + les écrans de jeu, et une page-témoin volontairement
+> défectueuse pour valider que l'outillage détecte bien les trois familles de défauts.
+>
+> **Conforme sur les 11 pages :** 0 élément sous 12,8 px, 0 débordement horizontal,
+> 0 recouvrement du titre, 0 clé i18n brute, 0 `pageerror`, 0 appel à
+> `fonts.googleapis.com` (les `.woff2` locaux chargent — vérifié via
+> `document.fonts`), en-tête unifié et lien retour partout, jetons d'identité
+> (`--bg`, `--txt-secondaire`, `--acc`, `--font-*`) déclarés dans chaque `:root`,
+> 0 `font-size` en dur sous 0,8 rem dans les 11 fichiers. Le périmètre est respecté :
+> le commit ne touche que les 11 `.html` — ni JS de logique, ni le Snake racine.
+>
+> **Écart documenté, à valider par Antonin :** les 4 éditeurs ne chargent pas
+> `i18n.js` — commentaire dans le code : « page outil non traduite ». Défendable
+> (outils internes, pas des jeux d'élèves), mais c'est une exception à la règle
+> « FR et EN » : à entériner ou à corriger, pas à laisser implicite.
+>
+> **Observation, sans action :** `--entete-h` n'est consommé que par
+> `qcm-classique.html` — sur les autres pages le HUD est passé dans le flux plutôt
+> qu'adossé en `position:fixed`, ce qui rend l'adossement sans objet. Aucune
+> collision mesurée : conforme à l'esprit, mieux que la lettre.
+>
+> **⚠️ Réserve — socle, pas lot :** sous 560 px, retour et langue passent en icône
+> seule et font **38–40 px de large** (pour 44 de haut). C'est `collection.css` qui
+> les rétrécit, donc toutes les pages migrées sont concernées, pas seulement
+> l'arcade. À régler une fois : `min-width: var(--cible)` sur
+> `.col-entete__retour` / `.col-entete__langue` en mode icône.
+>
+> **Constatés au passage, hors périmètre (pré-existants, pour les chantiers 02/03
+> et 06) :** boutons 🔊 à 38 px de large (§9.4) ; rangée d'actions ↑ ↓ ✎ 🗑 de
+> `editeur-questions.html` à 32 × 32 px ; et la **seule dépendance externe de la
+> collection** — `xlsx.full.min.js` depuis cdnjs sur le hub et
+> `editeur-questions.html` (antérieure au lot : présente avant comme après) — qui
+> jette une erreur console hors ligne. À trancher au chantier 06 : vendoriser ou
+> assumer.
+>
+> **Verdict : lot validé.** Prochain lot : Catalogues (Perceptio, Cobaye, Rhetor).
 
 ### Après le chantier 05 — relire 02 et 03 avant de les lancer
 
