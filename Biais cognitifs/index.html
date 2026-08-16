@@ -5,17 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perceptio — le laboratoire des biais cognitifs</title>
 <meta name="description" content="Catalogue interactif des biais cognitifs : définitions, exemples, QCM et exercices d'identification, sources scientifiques vérifiées.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <style>
   :root{
+    /* Identité Perceptio sur le socle (chantier 05) : le socle impose la
+       structure, l'échelle typographique et le contraste, ces jetons portent
+       la direction artistique — sobre, sérif, cobalt sur gris clair. On ne
+       converge pas vers l'arcade : Perceptio reste un laboratoire. */
     --bg:#E7EAF0;
-    --bg-deep:#10131C;
+    --txt:#10131C;
+    --txt-secondaire:#565B66;   /* 5,6:1 sur --bg — mesuré */
+    --acc:#2B4CFF;
+    --acc-txt:#FFFFFF;
+    --bordure:#C9CEDA;
+    /* Le jaune de focus du socle est pensé pour les fonds sombres de la
+       collection ; sur ce gris clair il ne contraste pas. Le rôle est
+       surchargé, la règle du socle reste la seule. */
+    --focus:#2B4CFF;
+    --font-texte:'Source Serif 4',serif;
+    --font-titre:'Space Grotesk',sans-serif;
+
+    /* Noms historiques de la page : conservés en alias des rôles ci-dessus
+       plutôt que réécrits partout — la feuille en compte une centaine
+       d'usages, et un renommage rendrait la revue impossible. */
     --surface:#FFFFFF;
-    --border:#C9CEDA;
-    --ink:#10131C;
-    --ink-dim:#565B66;
-    --cobalt:#2B4CFF;
+    --border:var(--bordure);
+    --ink:var(--txt);
+    --ink-dim:var(--txt-secondaire);
+    --cobalt:var(--acc);
+
+    --bg-deep:#10131C;
     --cobalt-soft:#DCE3FF;
     --lime:#D6FF3F;
     --wrong:#FF4D6D;
@@ -35,25 +55,30 @@
   .wrap{max-width:1080px;margin:0 auto;padding:20px 24px 100px;}
   a{color:inherit;}
 
-  /* ---------- collection: retour hub + a11y ---------- */
-  .back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:rgba(16,19,28,.82);border:1px solid rgba(255,255,255,.15);color:#EDEFF6;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
-  .back-hub:hover{opacity:1;transform:translateX(-2px);}
-  :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;border-radius:4px;}
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important;}}
+  /* ---------- collection: en-tête du socle ----------
+     Ni pastille de retour, ni bouton FR/EN, ni bloc de focus, ni
+     prefers-reduced-motion ici : collection.css et collection.js les
+     portent une seule fois pour toute la collection. Ce qui reste, c'est
+     l'habillage de la marque dans l'emplacement « extra » de l'en-tête. */
+  .col-entete__extra > .brand{
+    font-family:var(--font-titre);font-weight:700;font-size:var(--fs-300);
+    letter-spacing:-.01em;color:var(--txt);padding:0 var(--sp-3);
+  }
+  .col-entete__extra > .brand:hover{color:var(--acc);}
 
   /* ---------- topbar ---------- */
-  .topbar{max-width:1080px;margin:0 auto;padding:54px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .topbar{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
   .brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;}
   .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--cobalt);display:inline-block;}
   .tabs{display:flex;gap:4px;flex-wrap:wrap;}
   .tab{
     font-family:'Space Grotesk',sans-serif;font-weight:600;
-    font-size:13px;background:none;border:1.5px solid transparent;color:var(--ink-dim);
+    font-size:var(--fs-200);background:none;border:1.5px solid transparent;color:var(--ink-dim);
     padding:9px 15px;border-radius:20px;cursor:pointer;transition:all .15s ease;text-decoration:none;
   }
   .tab:hover{border-color:var(--border);}
   .tab.active{background:var(--cobalt);color:#fff;}
-  .rand-btn{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;background:var(--ink);color:#fff;border:none;padding:9px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;}
+  .rand-btn{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;background:var(--ink);color:#fff;border:none;padding:9px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;}
   .rand-btn:hover{background:var(--cobalt);}
 
   /* ---------- hero / illusion ---------- */
@@ -63,7 +88,7 @@
     display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;
   }
   .eyebrow{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.16em;text-transform:uppercase;
     color:var(--lime);margin:0 0 14px;
   }
   .hero h1{
@@ -76,17 +101,17 @@
   .demo-q{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14.5px;color:#EDEFF6;margin:0;max-width:300px;line-height:1.4;}
   .demo-choices{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
   .demo-btn{
-    font-family:'JetBrains Mono',monospace;font-size:11.5px;background:#232838;color:#D6DAE6;
+    font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);background:#232838;color:#D6DAE6;
     border:1.5px solid #3A4053;padding:8px 12px;border-radius:20px;cursor:pointer;transition:all .15s ease;
   }
   .demo-btn:hover{border-color:var(--lime);color:#fff;}
   .demo-btn.picked{background:var(--lime);color:#10131C;border-color:var(--lime);}
-  .illusion-caption{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9DA3B4;text-align:center;max-width:320px;line-height:1.5;min-height:0;}
+  .illusion-caption{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:#9DA3B4;text-align:center;max-width:320px;line-height:1.5;min-height:0;}
   .illusion-caption b{color:var(--lime);}
 
   /* ---------- home sections ---------- */
   .section-lab{
-    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.03em;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:var(--fs-200);letter-spacing:.03em;
     color:var(--ink);margin:0 0 14px;display:flex;align-items:center;gap:10px;
   }
   .section-lab::after{content:'';flex:1;height:1.5px;background:var(--border);}
@@ -97,12 +122,20 @@
   .btn-ghost{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;background:none;color:var(--ink);border:1.5px solid var(--border);padding:11px 20px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;}
   .btn-ghost:hover{border-color:var(--cobalt);color:var(--cobalt);}
 
-  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
-  .catcard{border-radius:10px;padding:22px 20px;color:#fff;text-decoration:none;display:block;transition:transform .15s ease;}
-  .catcard:hover{transform:translateY(-3px);}
-  .catcard h3{font-family:'Space Grotesk',sans-serif;font-size:17px;margin:0 0 6px;}
-  .catcard p{font-size:12.5px;opacity:.92;line-height:1.5;margin:0 0 10px;}
-  .catcard .count{font-family:'JetBrains Mono',monospace;font-size:10.5px;opacity:.88;text-transform:uppercase;letter-spacing:.05em;}
+  /* ---------- cartes : grille du socle ----------
+     Les deux grilles de la page (catégories, catalogue) passent sur
+     .col-cartes / .col-carte, le composant de l'étape 3. Ce qui restait
+     maison — .cat-grid, .catcard, .grid, .card — dupliquait la grille,
+     le survol et la cible cliquable. Ne reste ici que ce qui porte
+     l'identité : la catégorie en pleine couleur, la fiche en carte blanche
+     à bandeau. Les deux variantes gardent leurs classes de couleur
+     (.c-croyance…), qui l'emportent sur --surface par ordre de cascade. */
+  .col-carte--cat{
+    border:0;border-radius:10px;padding:22px 20px;color:#fff;gap:0;
+  }
+  .col-carte--cat .col-carte__titre{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin:0 0 6px;}
+  .col-carte--cat .col-carte__desc{font-size:var(--fs-200);color:inherit;opacity:.92;line-height:1.5;margin:0 0 10px;}
+  .col-carte--cat .count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);opacity:.88;text-transform:uppercase;letter-spacing:.05em;}
 
   /* ---------- tabs / views ---------- */
   section.view{display:none;}
@@ -111,24 +144,27 @@
   /* ---------- catalogue / swatch grid ---------- */
   .searchbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
   .searchbar input[type="search"]{flex:1;min-width:200px;padding:11px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'Source Serif 4',serif;font-size:14.5px;background:#fff;color:var(--ink);}
-  .searchbar input[type="search"]:focus-visible{outline:2px solid var(--cobalt);outline-offset:1px;}
-  .searchbar select{padding:11px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;background:#fff;color:var(--ink);cursor:pointer;}
-  .result-count{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
+  .searchbar select{padding:11px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);background:#fff;color:var(--ink);cursor:pointer;}
+  .result-count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px;}
-  .card{
-    position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
-    padding:0;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
-    text-decoration:none;color:var(--ink);display:block;
+  /* Le catalogue tient des cartes plus larges que les catégories : la seule
+     différence est la borne de la grille, déclarée en modificateur. */
+  .col-cartes--catalogue{grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px;}
+  .col-carte--fiche{
+    position:relative;border-width:1.5px;border-left-width:1.5px;border-color:var(--border);border-radius:8px;
+    padding:0;gap:0;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
   }
-  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px -12px rgba(16,19,28,.25);}
-  .card:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;}
+  .col-carte--fiche:hover{border-color:var(--border);box-shadow:0 10px 24px -12px rgba(16,19,28,.25);}
   .swatch-top{height:54px;}
   .card-body{padding:18px 18px 20px;}
-  .card h3{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;margin:0 0 8px;}
-  .card p{font-size:14px;color:var(--ink-dim);line-height:1.5;margin:0 0 16px;font-style:italic;}
-  .card-foot{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
-  .badge-lu{position:absolute;top:10px;right:10px;background:var(--lime);color:#10131C;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.03em;}
+  .col-carte--fiche .col-carte__titre{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;margin:0 0 8px;}
+  .col-carte--fiche .col-carte__desc{font-size:14px;color:var(--ink-dim);line-height:1.5;margin:0 0 16px;font-style:italic;}
+  /* La catégorie et la difficulté passent de 10,5 à 12,8 px : « Temps &
+     probabilités » en capitales monospace ne tient plus sur une ligne avec
+     la difficulté à côté. Le pied se replie plutôt que d'être rogné par
+     l'overflow:hidden de la carte. */
+  .card-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--sp-1) var(--sp-2);font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
+  .badge-lu{position:absolute;top:10px;right:10px;background:var(--lime);color:#10131C;font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.03em;}
 
   .c-croyance{background:#2B4CFF;} .c-memoire{background:#7A5CFA;}
   .c-social{background:#FF6FA5;} .c-decision{background:#17B890;}
@@ -137,22 +173,22 @@
   .empty{text-align:center;padding:50px 20px;color:var(--ink-dim);font-size:14.5px;}
 
   /* ---------- fiche detail ---------- */
-  .fiche-back{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);text-decoration:none;margin-bottom:18px;font-weight:600;}
+  .fiche-back{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:var(--ink-dim);text-decoration:none;margin-bottom:18px;font-weight:600;}
   .fiche-back:hover{color:var(--cobalt);}
   .fiche{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
   .fiche-band{height:6px;}
   .fiche-inner{padding:40px clamp(20px,4vw,52px);}
   .fiche-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
-  .fiche-cat{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cobalt);margin-bottom:8px;text-decoration:none;}
+  .fiche-cat{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.1em;text-transform:uppercase;color:var(--cobalt);margin-bottom:8px;text-decoration:none;}
   .fiche h2{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,4vw,36px);margin:0 0 4px;}
   .fiche .eng{font-style:italic;color:var(--ink-dim);font-size:14px;margin:0;}
   .diff-badge{
-    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.05em;text-transform:uppercase;
     background:var(--cobalt-soft);color:var(--cobalt);padding:5px 12px;border-radius:20px;white-space:nowrap;
   }
 
   .label{
-    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.03em;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:var(--fs-200);letter-spacing:.03em;
     color:var(--ink);margin:0 0 12px;display:flex;align-items:center;gap:10px;
   }
   .label::after{content:'';flex:1;height:1.5px;background:var(--border);}
@@ -174,7 +210,6 @@
     transition:border-color .15s ease;width:100%;
   }
   .choice:hover:not(:disabled){border-color:var(--cobalt);}
-  .choice:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;}
   .choice.correct{border-color:var(--good);background:var(--good-soft);}
   .choice.wrong{border-color:var(--wrong);background:var(--wrong-soft);}
   .explain{font-size:13.5px;color:var(--ink-dim);margin-top:14px;line-height:1.55;display:none;}
@@ -189,31 +224,35 @@
   .scan-ring.wrong{border-color:var(--wrong);color:var(--wrong);}
   .scan-ring.show{transform:scale(1);opacity:1;}
 
-  .qcm-score{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);margin:0 0 34px;}
+  .qcm-score{font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:var(--ink-dim);margin:0 0 34px;}
   .qcm-score b{color:var(--cobalt);}
 
   .sources{display:grid;gap:14px;margin-bottom:34px;}
   .source{font-size:13.5px;color:var(--ink-dim);line-height:1.55;padding-left:16px;border-left:2px solid var(--cobalt);}
   .source b{color:var(--ink);font-weight:600;font-family:'Space Grotesk',sans-serif;}
-  .source .meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cobalt);display:block;margin-bottom:3px;}
+  .source .meta{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--cobalt);display:block;margin-bottom:3px;}
   .source a{color:var(--cobalt);}
 
   .related{display:flex;gap:8px;flex-wrap:wrap;}
-  .related a{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--cobalt-soft);color:var(--cobalt);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;transition:background .15s,color .15s;}
+  .related a{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);background:var(--cobalt-soft);color:var(--cobalt);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;transition:background .15s,color .15s;}
   .related a:hover{background:var(--cobalt);color:#fff;}
 
   /* ---------- identification libre ---------- */
   .id-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;max-width:640px;overflow:hidden;}
   .id-band{height:6px;background:var(--lime);}
   .id-inner{padding:38px clamp(20px,4vw,50px);}
-  .id-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .id-eyebrow{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .id-situation{font-size:16.5px;line-height:1.7;margin:0 0 26px;}
-  .id-row{display:flex;gap:10px;margin-bottom:6px;}
-  .id-input{flex:1;background:#FBFBFD;border:1.5px solid var(--border);color:var(--ink);padding:12px 14px;border-radius:6px;font-size:14.5px;font-family:'Source Serif 4',serif;}
-  .id-input:focus-visible{outline:2px solid var(--cobalt);outline-offset:1px;}
+  /* Un <input> a une largeur intrinseque (≈ 20 caracteres) qui l'empeche de
+     se comprimer : sans `min-width:0` il poussait le bouton « Valider » hors
+     du cadre — 369 px mesures sur un ecran de 320. */
+  .id-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+  .id-input{flex:1;min-width:0;background:#FBFBFD;border:1.5px solid var(--border);color:var(--ink);padding:12px 14px;border-radius:6px;font-size:14.5px;font-family:'Source Serif 4',serif;}
   .id-btn{background:var(--cobalt);color:#fff;border:none;font-weight:600;padding:0 22px;border-radius:6px;cursor:pointer;font-size:14px;font-family:'Space Grotesk',sans-serif;}
   .id-btn:hover{background:#1d3add;}
-  .id-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  /* Seule surcharge de focus conservée : --focus vaut la couleur d'accent, or
+     ce bouton EST en couleur d'accent — l'anneau du socle y disparaîtrait. */
+  .id-btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
   .id-feedback{font-size:13.5px;line-height:1.55;margin-top:16px;padding:14px 16px;border-radius:6px;display:none;font-family:'Source Serif 4',serif;}
   .id-feedback.hint{display:block;background:var(--cobalt-soft);border:1px solid var(--cobalt);}
   .id-feedback.correct{display:block;background:var(--good-soft);border:1px solid var(--good);}
@@ -222,9 +261,9 @@
   .id-next{margin-top:18px;}
 
   /* ---------- quiz global ---------- */
-  .quiz-progress{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
+  .quiz-progress{font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
   .quiz-progress b{color:var(--cobalt);}
-  .quiz-origin{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);margin-top:10px;}
+  .quiz-origin{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);margin-top:10px;}
   .quiz-end{text-align:center;padding:50px 20px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;}
   .quiz-end .score{font-family:'Space Grotesk',sans-serif;font-size:52px;font-weight:700;color:var(--cobalt);margin:6px 0 10px;}
   .quiz-end p{color:var(--ink-dim);font-size:14.5px;max-width:420px;margin:0 auto 22px;line-height:1.55;}
@@ -240,16 +279,16 @@
   @media (max-width:640px){
     .hero{grid-template-columns:1fr;}
   }
-  @media (prefers-reduced-motion: reduce){
-    .card, .scan-ring, .catcard{transition:none;}
-  }
 </style>
 </head>
-<body>
-<a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
+<!-- Le titre de l'en-tête est déclaré, pas déduit : l'unique <h1> de la page
+     est celui du hero, écrit par app.js dans #app et propre à la vue
+     d'accueil. Le socle l'aurait pris pour titre de page sur « / » et rien du
+     tout sur les autres routes. -->
+<body data-col-retour="../index.html" data-col-titre-cle="titreEntete">
 
 <div class="topbar">
-  <a class="brand" href="#/"><span class="dot"></span>Perceptio</a>
+  <a class="brand" href="#/" data-col-entete-extra><span class="dot"></span>Perceptio</a>
   <nav class="tabs" id="mainnav" data-i18n-aria-label="nav" aria-label="Navigation principale">
     <a class="tab" href="#/biais" data-i18n="tabExplore">Explorer</a>
     <a class="tab" href="#/categories" data-i18n="tabCategories">Catégories</a>
@@ -271,14 +310,14 @@
 <script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux", nav: "Navigation principale",
+    titreEntete: "Biais cognitifs", nav: "Navigation principale",
     tabExplore: "Explorer", tabCategories: "Catégories", tabQuiz: "Quiz",
     tabIdentification: "Trouve le biais", tabAbout: "À propos",
     randomBtn: "🎲 Biais aléatoire", by: "par",
     footerTag: "Perceptio — {n} biais recensés à ce jour, sources scientifiques vérifiées une à une."
   },
   en: {
-    back: "← Back to games", nav: "Main navigation",
+    titreEntete: "Cognitive biases", nav: "Main navigation",
     tabExplore: "Explore", tabCategories: "Categories", tabQuiz: "Quiz",
     tabIdentification: "Spot the bias", tabAbout: "About",
     randomBtn: "🎲 Random bias", by: "by",
@@ -288,6 +327,7 @@ I18N.register({
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
 </script>
+<script src="../collection.js"></script>
 <script>
 /* Compteur de contenu : le pied de page reflete le nombre reel d'entrees. */
 window.addEventListener('load', function () {

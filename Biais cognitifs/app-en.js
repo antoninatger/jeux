@@ -154,11 +154,11 @@ function renderHome(){
 
     <div class="home-block">
       <p class="section-lab">Bias of the day</p>
-      <a class="card" href="#/biais/${jour.id}" style="max-width:420px;">
+      <a class="col-carte col-carte--fiche" href="#/biais/${jour.id}" style="max-width:420px;">
         <div class="swatch-top ${jourCat.classe}"></div>
         <div class="card-body">
-          <h3>${jour.nom}</h3>
-          <p>${jour.definition_courte}</p>
+          <h3 class="col-carte__titre">${jour.nom}</h3>
+          <p class="col-carte__desc">${jour.definition_courte}</p>
           <div class="card-foot"><span>${jourCat.nom}</span><span>${capitalize(jour.difficulte)}</span></div>
         </div>
       </a>
@@ -166,11 +166,11 @@ function renderHome(){
 
     <div class="home-block">
       <p class="section-lab">Categories</p>
-      <div class="cat-grid">
+      <div class="col-cartes">
         ${CATEGORIES.map(c => `
-          <a class="catcard ${c.classe}" href="#/categories/${c.id}">
-            <h3>${c.nom}</h3>
-            <p>${c.description}</p>
+          <a class="col-carte col-carte--cat ${c.classe}" href="#/categories/${c.id}">
+            <h3 class="col-carte__titre">${c.nom}</h3>
+            <p class="col-carte__desc">${c.description}</p>
             <span class="count">${countByCat(c.id)} biases</span>
           </a>
         `).join('')}
@@ -255,16 +255,16 @@ function initCatalogue(presetCat){
     }
     results.innerHTML = `
       <p class="result-count">${list.length} biases</p>
-      <div class="grid">
+      <div class="col-cartes col-cartes--catalogue">
         ${list.map(b => {
           const c = catById(b.categorie);
           return `
-            <a class="card" href="#/biais/${b.id}">
+            <a class="col-carte col-carte--fiche" href="#/biais/${b.id}">
               ${lus.has(b.id) ? '<span class="badge-lu">read</span>' : ''}
               <div class="swatch-top ${c.classe}"></div>
               <div class="card-body">
-                <h3>${b.nom}</h3>
-                <p>${b.definition_courte}</p>
+                <h3 class="col-carte__titre">${b.nom}</h3>
+                <p class="col-carte__desc">${b.definition_courte}</p>
                 <div class="card-foot"><span>${c.nom}</span><span>${capitalize(b.difficulte)}</span></div>
               </div>
             </a>
@@ -287,11 +287,11 @@ function initCatalogue(presetCat){
 function renderCategoriesPage(){
   return `
     <p class="section-lab">All categories</p>
-    <div class="cat-grid">
+    <div class="col-cartes">
       ${CATEGORIES.map(c => `
-        <a class="catcard ${c.classe}" href="#/categories/${c.id}">
-          <h3>${c.nom}</h3>
-          <p>${c.description}</p>
+        <a class="col-carte col-carte--cat ${c.classe}" href="#/categories/${c.id}">
+          <h3 class="col-carte__titre">${c.nom}</h3>
+          <p class="col-carte__desc">${c.description}</p>
           <span class="count">${countByCat(c.id)} biases</span>
         </a>
       `).join('')}
@@ -547,7 +547,7 @@ function renderQuizQuestion(){
     app.innerHTML = `
       <p class="section-lab">Global quiz — result</p>
       <div class="quiz-end">
-        <p class="mono" style="font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;">Final score</p>
+        <p class="mono" style="font-size:var(--fs-100);color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;">Final score</p>
         <p class="score">${quizState.correct}/${quizState.pool.length}</p>
         <p>${quizState.correct === quizState.pool.length ? 'Flawless — your brain resisted every trap in this draw.' : 'Each mistake points to a bias worth re-reading: head to its fiche to dig into the mechanism.'}</p>
         <div class="cta-row" style="justify-content:center;">
