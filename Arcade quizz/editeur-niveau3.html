@@ -4,21 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Éditeur — Niveau 3</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  :root{--accent:#cc44ff}
+  :root{
+    --accent:#cc44ff;
+    /* Jetons du socle (chantier 05) — page outil claire, non traduite. */
+    --bg:#f0f4f8; --surface:#ffffff; --bordure:#e2e8f0;
+    --txt:#1a1a2e; --txt-secondaire:#5b6470; /* 5,4:1 sur --bg */
+    --acc:var(--accent); --acc-txt:#26073a;
+    --font-texte:system-ui,sans-serif; --font-titre:system-ui,sans-serif;
+  }
   body{font-family:system-ui,sans-serif;background:#f0f4f8;color:#1a1a2e;min-height:100vh}
 
-  header{
+  /* Barre d'outils sous son propre nom de classe : `header` au sélecteur de
+     type retomberait sur l'en-tête unifié du socle. */
+  .ed-header{
     background:#1a1a2e;color:#fff;padding:14px 24px;
     display:flex;align-items:center;justify-content:space-between;
     position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.35)
   }
-  header h1{font-size:1rem;font-weight:700;letter-spacing:.03em}
-  header h1 span{color:var(--accent)}
-  .subtitle{font-size:.72rem;color:#888;margin-top:2px}
-  .header-right{display:flex;align-items:center;gap:10px}
-  #count{font-size:.75rem;color:#888}
+  .ed-header h1{font-size:1rem;font-weight:700;letter-spacing:.03em}
+  .ed-header h1 span{color:var(--accent)}
+  .subtitle{font-size:var(--fs-100);color:#a3adbd;margin-top:2px}
+  .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  #count{font-size:var(--fs-100);color:#a3adbd}
 
   .btn{padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;transition:opacity .15s}
   .btn:hover{opacity:.85}
@@ -33,12 +44,12 @@
   }
   .card-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .qnum{
-    background:var(--accent);color:#fff;font-weight:700;font-size:.72rem;
+    background:var(--accent);color:#fff;font-weight:700;font-size:var(--fs-100);
     padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0
   }
   .cat-input{flex:1;font-size:.82rem;font-style:italic;color:#555}
 
-  label{font-size:.68rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;display:block;margin:10px 0 4px}
+  label{font-size:var(--fs-100);font-weight:700;color:var(--txt-secondaire);text-transform:uppercase;letter-spacing:.05em;display:block;margin:10px 0 4px}
 
   input[type=text],textarea{
     width:100%;padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;
@@ -50,23 +61,23 @@
 
   .options-grid{display:flex;flex-direction:column;gap:6px}
   .opt-row{display:flex;align-items:center;gap:8px}
-  .opt-idx{font-size:.72rem;color:#bbb;width:16px;text-align:center;flex-shrink:0}
+  .opt-idx{font-size:var(--fs-100);color:var(--txt-secondaire);width:16px;text-align:center;flex-shrink:0}
   .opt-row input[type=radio]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0}
   .opt-row input[type=text]{flex:1}
 
-  .correct-hint{font-size:.68rem;color:var(--accent);font-weight:normal;text-transform:none;letter-spacing:0}
+  .correct-hint{font-size:var(--fs-100);color:var(--accent);font-weight:normal;text-transform:none;letter-spacing:0}
 
   .card-footer{margin-top:14px;display:flex;justify-content:flex-end}
   .btn-del{
     padding:5px 12px;border:none;border-radius:5px;cursor:pointer;
-    font-size:.72rem;font-weight:600;background:#fee2e2;color:#dc2626;transition:background .15s
+    font-size:var(--fs-100);font-weight:600;background:#fee2e2;color:#dc2626;transition:background .15s
   }
   .btn-del:hover{background:#fecaca}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html">
 
-<header>
+<header class="ed-header">
   <div>
     <h1>Éditeur <span>Niveau 3</span> — Rhétorique &amp; Esprit Critique</h1>
     <div class="subtitle">questions-niveau3.js · QUESTIONS_NIVEAU3</div>
@@ -155,5 +166,7 @@ function exportJS(){
 
 render();
 </script>
+<!-- En-tête unifié (chantier 05) — pas d'i18n.js : page outil non traduite. -->
+<script src="../collection.js"></script>
 </body>
 </html>

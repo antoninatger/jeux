@@ -3,11 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whac-A-Quiz</title>
+<title data-i18n="pageTitle">Whac-A-Quiz</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
+    pageTitle: "Whac-A-Quiz", colRetour: "Retour à l'arcade",
+    hudScore: "SCORE", hudLives: "VIES",
+    consigne: "FRAPPE LES FAUSSES RÉPONSES !",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Souris ou doigt",
+    speedVerySlow: "TRÈS LENTE", speedSlow: "LENTE", speedNormal: "NORMALE", speedFast: "RAPIDE", speedTurbo: "TURBO",
     intro: `🔨 Une question s'affiche — des réponses surgissent des trous.<br><strong style="color:#ff6633">Frappe toutes les FAUSSES réponses !</strong><br>⚠️ Ne frappe <strong style="color:#ffcc00">PAS</strong> la bonne réponse — −1 vie<br>⏱ Frappe toutes les fausses avant la fin du temps !`,
     chooseMode: "CHOISIR LE MODE", easyBtn: "🟢 FACILE — Lis d'abord, lance toi-même", hardBtn: "🔴 DIFFICILE — Les réponses surgissent !",
     easyBtnShort: "🟢 FACILE — Lis d'abord", hardBtnShort: "🔴 DIFFICILE — Les réponses surgissent",
@@ -19,6 +27,11 @@ I18N.register({
     hitGood: "❌ Bonne réponse frappée ! −1 vie", allHit: "✅ Toutes les fausses réponses frappées !"
   },
   en: {
+    pageTitle: "Whac-A-Quiz", colRetour: "Back to the arcade",
+    hudScore: "SCORE", hudLives: "LIVES",
+    consigne: "WHACK THE FALSE ANSWERS!",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Mouse or touch",
+    speedVerySlow: "VERY SLOW", speedSlow: "SLOW", speedNormal: "NORMAL", speedFast: "FAST", speedTurbo: "TURBO",
     intro: `🔨 A question appears — answers pop up from the holes.<br><strong style="color:#ff6633">Whack all the FALSE answers!</strong><br>⚠️ Do <strong style="color:#ffcc00">NOT</strong> whack the correct answer — −1 life<br>⏱ Whack all the false ones before time runs out!`,
     chooseMode: "CHOOSE MODE", easyBtn: "🟢 EASY — Read first, launch yourself", hardBtn: "🔴 HARD — The answers pop up!",
     easyBtnShort: "🟢 EASY — Read first", hardBtnShort: "🔴 HARD — The answers pop up",
@@ -37,7 +50,18 @@ I18N.register({
 </script>
 <script>if(typeof QCMStore!=='undefined'){var _s=QCMStore.getSessionQuestions();if(_s&&_s.length)window.DEFAULT_QCM=_s;}</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@600;700;800&family=Fredoka+One&display=swap');
+  /* Identité arcade sur le socle (chantier 05). */
+  :root {
+    --bg:#0a0010;
+    --surface:#160525;
+    --txt:#f0e8ff;
+    --txt-secondaire:#99a3c4;  /* 8,2:1 sur --bg */
+    --acc:#cc44ff;
+    --acc-txt:#12001c;
+    --font-texte:'Nunito',sans-serif;
+    --font-titre:'Orbitron',sans-serif;
+  }
+  .col-entete__titre{color:#cc44ff;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 0 16px rgba(204,68,255,.45)}
   * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
@@ -259,9 +283,13 @@ I18N.register({
   /* Overlay */
   #overlay {
     position:absolute; inset:0; display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    background:rgba(10,0,16,0.94); color:#cc44ff; text-align:center; gap:14px; z-index:50;
+    align-items:center; justify-content:flex-start;
+    background:rgba(10,0,16,0.94); color:#cc44ff; text-align:center; gap:14px; z-index:45;
+    overflow-y:auto; padding:14px 0;
   }
+  /* Centrage sûr : centré quand ça tient, défilable depuis le haut sinon (§9.3). */
+  #overlay > :first-child{margin-top:auto}
+  #overlay > :last-child{margin-bottom:auto}
   #overlay h1 {
     font-size:2rem; font-weight:900; letter-spacing:.15em; line-height:1.15;
     text-shadow:0 0 30px #cc44ff, 0 0 60px #cc44ff;
@@ -318,19 +346,18 @@ I18N.register({
   #menu-btn-bottom:hover { background:#cc44ff; color:#000; }
 
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 
+<!-- Le titre vit dans l'en-tête unifié : le HUD garde score, consigne et vies
+     sous lui, en flux — plus rien ne se recouvre en 390 px (§9.3). -->
 <div id="ui">
-  <div>SCORE<br><span id="score-display">0</span></div>
-  <div style="text-align:center">WHAC-A-QUIZ<br>
-    <span style="font-family:'Nunito',sans-serif;font-size:.8125rem;font-weight:800;color:#ff6633;letter-spacing:.05em">FRAPPE LES FAUSSES RÉPONSES !</span>
+  <div><span data-i18n="hudScore">SCORE</span><br><span id="score-display">0</span></div>
+  <div style="text-align:center">
+    <span style="font-family:'Nunito',sans-serif;font-size:.8125rem;font-weight:800;color:#ff6633;letter-spacing:.05em" data-i18n="consigne">FRAPPE LES FAUSSES RÉPONSES !</span>
   </div>
-  <div style="text-align:right">VIES<br><span id="lives-display">❤️❤️❤️</span></div>
+  <div style="text-align:right"><span data-i18n="hudLives">VIES</span><br><span id="lives-display">❤️❤️❤️</span></div>
 </div>
 
 <div id="board-wrap">
@@ -351,6 +378,11 @@ I18N.register({
       ⚠️ Ne frappe <strong style="color:#ffcc00">PAS</strong> la bonne réponse — −1 vie<br>
       ⏱ Frappe toutes les fausses avant la fin du temps !
     </div>
+    <ul class="col-meta">
+      <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
+      <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
+      <li>🖱️ <span data-i18n="metaCommandes">Souris ou doigt</span></li>
+    </ul>
     <div style="color:#cc44ff;font-family:'Orbitron',sans-serif;font-size:0.8125rem;letter-spacing:.12em;margin-top:4px" data-i18n="chooseMode">CHOISIR LE MODE</div>
     <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%">
       <button onclick="startDefaultGame('easy')" style="border-color:#3ecf8e;color:#3ecf8e;text-shadow:0 0 10px #3ecf8e;box-shadow:0 0 20px rgba(62,207,142,.2);width:320px" data-i18n="easyBtn">
@@ -369,10 +401,11 @@ I18N.register({
   🐢
   <input type="range" id="speed-slider" min="1" max="5" value="2" step="1">
   🚀
-  <span id="speed-label">LENTE</span>
+  <span id="speed-label" data-i18n="speedSlow">LENTE</span>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   🔡
-  <input type="range" id="font-slider" min="10" max="18" value="13" step="1">
+  <!-- min 13 : le texte des taupes est du texte DOM, plancher 12,8 px du socle -->
+  <input type="range" id="font-slider" min="13" max="18" value="13" step="1">
   🔠
   <span id="font-label">13 px</span>
   &nbsp;&nbsp;
@@ -395,11 +428,11 @@ function toggleMute() {
 // La vitesse règle la durée du chrono et le rythme d'apparition.
 // Les boules sortent les unes après les autres (stagger) puis RESTENT jusqu'au bout.
 const SPEED_LEVELS = [
-  { label:'TRÈS LENTE', qTime:60000, stagger:2400 },
-  { label:'LENTE',      qTime:45000, stagger:1700 },
-  { label:'NORMALE',    qTime:30000, stagger:1100 },
-  { label:'RAPIDE',     qTime:20000, stagger:650  },
-  { label:'TURBO',      qTime:12000, stagger:300  },
+  { label:I18N.t('speedVerySlow'), qTime:60000, stagger:2400 },
+  { label:I18N.t('speedSlow'),     qTime:45000, stagger:1700 },
+  { label:I18N.t('speedNormal'),   qTime:30000, stagger:1100 },
+  { label:I18N.t('speedFast'),     qTime:20000, stagger:650  },
+  { label:I18N.t('speedTurbo'),    qTime:12000, stagger:300  },
 ];
 let currentSpeed = SPEED_LEVELS[1]; // défaut : LENTE
 

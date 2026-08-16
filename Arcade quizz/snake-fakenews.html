@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake - Fake News & Esprit Critique</title>
+<title data-i18n="pageTitle">Snake - Fake News & Esprit Critique</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Exo+2:wght@400;700&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -20,7 +20,18 @@
     --yellow: #ffd740;
     --text: #e0e0ff;
     --dim: #4040aa;
+    /* Jetons du socle (chantier 05) — identité arcade conservée. */
+    --surface: var(--panel);
+    --bordure: rgba(79,195,247,.2);
+    --txt: #e0e0ff;
+    --txt-secondaire: #9a9ad0;  /* 7,6:1 sur --bg */
+    --acc: #4fc3f7;
+    --acc-txt: #041018;
+    --font-texte: 'Exo 2', sans-serif;
+    --font-titre: 'Press Start 2P', monospace;
   }
+  /* Press Start 2P est très large : le titre de l'en-tête unifié redescend. */
+  .col-entete__titre{font-size:var(--fs-300);color:var(--blue);text-shadow:0 0 14px rgba(79,195,247,.5)}
 
   body {
     background: var(--bg);
@@ -30,12 +41,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow-x: hidden;
     overflow-y: auto;
     gap: 12px;
-    padding: 10px;
+    padding: 0 10px 10px;
   }
+  /* L'en-tête unifié reste en haut ; le bloc de jeu se centre par marges
+     auto dans l'espace restant (l'ancien justify-content:center posait
+     l'en-tête au milieu de la page). */
+  .subtitle{margin-top:auto}
+  .controls{margin-bottom:auto}
 
   body::before {
     content: '';
@@ -66,8 +82,10 @@
   .hud {
     display: flex;
     gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
+    font-size: var(--fs-100);
     color: #9a9ad0;
   }
   .hud span { color: var(--blue); }
@@ -115,7 +133,7 @@
   }
   .legend h3 {
     font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
+    font-size: var(--fs-100);
     color: var(--blue);
     margin-bottom: 8px;
     letter-spacing: 1px;
@@ -138,7 +156,7 @@
   }
   .question-label {
     font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
+    font-size: var(--fs-100);
     color: var(--yellow);
     white-space: nowrap;
     flex-shrink: 0;
@@ -183,11 +201,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 20px;
     background: rgba(0,0,0,0.88);
     z-index: 10;
+    overflow-y: auto;
+    padding: 14px 0;
   }
+  /* Centrage sûr : centré quand ça tient, défilable depuis le haut sinon (§9.3). */
+  .overlay > :first-child{margin-top:auto}
+  .overlay > :last-child{margin-bottom:auto}
   .overlay.hidden { display: none; }
 
   .overlay h2 {
@@ -214,7 +237,7 @@
   }
   .overlay .score-display {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
+    font-size: var(--fs-100);
     color: var(--yellow);
     text-align: center;
     line-height: 2;
@@ -256,14 +279,11 @@
   input[type=range]::-webkit-slider-thumb { width: 20px; height: 20px; }
   input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border: none; }
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html" data-col-retour-cle="colRetour">
 <h1>SNAKE</h1>
-<div class="subtitle">Fake News & Esprit Critique</div>
+<div class="subtitle" data-i18n="subtitle">Fake News & Esprit Critique</div>
 <div class="hud"><span data-i18n="hudScore">SCORE:</span> <span id="score">0</span> &nbsp; <span data-i18n="hudLives">VIE:</span> <span id="lives">❤️❤️❤️</span> &nbsp; <span data-i18n="hudLevel">NIVEAU:</span> <span id="level">1</span></div>
 
 <!-- Question bar above the game -->
@@ -278,6 +298,11 @@
     <div class="overlay" id="overlay">
       <h2 data-i18n-html="overlayH2">SNAKE<br>ESPRIT CRITIQUE</h2>
       <p data-i18n-html="overlayP"><strong style="color:#69f0ae">Mange UNIQUEMENT la bonne réponse !</strong><br>Manger une mauvaise réponse = −1 vie.<br><br>Toutes les réponses sont en <strong style="color:#4fc3f7">BLEU</strong> — à toi de trouver la bonne. Après chaque bouchée, la bonne devient 🟢 verte et les mauvaises 🔴 rouges.</p>
+      <ul class="col-meta">
+        <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
+        <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
+        <li>⌨️ <span data-i18n="metaCommandes">Clavier</span></li>
+      </ul>
       <button class="btn" id="startBtn" data-i18n="startBtn">COMMENCER</button>
       <button class="btn-menu" onclick="location.href='index.html'" data-i18n="menu">← MENU</button>
     </div>
@@ -304,17 +329,23 @@
           style="flex:1;accent-color:#4fc3f7;cursor:pointer">
         <span style="font-size:14px;color:#9a9ad0">🐇</span>
       </div>
-      <div style="text-align:center;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;color:#4fc3f7" id="speedLabel">NORMALE</div>
+      <div style="text-align:center;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;color:#4fc3f7" id="speedLabel" data-i18n="speedNormal">NORMALE</div>
     </div>
   </div>
 </div>
 
-<div class="controls">↑ ↓ ← → ou WASD · ESPACE = Pause</div>
+<div class="controls" data-i18n="controlsHint">↑ ↓ ← → ou WASD · ESPACE = Pause</div>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
+    pageTitle: "Snake - Fake News & Esprit Critique", colRetour: "Retour à l'arcade",
+    subtitle: "Fake News & Esprit Critique",
+    controlsHint: "↑ ↓ ← → ou WASD · ESPACE = Pause",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier",
+    collision: "auto-collision !",
     currentQ: "Lance le jeu pour commencer !", overlayH2: "SNAKE<br>ESPRIT CRITIQUE",
     overlayP: `<strong style="color:#69f0ae">Mange UNIQUEMENT la bonne réponse !</strong><br>Manger une mauvaise réponse = −1 vie.<br><br>Toutes les réponses sont en <strong style="color:#4fc3f7">BLEU</strong> — à toi de trouver la bonne. Après chaque bouchée, la bonne devient 🟢 verte et les mauvaises 🔴 rouges.`,
     startBtn: "COMMENCER", menu: "← MENU", menuQ: "← MENU & QUESTIONS", replay: "REJOUER",
@@ -325,6 +356,11 @@ I18N.register({
     eatOnly: "Mange UNIQUEMENT la bonne réponse !", goodA: "✅ Bonne réponse ! +", goodB: " pts", wrongFb: "❌ Fausse réponse ! -1 vie", noLives: "Plus de vies !"
   },
   en: {
+    pageTitle: "Snake - Fake News & Critical Thinking", colRetour: "Back to the arcade",
+    subtitle: "Fake News & Critical Thinking",
+    controlsHint: "↑ ↓ ← → or WASD · SPACE = Pause",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard",
+    collision: "self-collision!",
     currentQ: "Start the game to begin!", overlayH2: "SNAKE<br>CRITICAL THINKING",
     overlayP: `<strong style="color:#69f0ae">Eat ONLY the correct answer!</strong><br>Eating a wrong answer = −1 life.<br><br>All the answers are in <strong style="color:#4fc3f7">BLUE</strong> — it's up to you to find the right one. After each bite, the correct one turns 🟢 green and the wrong ones 🔴 red.`,
     startBtn: "START", menu: "← MENU", menuQ: "← MENU & QUESTIONS", replay: "REPLAY",
@@ -502,7 +538,7 @@ function tick() {
   head.y = (head.y + ROWS) % ROWS;
 
   // Self collision
-  if (snake.some(s => s.x === head.x && s.y === head.y)) return die('auto-collision !');
+  if (snake.some(s => s.x === head.x && s.y === head.y)) return die(I18N.t('collision'));
 
   snake.unshift(head);
 

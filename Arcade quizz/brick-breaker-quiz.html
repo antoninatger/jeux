@@ -3,11 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brick Breaker Quiz</title>
+<title data-i18n="pageTitle">Brick Breaker Quiz</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
+    pageTitle: "Brick Breaker Quiz", colRetour: "Retour à l'arcade",
+    hudScore: "SCORE", hudLives: "VIES",
+    consigne: "🧱 CASSE LES FAUSSES RÉPONSES !",
+    controlsHint: "← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou souris",
     intro: `🧱 Une question s'affiche en haut — les réponses sont des briques.<br><strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br>⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>⚠️ La balle qui tombe = −1 vie<br><br>← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>TOUTES<br>CASSÉES !", loseTitle: "GAME<br>OVER",
@@ -17,6 +25,11 @@ I18N.register({
     firstHint: "🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !"
   },
   en: {
+    pageTitle: "Brick Breaker Quiz", colRetour: "Back to the arcade",
+    hudScore: "SCORE", hudLives: "LIVES",
+    consigne: "🧱 BREAK THE FALSE ANSWERS!",
+    controlsHint: "← → or MOUSE to move &nbsp;|&nbsp; SPACE to launch &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Break the FALSE bricks",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or mouse",
     intro: `🧱 A question appears at the top — the answers are bricks.<br><strong style="color:#ffaa00">Break all the FALSE answers!</strong><br>⚠️ Read the bricks — hitting the <strong style="color:#ffcc00">correct answer</strong> costs a life!<br>⚠️ A falling ball = −1 life<br><br>← → or <strong style="color:#00ffcc">Mouse</strong> for the paddle &nbsp;|&nbsp; <strong style="color:#00ffcc">SPACE</strong> to launch &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>ALL<br>BROKEN!", loseTitle: "GAME<br>OVER",
@@ -33,14 +46,30 @@ I18N.register({
 </script>
 <script>if(typeof QCMStore!=='undefined'){var _s=QCMStore.getSessionQuestions();if(_s&&_s.length)window.DEFAULT_QCM=_s;}</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@600;700;800&display=swap');
+  /* Identité arcade sur le socle (chantier 05). */
+  :root {
+    --bg:#050010;
+    --surface:#0b0b26;
+    --txt:#e8f0ff;
+    --txt-secondaire:#99a3c4;  /* 8,3:1 sur --bg */
+    --acc:#00ffcc;
+    --acc-txt:#001510;
+    --font-texte:'Nunito',sans-serif;
+    --font-titre:'Orbitron',sans-serif;
+  }
+  .col-entete__titre{color:#00ffcc;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 0 16px rgba(0,255,204,.45)}
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background:#050010;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     min-height:100vh; overflow-x:hidden;
     font-family:'Orbitron', sans-serif;
   }
+  /* L'en-tête unifié reste en haut ; le bloc de jeu se centre par marges
+     auto dans l'espace restant (l'ancien justify-content:center posait
+     l'en-tête au milieu de la page). */
+  #ui{margin-top:auto}
+  #speed-row{margin-bottom:auto}
 
   #ui {
     max-width:660px; width:100%; display:flex; justify-content:space-between; align-items:center;
@@ -94,9 +123,15 @@ I18N.register({
 
   #overlay {
     position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     background:rgba(0,4,15,0.93); color:#00ffcc; text-align:center; gap:14px;
+    overflow-y:auto; padding:14px 0;
   }
+  /* Centrage sûr : centré quand ça tient, défilable depuis le haut sinon —
+     en 320/390 px le bouton JOUER débordait du cadre et devenait
+     inatteignable (§9.3). */
+  #overlay > :first-child{margin-top:auto}
+  #overlay > :last-child{margin-bottom:auto}
   #overlay h1 {
     font-size:2rem; font-weight:900; letter-spacing:.15em;
     text-shadow:0 0 30px #00ffcc, 0 0 60px #00ffcc; line-height:1.15;
@@ -136,7 +171,8 @@ I18N.register({
     font-family:'Nunito',sans-serif; font-size:0.8125rem; color:#99a3c4; letter-spacing:.04em;
   }
   #speed-row {
-    display:flex; align-items:center; justify-content:center; gap:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px 10px;
+    flex-wrap:wrap; padding:0 8px; max-width:100%;
     margin-top:10px; font-family:'Nunito',sans-serif; font-size:0.875rem;
     color:#00ffcc; letter-spacing:.04em;
   }
@@ -156,19 +192,18 @@ I18N.register({
   #mute-btn:hover { border-color:#00ffcc; color:#00ffcc; }
 
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 
+<!-- Le titre vit dans l'en-tête unifié : le HUD garde score, consigne et vies
+     sous lui, en flux — plus rien ne se recouvre en 390 px (§9.3). -->
 <div id="ui">
-  <div>SCORE<br><span id="score-display">0</span></div>
-  <div style="text-align:center">BRICK BREAKER QUIZ<br>
-    <span class="consigne">🧱 CASSE LES FAUSSES RÉPONSES !</span>
+  <div><span data-i18n="hudScore">SCORE</span><br><span id="score-display">0</span></div>
+  <div style="text-align:center">
+    <span class="consigne" data-i18n="consigne">🧱 CASSE LES FAUSSES RÉPONSES !</span>
   </div>
-  <div style="text-align:right">VIES<br><span id="lives-display">❤️❤️❤️</span></div>
+  <div style="text-align:right"><span data-i18n="hudLives">VIES</span><br><span id="lives-display">❤️❤️❤️</span></div>
 </div>
 
 <div id="canvas-wrap">
@@ -190,14 +225,19 @@ I18N.register({
       ⚠️ La balle qui tombe = −1 vie<br><br>
       ← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+    <ul class="col-meta">
+      <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
+      <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
+      <li>⌨️ <span data-i18n="metaCommandes">Clavier ou souris</span></li>
+    </ul>
+    <div class="col-actions" style="flex-direction:column;align-items:center">
       <button onclick="startDefaultGame()" data-i18n="play">JOUER ▶</button>
       <button class="btn-custom" onclick="location.href='index.html'" data-i18n="menu">← MENU &amp; QUESTIONS</button>
     </div>
   </div>
 </div>
 
-<div id="controls">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
+<div id="controls"><span data-i18n-html="controlsHint">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques</span> <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
 <div id="speed-row">
   🔡
   <input type="range" id="font-slider" min="10" max="20" value="14" step="1">

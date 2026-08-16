@@ -3,12 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAKE BLASTER — Esprit Critique</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<title data-i18n="pageTitle">FAKE BLASTER — Esprit Critique</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
+    pageTitle: "Fake Blaster", colRetour: "Retour à l'arcade",
+    startMsg: "Appuie sur ESPACE ou clique pour commencer !",
+    gameOfA: "— partie de", gameOfB: "questions",
+    realOne: "C'EST LA VRAIE ! −1 VIE", lostLife: "−1 VIE !",
     subtitle: "ESPRIT CRITIQUE", menu: "← MENU",
     rule1: "🎯  Les réponses flottent dans le ciel — vise avec la souris",
     rule2: "💥  Détruis toutes les FAUSSES réponses (+50 pts)",
@@ -25,6 +31,10 @@ I18N.register({
     explWaiting: "L'explication s'affichera ici après chaque question."
   },
   en: {
+    pageTitle: "Fake Blaster", colRetour: "Back to the arcade",
+    startMsg: "Press SPACE or click to start!",
+    gameOfA: "— game of", gameOfB: "questions",
+    realOne: "THAT'S THE TRUE ONE! −1 LIFE", lostLife: "−1 LIFE!",
     subtitle: "CRITICAL THINKING", menu: "← MENU",
     rule1: "🎯  The answers float in the sky — aim with the mouse",
     rule2: "💥  Destroy all the FALSE answers (+50 pts)",
@@ -47,14 +57,30 @@ I18N.register({
 ['questions','questions-6e5e','questions-niveau1','questions-niveau2','questions-niveau3','qcm-store'].forEach(function(f){document.write('<scr'+'ipt src="'+f+(en?'-en':'')+'.js"><'+'/scr'+'ipt>');});})();
 </script>
 <style>
+/* Identité arcade sur le socle (chantier 05). */
+:root{
+  --bg:#07020f;
+  --surface:#150b28;
+  --txt:#e0d0ff;
+  --txt-secondaire:#8a6ab0;  /* 4,65:1 sur --bg */
+  --acc:#ff7700;
+  --acc-txt:#1c0a00;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Press Start 2P',monospace;
+}
+/* Press Start 2P est très large : le titre de l'en-tête unifié redescend. */
+.col-entete__titre{font-size:var(--fs-300);color:#ff7700;text-shadow:0 0 14px rgba(255,119,0,.5)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
   background:#07020f;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   min-height:100vh;
   font-family:'Press Start 2P',monospace;
 }
-#wrap{position:relative;width:800px;max-width:100vw;}
+/* L'en-tête unifié reste en haut ; le jeu se centre par marges auto dans
+   l'espace restant (l'ancien justify-content:center posait l'en-tête au
+   milieu de la page). */
+#wrap{position:relative;width:800px;max-width:100%;margin-top:auto;margin-bottom:auto;}
 #game{
   display:block;width:800px;height:460px;max-width:100%;
   border:3px solid #c8440a;
@@ -66,7 +92,7 @@ body{
   padding:10px 18px;display:flex;align-items:center;gap:12px;
   line-height:1.5;
 }
-#qlabel{font-size:10px;color:#ff7700;white-space:nowrap;flex-shrink:0;}
+#qlabel{font-size:var(--fs-100);color:#ff7700;white-space:nowrap;flex-shrink:0;}
 #qtext{font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:#e0d0ff;flex:1;}
 /* Chantier 04 : bandeau d'explication — le jeu n'en affichait aucune, jamais. */
 #explbar{
@@ -74,7 +100,7 @@ body{
   padding:10px 18px;display:flex;align-items:flex-start;gap:12px;
   line-height:1.5;transition:background .2s,border-color .2s;
 }
-#expllabel{font-size:10px;color:#ffcc44;white-space:nowrap;flex-shrink:0;padding-top:2px;}
+#expllabel{font-size:var(--fs-100);color:#ffcc44;white-space:nowrap;flex-shrink:0;padding-top:2px;}
 #expltext{font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:#ffe9b0;flex:1;}
 #explbar.ko{border-color:#ff3355;background:#170209;}
 #explbar.ko #expllabel{color:#ff8098;}
@@ -91,17 +117,14 @@ body{
 #menu-link:hover{background:#c8440a;color:#fff;}
 #set-label{color:#8a6ab0;letter-spacing:.04em;font-size:13px;}
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 <div id="wrap">
   <canvas id="game" width="800" height="460"></canvas>
   <div id="qbar">
     <span id="qlabel">❓ QUESTION :</span>
-    <span id="qtext">Appuie sur ESPACE ou clique pour commencer !</span>
+    <span id="qtext" data-i18n="startMsg">Appuie sur ESPACE ou clique pour commencer !</span>
   </div>
   <div id="explbar" class="idle" aria-live="polite">
     <span id="expllabel" data-i18n="explLabel">💡 POURQUOI :</span>
@@ -178,6 +201,14 @@ var QUESTIONS = [
 // ── Construction de la session (série du hub + longueur 5/10/30) ──
 function buildSession(){
   var src = (typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions() : null;
+  // Sans série choisie au hub : série par défaut DANS LA LANGUE COURANTE
+  // (questions.js / questions-en.js), comme les autres jeux de l'arcade —
+  // le secours local ci-dessous n'existe qu'en français.
+  if(!(src && src.length && src[0].options) && typeof DEFAULT_QCM!=='undefined' && DEFAULT_QCM.length && DEFAULT_QCM[0].options){
+    src = DEFAULT_QCM.slice();
+    for(var i2=src.length-1;i2>0;i2--){var j2=Math.floor(Math.random()*(i2+1));var t2=src[i2];src[i2]=src[j2];src[j2]=t2;}
+    src = src.slice(0, (typeof QCMStore!=='undefined') ? QCMStore.loadSessionCount() : 10);
+  }
   if(src && src.length && src[0].options){
     // Chantier 04 : `expl` était perdu ici — le champ n'arrivait jamais jusqu'au jeu.
     return src.map(function(item){
@@ -197,10 +228,13 @@ function buildSession(){
 }
 
 (function(){
-  if(typeof QCMStore==='undefined') return;
-  var info=QCMStore.getActiveInfo();
+  // Le lien MENU vit désormais dans l'en-tête unifié : sans série affichée,
+  // la barre du bas n'a plus rien à montrer, on la masque.
+  var bar=document.getElementById('menubar');
+  var info=(typeof QCMStore!=='undefined')?QCMStore.getActiveInfo():null;
   var lbl=document.getElementById('set-label');
-  if(lbl&&info.label) lbl.textContent=info.label+' — partie de '+Math.min(QCMStore.loadSessionCount(),info.count)+' questions';
+  if(lbl&&info&&info.label) lbl.textContent=info.label+' '+I18N.t('gameOfA')+' '+Math.min(QCMStore.loadSessionCount(),info.count)+' '+I18N.t('gameOfB');
+  else if(bar) bar.style.display='none';
 })();
 
 // ══════════════════════════════════════════════
@@ -369,7 +403,7 @@ function doShoot(){
 
 function loseLife(msg,fx,fy){
   lives--;shakeT=11;
-  addFloat(fx||hero.x,(fy||hero.y-70),msg||'−1 VIE !','#ff3355');
+  addFloat(fx||hero.x,(fy||hero.y-70),msg||I18N.t('lostLife'),'#ff3355');
   if(lives<=0) gstate='gameover';
 }
 
@@ -444,7 +478,7 @@ function update(){
           bb.revealed=true;bb.flash=20;
           boom(bb.x,by,'#44ff88',10);
           flashCol='rgba(220,0,50,1)';flashT=24;
-          loseLife('C\'EST LA VRAIE ! −1 VIE',bb.x,by-35);
+          loseLife(I18N.t('realOne'),bb.x,by-35);
           // Chantier 04 : c'est LE moment pédagogique — le joueur vient de tirer
           // sur la bonne réponse, on lui dit pourquoi c'était la bonne.
           showExpl('ko');

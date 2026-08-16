@@ -4,13 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">QCM Arcade</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Nunito:wght@600;700;800&display=swap');
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
+  /* Identité arcade sur le socle (chantier 05) : le socle impose la
+     structure, ces jetons portent la direction artistique néon. */
   --bg:#05070f;
+  --surface:#0b1020;
+  --bordure:rgba(0,229,255,.28);
+  --txt:#f2f6ff;
+  --txt-secondaire:#8b9abb;  /* 7,1:1 sur --bg */
+  --acc:#00e5ff;
+  --acc-txt:#02030a;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Orbitron',sans-serif;
   --bg-deep:#02030a;
   --panel:#0b1020;
   --text:#f2f6ff;
@@ -37,7 +47,13 @@ body{
   font-family:var(--font-body);
   min-height:100vh;
   display:flex;flex-direction:column;align-items:center;
-  padding:52px 20px 72px;gap:40px;
+  padding:0 20px 72px;gap:40px;
+}
+
+/* L'en-tête unifié porte le titre : on garde l'identité néon dessus. */
+.col-entete__titre{
+  color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;
+  text-shadow:0 0 18px rgba(0,229,255,.5);
 }
 
 body::before{
@@ -155,34 +171,41 @@ body::before{
 
 .hub-status.empty{color:var(--dim)}
 
-/* ── GAME GRID ── */
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:860px;width:100%}
+/* ── GAME GRID ─────────────────────────────────────────────────
+   Grille du socle (.col-cartes / .col-carte, étape 3 de la tranche 2),
+   habillée aux couleurs de l'arcade : la structure vient du composant,
+   l'aperçu animé, le néon et l'accent par carte restent maison. */
+.col-cartes{grid-template-columns:repeat(2,1fr);gap:18px;max-width:860px;width:100%}
 
-.card{
-  text-decoration:none;display:flex;flex-direction:column;
-  border:2px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;
+.col-carte{
+  overflow:hidden;position:relative;gap:6px;
+  border:2px solid rgba(255,255,255,.07);border-left:2px solid rgba(255,255,255,.07);
+  border-radius:14px;
   background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),var(--panel);
   transition:border-color .2s,box-shadow .2s,transform .2s;
 }
 
-.card:hover{
+.col-carte:hover{
   border-color:var(--c);
   box-shadow:0 0 32px color-mix(in srgb,var(--c) 30%,transparent);
   transform:translateY(-5px);
 }
 
-.card canvas{display:block;width:100%;height:auto;min-height:80px;background:#02030a}
+/* L'aperçu animé déborde du padding de la carte pour rester pleine largeur. */
+.col-carte canvas{
+  display:block;width:calc(100% + 2*var(--sp-4));max-width:none;height:auto;
+  margin:calc(-1*var(--sp-4)) calc(-1*var(--sp-4)) var(--sp-1);
+  min-height:80px;background:#02030a;
+}
 #cv-blaster,#cv-qcm{min-height:110px}
 
-.card-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:6px}
-
-.card-title{
+.col-carte__titre{
   font-family:var(--font-display);font-size:.9375rem;font-weight:700;
   color:var(--c);letter-spacing:.14em;text-transform:uppercase;
   text-shadow:0 0 10px color-mix(in srgb,var(--c) 65%,transparent);
 }
 
-.card-desc{font-family:var(--font-body);font-size:.9375rem;color:var(--muted);line-height:1.55;margin-top:2px}
+.col-carte__desc{font-family:var(--font-body);font-size:.9375rem;color:var(--muted);line-height:1.55;margin-top:2px}
 
 .play-btn{
   margin-top:10px;align-self:flex-start;
@@ -192,12 +215,11 @@ body::before{
   transition:background .15s,color .15s;pointer-events:none;border-radius:4px;
 }
 
-.card:hover .play-btn{background:var(--c);color:var(--bg-deep)}
+.col-carte:hover .play-btn{background:var(--c);color:var(--bg-deep)}
 
-.card{position:relative}
-.card.locked{opacity:.42;filter:grayscale(.65);pointer-events:none}
-.card.locked .play-btn{border-color:var(--dim);color:var(--dim)}
-.card.locked::after{
+.col-carte.locked{opacity:.42;filter:grayscale(.65);pointer-events:none}
+.col-carte.locked .play-btn{border-color:var(--dim);color:var(--dim)}
+.col-carte.locked::after{
   content:'🔒';
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   font-size:1.8rem;opacity:.55;pointer-events:none;
@@ -235,25 +257,19 @@ body::before{
 @keyframes blink{0%,100%{opacity:.9}50%{opacity:.35}}
 
 @media(max-width:600px){
-  .grid{grid-template-columns:1fr}
-  .card{grid-column:span 1 !important}
+  .col-cartes{grid-template-columns:1fr}
+  .col-carte{grid-column:span 1 !important}
 }
 
 .hub-status.empty{color:var(--muted)}
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:rgba(11,16,32,.8);border:1px solid rgba(255,255,255,.18);color:#cdd8e6;text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);font-family:'Nunito',sans-serif;}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #f7c948;outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
-<a class="back-hub" href="../index.html">← Retour aux jeux</a>
+<body data-col-retour="../index.html">
 
 <div class="site-header">
   <h1 class="site-title" data-i18n="siteTitle">QCM ARCADE</h1>
   <p class="site-sub" data-i18n="siteSub">Fake News &amp; Esprit Critique</p>
-  <p class="cred-atger" style="font-size:.78rem;font-weight:600;opacity:.7;margin-top:6px;">par <a href="https://antoninatger.com" target="_blank" style="color:inherit;">Antonin Atger</a></p>
+  <p class="cred-atger" style="font-size:var(--fs-100);font-weight:600;opacity:.7;margin-top:6px;">par <a href="https://antoninatger.com" target="_blank" style="color:inherit;">Antonin Atger</a></p>
 </div>
 
 <div class="hub">
@@ -274,59 +290,47 @@ body::before{
   <div class="hub-status empty" id="hub-status" data-i18n="noSet">Aucune série sélectionnée</div>
 </div>
 
-<div class="grid">
-  <a class="card" href="snake-fakenews.html" style="--c:var(--cyan)">
+<div class="col-cartes">
+  <a class="col-carte" href="snake-fakenews.html" style="--c:var(--cyan)">
     <canvas id="cv-snake" width="420" height="170"></canvas>
-    <div class="card-body">
-      <div class="card-title">Snake</div>
-      <div class="card-desc" data-i18n="descSnake">Mange la bonne réponse, évite les mauvaises !</div>
-      <div class="play-btn" data-i18n="play">▶ Jouer</div>
-    </div>
+    <span class="col-carte__titre">Snake</span>
+    <span class="col-carte__desc" data-i18n="descSnake">Mange la bonne réponse, évite les mauvaises !</span>
+    <span class="play-btn" data-i18n="play">▶ Jouer</span>
   </a>
 
-  <a class="card" href="brick-breaker-quiz.html" style="--c:var(--yellow)">
+  <a class="col-carte" href="brick-breaker-quiz.html" style="--c:var(--yellow)">
     <canvas id="cv-brick" width="420" height="170"></canvas>
-    <div class="card-body">
-      <div class="card-title">Brick Breaker</div>
-      <div class="card-desc" data-i18n="descBrick">Casse les briques des mauvaises réponses !</div>
-      <div class="play-btn" data-i18n="play">▶ Jouer</div>
-    </div>
+    <span class="col-carte__titre">Brick Breaker</span>
+    <span class="col-carte__desc" data-i18n="descBrick">Casse les briques des mauvaises réponses !</span>
+    <span class="play-btn" data-i18n="play">▶ Jouer</span>
   </a>
 
-  <a class="card" href="fakenews_defender.html" style="--c:var(--red)">
+  <a class="col-carte" href="fakenews_defender.html" style="--c:var(--red)">
     <canvas id="cv-defend" width="420" height="170"></canvas>
-    <div class="card-body">
-      <div class="card-title">Fake News Defender</div>
-      <div class="card-desc" data-i18n="descDefender">Tire sur les fausses réponses tombantes !</div>
-      <div class="play-btn" data-i18n="play">▶ Jouer</div>
-    </div>
+    <span class="col-carte__titre">Fake News Defender</span>
+    <span class="col-carte__desc" data-i18n="descDefender">Tire sur les fausses réponses tombantes !</span>
+    <span class="play-btn" data-i18n="play">▶ Jouer</span>
   </a>
 
-  <a class="card" href="whac-a-quiz.html" style="--c:var(--purple)">
+  <a class="col-carte" href="whac-a-quiz.html" style="--c:var(--purple)">
     <canvas id="cv-whac" width="420" height="170"></canvas>
-    <div class="card-body">
-      <div class="card-title">Whac-A-Quiz</div>
-      <div class="card-desc" data-i18n="descWhac">Frappe les taupes des mauvaises réponses !</div>
-      <div class="play-btn" data-i18n="play">▶ Jouer</div>
-    </div>
+    <span class="col-carte__titre">Whac-A-Quiz</span>
+    <span class="col-carte__desc" data-i18n="descWhac">Frappe les taupes des mauvaises réponses !</span>
+    <span class="play-btn" data-i18n="play">▶ Jouer</span>
   </a>
 
-  <a class="card" href="fake-blaster.html" style="--c:var(--orange);grid-column:span 2">
+  <a class="col-carte" href="fake-blaster.html" style="--c:var(--orange);grid-column:span 2">
     <canvas id="cv-blaster" width="840" height="170"></canvas>
-    <div class="card-body">
-      <div class="card-title">Fake Blaster</div>
-      <div class="card-desc" data-i18n="descBlaster">Tire sur les fausses affirmations qui avancent vers toi, esquive les vraies ! Jeu de plateforme arcade.</div>
-      <div class="play-btn" data-i18n="play">▶ Jouer</div>
-    </div>
+    <span class="col-carte__titre">Fake Blaster</span>
+    <span class="col-carte__desc" data-i18n="descBlaster">Tire sur les fausses affirmations qui avancent vers toi, esquive les vraies ! Jeu de plateforme arcade.</span>
+    <span class="play-btn" data-i18n="play">▶ Jouer</span>
   </a>
 
-  <a class="card" href="qcm-classique.html" style="--c:var(--green);grid-column:span 2">
+  <a class="col-carte" href="qcm-classique.html" style="--c:var(--green);grid-column:span 2">
     <canvas id="cv-qcm" width="840" height="170"></canvas>
-    <div class="card-body">
-      <div class="card-title" data-i18n="titleQcm">QCM Classique</div>
-      <div class="card-desc" data-i18n="descQcm">Réponds aux questions à ton rythme, lis les explications et suis ta progression par thème !</div>
-      <div class="play-btn" data-i18n="play">▶ Jouer</div>
-    </div>
+    <span class="col-carte__titre" data-i18n="titleQcm">QCM Classique</span>
+    <span class="col-carte__desc" data-i18n="descQcm">Réponds aux questions à ton rythme, lis les explications et suis ta progression par thème !</span>
+    <span class="play-btn" data-i18n="play">▶ Jouer</span>
   </a>
 </div>
 
@@ -335,12 +339,15 @@ body::before{
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
     pageTitle: "QCM Arcade", siteTitle: "QCM ARCADE", siteSub: "Fake News & Esprit Critique",
     hubStep: "— 1. Choisir une série de questions —", uploadZone: "⬆ Importer un fichier (.xlsx / .json)",
     sessionLabel: "Questions par partie :", noSet: "Aucune série sélectionnée",
+    loadedA: "questions chargées —", errPrefix: "❌ Erreur :", badFormat: "❌ Format non supporté (.xlsx ou .json uniquement)",
+    qWord: "questions",
     descSnake: "Mange la bonne réponse, évite les mauvaises !",
     descBrick: "Casse les briques des mauvaises réponses !",
     descDefender: "Tire sur les fausses réponses tombantes !",
@@ -354,6 +361,8 @@ I18N.register({
     pageTitle: "Arcade Quiz", siteTitle: "ARCADE QUIZ", siteSub: "Fake News & Critical Thinking",
     hubStep: "— 1. Choose a question set —", uploadZone: "⬆ Import a file (.xlsx / .json)",
     sessionLabel: "Questions per game:", noSet: "No set selected",
+    loadedA: "questions loaded —", errPrefix: "❌ Error:", badFormat: "❌ Unsupported format (.xlsx or .json only)",
+    qWord: "questions",
     descSnake: "Eat the right answer, avoid the wrong ones!",
     descBrick: "Smash the bricks of wrong answers!",
     descDefender: "Shoot the falling wrong answers!",
@@ -737,7 +746,7 @@ const CW=420, CH=170;
   var sets   = QCMStore.getAvailableSets();
 
   function setCards(enabled){
-    document.querySelectorAll('.grid .card').forEach(function(c){
+    document.querySelectorAll('.col-cartes .col-carte').forEach(function(c){
       c.classList.toggle('locked', !enabled);
     });
   }
@@ -745,11 +754,11 @@ const CW=420, CH=170;
   function setStatus(info){
     if(info && info.count){
       status.className = 'hub-status ok';
-      status.textContent = '✅ ' + info.count + ' questions chargées — ' + (info.label||'');
+      status.textContent = '✅ ' + info.count + ' ' + I18N.t('loadedA') + ' ' + (info.label||'');
       setCards(true);
     } else {
       status.className = 'hub-status empty';
-      status.textContent = 'Aucune série sélectionnée';
+      status.textContent = I18N.t('noSet');
       setCards(false);
     }
   }
@@ -766,7 +775,7 @@ const CW=420, CH=170;
     var chip = document.createElement('button');
     chip.className = 'set-chip';
     chip.dataset.id = s.id;
-    chip.innerHTML = s.label + '<span class="chip-sub">' + s.questions.length + ' questions</span>';
+    chip.innerHTML = s.label + '<span class="chip-sub">' + s.questions.length + ' ' + I18N.t('qWord') + '</span>';
     chip.onclick = function(){
       QCMStore.saveActiveSet(s.id);
       markActive(s.id);
@@ -808,7 +817,7 @@ const CW=420, CH=170;
           setStatus(QCMStore.getActiveInfo());
         } catch(err){
           status.className = 'hub-status empty';
-          status.textContent = '❌ Erreur : ' + err.message;
+          status.textContent = I18N.t('errPrefix') + ' ' + err.message;
         }
       };
       reader.readAsText(file);
@@ -844,13 +853,13 @@ const CW=420, CH=170;
           setStatus(QCMStore.getActiveInfo());
         } catch(err){
           status.className = 'hub-status empty';
-          status.textContent = '❌ Erreur : ' + err.message;
+          status.textContent = I18N.t('errPrefix') + ' ' + err.message;
         }
       };
       reader2.readAsArrayBuffer(file);
     } else {
       status.className = 'hub-status empty';
-      status.textContent = '❌ Format non supporté (.xlsx ou .json uniquement)';
+      status.textContent = I18N.t('badFormat');
     }
     e.target.value = '';
   });
