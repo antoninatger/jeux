@@ -56,9 +56,9 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
         ├ étape 3  ✅ FAIT (80e69f7) — hub, composants intro/fin, _gabarit/
         └ étape 4  ← ICI — migration en 3 lots
                      ├ lot Arcade      ✅ FAIT (a6b8b62) + relu, voir la relecture
-                     ├ lot Catalogues  ⬜ à faire (3 pages)
-                     └ lot « le reste »⬜ à faire (~16 pages)
-                     (26 pages migrées sur 58 au 16/08 — compte mesuré, à jour dans
+                     ├ lot Catalogues  ✅ FAIT (965b366) — Perceptio, Cobaye, Rhetor
+                     └ lot « le reste »⬜ à faire (~16 pages) ← ICI
+                     (29 pages migrées sur 58 au 19/08 — compte mesuré, à jour dans
                      `_prive/ETAT.md` ; `_gabarit/` n'est pas une page publique et
                      n'est pas compté)
                      ⚙️ candidate à Fable 5, voir l'encadré de l'étape 4

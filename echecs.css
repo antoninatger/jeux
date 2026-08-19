@@ -173,6 +173,20 @@ main {
 .square.light { background: #f0d9b5; }
 .square.dark  { background: #b58863; }
 
+/* 2.2bis Accès clavier (chantier 02, bloquant « le mode Exercice exige la souris »)
+   Les rangées portent le sens ARIA (role="row") sans toucher au dessin :
+   `display: contents` laisse les 64 cases enfants directs de la grille. */
+.board-rank { display: contents; }
+
+/* Les cases se touchent : l'anneau de focus du socle, posé à +2 px, mordrait sur
+   les voisines. On le rentre à l'intérieur de la case — même couleur, même
+   épaisseur, aucune exception au socle ailleurs. */
+#board .square:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: 0;
+}
+
 /* 11.1 Hover sur les cases (mode exercice uniquement) */
 #board.interactive-mode .square:hover {
   filter: brightness(1.12);
