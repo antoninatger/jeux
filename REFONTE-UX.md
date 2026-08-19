@@ -57,7 +57,9 @@ sans rapport avec elle : `HPLsbAMWcAArj4a.jpg`, un `.epub`, `ziM6iQ7v`, et `_to_
         └ étape 4  ← ICI — migration en 3 lots
                      ├ lot Arcade      ✅ FAIT (a6b8b62) + relu, voir la relecture
                      ├ lot Catalogues  ✅ FAIT (965b366) — Perceptio, Cobaye, Rhetor
-                     └ lot « le reste »⬜ à faire (~16 pages) ← ICI
+                     └ lot « le reste »⬜ à faire (29 pages) ← ICI
+                        (le §7 bis le définit comme « les ~30 pages restantes » ;
+                         ETAT.md les compte : 13 « Interventions » + 16 « Le reste »)
                      (29 pages migrées sur 58 au 19/08 — compte mesuré, à jour dans
                      `_prive/ETAT.md` ; `_gabarit/` n'est pas une page publique et
                      n'est pas compté)
