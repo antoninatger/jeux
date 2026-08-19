@@ -59,6 +59,64 @@ contourne pas, et ne modifie jamais `ETAT.md` à la main, il sera écrasé.
 L'état est un tableau de bord, pas une source de vérité : pour la suite des travaux
 et les décisions produit, la référence reste `REFONTE-UX.md`.
 
+## Demain — ce qui peut partir en Opus (établi le 19 août)
+
+**Avant de lancer quoi que ce soit : relire et vérifier.** Cette liste date du
+19 août. Elle se périme, et elle n'est pas la source de vérité. Ouvrir
+`_prive/ETAT.md` (régénéré à chaque commit) et confronter : un bloquant est levé
+quand **son test rejoué sur le code** le dit, jamais quand une liste l'affirme.
+Puis lire `REFONTE-UX.md` pour les décisions produit. Ne rien commencer sur la
+foi de ce bloc seul.
+
+État mesuré au 19 août : **29 pages migrées sur 58**, **6 bloquants levés sur 9**.
+
+### 1. Les deux bloquants orange — la moitié tactile
+
+Les deux ont leur première moitié faite et la seconde ouverte, et c'est la même :
+**le jeu au doigt**.
+
+- **`mine.html`** — la typographie est rattrapée (plus de `.36rem`), mais rien ne
+  répond au doigt. Le test de `outils/etat-refonte.py` se ferme quand une règle
+  `pointer:coarse` apparaît dans le fichier. C'est un jeu pour le primaire : le
+  `cursor:none` d'origine et le pointage fin y sont le vrai sujet, pas la règle
+  CSS qui sert de témoin.
+- **`snake-fakenews.html`** (celui de la racine, pas ceux d'Arcade) — la media
+  query est là, le pilotage au doigt non. Le témoin est `touchmove`. Un serpent se
+  dirige au glissement, pas au clavier seul.
+
+Traitables un par un, indépendamment de la migration. Vérifier en 390 px **et**
+sur un vrai doigt si possible : l'émulation tactile ne dit pas tout.
+
+### 2. « Graphiques trompeurs » — à écrire avec Antonin d'abord
+
+Dernier bloquant rouge, et le seul qui ne soit pas mécanique. Son test se ferme
+quand `app.js` cesse d'annoncer « Graphique à analyser » : autrement dit, il faut
+**une description textuelle par graphique**, qui en dise assez pour qu'on puisse
+répondre sans voir, et pas assez pour livrer le piège — le graphique **est** la
+question. C'est de l'écriture pédagogique. Soumettre les descriptions à Antonin
+avant d'écrire une ligne de code.
+
+### Ce qui n'est pas lançable, et pourquoi
+
+- **Le lot « le reste » de l'étape 4** (~16 pages) est la migration de masse :
+  la difficulté n'est pas de savoir quoi faire, c'est de rester cohérent du
+  premier au dernier fichier. Il est **candidat à Fable 5** (encadré de l'étape 4
+  dans `REFONTE-UX.md`). Fable revient sous quelques jours : ne pas l'entamer en
+  attendant, un lot commencé à moitié coûterait plus cher que l'attente.
+- **Le ménage à la racine** (4 éléments non suivis, antérieurs à la refonte :
+  `HPLsbAMWcAArj4a.jpg`, l'`.epub`, `ziM6iQ7v` — 30 Mo —, et `_to_delete/`)
+  attend qu'Antonin dise ce qui part.
+
+### Rappels qui coûtent cher quand on les oublie
+
+- **Jamais `git add -A`** : le dossier contient des fichiers pré-modifiés sans
+  rapport. Toujours une liste de chemins explicite.
+- `recrutement-de-mehdi/` et `fakemetre/` sont des **dépôts git indépendants**.
+- Toute correction de logique s'applique **deux fois**, `app.js` et `app-en.js`.
+- Recette avant commit : 1440 px **et** 390 px · 0 erreur console · testé au
+  clavier seul · FR **et** EN · lien de retour · bascule de langue sans clé brute.
+
+
 ## Quel modèle pour cette session — à signaler à Antonin
 
 Antonin veut être **prévenu en début de session** quand la tâche demandée justifie de
