@@ -7,6 +7,16 @@
 (function (global) {
   'use strict';
 
+  /* La banque "influenceurs" a ete ajoutee apres les autres. Plutot que de
+     modifier la ligne de chargement de chaque jeu, ce fichier la reclame
+     lui-meme : les pages restent intactes. Le script injecte ici s'execute
+     juste apres celui-ci, donc avant le code des jeux. */
+  try {
+    if (global.document && global.document.readyState === 'loading') {
+      global.document.write('<scr' + 'ipt src="questions-influenceurs.js"><' + '/scr' + 'ipt>');
+    }
+  } catch (e) {}
+
   const Q_KEY  = 'qcm-arcade.questions';   // questions sérialisées
   const ID_KEY = 'qcm-arcade.setId';        // id du set prédéfini (si applicable)
   const N_KEY  = 'qcm-arcade.sessionCount'; // nb de questions par partie (5 | 10 | 30)
@@ -17,6 +27,7 @@
     { id: '6e5e',     label: '6e–5e · Fake News',             variable: 'QUESTIONS_6E5E'      },
     { id: 'niveau1',  label: 'N1 · Fake News (lycée)',        variable: 'QUESTIONS_NIVEAU1'   },
     { id: 'niveau2',  label: 'N2 · Désinformation',           variable: 'QUESTIONS_NIVEAU2'   },
+    { id: 'influenceurs', label: 'Influenceurs',               variable: 'QUESTIONS_INFLUENCEURS' },
     { id: 'niveau3',  label: 'N3 · Rhétorique',               variable: 'QUESTIONS_NIVEAU3'   }
   ];
 
