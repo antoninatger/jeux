@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeux hors interventions scolaires</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#0f172a; --card:#1e293b; --card2:#243449;
+    --txt:#e8eef7; --doux:#93a4bd; --acc:#38bdf8; --acc2:#a78bfa; --bord:#31415a;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:'Nunito',system-ui,"Segoe UI",Roboto,sans-serif; color:var(--txt);
+    background:radial-gradient(1200px 600px at 50% -10%, #16233d 0%, var(--bg) 60%); min-height:100vh; }
+  header{ text-align:center; padding:56px 20px 8px; }
+  header .logo{ font-size:2.6em; }
+  header h1{ font-family:'Fredoka One',cursive; margin:.2em 0 .15em; font-size:2.2em; letter-spacing:-.5px;
+    background:linear-gradient(90deg,var(--acc),var(--acc2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  header p{ margin:0 auto; max-width:560px; color:var(--doux); line-height:1.5; }
+  header .author{ margin:12px auto 0; font-size:.9em; color:var(--doux); font-weight:600; }
+  header .author a{ color:var(--acc); text-decoration:none; }
+  header .author a:hover{ text-decoration:underline; }
+  .cat{ max-width:1040px; margin:0 auto; padding:14px 22px 6px; }
+  .cat h2{ font-size:.82em; letter-spacing:.14em; text-transform:uppercase; color:var(--doux);
+    margin:34px 0 4px; padding-bottom:8px; border-bottom:1px solid var(--bord); }
+  .grid{ max-width:1040px; margin:0 auto; padding:12px 22px; display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  a.card{ position:relative; overflow:hidden; display:block; background:linear-gradient(180deg,var(--card),var(--card2));
+    border:1px solid var(--bord); border-radius:16px; padding:20px 18px 16px; text-decoration:none;
+    color:var(--txt); transition:transform .15s, border-color .15s, box-shadow .15s; }
+  a.card::before{ content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background:var(--c,var(--acc)); opacity:.9; transition:height .15s; }
+  a.card:hover{ transform:translateY(-4px); border-color:var(--c,var(--acc));
+    box-shadow:0 12px 28px rgba(0,0,0,.45); }
+  a.card:hover::before{ height:6px; }
+  a.card .em{ font-size:1.7em; filter:drop-shadow(0 2px 6px color-mix(in srgb, var(--c,var(--acc)) 45%, transparent)); }
+  a.card b{ display:block; font-size:1.12em; font-weight:800; margin:6px 0 4px; }
+  a.card .desc{ color:var(--doux); font-size:.9em; line-height:1.45; min-height:2.6em; }
+  a.card .url{ display:block; margin-top:12px; font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:.72em; color:var(--c,var(--acc)); word-break:break-all; opacity:.85; }
+  footer{ text-align:center; color:var(--doux); font-size:.85em; padding:30px 20px 60px; line-height:1.7; }
+  footer a{ color:var(--acc2); }
+  footer .by{ display:block; margin-bottom:10px; font-weight:700; color:var(--txt); }
+  footer .by a{ color:var(--acc); }
+  :where(a,button,[tabindex]):focus-visible{ outline:3px solid var(--acc); outline-offset:3px; border-radius:8px; }
+  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.001ms!important; transition-duration:.001ms!important; } }
+</style>
+<style>
+  /* Cette page n'utilise pas d'emoji : le filet de couleur en haut de chaque
+     carte suffit a les distinguer, et le titre porte l'information. */
+  a.card b{ margin-top:0; }
+  .retour{ max-width:1040px; margin:0 auto; padding:0 22px; }
+  .retour a{ color:var(--acc); text-decoration:none; font-weight:700; font-size:.9em; }
+  .retour a:hover{ text-decoration:underline; }
+</style>
+</head>
+<body>
+  <header>
+    <h1 data-i18n="h1">Hors interventions scolaires</h1>
+    <p data-i18n="intro">Ces trois jeux ne font pas partie des interventions en classe. Ils s'adressent à d'autres publics et à d'autres contextes.</p>
+    <p class="author"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
+  </header>
+
+  <div class="retour"><a href="index.html" data-i18n="retour">Retour aux jeux des interventions scolaires</a></div>
+
+  <div class="grid">
+    <a class="card" href="Emprise/index.html" style="--c:#f472b6">
+      <b data-i18n="t1">Signaux</b>
+      <div class="desc" data-i18n="d1">Repérer les mécanismes d'emprise dans une conversation de couple. Sujet sensible, à encadrer.</div>
+      <span class="url">antoninatger.github.io/jeux/Emprise/</span></a>
+    <a class="card" href="https://antoninatger.github.io/recrutement-de-mehdi/" style="--c:#38bdf8">
+      <b data-i18n="t2">Le Recrutement</b>
+      <div class="desc" data-i18n="d2">Les biais à l'embauche, en atelier collectif. Utilisé en conférence. Dépôt séparé.</div>
+      <span class="url">antoninatger.github.io/recrutement-de-mehdi/</span></a>
+    <a class="card" href="echecs.html" style="--c:#e2b96f">
+      <b data-i18n="t3">Ouvertures aux échecs</b>
+      <div class="desc" data-i18n="d3">Apprendre les grandes ouvertures. Sans rapport avec l'esprit critique.</div>
+      <span class="url">antoninatger.github.io/jeux/echecs.html</span></a>
+  </div>
+
+  <footer>
+    <span class="by"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></span>
+    <span data-i18n="tip">Astuce : cliquez sur l'URL sous une carte pour la copier.</span>
+  </footer>
+
+  <style>
+    a.card .url{ cursor:copy; }
+    a.card .url:hover{ text-decoration:underline; }
+    a.card .url.copied{ color:#34d399; }
+  </style>
+  <script src="i18n.js"></script>
+  <script>
+  I18N.register({
+    fr: {
+      h1: "Hors interventions scolaires",
+      intro: "Ces trois jeux ne font pas partie des interventions en classe. Ils s'adressent à d'autres publics et à d'autres contextes.",
+      by: "par",
+      retour: "Retour aux jeux des interventions scolaires",
+      t1: "Signaux", d1: "Repérer les mécanismes d'emprise dans une conversation de couple. Sujet sensible, à encadrer.",
+      t2: "Le Recrutement", d2: "Les biais à l'embauche, en atelier collectif. Utilisé en conférence. Dépôt séparé.",
+      t3: "Ouvertures aux échecs", d3: "Apprendre les grandes ouvertures. Sans rapport avec l'esprit critique.",
+      tip: "Astuce : cliquez sur l'URL sous une carte pour la copier."
+    },
+    en: {
+      h1: "Outside school sessions",
+      intro: "These three games are not part of the classroom sessions. They are meant for other audiences and other settings.",
+      by: "by",
+      retour: "Back to the classroom games",
+      t1: "Signaux", d1: "Spotting coercive-control patterns in a couple's conversation. Sensitive topic, needs framing.",
+      t2: "The Recruitment", d2: "Hiring bias, as a group workshop. Used in talks. Separate repository.",
+      t3: "Chess Openings", d3: "Learn the great openings. Nothing to do with critical thinking.",
+      tip: "Tip: click the URL under a card to copy it."
+    }
+  });
+  </script>
+  <script>
+  (function(){
+    var BASE='https://antoninatger.github.io/jeux/';
+    function flash(el){ var o=el.textContent; el.classList.add('copied'); el.textContent='Lien copié !';
+      setTimeout(function(){ el.classList.remove('copied'); el.textContent=o; }, 1200); }
+    function fallback(url,el){ var t=document.createElement('textarea'); t.value=url;
+      t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select();
+      try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(t); flash(el); }
+    document.querySelectorAll('a.card').forEach(function(card){
+      var u=card.querySelector('.url'); if(!u) return;
+      u.title='Cliquer pour copier le lien';
+      u.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var raw=card.getAttribute('href');
+        var url=/^https?:/i.test(raw) ? raw : BASE+raw;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(url).then(function(){ flash(u); }).catch(function(){ fallback(url,u); });
+        } else { fallback(url,u); }
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

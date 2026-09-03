@@ -25,4 +25,4 @@ Chaque jeu est autonome : il suffit d'ouvrir son fichier `index.html` (ou le `.h
 | `snake-fakenews.html` | Snake — Fake News & esprit critique |
 
 > Les présentations de cours, PDF et vidéos volumineuses ne sont pas versionnés ici (voir `.gitignore`).
-> Le jeu **Fakemètre** a son propre dépôt : https://github.com/Amanalat/fakemetre
+> Le jeu **Fakemètre** a son propre dépôt : https://github.com/antoninatger/fakemetre

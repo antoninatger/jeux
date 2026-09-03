@@ -20,6 +20,27 @@
     { id: 'niveau3',  label: 'N3 · Rhétorique',               variable: 'QUESTIONS_NIVEAU3'   }
   ];
 
+  /**
+   * Serie demandee par l'adresse : "qcm-classique.html?serie=niveau3".
+   *
+   * Sans ce parametre, la serie active vient du localStorage, choisie au hub.
+   * Un participant qui arrive par un lien de bilan a un localStorage vide :
+   * il tombait alors sur DEFAULT_QCM, c'est-a-dire des questions Fake News,
+   * quelle que soit la formation suivie.
+   *
+   * La serie de l'adresse a la priorite, mais elle n'ecrit RIEN dans le
+   * localStorage : un lien envoye a quelqu'un ne doit pas modifier la
+   * selection faite au hub sur la machine du formateur.
+   */
+  function getSerieDemandee() {
+    try {
+      if (!global.location || !global.URLSearchParams) return null;
+      var id = new global.URLSearchParams(global.location.search).get('serie');
+      if (!id) return null;
+      return getAvailableSets().find(function (s) { return s.id === id; }) || null;
+    } catch (e) { return null; }
+  }
+
   function getAvailableSets() {
     return KNOWN_SETS
       .filter(function (s) {
@@ -62,6 +83,15 @@
   }
 
   function getActiveInfo() {
+    var demandee = getSerieDemandee();
+    if (demandee) {
+      return {
+        questions : demandee.questions,
+        setId     : demandee.id,
+        label     : demandee.label,
+        count     : demandee.questions.length
+      };
+    }
     var id  = loadActiveSetId();
     var qs  = loadActiveQuestions();
     var set = id ? getAvailableSets().find(function (s) { return s.id === id; }) : null;
@@ -98,7 +128,8 @@
    * dans la série active (toute la série si elle est plus courte).
    */
   function getSessionQuestions() {
-    var qs = loadActiveQuestions();
+    var demandee = getSerieDemandee();
+    var qs = demandee ? demandee.questions : loadActiveQuestions();
     if (!qs || !qs.length) return null;
     var pool = qs.slice();
     for (var i = pool.length - 1; i > 0; i--) {
@@ -119,7 +150,8 @@
     clearActive         : clearActive,
     saveSessionCount    : saveSessionCount,
     loadSessionCount    : loadSessionCount,
-    getSessionQuestions : getSessionQuestions
+    getSessionQuestions : getSessionQuestions,
+    getSerieDemandee    : getSerieDemandee
   };
 
 })(window);
