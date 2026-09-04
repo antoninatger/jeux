@@ -16,13 +16,15 @@ I18N.register({
     consigne: "🧱 CASSE LES FAUSSES RÉPONSES !",
     controlsHint: "← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques",
     metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou souris",
-    intro: `🧱 Une question s'affiche en haut — les réponses sont des briques.<br><strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br>⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>⚠️ La balle qui tombe = −1 vie<br><br>← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🧱 Une question s'affiche en haut — les réponses sont des briques.<br><strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br><span class="mob-hide">⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>⚠️ La balle qui tombe = −1 vie<br><br></span>← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>TOUTES<br>CASSÉES !", loseTitle: "GAME<br>OVER",
     winMsg: "Tu as détruit toutes les fausses réponses !", loseMsg: "Continue à développer ton esprit critique !",
     hitGold: "❌ Brique DORÉE touchée ! −1 vie", ballLost: "💥 La balle est tombée ! −1 vie",
     allBroken: "✅ Toutes les fausses réponses détruites !",
-    firstHint: "🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !"
+    firstHint: "🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P ou ECHAP pour continuer",
+    launchHint: "ESPACE ou CLIC pour lancer", ptsLabel: "pts"
   },
   en: {
     pageTitle: "Brick Breaker Quiz", colRetour: "Back to the arcade",
@@ -30,13 +32,15 @@ I18N.register({
     consigne: "🧱 BREAK THE FALSE ANSWERS!",
     controlsHint: "← → or MOUSE to move &nbsp;|&nbsp; SPACE to launch &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Break the FALSE bricks",
     metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or mouse",
-    intro: `🧱 A question appears at the top — the answers are bricks.<br><strong style="color:#ffaa00">Break all the FALSE answers!</strong><br>⚠️ Read the bricks — hitting the <strong style="color:#ffcc00">correct answer</strong> costs a life!<br>⚠️ A falling ball = −1 life<br><br>← → or <strong style="color:#00ffcc">Mouse</strong> for the paddle &nbsp;|&nbsp; <strong style="color:#00ffcc">SPACE</strong> to launch &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🧱 A question appears at the top — the answers are bricks.<br><strong style="color:#ffaa00">Break all the FALSE answers!</strong><br><span class="mob-hide">⚠️ Read the bricks — hitting the <strong style="color:#ffcc00">correct answer</strong> costs a life!<br>⚠️ A falling ball = −1 life<br><br></span>← → or <strong style="color:#00ffcc">Mouse</strong> for the paddle &nbsp;|&nbsp; <strong style="color:#00ffcc">SPACE</strong> to launch &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>ALL<br>BROKEN!", loseTitle: "GAME<br>OVER",
     winMsg: "You destroyed all the false answers!", loseMsg: "Keep developing your critical thinking!",
     hitGold: "❌ You hit the GOLDEN brick! −1 life", ballLost: "💥 The ball fell! −1 life",
     allBroken: "✅ All the false answers destroyed!",
-    firstHint: "🧱 Destroy all the FALSE answers — the correct one must stay!"
+    firstHint: "🧱 Destroy all the FALSE answers — the correct one must stay!",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P or ESC to continue",
+    launchHint: "SPACE or CLICK to launch", ptsLabel: "pts"
   }
 });
 </script>
@@ -140,6 +144,16 @@ I18N.register({
     font-family:'Nunito',sans-serif; font-size:1rem;
     color:#ccc; line-height:1.9; max-width:500px; padding:0 16px;
   }
+  /* Intro raccourcie en mobile : le cadre du canvas ne fait que ~300 px de
+     haut à 390 px de large, JOUER doit rester visible sans défiler (§9.3). */
+  @media (max-width:480px){
+    #overlay{gap:8px; padding:8px 0}
+    #overlay h1{font-size:1.4rem}
+    #overlay .sub{font-size:0.8125rem; line-height:1.5}
+    #overlay .sub .mob-hide{display:none}
+    #overlay .col-meta{display:none}
+    #overlay button{padding:9px 30px; font-size:0.8125rem}
+  }
   #overlay button {
     padding:12px 44px; background:transparent;
     border:2px solid #00ffcc; color:#00ffcc;
@@ -221,8 +235,8 @@ I18N.register({
     <div class="sub" data-i18n-html="intro">
       🧱 Une question s'affiche en haut — les réponses sont des briques.<br>
       <strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br>
-      ⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>
-      ⚠️ La balle qui tombe = −1 vie<br><br>
+      <span class="mob-hide">⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>
+      ⚠️ La balle qui tombe = −1 vie<br><br></span>
       ← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
     <ul class="col-meta">
@@ -274,8 +288,11 @@ const ctx    = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
 // ── CONSTANTS ────────────────────────────────────────────────
-const BANNER_H    = 80;   // question banner height (bounce ceiling)
-const BRICK_TOP   = 100;  // y of first row of bricks
+// Hauteur du bandeau et plafond des briques : mesurés sur le bandeau réel à
+// chaque question (pas devinés) — sinon la 1re rangée se cache sous le
+// bandeau dès qu'il passe sur deux lignes, notamment à 390 px (§F3).
+let BANNER_H      = 80;
+let BRICK_TOP     = 100;
 const BRICK_H     = 55;
 const BRICK_GAP_X = 9;
 const BRICK_GAP_Y = 9;
@@ -293,6 +310,7 @@ let paused = false;
 let qIndex, currentQ, questionActive, feedbackTimer;
 let bricks, particles, stars;
 let ballLaunched;
+let correctPenalized; // la bonne brique ne coûte une vie qu'une fois par question
 
 const paddle = { x: W/2, w: PADDLE_W0, y: PADDLE_Y, h: PADDLE_H };
 const ball   = { x: W/2, y: PADDLE_Y - BALL_R - 2, vx: 0, vy: 0, r: BALL_R, spd: BALL_SPD };
@@ -350,13 +368,25 @@ function withShuffledOptions(list) {
   });
 }
 
+// Hauteur réelle du bandeau de question, mesurée en coordonnées canvas.
+function getBannerCanvasH() {
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.height) return 80;
+  const scale = H / rect.height;
+  const bannerRect = document.getElementById('question-banner').getBoundingClientRect();
+  return Math.max(60, Math.round(bannerRect.height * scale));
+}
+
 // ── BRICKS ───────────────────────────────────────────────────
 function spawnBricks() {
   bricks = [];
   const q = activeQCM[qIndex];
   const N = q.options.length;
   const margin = 18;
-  const cols   = N <= 3 ? N : 2;
+  // Au-delà de 90 caractères, une brique pleine largeur au lieu de partager
+  // la ligne : le texte n'a de place pour tenir sur 3 lignes qu'à cette largeur.
+  const hasLong = q.options.some(t => t.length > 90);
+  const cols   = hasLong ? 1 : (N <= 3 ? N : 2);
   const avail  = W - 2*margin;
   const bw     = (avail - (cols-1)*BRICK_GAP_X) / cols;
   const colors = shuffleColors();
@@ -398,7 +428,7 @@ function drawBrick(b) {
   const fs = b.text.length > 28 ? Math.max(11, brickFontSize - 2) : brickFontSize;
   ctx.font = `700 ${fs}px Nunito, sans-serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  wrapText(ctx, b.text, b.x+b.w/2, b.y+b.h/2, b.w-22, fs + 4);
+  wrapText(ctx, b.text, b.x+b.w/2, b.y+b.h/2, b.w-22, fs + 4, 3);
 }
 
 // ── BALL ─────────────────────────────────────────────────────
@@ -454,14 +484,20 @@ function checkBrickCollisions() {
 
     if (b.isCorrect) {
       b.flash = 20;
-      lives--;
-      updateUI();
-      playSound(110, 0.45, 'sawtooth');
-      // Chantier 04 : c'est LE moment pédagogique — le joueur vient de détruire
-      // la bonne réponse, on lui dit pourquoi c'était la bonne.
-      feedbackKO(I18N.t('hitGold'));
-      ballLaunched = false;
-      if (lives <= 0) setTimeout(() => endGame(false), 2600);
+      // F3 : la bonne brique reste sur le plateau, mais ne coûte une vie
+      // qu'une fois par question — la retoucher par adresse n'est pas une
+      // nouvelle erreur de compréhension.
+      if (!correctPenalized) {
+        correctPenalized = true;
+        lives--;
+        updateUI();
+        playSound(110, 0.45, 'sawtooth');
+        // Chantier 04 : c'est LE moment pédagogique — le joueur vient de détruire
+        // la bonne réponse, on lui dit pourquoi c'était la bonne.
+        feedbackKO(I18N.t('hitGold'));
+        ballLaunched = false;
+        if (lives <= 0) setTimeout(() => endGame(false), 2600);
+      }
     } else {
       b.hitting = true;
       b.flash = 14;
@@ -522,6 +558,11 @@ function loadQuestion() {
   document.getElementById('q-num').textContent   = qIndex+1;
   document.getElementById('q-total').textContent = activeQCM.length;
   document.getElementById('question-banner').classList.add('visible');
+  // Bandeau mesuré après avoir posé le texte de la question (sa hauteur
+  // dépend du nombre de lignes), pas devinée à 80/100 px fixes (§F3).
+  BANNER_H  = getBannerCanvasH();
+  BRICK_TOP = BANNER_H + 20;
+  correctPenalized = false;
   spawnBricks();
   resetBall();
   questionActive = true;
@@ -594,13 +635,19 @@ function playSound(freq, dur, type='sine', vol=0.15) {
 }
 
 // ── HELPERS ──────────────────────────────────────────────────
-function wrapText(ctx, text, cx, cy, maxW, lineH) {
+function wrapText(ctx, text, cx, cy, maxW, lineH, maxLines) {
   const words = text.split(' '); let line = '', lines = [];
   for (const w of words) {
     const t = line ? line + ' ' + w : w;
     if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
   }
   if (line) lines.push(line);
+  if (maxLines && lines.length > maxLines) {
+    lines = lines.slice(0, maxLines);
+    let last = lines[maxLines - 1];
+    while (last.length > 1 && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1);
+    lines[maxLines - 1] = last.trimEnd() + '…';
+  }
   const sy = cy - (lines.length - 1) * lineH / 2;
   lines.forEach((l, i) => ctx.fillText(l, cx, sy + i * lineH));
 }
@@ -635,9 +682,9 @@ function gameLoop() {
   if (paused) {
     ctx.font='700 20px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.9)';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('⏸ PAUSE', W/2, H/2);
+    ctx.fillText(I18N.t('pauseLabel'), W/2, H/2);
     ctx.font='400 13px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.6)';
-    ctx.fillText('P ou ECHAP pour continuer', W/2, H/2+32);
+    ctx.fillText(I18N.t('pauseHint'), W/2, H/2+32);
     return;
   }
 
@@ -708,13 +755,13 @@ function gameLoop() {
     ctx.font='600 13px Orbitron,sans-serif';
     ctx.fillStyle='rgba(0,255,204,0.55)';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('ESPACE ou CLIC pour lancer', W/2, paddle.y-22);
+    ctx.fillText(I18N.t('launchHint'), W/2, paddle.y-22);
   }
 
   // HUD
   ctx.font='600 13px Orbitron'; ctx.fillStyle='rgba(0,255,204,0.45)';
   ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score} pts`, W-10, H-8);
+  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score} ${I18N.t('ptsLabel')}`, W-10, H-8);
 }
 
 
