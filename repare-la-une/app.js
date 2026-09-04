@@ -326,9 +326,9 @@ function renderLevel(){
     optBtns[si]=[];
     slot.opts.forEach((o,oi)=>{
       const b=document.createElement("button");
-      b.className="opt";
-      b.setAttribute("aria-pressed","false");
-      b.textContent=o.t;
+      b.className="opt"+(oi===0?" sel":"");
+      b.setAttribute("aria-pressed",oi===0?"true":"false");
+      b.textContent=o.t+(oi===0?" (titre du stagiaire, non modifié)":"");
       b.onclick=()=>{
         sel[si]=oi;
         wrap.querySelectorAll(".opt").forEach((x,k)=>{
@@ -358,9 +358,14 @@ function currentScores(){
 function updateDraft(){
   // Met à jour l'aperçu de la une, mais PAS les jauges : le verdict n'arrive qu'à la publication.
   const L=LEVELS[lvl];
-  const txt=L.slots.map((s,i)=>s.opts[sel[i]].t).join(" ")
-    .replace(/\s+([,.])/g,"$1").replace(/\s+/g," ").trim();
-  $("draft-txt").textContent=txt;
+  const html=L.slots.map((s,i)=>{
+    const t=s.opts[sel[i]].t;
+    // Segment resté au choix 0 (par défaut) = non modifié : signalé, pas confondu avec un vrai choix.
+    return sel[i]===0
+      ? `<span class="unchanged" title="Segment non modifié (titre du stagiaire)">${t}</span>`
+      : t;
+  }).join(" ").replace(/\s+([,.])/g,"$1").replace(/\s+/g," ").trim();
+  $("draft-txt").innerHTML=html;
   if(!solved){$("feedback").style.display="none";}
 }
 
@@ -420,6 +425,7 @@ function publish(){
   $("nextbtn").textContent = lvl===LEVELS.length-1 ? "Voir mon bilan ➜" : "Une suivante ➜";
   $("nextbtn").style.display="block";
   fb.scrollIntoView({behavior:"smooth",block:"center"});
+  $("nextbtn").focus();
 }
 
 function nextLevel(){

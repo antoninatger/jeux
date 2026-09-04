@@ -326,9 +326,9 @@ function renderLevel(){
     optBtns[si]=[];
     slot.opts.forEach((o,oi)=>{
       const b=document.createElement("button");
-      b.className="opt";
-      b.setAttribute("aria-pressed","false");
-      b.textContent=o.t;
+      b.className="opt"+(oi===0?" sel":"");
+      b.setAttribute("aria-pressed",oi===0?"true":"false");
+      b.textContent=o.t+(oi===0?" (trainee's original title, unchanged)":"");
       b.onclick=()=>{
         sel[si]=oi;
         wrap.querySelectorAll(".opt").forEach((x,k)=>{
@@ -358,9 +358,14 @@ function currentScores(){
 function updateDraft(){
   // Updates the front-page preview, but NOT the gauges: the verdict only arrives after publication.
   const L=LEVELS[lvl];
-  const txt=L.slots.map((s,i)=>s.opts[sel[i]].t).join(" ")
-    .replace(/\s+([,.])/g,"$1").replace(/\s+/g," ").trim();
-  $("draft-txt").textContent=txt;
+  const html=L.slots.map((s,i)=>{
+    const t=s.opts[sel[i]].t;
+    // Segment left at choice 0 (default) = unchanged: flagged, not mistaken for a real choice.
+    return sel[i]===0
+      ? `<span class="unchanged" title="Unchanged segment (trainee's original title)">${t}</span>`
+      : t;
+  }).join(" ").replace(/\s+([,.])/g,"$1").replace(/\s+/g," ").trim();
+  $("draft-txt").innerHTML=html;
   if(!solved){$("feedback").style.display="none";}
 }
 
@@ -420,6 +425,7 @@ function publish(){
   $("nextbtn").textContent = lvl===LEVELS.length-1 ? "See my final result ➜" : "Next front page ➜";
   $("nextbtn").style.display="block";
   fb.scrollIntoView({behavior:"smooth",block:"center"});
+  $("nextbtn").focus();
 }
 
 function nextLevel(){
