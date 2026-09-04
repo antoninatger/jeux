@@ -20,15 +20,15 @@ I18N.register({
     rule2: "💥  Détruis toutes les FAUSSES réponses (+50 pts)",
     rule3: "✅  Ne tire PAS sur la bonne réponse (−1 vie)",
     rule4: "➡  Quand tout est détruit, avance à droite pour continuer",
-    startPrompt: "▶  ESPACE ou CLIC pour commencer  ◀",
     controls: "← → : bouger   |   ↑ W : sauter   |   SOURIS : viser   |   CLIC Z X ESPACE : tirer",
     finalScore: "SCORE FINAL : ", loseMsg: "Continue à entrainer ton esprit critique !",
-    replayPrompt: "▶  ESPACE ou CLIC pour rejouer  ◀",
     winTitle: "MISSION ACCOMPLIE !", winMsg: "Tu as démasqué toutes les fausses infos de la série !",
     isTrue: "✅ VRAIE !", advance: "AVANCE !",
     inGameControls: "← → bouger  |  ↑ sauter  |  SOURIS viser  |  CLIC / ESPACE tirer",
     explLabel: "💡 POURQUOI :", explDefault: "La bonne réponse est celle restée en vert.",
-    explWaiting: "L'explication s'affichera ici après chaque question."
+    explWaiting: "L'explication s'affichera ici après chaque question.",
+    plus50: "+50 pts !", plus100Advance: "+100 ! AVANCE ➡",
+    playBtn: "JOUER ▶", replayBtn: "REJOUER ▶"
   },
   en: {
     pageTitle: "Fake Blaster", colRetour: "Back to the arcade",
@@ -40,15 +40,15 @@ I18N.register({
     rule2: "💥  Destroy all the FALSE answers (+50 pts)",
     rule3: "✅  Do NOT shoot the correct answer (−1 life)",
     rule4: "➡  When everything's destroyed, move right to continue",
-    startPrompt: "▶  SPACE or CLICK to start  ◀",
     controls: "← → : move   |   ↑ W : jump   |   MOUSE : aim   |   CLICK Z X SPACE : shoot",
     finalScore: "FINAL SCORE: ", loseMsg: "Keep training your critical thinking!",
-    replayPrompt: "▶  SPACE or CLICK to replay  ◀",
     winTitle: "MISSION ACCOMPLISHED!", winMsg: "You unmasked all the false claims in the set!",
     isTrue: "✅ TRUE!", advance: "GO!",
     inGameControls: "← → move  |  ↑ jump  |  MOUSE aim  |  CLICK / SPACE shoot",
     explLabel: "💡 WHY:", explDefault: "The correct answer is the one left in green.",
-    explWaiting: "The explanation will appear here after each question."
+    explWaiting: "The explanation will appear here after each question.",
+    plus50: "+50 pts!", plus100Advance: "+100! GO ➡",
+    playBtn: "PLAY ▶", replayBtn: "REPLAY ▶"
   }
 });
 </script>
@@ -81,17 +81,31 @@ body{
    l'espace restant (l'ancien justify-content:center posait l'en-tête au
    milieu de la page). */
 #wrap{position:relative;width:800px;max-width:100%;margin-top:auto;margin-bottom:auto;}
+#gameArea{position:relative}
 #game{
-  display:block;width:800px;height:460px;max-width:100%;
+  display:block;width:800px;aspect-ratio:800/460;height:auto;max-width:100%;
   border:3px solid #c8440a;
   box-shadow:0 0 60px rgba(255,100,0,0.5);
   cursor:crosshair;
 }
+/* F6 : la question vit désormais AU-DESSUS du canvas — les réponses sont
+   dans le ciel du jeu, l'œil ne doit plus faire l'aller-retour vers le bas. */
 #qbar{
-  background:#09040f;border:2px solid #c8440a;border-top:none;
+  background:#09040f;border:2px solid #c8440a;border-bottom:none;
   padding:10px 18px;display:flex;align-items:center;gap:12px;
   line-height:1.5;
 }
+/* F6 : bouton HTML pour commencer/rejouer — la seule action jusqu'ici était
+   Espace/clic sur un texte peint dans le canvas, jamais focusable. */
+#actionBtn{
+  position:absolute;left:50%;bottom:64px;transform:translateX(-50%);
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;
+  padding:12px 30px;border-radius:8px;border:2px solid #ff7700;color:#ff7700;
+  background:rgba(7,2,15,.85);cursor:pointer;letter-spacing:.04em;
+  box-shadow:0 0 20px rgba(255,119,0,.35);transition:all .15s;
+}
+#actionBtn:hover{background:#ff7700;color:#1c0a00}
+#actionBtn[hidden]{display:none}
 #qlabel{font-size:var(--fs-100);color:#ff7700;white-space:nowrap;flex-shrink:0;}
 #qtext{font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:#e0d0ff;flex:1;}
 /* Chantier 04 : bandeau d'explication — le jeu n'en affichait aucune, jamais. */
@@ -121,10 +135,13 @@ body{
 </head>
 <body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 <div id="wrap">
-  <canvas id="game" width="800" height="460"></canvas>
   <div id="qbar">
     <span id="qlabel">❓ QUESTION :</span>
     <span id="qtext" data-i18n="startMsg">Appuie sur ESPACE ou clique pour commencer !</span>
+  </div>
+  <div id="gameArea">
+    <canvas id="game" width="800" height="460"></canvas>
+    <button id="actionBtn" type="button"></button>
   </div>
   <div id="explbar" class="idle" aria-live="polite">
     <span id="expllabel" data-i18n="explLabel">💡 POURQUOI :</span>
@@ -136,95 +153,25 @@ body{
   </div>
 </div>
 <script>
-// ══════════════════════════════════════════════
-// DATA — questions de secours (si rien au hub)
-// ══════════════════════════════════════════════
-var QUESTIONS = [
-  {q:"Qu'est-ce qu'une Fake News ?",
-   good:["Une information fausse"],
-   bad:["Une vraie information","Un fait prouvé","Un avis personnel"],
-   expl:"Une Fake News, c'est une information fausse !"},
-  {q:"Comment vérifier une information ?",
-   good:["Vérifier la source"],
-   bad:["La partager immédiatement","Faire confiance aux réseaux","Croire si ça semble sympa"],
-   expl:"Il faut toujours vérifier la source avant de partager."},
-  {q:"Qu'est-ce qu'un FAIT ?",
-   good:["Une info prouvée, la même pour tous"],
-   bad:["Un avis personnel","Les gâteaux choco sont meilleurs","La glace vanille est délicieuse"],
-   expl:"Un fait est une information prouvée, identique pour tout le monde."},
-  {q:"Qu'est-ce qu'une OPINION ?",
-   good:["Un avis personnel"],
-   bad:["Une info prouvée","Le soleil est une étoile","Paris est en France"],
-   expl:"Une opinion est un avis personnel, pas un fait vérifiable."},
-  {q:"Les paréidolies, c'est quoi ?",
-   good:["Des illusions créées par le cerveau"],
-   bad:["Des faits scientifiques","De vrais visages cachés","Un type de Fake News"],
-   expl:"Les paréidolies sont des illusions créées par notre cerveau."},
-  {q:"C'est quoi le système INTUITIF ?",
-   good:["Rapide mais peut se tromper"],
-   bad:["Lent et très rationnel","Toujours fiable","Consomme beaucoup d'énergie"],
-   expl:"Le système intuitif est rapide mais peut nous induire en erreur."},
-  {q:"C'est quoi le système ANALYTIQUE ?",
-   good:["Lent mais plus rationnel"],
-   bad:["Fonctionne très vite","Fait souvent des erreurs","Consomme peu d'énergie"],
-   expl:"Le système analytique est lent mais plus fiable et rationnel."},
-  {q:"C'est quoi un BIAIS COGNITIF ?",
-   good:["Une distorsion du traitement d'une info"],
-   bad:["Une information vraie","Un fait scientifique","Une méthode de vérif."],
-   expl:"Un biais cognitif est une distorsion dans la façon dont on traite l'information."},
-  {q:"Que faire face à une info en ligne ?",
-   good:["Vérifier le contexte"],
-   bad:["La partager sans vérifier","Faire confiance aux likes","Croire si c'est spectaculaire"],
-   expl:"Il faut toujours vérifier le contexte avant de croire ou partager."},
-  {q:"Le biais de CONFIRMATION, c'est ?",
-   good:["Croire les infos qui confirment nos idées"],
-   bad:["Vérifier toutes les informations","Accepter d'avoir tort","Chercher des preuves contraires"],
-   expl:"Le biais de confirmation nous pousse à croire ce qui conforte nos opinions."},
-  {q:"Si une info semble trop belle pour être vraie…",
-   good:["Il faut la vérifier"],
-   bad:["C'est forcément vrai","Il faut la partager vite","C'est toujours fiable"],
-   expl:"Si c'est trop beau pour être vrai, il faut vérifier !"},
-  {q:"Que boit une vache ?",
-   good:["De l'eau"],
-   bad:["Du lait","Du jus de fruit","Du café"],
-   expl:"Une vache boit de l'eau, c'est elle qui produit le lait !"},
-  {q:"L'étoile du Berger, c'est…",
-   good:["Une planète (Vénus)"],
-   bad:["Une étoile","Le Soleil","Mars"],
-   expl:"L'étoile du Berger est en réalité la planète Vénus !"},
-  {q:"Quelle attitude face aux Fake News ?",
-   good:["Être modeste, accepter de se tromper"],
-   bad:["Faire confiance à son instinct","Partager sans réfléchir","Ne jamais douter de soi"],
-   expl:"L'humilité et l'esprit critique sont nos meilleurs alliés."},
-];
+// F6 : le secours local au format good/bad (un troisième format de question
+// dans le projet, en double avec questions.js) est supprimé — DEFAULT_QCM
+// est chargé avant ce script comme dans les cinq autres jeux de l'arcade.
 
 // ── Construction de la session (série du hub + longueur 5/10/30) ──
 function buildSession(){
   var src = (typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions() : null;
   // Sans série choisie au hub : série par défaut DANS LA LANGUE COURANTE
-  // (questions.js / questions-en.js), comme les autres jeux de l'arcade —
-  // le secours local ci-dessous n'existe qu'en français.
+  // (questions.js / questions-en.js), comme les autres jeux de l'arcade.
   if(!(src && src.length && src[0].options) && typeof DEFAULT_QCM!=='undefined' && DEFAULT_QCM.length && DEFAULT_QCM[0].options){
     src = DEFAULT_QCM.slice();
     for(var i2=src.length-1;i2>0;i2--){var j2=Math.floor(Math.random()*(i2+1));var t2=src[i2];src[i2]=src[j2];src[j2]=t2;}
     src = src.slice(0, (typeof QCMStore!=='undefined') ? QCMStore.loadSessionCount() : 10);
   }
-  if(src && src.length && src[0].options){
-    // Chantier 04 : `expl` était perdu ici — le champ n'arrivait jamais jusqu'au jeu.
-    return src.map(function(item){
-      return {q:item.q, expl:item.expl,
-              opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
-    });
-  }
-  // Secours : format good/bad local, mélangé puis coupé
-  var list = QUESTIONS.map(function(item){
-    var opts=[{text:item.good[0],bad:false}];
-    item.bad.slice(0,3).forEach(function(b){opts.push({text:b,bad:true});});
-    return {q:item.q, expl:item.expl, opts:opts};
+  // Chantier 04 : `expl` était perdu ici — le champ n'arrivait jamais jusqu'au jeu.
+  return src.map(function(item){
+    return {q:item.q, expl:item.expl,
+            opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
   });
-  for(var i=list.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=list[i];list[i]=list[j];list[j]=t;}
-  var n=(typeof QCMStore!=='undefined')?QCMStore.loadSessionCount():10;
-  return list.slice(0,Math.min(n,list.length));
 }
 
 (function(){
@@ -320,6 +267,16 @@ cv.addEventListener('click',function(){
   if(gstate==='playing') doShoot(); else startGame();
 });
 
+// F6 : bouton HTML pour commencer/rejouer — accessible au clavier et au
+// lecteur d'écran, là où seul un texte peint dans le canvas existait avant.
+var actionBtn=document.getElementById('actionBtn');
+actionBtn.addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
+function syncActionBtn(){
+  if(gstate==='playing'){ actionBtn.hidden=true; return; }
+  actionBtn.hidden=false;
+  actionBtn.textContent = (gstate==='title') ? I18N.t('playBtn') : I18N.t('replayBtn');
+}
+
 // ══════════════════════════════════════════════
 // CORE
 // ══════════════════════════════════════════════
@@ -331,6 +288,7 @@ function startGame(){
   qIdx=0;
   loadQ();
   gstate='playing';
+  syncActionBtn();
 }
 
 function loadQ(){
@@ -363,16 +321,30 @@ function spawnBubbles(){
   for(var i=opts.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=opts[i];opts[i]=opts[j];opts[j]=t;}
   var n=opts.length;
   cx.font='700 14px Nunito,sans-serif';
+
+  // F6 : colonnes réelles — la largeur des bulles est bornée par la largeur
+  // de leur colonne, plus de jitter qui les poussait dans la colonne voisine
+  // (l'ancienne largeur fixe de 200 px débordait des colonnes de 160 px).
+  var marginX=60;
+  var colW=(W-marginX*2)/n;
+  var maxW=Math.max(90,colW-24);
+  // Au-delà de 60 caractères, deux rangées décalées : le texte prend 2-3
+  // lignes, il lui faut de la hauteur, pas seulement de la largeur.
+  var hasLong=opts.some(function(o){return o.text.length>60;});
+  var skyTop=78, skyBot=GY-130;
+
   for(var k=0;k<n;k++){
-    var maxW=200;
     var lines=wrapLines(opts[k].text,maxW-16);
     var widths=lines.map(function(l){return cx.measureText(l).width;});
     var bw=Math.min(maxW,Math.max.apply(null,widths)+24);
     var bh=lines.length*17+16;
-    // colonnes réparties sur la largeur, hauteur aléatoire dans le ciel
-    var colW=(W-160)/n;
-    var x=110+colW*k+colW/2+(Math.random()-0.5)*30;
-    var y=80+Math.random()*(GY-220);
+    var x=marginX+colW*k+colW/2;
+    var y;
+    if(hasLong){
+      y=(k%2===0) ? (skyTop+bh/2+4) : (skyBot-bh/2-4);
+    } else {
+      y=skyTop+Math.random()*(skyBot-skyTop);
+    }
     bubbles.push({
       x:x, y:y, w:bw, h:bh, lines:lines,
       bad:opts[k].bad, alive:true, revealed:false,
@@ -404,7 +376,7 @@ function doShoot(){
 function loseLife(msg,fx,fy){
   lives--;shakeT=11;
   addFloat(fx||hero.x,(fy||hero.y-70),msg||I18N.t('lostLife'),'#ff3355');
-  if(lives<=0) gstate='gameover';
+  if(lives<=0){ gstate='gameover'; syncActionBtn(); }
 }
 
 function boom(x,y,col,n){
@@ -472,7 +444,7 @@ function update(){
           score+=50;
           boom(bb.x,by,'#ff7700');boom(bb.x,by,'#ffcc00',8);
           flashCol='rgba(255,140,0,1)';flashT=14;
-          addFloat(bb.x,by-30,'+50 pts !','#ffee55');
+          addFloat(bb.x,by-30,I18N.t('plus50'),'#ffee55');
           checkCleared();
         } else if(!bb.revealed){
           bb.revealed=true;bb.flash=20;
@@ -491,7 +463,7 @@ function update(){
   // Avancer vers la droite quand tout est détruit → question suivante
   if(cleared&&hero.x>=W-40){
     qIdx++;
-    if(qIdx>=SESSION.length){ gstate='win'; }
+    if(qIdx>=SESSION.length){ gstate='win'; syncActionBtn(); }
     else { hero.x=60; loadQ(); }
   }
 
@@ -517,7 +489,7 @@ function checkCleared(){
   for(var j=0;j<bubbles.length;j++){
     if(!bubbles[j].bad) bubbles[j].revealed=true;
   }
-  addFloat(hero.x,hero.y-90,'+100 ! AVANCE ➡','#44ffcc');
+  addFloat(hero.x,hero.y-90,I18N.t('plus100Advance'),'#44ffcc');
   // Chantier 04 : explication aussi à la réussite. Elle reste affichée tant que
   // le joueur n'a pas avancé jusqu'à la question suivante — pas de minuteur.
   showExpl('ok');
@@ -742,10 +714,8 @@ function drawTitle(){
     cx.fillStyle=rules[i][1];cx.fillText(rules[i][0],W/2,180+i*32);
   }
 
-  if(Math.sin(frame*0.07)>0){
-    cx.font='800 16px Nunito,sans-serif';cx.textAlign='center';cx.textBaseline='middle';
-    cx.fillStyle='#ffffff';cx.fillText(I18N.t('startPrompt'),W/2,H-50);
-  }
+  // F6 : le bouton HTML #actionBtn remplace le texte clignotant qui vivait
+  // ici — seule la ligne de commandes clavier/souris reste peinte.
   cx.font='600 13px Nunito,sans-serif';cx.textAlign='center';cx.textBaseline='middle';
   cx.fillStyle='rgba(170,120,230,0.8)';
   cx.fillText(I18N.t('controls'),W/2,H-20);
@@ -765,10 +735,6 @@ function drawGameOver(){
   cx.fillText(I18N.t('finalScore')+score,W/2,195);
   cx.font='700 16px Nunito,sans-serif';cx.fillStyle='#b9a0e0';
   cx.fillText(I18N.t('loseMsg'),W/2,250);
-  if(Math.sin(frame*0.07)>0){
-    cx.font='800 16px Nunito,sans-serif';cx.fillStyle='#fff';
-    cx.fillText(I18N.t('replayPrompt'),W/2,330);
-  }
   cx.restore();
 }
 
@@ -783,10 +749,6 @@ function drawWin(){
   cx.fillText(I18N.t('finalScore')+score,W/2,195);
   cx.font='700 16px Nunito,sans-serif';cx.fillStyle='#b9e0c8';
   cx.fillText(I18N.t('winMsg'),W/2,250);
-  if(Math.sin(frame*0.07)>0){
-    cx.font='800 16px Nunito,sans-serif';cx.fillStyle='#fff';
-    cx.fillText(I18N.t('replayPrompt'),W/2,330);
-  }
   cx.restore();
 }
 
@@ -851,6 +813,7 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
+syncActionBtn();
 loop();
 </script>
 </body>
