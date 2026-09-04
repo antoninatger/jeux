@@ -280,6 +280,10 @@ body::before{
       <span data-i18n="uploadZone">⬆ Importer un fichier (.xlsx / .json)</span>
       <input type="file" id="q-file-input" accept=".xlsx,.xls,.json">
     </label>
+    <p class="hub-format-hint" style="font-size:var(--fs-100);opacity:.7;margin-top:6px;">
+      <span data-i18n="hubFormatHint">Format Excel attendu : question · bonne réponse · 1 à 3 mauvaises réponses · explication (optionnel) · catégorie (optionnel).</span>
+      <a href="#" id="hub-template-link" data-i18n="hubTemplateLink">Télécharger le modèle</a>
+    </p>
   </div>
   <div class="session-row" id="session-row">
     <span class="session-label" data-i18n="sessionLabel">Questions par partie :</span>
@@ -287,7 +291,7 @@ body::before{
     <button class="count-chip" data-count="10">10</button>
     <button class="count-chip" data-count="30">30</button>
   </div>
-  <div class="hub-status empty" id="hub-status" data-i18n="noSet">Aucune série sélectionnée</div>
+  <div class="hub-status empty" id="hub-status">Aucune série sélectionnée</div>
 </div>
 
 <div class="col-cartes">
@@ -347,6 +351,8 @@ I18N.register({
     hubStep: "— 1. Choisir une série de questions —", uploadZone: "⬆ Importer un fichier (.xlsx / .json)",
     sessionLabel: "Questions par partie :", noSet: "Aucune série sélectionnée",
     loadedA: "questions chargées —", errPrefix: "❌ Erreur :", badFormat: "❌ Format non supporté (.xlsx ou .json uniquement)",
+    hubFormatHint: "Format Excel attendu : question · bonne réponse · 1 à 3 mauvaises réponses · explication (optionnel) · catégorie (optionnel).",
+    hubTemplateLink: "Télécharger le modèle",
     qWord: "questions",
     descSnake: "Mange la bonne réponse, évite les mauvaises !",
     descBrick: "Casse les briques des mauvaises réponses !",
@@ -362,6 +368,8 @@ I18N.register({
     hubStep: "— 1. Choose a question set —", uploadZone: "⬆ Import a file (.xlsx / .json)",
     sessionLabel: "Questions per game:", noSet: "No set selected",
     loadedA: "questions loaded —", errPrefix: "❌ Error:", badFormat: "❌ Unsupported format (.xlsx or .json only)",
+    hubFormatHint: "Expected Excel format: question · correct answer · 1 to 3 wrong answers · explanation (optional) · category (optional).",
+    hubTemplateLink: "Download the template",
     qWord: "questions",
     descSnake: "Eat the right answer, avoid the wrong ones!",
     descBrick: "Smash the bricks of wrong answers!",
@@ -801,6 +809,20 @@ const CW=420, CH=170;
   });
   markCount(QCMStore.loadSessionCount());
 
+  document.getElementById('hub-template-link').addEventListener('click', function(e){
+    e.preventDefault();
+    var wb = XLSX.utils.book_new();
+    var data = [
+      ['Question / Affirmation', 'Bonne réponse ✅', 'Mauvaise réponse 1 ❌', 'Mauvaise réponse 2 ❌', 'Mauvaise réponse 3 ❌', 'Explication 💡', 'Catégorie (optionnel)'],
+      ["Qu'est-ce qu'une Fake News ?", 'Une information fausse', 'Une vraie information', 'Un fait prouvé', 'Un avis personnel', "Une Fake News, c'est une info fausse !", 'Définitions'],
+      ['Que boit une vache ?', "De l'eau", 'Du lait', 'Du jus', 'Du café', "C'est la vache qui produit le lait, elle boit de l'eau !", ''],
+    ];
+    var ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{wch:40},{wch:30},{wch:30},{wch:30},{wch:30},{wch:40},{wch:20}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Questions');
+    XLSX.writeFile(wb, 'modele_questions.xlsx');
+  });
+
   document.getElementById('q-file-input').addEventListener('change', function(e){
     var file = e.target.files[0];
     if(!file) return;
@@ -834,17 +856,17 @@ const CW=420, CH=170;
           for(var i=start; i<rows.length; i++){
             var row = rows[i];
             var q = String(row[0]||'').trim();
-            if(!q) continue;
-            var opts = [row[1],row[2],row[3],row[4]].map(function(x){return String(x||'').trim();}).filter(Boolean);
-            if(opts.length < 2) continue;
-            var ansNum = parseInt(row[5]||'1');
-            if(isNaN(ansNum)||ansNum<1||ansNum>opts.length) ansNum = 1;
+            var bonne = String(row[1]||'').trim();
+            if(!q || !bonne) continue;
+            var mauvaises = [row[2],row[3],row[4]].map(function(x){return String(x||'').trim();}).filter(Boolean);
+            if(!mauvaises.length) continue;
+            var opts = [bonne].concat(mauvaises);
             imported.push({
               q: q,
-              options: opts.length===4 ? opts : opts.concat(Array(4-opts.length).fill('—')),
-              answer: ansNum-1,
-              expl: String(row[6]||'').trim() || ('✅ Bonne réponse : ' + opts[ansNum-1]),
-              cat: String(row[7]||'').trim() || ''
+              options: opts,
+              answer: 0,
+              expl: String(row[5]||'').trim() || ('✅ Bonne réponse : ' + bonne),
+              cat: String(row[6]||'').trim() || ''
             });
           }
           if(!imported.length) throw new Error('Aucune question valide trouvée');

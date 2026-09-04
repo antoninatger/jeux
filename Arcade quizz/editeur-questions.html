@@ -210,18 +210,19 @@ h1{
 <div class="section" style="max-width:820px;width:100%">
   <div class="section-title">⬆ IMPORTER DEPUIS EXCEL</div>
   <div class="import-zone" id="drop-zone">
-    <input type="file" id="file-input" accept=".xlsx,.xls,.csv">
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.json">
     <p>
       <strong>Glisse ton fichier ici</strong> ou clique pour choisir<br>
-      Formats acceptés : .xlsx · .xls · .csv
+      Formats acceptés : .xlsx · .xls · .csv · .json
     </p>
   </div>
   <div class="format-hint">
-    Format attendu (une ligne = une question) :<br>
+    Format attendu (une ligne = une question) — c'est le même format que lit le hub :<br>
     <code>Col A</code> Question &nbsp;·&nbsp;
     <code>Col B</code> ✅ Bonne réponse &nbsp;·&nbsp;
     <code>Col C D E</code> ❌ Mauvaises réponses &nbsp;·&nbsp;
-    <code>Col F</code> 💡 Explication (optionnel)
+    <code>Col F</code> 💡 Explication (optionnel) &nbsp;·&nbsp;
+    <code>Col G</code> 🏷️ Catégorie (optionnel)
     <br><br>La première ligne peut être une ligne d'en-tête (elle sera ignorée automatiquement).
   </div>
   <button class="btn-template" onclick="downloadTemplate()">⬇ TÉLÉCHARGER LE MODÈLE EXCEL</button>
@@ -269,6 +270,7 @@ h1{
 <div class="export-bar">
   <p><span id="exp-count">0</span> question(s) prête(s)</p>
   <button class="btn-export" onclick="exportQCM()">⬇ EXPORTER questions.js</button>
+  <button class="btn-export" onclick="exportJSON()">⬇ EXPORTER en JSON</button>
 </div>
 
 <script>
@@ -452,6 +454,28 @@ dropZone.addEventListener('drop', e => {
 });
 
 function readFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if(ext === 'json'){
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        if(!Array.isArray(parsed) || !parsed.length) throw new Error('Format invalide');
+        parsed.forEach(item => {
+          if(!item.q || !Array.isArray(item.options) || item.options.length < 2) return;
+          questions.push({ q: item.q, options: item.options, answer: item.answer || 0, expl: item.expl || '', cat: item.cat || '' });
+        });
+        render();
+        alert(`✅ ${parsed.length} question(s) importée(s) depuis le fichier !`);
+      } catch(err) {
+        alert('❌ Erreur de lecture du fichier : ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = e => {
     try {
@@ -467,13 +491,13 @@ function readFile(file) {
         const m2 = String(row[3]||'').trim();
         const m3 = String(row[4]||'').trim();
         const expl = String(row[5]||'').trim();
+        const cat = String(row[6]||'').trim();
 
         // Skip header row or empty rows
         if(!q || !b || !m1) return;
         if(ri === 0 && q.toLowerCase().includes('question')) return;
 
         const opts = [b, m1, m2, m3].filter(o => o);
-        while(opts.length < 4) opts.push('—');
 
         // Shuffle
         for(let i=opts.length-1;i>0;i--){
@@ -482,7 +506,7 @@ function readFile(file) {
         }
         const answer = opts.indexOf(b) !== -1 ? opts.indexOf(b) : 0;
 
-        questions.push({ q, options: opts, answer, expl });
+        questions.push({ q, options: opts, answer, expl, cat });
         imported++;
       });
 
@@ -507,16 +531,27 @@ function exportQCM() {
   a.click();
 }
 
+// ── EXPORT JSON ────────────────────────────────────────────────
+function exportJSON() {
+  if(!questions.length) { alert('Aucune question à exporter !'); return; }
+  const json = JSON.stringify(questions, null, 2);
+  const blob = new Blob([json], {type:'application/json;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'questions.json';
+  a.click();
+}
+
 // ── MODÈLE EXCEL ─────────────────────────────────────────────
 function downloadTemplate() {
   const wb = XLSX.utils.book_new();
   const data = [
-    ['Question / Affirmation', 'Bonne réponse ✅', 'Mauvaise réponse 1 ❌', 'Mauvaise réponse 2 ❌', 'Mauvaise réponse 3 ❌', 'Explication 💡'],
-    ["Qu'est-ce qu'une Fake News ?", 'Une information fausse', 'Une vraie information', 'Un fait prouvé', 'Un avis personnel', "Une Fake News, c'est une info fausse !"],
-    ['Que boit une vache ?', "De l'eau", 'Du lait', 'Du jus', 'Du café', "C'est la vache qui produit le lait, elle boit de l'eau !"],
+    ['Question / Affirmation', 'Bonne réponse ✅', 'Mauvaise réponse 1 ❌', 'Mauvaise réponse 2 ❌', 'Mauvaise réponse 3 ❌', 'Explication 💡', 'Catégorie (optionnel)'],
+    ["Qu'est-ce qu'une Fake News ?", 'Une information fausse', 'Une vraie information', 'Un fait prouvé', 'Un avis personnel', "Une Fake News, c'est une info fausse !", 'Définitions'],
+    ['Que boit une vache ?', "De l'eau", 'Du lait', 'Du jus', 'Du café', "C'est la vache qui produit le lait, elle boit de l'eau !", ''],
   ];
   const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = [{wch:40},{wch:30},{wch:30},{wch:30},{wch:30},{wch:40}];
+  ws['!cols'] = [{wch:40},{wch:30},{wch:30},{wch:30},{wch:30},{wch:40},{wch:20}];
   XLSX.utils.book_append_sheet(wb, ws, 'Questions');
   XLSX.writeFile(wb, 'modele_questions.xlsx');
 }
