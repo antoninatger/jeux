@@ -219,8 +219,14 @@ function chk(v,list){return list.some(a=>norm(a)===norm(v))}
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
+// Bouton enseignant : seulement derrière ?prof=1, jamais montré à l'élève.
+const PROF_MODE = new URLSearchParams(location.search).get('prof')==='1';
+if(!PROF_MODE){ const bf=document.getElementById('btn-force'); if(bf) bf.remove(); }
+
 let score=0, lives=3, mined=0, lvl=1;
 let qPool=[], qIdx=0, answered=false, tries=0;
+let solvedIdx=new Set(), solvedKeys=new Set(); // phrases déjà réussies : jamais reproposées
+function qKeyOf(q){ return q.avant+q.mot+q.apres+'_'+q.type; }
 let blockClicks=0;       // clicks on current block (0→3 to reveal phrase)
 let questionsToWin=10;   // 10 for normal, 5 for quick mode
 let phase='mining';      // 'mining' | 'question'
@@ -611,7 +617,7 @@ function forceValidate(){
   answered=true;
   const fb=document.getElementById('panel-fb');
   const nx=document.getElementById('panel-next');
-  document.getElementById('btn-force').style.display='none';
+  document.getElementById('btn-force')?.style.setProperty('display','none');
   document.getElementById('ip-row').style.display='none';
   document.getElementById('ip-tries').textContent='';
   fb.className='fb ok';fb.textContent=I18N.t('acceptedA')+val+I18N.t('acceptedB')+qPool[qIdx].exp;fb.style.display='block';
@@ -646,7 +652,7 @@ function validateInput(){
   if(chk(val,list)||chk(val,extra)){
     answered=true;
     fb.className='fb ok';fb.textContent='✔ '+q.exp;fb.style.display='block';
-    document.getElementById('btn-force').style.display='none';
+    document.getElementById('btn-force')?.style.setProperty('display','none');
     document.getElementById('ip-row').style.display='none';tr.textContent='';
     // update word visually
     document.querySelectorAll('.w.selected').forEach(s=>{
@@ -662,7 +668,7 @@ function validateInput(){
       answered=true;
       fb.className='fb ko';fb.textContent='✘ '+q.exp+I18N.t('exampleA')+list[0]+I18N.t('exampleB');fb.style.display='block';
       document.getElementById('ip-row').style.display='none';tr.textContent='';
-      document.getElementById('btn-force').style.display='block';
+      document.getElementById('btn-force')?.style.setProperty('display','block');
       onFail();
       if(lives<=0){setTimeout(()=>{closePanel();showOver();},2000);return;}
       nx.style.display='block';
@@ -671,7 +677,7 @@ function validateInput(){
     } else {
       fb.className='fb hint';fb.textContent=I18N.t('notQuite');fb.style.display='block';
       tr.textContent=I18N.t('try1left');
-      document.getElementById('btn-force').style.display='block';
+      document.getElementById('btn-force')?.style.setProperty('display','block');
       document.getElementById('ip-in').value='';
       document.getElementById('ip-in').focus();
     }
@@ -687,6 +693,8 @@ document.getElementById('ip-in').addEventListener('keydown',e=>{
 function onSuccess(){
   score+=lvl===1?100:150;
   mined++;
+  solvedIdx.add(qIdx);
+  solvedKeys.add(qKeyOf(qPool[qIdx]));
   updateHUD();
   addCrackOnSuccess();
   flashBlock(true);
@@ -715,7 +723,13 @@ function nextBlock(){
   phase='mining';
   document.getElementById('click-hint').style.display='block';
   document.getElementById('click-counter').textContent='';
-  qIdx=(qIdx+1)%qPool.length;
+  let next=(qIdx+1)%qPool.length;
+  let guard=0;
+  while(guard<qPool.length && (solvedIdx.has(next) || solvedKeys.has(qKeyOf(qPool[next])))){
+    next=(next+1)%qPool.length;
+    guard++;
+  }
+  qIdx=next;
   // don't clear SVG — cracks stay!
 }
 
@@ -828,6 +842,7 @@ function closeTuto(){
 
 function startGame(){
   score=0;lives=3;mined=0;qIdx=0;answered=false;tries=0;
+  solvedIdx=new Set();solvedKeys=new Set();
   blockClicks=0;phase='mining';totalCracks=0;crackDrawnCount=0;
   document.getElementById('cracks').innerHTML='';
   document.getElementById('click-hint').style.display='block';
