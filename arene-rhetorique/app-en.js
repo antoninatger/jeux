@@ -135,13 +135,13 @@ const FOES = [
 ];
 
 let foeIdx=0, lineIdx=0, youHP=6, foeHP=0, order=[];
-let correctCount=0, totalCount=0;
+let correctCount=0, totalCount=0, matchCorrect=0;
 const YOUMAX=6;
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function startMatch(i){
-  foeIdx=i; lineIdx=0;
+  foeIdx=i; lineIdx=0; matchCorrect=0;
   const foe=FOES[i];
   foeHP=foe.hp;
   if(i===0){ youHP=YOUMAX; correctCount=0; totalCount=0; }
@@ -214,7 +214,7 @@ function renderTurn(){
 function answer(line,id,btn){
   const ok=id===line.a;
   totalCount++;
-  if(ok) correctCount++;
+  if(ok){ correctCount++; matchCorrect++; }
   const all=[...document.querySelectorAll(".abtn")];
   all.forEach(b=>{b.disabled=true;b.classList.add("dim");});
   const goodLabel=(line.type==="epl"?EPL:FALLACIES).find(o=>o.id===line.a).l;
@@ -247,6 +247,10 @@ function nextTurn(){
   if(foeHP<=0){ winMatch(); return; }
   if(youHP<=0){ lose(); return; }
   lineIdx++;
+  if(lineIdx>=order.length){
+    if(matchCorrect*2>=order.length) winMatch(); else lose();
+    return;
+  }
   renderTurn();
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -288,5 +292,5 @@ function lose(){
   const rb=$("retry-btn");
   rb.style.display="inline-block";
   rb.textContent="🔁 Retry "+FOES[foeIdx].name;
-  rb.onclick=()=>{ $("end").style.display="none"; startMatch(foeIdx); };
+  rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx); };
 }
