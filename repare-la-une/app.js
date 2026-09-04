@@ -198,6 +198,71 @@ const LEVELS = [
   ],
   lesson:"Le titre original ne précise <b>jamais où</b> se passe cette histoire — beaucoup de lecteurs ont supposé que c'était en France et se sont indignés contre « nos » fonctionnaires. Or tout se déroule à Wesel, en <b>Allemagne</b>, avec un statut de fonctionnaire et des règles de retraite différentes des nôtres. Réflexe à garder : quand un titre reste vague sur le lieu, cherche-le avant de t'indigner — ou de partager."
  },
+ {
+  orig:"Après vingt noyades cet été, la piscine de Chalvres FERME : 2 000 écoliers directement touchés",
+  img:"depositphotos_12716878-stock-photo-swimming-pool.jpg",
+  imgAlt:"Vue sous-marine d'un bassin de natation vide : lignes d'eau, carrelage bleu, surface vue de dessous.",
+  imgCap:"La piscine de Chalvres. Photo d'illustration.",
+  sources:[
+   {icon:"📰", name:"L'article du Courrier de la Brie", body:"Le quotidien régional titre « Après vingt noyades cet été, la piscine de Chalvres va fermer : 2 000 écoliers directement touchés ». Le corps de l'article, lui, précise que la fermeture a été votée le 6 février — avant l'été — parce que le bassin, construit en 1974, perd 40 m³ d'eau par jour et que sa remise aux normes est chiffrée à 4,8 millions d'euros. Les 2 000 élèves de quatorze écoles perdront leur créneau « savoir-nager »."},
+   {icon:"📋", name:"Le bilan de la préfecture", body:"Vingt noyades ont été recensées dans le département entre le 1er juin et le 31 août : seize en rivière, canal ou plan d'eau, trois en piscine privée, une dans un bassin de jardin. Aucune dans une piscine municipale."},
+   {icon:"🏊", name:"Une déléguée de la fédération de natation", body:"« Un enfant sur deux entre en sixième sans savoir nager correctement. Supprimer un créneau scolaire d'apprentissage, c'est mécaniquement des enfants qui nageront moins bien dans dix ans. Un lien entre cette piscine et les noyades existe — mais il va dans l'autre sens, et il est devant nous, pas derrière. »"},
+  ],
+  slots:[
+   {name:"L'accroche (le lien sous-entendu)", opts:[
+    {t:"Après vingt noyades cet été,", emo:30, prec:0, trap:"C'est tout le piège de ce titre. Le bilan de la préfecture est formel : aucune des vingt noyades n'a eu lieu dans une piscine municipale, et la fermeture a été votée le 6 février, avant l'été. Le seul mot « après » suffit à faire croire à un lien de cause à effet entre deux faits qui n'en ont aucun."},
+    {t:"HÉCATOMBE dans le département :", emo:40, prec:0},
+    {t:"Vingt noyades, et maintenant ça :", emo:35, prec:0},
+    {t:"Faute de travaux,", emo:0, prec:30},
+   ]},
+   {name:"Le fait", opts:[
+    {t:"la piscine de Chalvres ferme ses portes", emo:20, prec:5},
+    {t:"vingt enfants se sont noyés et on ferme quand même la piscine", emo:40, prec:10, trap:"Deux inventions dans une seule phrase : le bilan de la préfecture ne dit nulle part que les vingt noyés étaient des enfants, et le « quand même » suppose un lien entre les noyades et la fermeture. Ajouter un mot qui n'est dans aucune source, c'est fabriquer de l'info."},
+    {t:"la piscine de Chalvres fermera le 31 décembre, un bassin de 1974 dont la remise aux normes est chiffrée à 4,8 M€", emo:0, prec:40},
+    {t:"on SACRIFIE la sécurité de nos enfants", emo:40, prec:0},
+   ]},
+   {name:"La chute", opts:[
+    {t:": 2 000 écoliers directement touchés", emo:25, prec:5},
+    {t:": à quand le prochain drame ?!", emo:40, prec:0},
+    {t:": 2 000 élèves de quatorze écoles perdront leur créneau d'apprentissage de la natation, sans solution de repli annoncée.", emo:0, prec:35},
+    {t:".", emo:0, prec:10},
+   ]},
+  ],
+  lesson:"Deux faits vrais — vingt noyades dans le département, une piscine qui ferme — n'ont ici <b>aucun rapport</b> : les noyades ont eu lieu en rivière et en plan d'eau, et la fermeture a été votée en février, avant l'été. C'est le petit mot « <b>après</b> » qui fabrique le lien : ce n'est pas la réalité qui l'a mis là, c'est la phrase. Pire encore : le seul lien réel va dans l'<b>autre sens</b> — c'est la fermeture qui, en supprimant l'apprentissage de la natation, pourrait produire des noyades, dans dix ans. Et regarde la photo : bassin vide, vu de sous l'eau. Elle ne montre <b>rien</b> de l'information — ce n'est même pas la piscine de Chalvres, c'est une image de banque. Elle n'apporte pas un fait, elle apporte une <b>ambiance</b> : l'eau devient la menace. Réflexe à garder : quand un titre juxtapose deux faits, demande-toi <b>qui a mis le lien entre eux : les faits, ou la phrase ?</b>"
+ },
+ {
+  orig:"🌍 La Nasa a dévoilé la dernière forme réelle de la Terre. Ce modèle mathématique, appelé le géoïde, repose sur plus d’un milliard d’observations acquises sur une période de 15 ans par 19 satellites.",
+  video:"geoide-nasa.mp4",
+  img:"geoide-nasa.jpg",
+  imgAlt:"Vidéo muette : le globe terrestre, rendu en 3D à partir du modèle de géoïde, tourne lentement sur lui-même. C’est une sphère bosselée, creusée de bleu au sud de l’Inde, bombée d’orange vers l’Indonésie, avec les frontières des pays tracées dessus. Sous le globe, une échelle de couleurs graduée de −80 à +80 mètres, légendée « Geoid Height (10,000x exaggeration) », reste affichée du début à la fin.",
+  imgCap:"La vidéo diffusée par la Nasa, reprise telle quelle par franceinfo le 31 août 2026. La légende ne quitte pas l’écran de toute la séquence : « Geoid Height (10,000x exaggeration) ».",
+  sources:[
+   {icon:"🛰️", name:"La page de la Nasa", body:"La visualisation s’intitule « The Geoid ». Le géoïde n’est pas le relief de la Terre : c’est la forme qu’aurait la surface des océans sous le seul effet de la gravité. La page précise que dans l’animation, la hauteur du géoïde est très fortement exagérée, par un facteur 10 000. Une première version montre le même géoïde à l’échelle réelle : on y voit une sphère. Mise en ligne le 15 juillet 2026, à partir du modèle GOCO06s — satellites GRACE (Nasa) et GOCE (Agence spatiale européenne) : plus d’un milliard d’observations, 15 ans, 19 satellites."},
+   {icon:"📏", name:"Les ordres de grandeur", body:"Du point le plus bas du géoïde (environ −106 m, au sud de l’Inde) au plus haut (environ +85 m, vers l’Islande), l’écart total est de 191 m — pour un rayon terrestre de 6 371 km, soit 0,003 %. L’aplatissement de la Terre aux pôles, lui, atteint 21 km : cent fois plus. Multipliés par 10 000, ces 100 m deviennent 1 000 km à l’écran. D’où la pomme de terre."},
+   {icon:"🧭", name:"Une géodésienne", body:"« Le géoïde, c’est le zéro des altitudes : la surface de référence à partir de laquelle on mesure la hauteur d’une montagne ou le niveau de la mer. Il ne montre aucun relief — ni l’Everest, ni la fosse des Mariannes n’y figurent. Et il n’a rien de nouveau : GRACE date de 2002, GOCE de 2009, le modèle GOCO06s de 2019. La Nasa a publié une image, pas une découverte. »"},
+  ],
+  slots:[
+   {name:"L’annonce", opts:[
+    {t:"🌍 La Nasa a dévoilé la dernière forme réelle de la Terre :", emo:20, prec:5, trap:"C’est le mot « réelle » qui fait tout basculer. La page de la Nasa est explicite : le géoïde n’est pas la forme de la Terre, c’est une surface de référence liée à la gravité, et les hauteurs y sont exagérées 10 000 fois. Tout le reste de ton post a beau être exact, ce mot-là est faux."},
+    {t:"🥔 LA TERRE N’EST PAS RONDE, la Nasa l’admet enfin :", emo:40, prec:0},
+    {t:"Ce que la Nasa vient de révéler sur notre planète va vous surprendre :", emo:35, prec:0},
+    {t:"🌍 La Nasa a mis en ligne une visualisation du géoïde terrestre :", emo:0, prec:30},
+   ]},
+   {name:"Ce que montre l’image", opts:[
+    {t:"notre planète ressemble en réalité à une pomme de terre", emo:25, prec:0, trap:"Relis les sources : ce que tu vois n’est pas la planète, c’est son champ de gravité, avec les hauteurs multipliées par 10 000. À l’échelle réelle, la même donnée donne une sphère. Décrire l’image comme si c’était la Terre, c’est répéter l’erreur, pas l’information."},
+    {t:"une planète DÉFORMÉE que personne ne vous avait jamais montrée", emo:40, prec:0},
+    {t:"un modèle mathématique construit à partir d’un milliard d’observations, acquises en 15 ans par 19 satellites", emo:0, prec:25},
+    {t:"une carte des variations de la gravité, dont les creux et les bosses sont exagérés 10 000 fois pour être visibles", emo:0, prec:40},
+   ]},
+   {name:"La chute", opts:[
+    {t:"— du jamais vu ! 😱", emo:35, prec:0},
+    {t:".", emo:0, prec:10},
+    {t:"— et personne n’en parle.", emo:40, prec:0},
+    {t:". À l’échelle réelle, les écarts du géoïde (191 m au maximum, pour un rayon de 6 371 km) sont invisibles : la Terre reste une sphère très légèrement aplatie aux pôles.", emo:0, prec:35},
+   ]},
+  ],
+  lesson:"Ce post est réel : publié le 31 août 2026 par le compte X de <b>franceinfo</b>, vu 161 000 fois. Et il est presque entièrement exact : le géoïde existe, le milliard d’observations, les 15 ans, les 19 satellites, tout est bien sur la page de la Nasa. <b>Un seul mot est faux</b> — « réelle » — et il suffit à retourner l’information. Le post se contredit d’ailleurs tout seul en deux phrases : « forme réelle », puis « modèle mathématique ». Or un modèle n’est pas une photo : ici les hauteurs sont exagérées <b>10 000 fois</b>, et à l’échelle vraie, la même donnée donne… une sphère. Le plus troublant : l’échelle était <b>écrite dans la vidéo</b> — « Geoid Height (10,000x exaggeration) », en toutes lettres sous le globe, affichée sans interruption pendant les 43 secondes du post. Méfie-toi enfin de l’effet <b>caution</b> des chiffres : « 1 milliard d’observations, 15 ans, 19 satellites » sont exacts, et c’est précisément leur précision qui rend crédible la seule phrase fausse. Réflexe à garder : devant une image ou une vidéo scientifique, cherche l’<b>échelle</b> avant de partager — elle est souvent écrite dessus, et toujours sur la page d’origine. Ici, ce ne sont pas les journalistes qui ont corrigé, mais des lecteurs : une note de contexte a été ajoutée sous la publication."
+ },
 ];
 
 const EMO_MAX=30, PREC_MIN=70;
@@ -220,6 +285,17 @@ function renderLevel(){
   attempts=0; solved=false;
   $("qnum").textContent=lvl+1;
   $("orig-txt").textContent=L.orig;
+  // Photo d'illustration : seuls certains niveaux en ont une.
+  // Illustration du niveau : une vidéo (avec image d'attente) ou une simple photo.
+  const fig=$("orig-fig"), im=$("orig-img"), vid=$("orig-vid");
+  vid.pause();
+  if(L.video){ vid.src=L.video; if(L.img) vid.poster=L.img; vid.setAttribute("aria-label",L.imgAlt||"");
+               vid.hidden=false; im.hidden=true; im.alt=""; im.removeAttribute("src");
+               $("orig-cap").textContent=L.imgCap||""; fig.style.display="block"; }
+  else if(L.img){ im.src=L.img; im.alt=L.imgAlt||""; im.hidden=false;
+                  vid.hidden=true; vid.removeAttribute("src");
+                  $("orig-cap").textContent=L.imgCap||""; fig.style.display="block"; }
+  else { fig.style.display="none"; im.hidden=false; im.alt=""; im.removeAttribute("src"); vid.hidden=true; vid.removeAttribute("src"); }
   $("feedback").style.display="none";
   $("gauges").style.display="none"; // jauges cachées tant qu'on n'a pas publié
   $("nextbtn").style.display="none";

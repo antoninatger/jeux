@@ -25,6 +25,10 @@ desktop.ini
 *.pst
 *.zip
 
+# Exception ciblée : la vidéo du géoïde de la Nasa est une pièce du jeu
+# « Répare la Une ! » (2,3 Mo, domaine public). Sans elle, la une 9 n'a rien à montrer.
+!/repare-la-une/geoide-nasa.mp4
+
 # === Copie de travail (ne pas versionner) ===
 /fakemetre-refonte/
 

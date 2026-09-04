@@ -198,6 +198,71 @@ const LEVELS = [
   ],
   lesson:"The original headline <b>never says where</b> this happened — many readers assumed it was France and got angry at « their » civil servants. It actually all took place in Wesel, <b>Germany</b>, under a different civil-service status and pension rules than at home. Habit worth keeping: when a headline stays vague about the place, look it up before getting outraged — or sharing."
  },
+ {
+  orig:"After twenty drownings this summer, the Chalvres swimming pool is CLOSING: 2,000 schoolchildren directly affected",
+  img:"depositphotos_12716878-stock-photo-swimming-pool.jpg",
+  imgAlt:"Underwater view of an empty swimming pool: lane ropes, blue tiles, the surface seen from below.",
+  imgCap:"The Chalvres swimming pool. Stock photo.",
+  sources:[
+   {icon:"📰", name:"The article in Le Courrier de la Brie", body:"The regional daily runs the headline « After twenty drownings this summer, the Chalvres swimming pool is closing: 2,000 schoolchildren directly affected ». The body of the article, however, states that the closure was voted on 6 February — before the summer — because the pool, built in 1974, leaks 40 m³ of water a day and bringing it up to standard is costed at €4.8 million. The 2,000 pupils of fourteen schools will lose their « learn to swim » slot."},
+   {icon:"📋", name:"The prefecture's summer report", body:"Twenty drownings were recorded across the département between 1 June and 31 August: sixteen in rivers, canals or lakes, three in private pools, one in a garden paddling pool. None in a municipal swimming pool."},
+   {icon:"🏊", name:"An official of the swimming federation", body:"« One child in two starts secondary school unable to swim properly. Removing a school learn-to-swim slot mechanically means children who will swim less well in ten years. There is a link between this pool and drownings — but it runs the other way, and it lies ahead of us, not behind. »"},
+  ],
+  slots:[
+   {name:"The lead (the implied link)", opts:[
+    {t:"After twenty drownings this summer,", emo:30, prec:0, trap:"This is the whole trap of the headline. The prefecture's report is unambiguous: none of the twenty drownings happened in a municipal pool, and the closure was voted on 6 February, before the summer. The single word « after » is enough to suggest cause and effect between two facts that have none."},
+    {t:"CARNAGE across the département:", emo:40, prec:0},
+    {t:"Twenty drownings, and now this:", emo:35, prec:0},
+    {t:"For want of repair funding,", emo:0, prec:30},
+   ]},
+   {name:"The fact", opts:[
+    {t:"the Chalvres swimming pool is closing its doors", emo:20, prec:5},
+    {t:"twenty children drowned and they are closing the pool anyway", emo:40, prec:10, trap:"Two inventions in a single sentence: the prefecture's report never says the twenty people who drowned were children, and « anyway » assumes a link between the drownings and the closure. Adding a word that appears in no source means manufacturing information."},
+    {t:"the Chalvres swimming pool will close on 31 December, a 1974 pool whose renovation is costed at €4.8 million", emo:0, prec:40},
+    {t:"our children's safety is being SACRIFICED", emo:40, prec:0},
+   ]},
+   {name:"The ending", opts:[
+    {t:": 2,000 schoolchildren directly affected", emo:25, prec:5},
+    {t:": when is the next tragedy?!", emo:40, prec:0},
+    {t:": 2,000 pupils from fourteen schools will lose their learn-to-swim slot, with no replacement announced.", emo:0, prec:35},
+    {t:".", emo:0, prec:10},
+   ]},
+  ],
+  lesson:"Two true facts — twenty drownings across the département, a swimming pool closing — have <b>nothing to do with each other</b> here: the drownings happened in rivers and lakes, and the closure was voted in February, before the summer. It is the little word « <b>after</b> » that manufactures the link: reality did not put it there, the sentence did. Worse still: the only real link runs the <b>other way</b> — it is the closure that, by removing swimming lessons, could produce drownings ten years from now. And look at the photo: an empty pool, shot from underwater. It shows <b>nothing</b> of the information — it is not even the Chalvres pool, it is a stock image. It does not supply a fact, it supplies a <b>mood</b>: the water becomes the threat. Habit worth keeping: when a headline puts two facts side by side, ask yourself <b>who linked them: the facts, or the sentence?</b>"
+ },
+ {
+  orig:"🌍 Nasa has unveiled the latest real shape of the Earth. This mathematical model, called the geoid, is based on more than a billion observations collected over 15 years by 19 satellites.",
+  video:"geoide-nasa.mp4",
+  img:"geoide-nasa.jpg",
+  imgAlt:"Silent video: the Earth, rendered in 3D from the geoid model, slowly rotates on itself. It is a lumpy sphere, hollowed out in blue south of India, bulging orange towards Indonesia, with country borders drawn over it. Under the globe, a colour scale graduated from −80 to +80 metres and labelled « Geoid Height (10,000x exaggeration) » stays on screen from beginning to end.",
+  imgCap:"The video released by Nasa, shared as it is by franceinfo on 31 August 2026. The caption never leaves the screen: « Geoid Height (10,000x exaggeration) ».",
+  sources:[
+   {icon:"🛰️", name:"Nasa’s own page", body:"The visualisation is titled « The Geoid ». The geoid is not the Earth’s relief: it is the shape the surface of the oceans would take under the effect of gravity alone. The page states that in the animation, the height of the geoid is greatly exaggerated, by a factor of 10,000. An earlier version shows the same geoid at true scale: what you see is a sphere. Published on 15 July 2026, from the GOCO06s model — GRACE (Nasa) and GOCE (European Space Agency) satellites: more than a billion observations, 15 years, 19 satellites."},
+   {icon:"📏", name:"Orders of magnitude", body:"From the lowest point of the geoid (about −106 m, south of India) to the highest (about +85 m, near Iceland), the total spread is 191 m — on an Earth radius of 6,371 km, that is 0.003%. The flattening of the Earth at the poles, by comparison, reaches 21 km: a hundred times more. Multiplied by 10,000, those 100 m become 1,000 km on screen. Hence the potato."},
+   {icon:"🧭", name:"A geodesist", body:"« The geoid is the zero of altitudes: the reference surface from which we measure the height of a mountain or the level of the sea. It shows no relief at all — neither Everest nor the Mariana Trench appears on it. And there is nothing new about it: GRACE dates from 2002, GOCE from 2009, the GOCO06s model from 2019. Nasa published a picture, not a discovery. »"},
+  ],
+  slots:[
+   {name:"The announcement", opts:[
+    {t:"🌍 Nasa has unveiled the latest real shape of the Earth:", emo:20, prec:5, trap:"It is the word « real » that tips everything over. Nasa’s page is explicit: the geoid is not the shape of the Earth, it is a reference surface tied to gravity, and its heights are exaggerated 10,000 times. Everything else in your post may be accurate — that one word is false."},
+    {t:"🥔 THE EARTH IS NOT ROUND, and Nasa finally admits it:", emo:40, prec:0},
+    {t:"What Nasa has just revealed about our planet will surprise you:", emo:35, prec:0},
+    {t:"🌍 Nasa has published a visualisation of the Earth’s geoid:", emo:0, prec:30},
+   ]},
+   {name:"What the picture shows", opts:[
+    {t:"our planet actually looks like a potato", emo:25, prec:0, trap:"Read the sources again: what you are looking at is not the planet, it is its gravity field, with the heights multiplied by 10,000. At true scale, the very same data gives a sphere. Describing the picture as if it were the Earth repeats the mistake instead of reporting the information."},
+    {t:"a DEFORMED planet nobody had ever shown you", emo:40, prec:0},
+    {t:"a mathematical model built from a billion observations, collected over 15 years by 19 satellites", emo:0, prec:25},
+    {t:"a map of the variations in gravity, whose dips and bumps are exaggerated 10,000 times to be visible at all", emo:0, prec:40},
+   ]},
+   {name:"The sign-off", opts:[
+    {t:"— never seen before! 😱", emo:35, prec:0},
+    {t:".", emo:0, prec:10},
+    {t:"— and nobody is talking about it.", emo:40, prec:0},
+    {t:". At true scale, the geoid’s ups and downs (191 m at most, on a radius of 6,371 km) are invisible: the Earth remains a sphere, very slightly flattened at the poles.", emo:0, prec:35},
+   ]},
+  ],
+  lesson:"This post is real: published on 31 August 2026 by the X account of <b>franceinfo</b>, and seen 161,000 times. And it is almost entirely accurate: the geoid exists, the billion observations, the 15 years, the 19 satellites — all of it is on Nasa’s page. <b>One single word is false</b> — « real » — and it is enough to turn the information upside down. The post even contradicts itself in two sentences: « real shape », then « mathematical model ». A model is not a photograph: here the heights are exaggerated <b>10,000 times</b>, and at true scale the same data gives… a sphere. Most striking of all: the scale was <b>written in the video</b> — « Geoid Height (10,000x exaggeration) », spelled out under the globe, on screen without a break for the whole 43 seconds of the post. Beware too of the <b>credibility effect</b> of numbers: « 1 billion observations, 15 years, 19 satellites » are exact, and it is precisely their precision that makes the one false sentence believable. Reflex to keep: faced with a scientific image or video, look for the <b>scale</b> before sharing — it is often written on it, and always on the original page. Here it was not the journalists who corrected it, but readers: a context note was added under the post."
+ },
 ];
 
 const EMO_MAX=30, PREC_MIN=70;
@@ -220,6 +285,17 @@ function renderLevel(){
   attempts=0; solved=false;
   $("qnum").textContent=lvl+1;
   $("orig-txt").textContent=L.orig;
+  // Illustration photo: only some levels have one.
+  // Illustration du niveau : une vidéo (avec image d'attente) ou une simple photo.
+  const fig=$("orig-fig"), im=$("orig-img"), vid=$("orig-vid");
+  vid.pause();
+  if(L.video){ vid.src=L.video; if(L.img) vid.poster=L.img; vid.setAttribute("aria-label",L.imgAlt||"");
+               vid.hidden=false; im.hidden=true; im.alt=""; im.removeAttribute("src");
+               $("orig-cap").textContent=L.imgCap||""; fig.style.display="block"; }
+  else if(L.img){ im.src=L.img; im.alt=L.imgAlt||""; im.hidden=false;
+                  vid.hidden=true; vid.removeAttribute("src");
+                  $("orig-cap").textContent=L.imgCap||""; fig.style.display="block"; }
+  else { fig.style.display="none"; im.hidden=false; im.alt=""; im.removeAttribute("src"); vid.hidden=true; vid.removeAttribute("src"); }
   $("feedback").style.display="none";
   $("gauges").style.display="none"; // gauges hidden until publication
   $("nextbtn").style.display="none";

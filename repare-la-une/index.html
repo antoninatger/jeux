@@ -45,6 +45,11 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .tabloid .ttag{background:rgba(179,38,30,.08);color:#b3261e;border:1px solid rgba(179,38,30,.4);}
 #draft .ttag{background:rgba(30,142,90,.08);color:#17744a;border:1px solid rgba(30,142,90,.4);}
 .ttxt,#draft-txt{font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;line-height:1.35;color:#181308;}
+/* Photo d'illustration : seuls certains niveaux en ont une. */
+.paper-fig{display:none;margin-top:12px;}
+.paper-fig img,.paper-fig video{display:block;width:100%;max-width:600px;height:auto;border-radius:3px;border:1px solid var(--bord);}
+.paper-fig [hidden]{display:none;} /* sinon le display:block ci-dessus l'emporte sur l'attribut hidden */
+.paper-fig figcaption{font-size:.72rem;font-weight:700;color:var(--mu);margin-top:5px;line-height:1.4;max-width:600px;}
 #draft{margin-bottom:10px;}
 
 /* Sources : chemises d'archives */
@@ -138,7 +143,7 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 </div>
 
 <div id="hud">
-  <span><span data-i18n="une">Une</span> <span class="num" id="qnum">1</span>/<span id="qtot">6</span></span>
+  <span><span data-i18n="une">Une</span> <span class="num" id="qnum">1</span>/<span id="qtot">9</span></span>
   <span id="hud-stars">⭐ 0</span>
 </div>
 
@@ -148,6 +153,11 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
     <div class="paper-bd">
       <span class="ttag" data-i18n="tabloidTag">😱 La une du stagiaire</span>
       <p class="ttxt" id="orig-txt"></p>
+      <figure class="paper-fig" id="orig-fig">
+        <img id="orig-img" alt="">
+        <video id="orig-vid" controls muted loop playsinline preload="none" hidden></video>
+        <figcaption id="orig-cap"></figcaption>
+      </figure>
     </div>
   </div>
 
