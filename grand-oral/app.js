@@ -196,9 +196,13 @@ function renderMission(){
       const b=document.createElement("button");
       b.className="opt";
       b.textContent=o.t;
+      b.setAttribute("aria-pressed","false");
       b.onclick=()=>{
         sel[reg]=oi;
-        wrap.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",x===b));
+        wrap.querySelectorAll(".opt").forEach(x=>{
+          x.classList.toggle("sel",x===b);
+          x.setAttribute("aria-pressed",x===b?"true":"false");
+        });
         checkReady();
       };
       wrap.appendChild(b);
@@ -302,6 +306,7 @@ function verdict(total){
   $("nextbtn").textContent = mi===DECK.length-1 ? "Voir mon bilan ➜" : "Mission suivante ➜";
   $("nextbtn").style.display="block";
   $("verdict").scrollIntoView({behavior:"smooth",block:"center"});
+  $("nextbtn").focus();
 }
 
 function nextMission(){

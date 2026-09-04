@@ -142,7 +142,7 @@ header{text-align:center;}
   </div>
   <p class="dq" data-i18n="dq">Quel est ton verdict de fact-checker ?</p>
   <div id="cats"></div>
-  <div id="feedback">
+  <div id="feedback" role="status" aria-live="polite">
     <div id="fb-title"></div>
     <p id="fb-expl"></p>
   </div>
@@ -150,7 +150,7 @@ header{text-align:center;}
 <button id="nextbtn" onclick="nextQ()" data-i18n="next">Dépêche suivante ➜</button>
 <button id="trainbtn" onclick="continueTraining()" data-i18n="train">📚 Continuer sans score, pour voir la suite</button>
 
-<div id="end">
+<div id="end" role="status" aria-live="assertive">
   <h2 id="end-title"></h2>
   <div class="score-big" id="end-score"></div>
   <p id="end-msg"></p>

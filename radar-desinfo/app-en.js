@@ -157,6 +157,7 @@ function answer(id,btn){
   }
   $("nextbtn").style.display="block";
   $("nextbtn").scrollIntoView({behavior:"smooth",block:"end"});
+  $("nextbtn").focus();
 }
 
 function gameOver(){ return lives<=0 && !training; }

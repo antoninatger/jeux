@@ -178,6 +178,7 @@ function answer(choice){
   $("why").innerHTML = s.why;
   $("feedback").classList.add("show");
   $("nextBtn").classList.add("show");
+  $("nextBtn").focus();
 }
 
 function nextQuestion(){
@@ -224,6 +225,9 @@ document.addEventListener("keydown", e => {
     if(e.key === "2") answer("des");
     if(e.key === "3") answer("mal");
   } else if(e.key === "Enter") {
+    // Si le focus est déjà sur un bouton (ex. « Suivant → »), le clic natif
+    // déclenché par Entrée appelle déjà son onclick : ne pas avancer deux fois.
+    if(e.target && e.target.tagName === "BUTTON") return;
     nextQuestion();
   }
 });

@@ -156,14 +156,14 @@ header{text-align:center;}
     <div id="timer-lab" data-i18n-html="timer">⏱ Réponds vite… mais <b>JUSTE</b> !</div>
   </div>
   <div id="answers"></div>
-  <div id="feedback">
+  <div id="feedback" role="status" aria-live="polite">
     <div id="fb-title"></div>
     <p id="fb-expl"></p>
   </div>
 </div>
 <button id="nextbtn" onclick="nextQ()" data-i18n="next">Question suivante ➜</button>
 
-<div id="end">
+<div id="end" role="status" aria-live="assertive">
   <h2 id="end-title"></h2>
   <div class="score-big" id="end-score"></div>
   <p id="end-msg"></p>

@@ -174,7 +174,7 @@ header{text-align:center;}
     <div class="dstep pathos" id="step1"><div class="dreg" data-i18n="yourPathos">💔 Ton pathos</div><div class="dsaid"></div><div class="dreact"></div></div>
     <div class="dstep logos" id="step2"><div class="dreg" data-i18n="yourLogos">🧮 Ton logos</div><div class="dsaid"></div><div class="dreact"></div></div>
     <button id="skipbtn" onclick="skipDelivery()" data-i18n="skip">⏭️ Passer à la réaction de l'auditoire</button>
-    <div id="verdict">
+    <div id="verdict" role="status" aria-live="polite">
       <h3 id="v-title"></h3>
       <div class="vstars" id="v-stars"></div>
       <p class="vscale" id="v-scale"></p>
@@ -184,7 +184,7 @@ header{text-align:center;}
   </div>
 </div>
 
-<div id="end">
+<div id="end" role="status" aria-live="assertive">
   <h2 id="end-title"></h2>
   <div class="score-big" id="end-score"></div>
   <p id="end-msg"></p>

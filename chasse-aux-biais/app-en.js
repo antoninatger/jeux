@@ -248,6 +248,7 @@ function timeUp(it){
   $("nextbtn").textContent=idx===deck.length-1?"See my final result ➜":"Next question ➜";
   $("nextbtn").style.display="block";
   $("nextbtn").scrollIntoView({behavior:"smooth",block:"end"});
+  $("nextbtn").focus();
 }
 
 function answer(it,btn){
@@ -282,6 +283,7 @@ function answer(it,btn){
   $("nextbtn").textContent=idx===deck.length-1?"See my final result ➜":"Next question ➜";
   $("nextbtn").style.display="block";
   $("nextbtn").scrollIntoView({behavior:"smooth",block:"end"});
+  $("nextbtn").focus();
 }
 
 function nextQ(){

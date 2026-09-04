@@ -353,7 +353,7 @@
         </button>
       </div>
 
-      <div class="feedback" id="feedback">
+      <div class="feedback" id="feedback" role="status" aria-live="polite">
         <div class="verdict" id="verdict"></div>
         <div class="why" id="why"></div>
       </div>
@@ -363,7 +363,7 @@
   </section>
 
   <!-- ÉCRAN FIN -->
-  <section id="end" class="panel hidden">
+  <section id="end" class="panel hidden" role="status" aria-live="assertive">
     <h2 data-i18n="endTitle">🏁 Terminé !</h2>
     <div class="final-score"><span id="finalScore">0</span><small> / <span id="maxScore">0</span></small></div>
     <div class="grade" id="grade"></div>
