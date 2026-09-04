@@ -23,12 +23,12 @@
 
   // ── Registre des sets prédéfinis ──────────────────────────
   const KNOWN_SETS = [
-    { id: 'default',  label: 'Par défaut',                    variable: 'DEFAULT_QCM'         },
-    { id: '6e5e',     label: '6e–5e · Fake News',             variable: 'QUESTIONS_6E5E'      },
+    { id: 'default',  label: 'Default',                       variable: 'DEFAULT_QCM'         },
+    { id: '6e5e',     label: 'Grades 6-7 · Fake News',        variable: 'QUESTIONS_6E5E'      },
     { id: 'niveau1',  label: 'N1 · Fake News (high school)',        variable: 'QUESTIONS_NIVEAU1'   },
-    { id: 'niveau2',  label: 'N2 · Désinformation',           variable: 'QUESTIONS_NIVEAU2'   },
+    { id: 'niveau2',  label: 'N2 · Disinformation',           variable: 'QUESTIONS_NIVEAU2'   },
     { id: 'influenceurs', label: 'Influencers',                variable: 'QUESTIONS_INFLUENCEURS' },
-    { id: 'niveau3',  label: 'N3 · Rhétorique',               variable: 'QUESTIONS_NIVEAU3'   }
+    { id: 'niveau3',  label: 'N3 · Rhetoric',                 variable: 'QUESTIONS_NIVEAU3'   }
   ];
 
   /**
@@ -75,13 +75,25 @@
   function saveActiveSet(setId) {
     var sets = getAvailableSets();
     var found = sets.find(function (s) { return s.id === setId; });
-    if (found) saveActiveQuestions(found.questions, setId);
+    if (!found) return;
+    // Pas d'instantané des questions : un set predefini se resout a la
+    // lecture depuis getAvailableSets(), dans la langue en cours. Sinon
+    // basculer de langue rejoue l'instantane fige dans l'autre langue.
+    try {
+      localStorage.setItem(ID_KEY, setId);
+      localStorage.removeItem(Q_KEY);
+    } catch (e) {}
   }
 
   // ── Lecture ───────────────────────────────────────────────
 
   function loadActiveQuestions() {
     try {
+      var id = loadActiveSetId();
+      if (id) {
+        var set = getAvailableSets().find(function (s) { return s.id === id; });
+        if (set) return set.questions;
+      }
       var raw = localStorage.getItem(Q_KEY);
       if (!raw) return null;
       var parsed = JSON.parse(raw);

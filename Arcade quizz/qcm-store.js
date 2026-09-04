@@ -75,13 +75,25 @@
   function saveActiveSet(setId) {
     var sets = getAvailableSets();
     var found = sets.find(function (s) { return s.id === setId; });
-    if (found) saveActiveQuestions(found.questions, setId);
+    if (!found) return;
+    // Pas d'instantané des questions : un set predefini se resout a la
+    // lecture depuis getAvailableSets(), dans la langue en cours. Sinon
+    // basculer de langue rejoue l'instantane fige dans l'autre langue.
+    try {
+      localStorage.setItem(ID_KEY, setId);
+      localStorage.removeItem(Q_KEY);
+    } catch (e) {}
   }
 
   // ── Lecture ───────────────────────────────────────────────
 
   function loadActiveQuestions() {
     try {
+      var id = loadActiveSetId();
+      if (id) {
+        var set = getAvailableSets().find(function (s) { return s.id === id; });
+        if (set) return set.questions;
+      }
       var raw = localStorage.getItem(Q_KEY);
       if (!raw) return null;
       var parsed = JSON.parse(raw);
