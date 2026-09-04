@@ -474,6 +474,30 @@ const SCENARIOS = [
 
   /* ================== MESSAGES LÉGITIMES (à ne pas confondre) ========= */
 
+  /* ---------- 47. E-mail faux remboursement ameli — ARNAQUE */
+  {
+    id: 'email-ameli-regularisation',
+    canal: 'email',
+    entete: 'E-mail aux couleurs de l’Assurance Maladie',
+    de: 'InfoSante',
+    deAdresse: 'theintersection@foundryco.com',
+    objet: 'Régularisation de vos frais de santé',
+    date: 'Jeu. 03/09, 16:52',
+    corps: '<div style="background:#0053b3;color:#fff;text-align:center;padding:16px 10px;border-radius:4px"><span style="font-size:1.6em;font-weight:bold;letter-spacing:.2em">ameli</span><br><span style="font-size:.85em">L’Assurance Maladie</span></div><br><div style="text-align:right;color:#777">Le 2 septembre 2026</div><b>Objet : régularisation de vos frais de santé</b><br><br>Madame, Monsieur,<br><br>Votre Assurance Maladie a procédé à la régularisation de vos dépenses de santé. Le montant de <b>18,90 €</b> a été versé par virement sur votre compte.<br><br><div style="background:#eef3fb;padding:12px;border-radius:4px"><b>Montant régularisé :</b> 18,90 €<br><b>Mode de paiement :</b> virement bancaire<br><b>Délai de réception :</b> 2 à 3 jours ouvrés</div>',
+    bouton: 'Accéder à mon espace',
+    verdict: 'arnaque',
+    categorie: 'Usurpation d’organisme public (Assurance Maladie) — faux remboursement',
+    indices: [
+      'Le nom affiché dit « InfoSante », mais l’adresse réelle est theintersection@foundryco.com : aucun rapport avec ameli.fr. Nom ≠ adresse.',
+      '« Madame, Monsieur » : l’Assurance Maladie vous connaît et vous appelle par votre nom.',
+      'Le bandeau bleu « ameli » se copie en quelques secondes : une belle mise en page ne prouve rien.',
+      'Un petit montant très crédible (18,90 €) : il n’éveille aucun soupçon et donne juste envie d’aller « vérifier ».',
+      { risque: 'Le bouton mène à une fausse page ameli qui réclame votre numéro de sécurité sociale, votre mot de passe, puis votre RIB.' }
+    ],
+    reflexe: 'Un remboursement annoncé ne se vérifie jamais depuis le bouton du mail : ouvrez vous-même ameli.fr ou l’application ameli.',
+    explication: 'D’habitude les faux mails font peur ; celui-ci fait plaisir — c’est la même arnaque à l’envers. En annonçant de l’argent déjà versé, il baisse votre garde : vous cliquez pour « voir le détail » et vous arrivez sur une copie du site ameli. Rappelez-vous qu’un vrai remboursement est automatique, versé sur le compte que l’Assurance Maladie connaît déjà, et consultable dans « Mes paiements » sans qu’on ait besoin de vous écrire.'
+  },
+
   /* ---------- 12. SMS banque légitime — FIABLE ----------------------- */
   {
     id: 'sms-banque-ok',
@@ -1305,6 +1329,12 @@ const REPERES = {
     { texte:'03:40', bon:true, aide:'Regardez l’heure d’envoi : est-ce une heure normale pour un vrai message professionnel ?', note:'Envoyé à 3h40 du matin : aucune entreprise sérieuse n’écrit à cette heure — signe d’un envoi automatisé de masse.' },
     { texte:'jusqu’à 10 800 €', bon:true, aide:'Ce montant est-il cohérent avec les « 900 € » annoncés juste au-dessus ?', note:'Les chiffres s’empilent sans logique : « 900 € » en gros titre, puis « jusqu’à 10 800 € » plus bas — des maximums théoriques additionnés pour impressionner.' },
     { texte:'sous conditions', bon:false, note:'Formule vague et rassurante… mais qu’on retrouve aussi dans de vraies publicités : elle ne prouve rien à elle seule.' }
+  ],
+  'email-ameli-regularisation': [
+    { texte:'theintersection@foundryco.com', bon:true, aide:'Le message a les couleurs de l’Assurance Maladie… mais regardez l’adresse complète de l’expéditeur : a-t-elle un rapport avec ameli.fr ?', note:'Adresse d’une société sans aucun lien avec l’Assurance Maladie : le bandeau est copié, l’adresse trahit l’escroc.' },
+    { texte:'Madame, Monsieur', bon:true, aide:'Comment vous appelle-t-on ? L’Assurance Maladie sait-elle qui vous êtes ?', note:'L’Assurance Maladie vous appelle par votre nom : cette formule passe-partout sert un envoi de masse.' },
+    { texte:'Accéder à mon espace', bon:true, aide:'Que vous propose-t-on de faire, alors que l’argent serait déjà versé ? Où mène ce bouton ?', note:'Le bouton mène à une fausse page ameli qui vole vos identifiants, puis votre RIB.' },
+    { texte:'virement bancaire', bon:false, note:'C’est bien ainsi que l’Assurance Maladie rembourse : cette ligne-là est vraie, elle ne trahit rien. Le piège est ailleurs.' }
   ]
 };
 

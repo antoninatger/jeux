@@ -468,6 +468,28 @@ const SCENARIOS = [
     "explication": "Same recipe as the fake solar-panel aid, just a summer edition: whenever a heatwave or cold snap makes the news, these lead-generation sites flood inboxes with promises of exceptional aid. The form unlocks no aid at all: it exists to resell your details to renovation companies who will call you back to sell an overpriced installation. Real government aid is never requested by clicking an unsolicited e-mail."
   },
   {
+    "id": "email-ameli-regularisation",
+    "canal": "email",
+    "entete": "E-mail in the colours of the French national health insurance",
+    "de": "InfoSante",
+    "deAdresse": "theintersection@foundryco.com",
+    "objet": "Adjustment of your healthcare costs",
+    "date": "Thu, 03/09, 16:52",
+    "corps": "<div style=\"background:#0053b3;color:#fff;text-align:center;padding:16px 10px;border-radius:4px\"><span style=\"font-size:1.6em;font-weight:bold;letter-spacing:.2em\">ameli</span><br><span style=\"font-size:.85em\">National Health Insurance</span></div><br><div style=\"text-align:right;color:#777\">2 September 2026</div><b>Subject: adjustment of your healthcare costs</b><br><br>Dear Sir or Madam,<br><br>Your health insurance fund has adjusted your healthcare expenses. The amount of <b>€18.90</b> has been paid into your account by bank transfer.<br><br><div style=\"background:#eef3fb;padding:12px;border-radius:4px\"><b>Amount adjusted:</b> €18.90<br><b>Payment method:</b> bank transfer<br><b>Expected within:</b> 2 to 3 working days</div>",
+    "bouton": "Go to my account",
+    "verdict": "arnaque",
+    "categorie": "Impersonation of a public body (health insurance) — fake refund",
+    "indices": [
+      "The display name says “InfoSante”, but the real address is theintersection@foundryco.com: nothing to do with the official health insurance site. Name ≠ address.",
+      "“Dear Sir or Madam”: your health insurance fund knows exactly who you are and uses your name.",
+      "The blue “ameli” banner can be copied in seconds: a neat layout proves nothing.",
+      "A small, very believable amount (€18.90): it raises no suspicion and simply makes you want to “check”.",
+      { "risque": "The button leads to a fake health insurance page asking for your social security number, your password and then your bank details." }
+    ],
+    "reflexe": "A refund announced by e-mail is never checked from the e-mail's button: open the official site or app yourself.",
+    "explication": "Fake e-mails usually scare you; this one pleases you — the same scam in reverse. By announcing money already paid, it lowers your guard: you click to “see the details” and land on a copy of the official site. Remember that a real refund is automatic, paid to the account the health insurance fund already has on file, and visible in your online account without anyone needing to e-mail you."
+  },
+  {
     "id": "sms-banque-ok",
     "canal": "sms",
     "entete": "SMS from your bank",
@@ -1878,6 +1900,31 @@ const REPERES = {
       "texte": "still available",
       "bon": false,
       "note": "A generic seller reply: pleasant, but not a clue on its own."
+    }
+  ],
+  "email-ameli-regularisation": [
+    {
+      "texte": "theintersection@foundryco.com",
+      "bon": true,
+      "aide": "The message has the colours of the health insurance fund… but look at the sender's full address: does it have anything to do with the official site?",
+      "note": "A company address with no link whatsoever to the health insurance fund: the banner is copied, the address gives the scammer away."
+    },
+    {
+      "texte": "Dear Sir or Madam",
+      "bon": true,
+      "aide": "How are you addressed? Does your health insurance fund know who you are?",
+      "note": "Your health insurance fund uses your name: this catch-all greeting means a mass mailing."
+    },
+    {
+      "texte": "Go to my account",
+      "bon": true,
+      "aide": "What are you invited to do, when the money has supposedly already been paid? Where does this button lead?",
+      "note": "The button leads to a fake health insurance page that steals your login details, then your bank details."
+    },
+    {
+      "texte": "bank transfer",
+      "bon": false,
+      "note": "That really is how the health insurance fund pays refunds: this line is true and gives nothing away. The trap is elsewhere."
     }
   ]
 };
