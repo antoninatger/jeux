@@ -309,7 +309,7 @@
     <!-- Left: place + map + photos -->
     <aside class="place">
       <div class="hero">
-        <div class="badge">Démo fictive • “look & feel” inspiré, pas une copie</div>
+        <div class="badge">Démo fictive • “look & feel” inspiré, pas une copie • <span data-i18n="dateBanner">aujourd'hui : mars 2026</span></div>
       </div>
 
       <div class="placeContent">
@@ -435,7 +435,8 @@
       fakeTag: "Maquette UI — avis inventés pour démo (ne pas publier comme vrais avis).",
       reviewsH2: "Avis", reviewsWord: "avis", searchPh: "Rechercher dans les avis",
       sortRelevant: "Tri : Pertinence", sortNewest: "Tri : Plus récents", sortOldest: "Tri : Plus anciens",
-      sortHighest: "Tri : Notes les plus hautes", sortLowest: "Tri : Notes les plus basses", last2y: "2 dernières années"
+      sortHighest: "Tri : Notes les plus hautes", sortLowest: "Tri : Notes les plus basses", last2y: "2 dernières années",
+      dateBanner: "aujourd'hui : mars 2026"
     },
     en: {
       pageTitle: 'Mock “Maps-style” – Reviews (fictional demo)',
@@ -447,7 +448,8 @@
       fakeTag: "UI mock-up — reviews invented for demo (do not publish as real reviews).",
       reviewsH2: "Reviews", reviewsWord: "reviews", searchPh: "Search in reviews",
       sortRelevant: "Sort: Relevance", sortNewest: "Sort: Most recent", sortOldest: "Sort: Oldest first",
-      sortHighest: "Sort: Highest rated", sortLowest: "Sort: Lowest rated", last2y: "Last 2 years"
+      sortHighest: "Sort: Highest rated", sortLowest: "Sort: Lowest rated", last2y: "Last 2 years",
+      dateBanner: "today: March 2026"
     }
   });
   </script>
@@ -499,9 +501,12 @@
     const rtext = r => (window.I18N && I18N.lang === 'en' && r.text_en) ? r.text_en : r.text;
 
     // --- Helpers ---
+    // Date de référence fixe : la démo prévoit 6 avis "récents" (≥ mars 2024),
+    // une date glissante en aurait fait disparaître au fil du temps.
+    const NOW = new Date('2026-03-01T12:00:00');
     const fmtDate = (iso) => {
       const d = new Date(iso + "T12:00:00");
-      const now = new Date();
+      const now = NOW;
       const diffDays = Math.floor((now - d) / (1000*60*60*24));
       if (diffDays < 14) return "il y a " + diffDays + " jour" + (diffDays>1?"s":"");
       const diffMonths = Math.floor(diffDays / 30);
@@ -532,7 +537,7 @@
 
     function isRecent(iso){
       const d = new Date(iso + "T00:00:00");
-      const now = new Date();
+      const now = NOW;
       const twoYearsAgo = new Date(now);
       twoYearsAgo.setFullYear(now.getFullYear() - 2);
       return d >= twoYearsAgo;
