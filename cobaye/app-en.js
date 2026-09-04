@@ -136,7 +136,7 @@ function renderHome(){
     <div class="hero">
       <div>
         <p class="eyebrow">Cobaye — inside the subjects' shoes</p>
-        <h1>Ten experiments.<br>One brain that hasn't changed.</h1>
+        <h1>${EXPERIENCES.length} experiments.<br>One brain that hasn't changed.</h1>
         <p class="lead">${EXPERIENCES.length} of the most famous psychology experiments — their history, what they actually showed, and what we know about them today.</p>
       </div>
       <div class="asch-demo" id="selfdemo">
@@ -190,10 +190,13 @@ function initHome(){
       btn.classList.add('picked');
       const v = btn.dataset.v;
       const result = document.getElementById('asch-result');
-      if (v === 'b'){
-        result.innerHTML = 'The correct answer was <b>A</b> — look closely, its bar is exactly the same length as the reference. If you picked B, you just lived a simplified version of the Asch experiment (1951): about 75% of original participants went along with an incorrect group answer at least once.';
+      const disclaimer = 'Note: the "4 previous participants" never existed — it was staged to put you in the shoes of a real experiment subject.';
+      if (v === 'a'){
+        result.innerHTML = '<b>A</b> was indeed correct, and you found it — you resisted the fake majority you were told about. In Asch\'s original experiment (1951), about 75% of participants nonetheless went along with an obviously wrong group answer at least once. ' + disclaimer;
+      } else if (v === 'b'){
+        result.innerHTML = 'The correct answer was <b>A</b> — look closely, its bar is exactly the same length as the reference. If you picked B, you just lived a simplified version of the Asch experiment (1951): about 75% of original participants went along with an incorrect group answer at least once. ' + disclaimer;
       } else {
-        result.innerHTML = '<b>A</b> was indeed correct, and you found it — you resisted the fake majority you were told about. In Asch\'s original experiment (1951), about 75% of participants nonetheless went along with an obviously wrong group answer at least once.';
+        result.innerHTML = 'The correct answer was <b>A</b>, not C — look closely, its bar is exactly the same length as the reference. No conformity at play here: C wasn\'t the answer the group announced, just a simple misreading. ' + disclaimer;
       }
     });
   });

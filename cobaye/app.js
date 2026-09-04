@@ -138,7 +138,7 @@ function renderHome(){
     <div class="hero">
       <div>
         <p class="eyebrow">Cobaye — dans la peau des sujets</p>
-        <h1>Dix expériences.<br>Un cerveau qui n'a pas changé.</h1>
+        <h1>${EXPERIENCES.length} expériences.<br>Un cerveau qui n'a pas changé.</h1>
         <p class="lead">${EXPERIENCES.length} expériences de psychologie parmi les plus célèbres — leur histoire, ce qu'elles ont vraiment montré, et ce qu'on en sait aujourd'hui.</p>
       </div>
       <div class="asch-demo" id="selfdemo">
@@ -192,10 +192,13 @@ function initHome(){
       btn.classList.add('picked');
       const v = btn.dataset.v;
       const result = document.getElementById('asch-result');
-      if (v === 'b'){
-        result.innerHTML = 'La bonne réponse était <b>A</b> — regarde bien, sa barre fait exactement la même longueur que la référence. Si tu as choisi B, tu viens de vivre une version simplifiée de l\'expérience d\'Asch (1951) : environ 75% des participants originaux se sont ralliés au moins une fois à une réponse de groupe pourtant fausse.';
+      const disclaimer = 'Précision : les « 4 participants précédents » n\'existaient pas, c\'était une mise en scène pour te mettre dans la peau d\'un vrai sujet de l\'expérience.';
+      if (v === 'a'){
+        result.innerHTML = 'C\'est <b>A</b> la bonne réponse, et tu l\'as trouvée — tu as résisté à la fausse majorité annoncée. Dans l\'expérience originale d\'Asch (1951), environ 75% des participants se sont pourtant ralliés au moins une fois à une réponse de groupe manifestement fausse. ' + disclaimer;
+      } else if (v === 'b'){
+        result.innerHTML = 'La bonne réponse était <b>A</b> — regarde bien, sa barre fait exactement la même longueur que la référence. Si tu as choisi B, tu viens de vivre une version simplifiée de l\'expérience d\'Asch (1951) : environ 75% des participants originaux se sont ralliés au moins une fois à une réponse de groupe pourtant fausse. ' + disclaimer;
       } else {
-        result.innerHTML = 'C\'est <b>A</b> la bonne réponse, et tu l\'as trouvée — tu as résisté à la fausse majorité annoncée. Dans l\'expérience originale d\'Asch (1951), environ 75% des participants se sont pourtant ralliés au moins une fois à une réponse de groupe manifestement fausse.';
+        result.innerHTML = 'La bonne réponse était <b>A</b>, pas C — regarde bien, sa barre fait exactement la même longueur que la référence. Ici, pas de conformisme en jeu : C n\'était pas la réponse annoncée par le groupe, juste une mauvaise lecture. ' + disclaimer;
       }
     });
   });
