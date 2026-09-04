@@ -86,7 +86,7 @@ I18N.register({
 
   /* ── GAME BOARD ─────────────────────────────── */
   #board-wrap {
-    position:relative; width:100%; flex:1; min-height:320px;
+    position:relative; width:100%; max-width:900px; flex:1; min-height:320px;
     border:2px solid #cc44ff;
     box-shadow:0 0 30px rgba(180,0,255,.3), inset 0 0 60px rgba(0,0,0,.8);
     background:#0a0010; overflow:hidden;
@@ -279,6 +279,10 @@ I18N.register({
   #feedback.show { opacity:1; }
   #feedback.ok  { background:#10b981; color:#fff; box-shadow:0 0 24px rgba(16,185,129,.6); }
   #feedback.ko  { background:#ef4444; color:#fff; box-shadow:0 0 24px rgba(239,68,68,.6); }
+  #feedback.clickable { pointer-events:auto; cursor:pointer; }
+
+  /* Bulle rectangulaire pour les options longues (> 60 caractères) : le rond ne suffit plus */
+  .mole-face.rect { border-radius:14px; }
 
   /* Overlay */
   #overlay {
@@ -334,8 +338,9 @@ I18N.register({
   input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border: none; }
   #mute-btn {
     background:transparent; border:1px solid #cc44ff44; color:#cc44ff99;
-    font-size:1rem; cursor:pointer; padding:2px 8px; border-radius:4px;
+    font-size:1.25rem; cursor:pointer; min-width:44px; min-height:44px; border-radius:8px;
     transition:all .2s; line-height:1;
+    display:inline-flex; align-items:center; justify-content:center;
   }
   #mute-btn:hover { border-color:#cc44ff; color:#cc44ff; }
   #menu-btn-bottom {
@@ -483,7 +488,9 @@ function buildHoles() {
 
   const boardW   = board.offsetWidth;
   const boardH   = board.offsetHeight;
-  const HOLE_R   = Math.min(Math.floor(boardW / 9), Math.floor((boardH - 90) / 4), 100);
+  // Rayon plafonné à 8 % de la largeur : garantit qu'aucun trou ne se chevauche,
+  // y compris entre 700 et 1 250 px où l'ancienne formule les faisait se toucher.
+  const HOLE_R   = Math.min(Math.floor(boardW / 9), Math.floor((boardH - 90) / 4), 100, Math.floor(boardW * 0.08));
   const MOLE_VIS = Math.round(HOLE_R * 0.85);
 
   const N = activeQCM[qIndex]?.options.length || 4;
@@ -538,7 +545,7 @@ function buildHoles() {
     hole.appendChild(mole);
     board.appendChild(hole);
 
-    return { hole, mole, face, pos, index: i, optionIndex: null, up: false, timer: null };
+    return { hole, mole, face, pos, index: i, optionIndex: null, up: false, timer: null, holeR: HOLE_R };
   });
 }
 
@@ -575,10 +582,10 @@ function startQTimer(ms, onExpire) {
 const hitOptions = new Set();
 
 // ── LEVEL ─────────────────────────────────────────────────────
-let gameLevel = 'hard'; // 'easy' | 'hard'
+let gameLevel = 'easy'; // 'easy' | 'hard' — FACILE par défaut (décision V6)
 
 // ── START / END ───────────────────────────────────────────────
-function startDefaultGame(level='hard') {
+function startDefaultGame(level='easy') {
   // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
   if (typeof QCMStore !== 'undefined') {
     var _p = QCMStore.getSessionQuestions();
@@ -628,11 +635,21 @@ function updateUI() {
   document.getElementById('lives-display').textContent = h[Math.max(0,lives)] || '💀';
 }
 
-function showFeedback(msg, type) {
+function showFeedback(msg, type, opts) {
+  opts = opts || {};
   const el = document.getElementById('feedback');
-  el.textContent = msg; el.className = 'show '+type;
+  el.textContent = msg; el.className = 'show '+type+' clickable';
   clearTimeout(feedbackTimer);
-  feedbackTimer = setTimeout(() => el.className='', 2800);
+  const duration = opts.duration || 2800;
+  let done = false;
+  const finish = () => {
+    if (done) return; done = true;
+    el.removeEventListener('click', finish);
+    el.className = '';
+    if (opts.onDismiss) opts.onDismiss();
+  };
+  el.addEventListener('click', finish);
+  feedbackTimer = setTimeout(finish, duration);
 }
 
 function playSound(freq, dur, type='sine', vol=0.15) {
@@ -682,9 +699,11 @@ function shuffle(arr) {
       lives--;
       updateUI();
       playSound(120, 0.4, 'sawtooth');
-      showFeedback(I18N.t('timeUp'), 'ko');
-      if (lives <= 0) { setTimeout(() => endGame(false), 800); return; }
-      setTimeout(() => { qIndex++; loadQuestion(); }, 1500);
+      const msg = currentQ.expl ? I18N.t('timeUp') + ' ' + currentQ.expl : I18N.t('timeUp');
+      showFeedback(msg, 'ko', { duration: 5000, onDismiss: () => {
+        if (lives <= 0) { endGame(false); return; }
+        qIndex++; loadQuestion();
+      }});
     }
 
     if (gameLevel === 'easy') {
@@ -761,7 +780,16 @@ function shuffle(arr) {
   function showMoleClean(slot, optIdx, isCorrect, duration, onRetract) {
     slot.optionIndex = optIdx;
     slot.up = true;
-    slot.face.className = 'mole-face ' + (isCorrect ? 'correct' : 'wrong');
+    const isLong = currentQ.options[optIdx].length > 60;
+    slot.face.className = 'mole-face ' + (isCorrect ? 'correct' : 'wrong') + (isLong ? ' rect' : '');
+    if (isLong) {
+      slot.face.style.width  = (slot.holeR*1.9)+'px';
+      slot.face.style.height = (slot.holeR*1.7)+'px';
+      slot.face.style.fontSize = '0.72rem';
+    } else {
+      slot.face.style.width = slot.face.style.height = (slot.holeR*1.55)+'px';
+      slot.face.style.fontSize = '';
+    }
     slot.face.textContent = currentQ.options[optIdx];
 
     slot.face.onclick = () => {
@@ -770,20 +798,21 @@ function shuffle(arr) {
       setTimeout(()=>hammerEl.classList.remove('smash'),120);
 
       if (isCorrect) {
-        slot.face.className = 'mole-face penalty';
+        slot.face.className = 'mole-face penalty' + (isLong ? ' rect' : '');
         lives--; updateUI();
         playSound(110, 0.4, 'sawtooth');
-        showFeedback(I18N.t('hitGood'), 'ko');
-        const doRetract = () => { retractMoleClean(slot, onRetract); };
-        setTimeout(doRetract, 500);
-        if (lives <= 0) { setTimeout(()=>endGame(false), 700); }
+        setTimeout(() => retractMoleClean(slot, onRetract), 500);
+        const msg = currentQ.expl ? I18N.t('hitGood') + ' ' + currentQ.expl : I18N.t('hitGood');
+        showFeedback(msg, 'ko', { duration: 5000, onDismiss: () => {
+          if (lives <= 0) endGame(false);
+        }});
       } else {
         hitOptions.add(optIdx);
-        slot.face.className = 'mole-face smashed';
+        slot.face.className = 'mole-face smashed' + (isLong ? ' rect' : '');
         score += 50; updateUI();
         playSound(520+Math.random()*180, 0.1, 'sine');
         setTimeout(() => {
-          slot.face.className = 'mole-face hit';
+          slot.face.className = 'mole-face hit' + (isLong ? ' rect' : '');
           setTimeout(() => { retractMoleClean(slot, onRetract); checkAllWrongGone(); }, 200);
         }, 120);
       }
