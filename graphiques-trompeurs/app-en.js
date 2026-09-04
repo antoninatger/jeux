@@ -99,27 +99,33 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 
 // ===== Expert mode: keyword-based technique detection =====
 const KEYWORDS = {
-  tronq:   ["truncated","not at zero","not at 0","doesn't start at","does not start at","cut axis","cut scale","clipped axis","zoom"],
+  tronq:   ["truncated","not at zero","not at 0","doesn't start at","does not start at","cut axis","cut scale","clipped axis","zoom","missing zero","no zero","not starting at zero"],
   cam3d:   ["pie chart","3d","three dimensions","relief","perspective","depth","tilt","angle","viewed from an angle","slanted"],
   double:  ["two scales","two axes","dual axis","double axis","different scales","right axis","secondary axis","second axis","not the same scale","different scale for each","own scale","scale on the left","scale on the right"],
   picto:   ["pictogram","icon","silhouette","disproportion","area","enlarged","too big","too large","wrong size","height and width","size of the icons","overrepresent","not proportional","not to scale","exaggerat"],
   omises:  ["missing","remov","disappear","incomplete","hidden","cherry pick","hole in the data","not all the years","not all the data"],
-  noaxe:   ["no scale","without a scale","no axis","missing axis","no numbers on the axis","no numbers on the scale","bars not proportional","height not proportional","not to scale","arbitrary height","made up height"],
+  noaxe:   ["no scale","without a scale","no axis","missing axis","no numbers on the axis","no numbers on the scale","bars not proportional","height not proportional","arbitrary height","made up height"],
   inverse: ["inverted axis","reversed axis","upside down","upside-down","flipped scale","reversed scale","axis flipped","backwards axis","flipped axis","axis is backwards"],
   honnete: ["honest","nothing wrong","no trap","no trick","reliable","correct","no problem","not misleading","fine as is","all good","nothing to report","seems fine","looks fine","no issue","looks correct","checks out","follows best practices"],
 };
 function normalize(s){
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
 }
+// A missing zero on the axis is always a truncated axis, never missing data:
+// "missing" (omises' broad keyword) also matches "the axis is missing zero",
+// hence this explicit priority before the generic scoring.
+const ZERO_AXIS_PHRASES=["missing zero","no zero","not starting at zero","not starting at 0","doesn't start at zero","does not start at zero","not at zero","not at 0"];
 function detectTech(raw){
   const n=normalize(raw);
+  if(ZERO_AXIS_PHRASES.some(p=>n.includes(normalize(p))))return "tronq";
   let bestId=null,bestCount=0,tieCount=0;
   for(const id in KEYWORDS){
     const count=KEYWORDS[id].reduce((acc,k)=>acc+(n.includes(normalize(k))?1:0),0);
     if(count>bestCount){bestId=id;bestCount=count;tieCount=1;}
     else if(count===bestCount && count>0){tieCount++;}
   }
-  if(bestCount===0||tieCount>1)return null;
+  if(bestCount===0)return null;
+  if(tieCount>1)return "__TIE__";
   return bestId;
 }
 
@@ -150,7 +156,8 @@ function renderQ(){
   const ft=$("ftext");
   ft.value="";ft.disabled=false;
   $("fvalidate").disabled=false;
-  ft.focus({preventScroll:true});
+  // No autofocus on touch: the virtual keyboard would open and hide the chart.
+  if(!matchMedia("(pointer: coarse)").matches) ft.focus({preventScroll:true});
   $("aidebtn").style.display="block";
   $("aidebtn").disabled=false;
   $("answers").style.display="none";
@@ -582,9 +589,11 @@ function submitFree(){
   const it=deck[idx];
   const detected=detectTech(raw);
   // Unintelligible answer ≠ wrong technique: offer one rephrase before counting it wrong
-  if(detected===null && !freeRetryUsed){
+  if((detected===null || detected==="__TIE__") && !freeRetryUsed){
     freeRetryUsed=true;
-    $("freehint").textContent="🤔 No technique recognized in your answer — rephrase using a technique name (last try).";
+    $("freehint").textContent = detected==="__TIE__"
+      ? "🤔 Two techniques recognized in your answer — be more specific (last try)."
+      : "🤔 No technique recognized in your answer — rephrase using a technique name (last try).";
     return;
   }
   $("freehint").textContent="";
@@ -596,7 +605,7 @@ function submitFree(){
     b.disabled=true;b.classList.add("dim");
     if(b.dataset.ok==="1"){b.classList.remove("dim");b.classList.add("good");}
   });
-  applyResult(it,ok,detected?TECH[detected].l:null,true);
+  applyResult(it,ok,(detected && detected!=="__TIE__")?TECH[detected].l:null,true);
 }
 
 function nextQ(){

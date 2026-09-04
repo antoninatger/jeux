@@ -99,27 +99,33 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 
 // ===== Mode expert : détection de la technique par mots-clés =====
 const KEYWORDS = {
-  tronq:   ["tronque","tronquee","pas a zero","pas a 0","pas de zero","pas de 0","echelle coupee","axe coupe","zoom"],
+  tronq:   ["tronque","tronquee","pas a zero","pas a 0","pas de zero","pas de 0","echelle coupee","axe coupe","zoom","manque le zero","manque de zero","commence pas a zero","commence pas a 0"],
   cam3d:   ["camembert","3d","trois dimensions","relief","perspective","profondeur","volume","biais","inclinaison","vu de travers","angle de vue"],
   double:  ["deux echelles","deux axes","double axe","double echelle","echelles differentes","axe a droite","axe de droite","axe secondaire","second axe","pas la meme echelle","echelle differente pour chaque","propre echelle","echelle a gauche","echelle a droite"],
   picto:   ["pictogramme","icone","silhouette","disproportion","surface","grossi","trop grande","trop gros","pas a la bonne taille","mauvaise taille","hauteur et largeur","taille des icones","surrepresent","pas proportionnel","pas a l echelle","exagere"],
   omises:  ["manqu","retir","supprim","enlev","dispar","incomplet","cach","omise","omis","trou dans","pas toutes les"],
-  noaxe:   ["sans echelle","pas d echelle","aucune echelle","echelle absente","axe manquant","aucun axe","pas de chiffres sur l axe","pas de chiffre sur l axe","hauteur pas proportionnelle","hauteurs pas proportionnelles","hauteur ne correspond pas","barres ne respectent pas","disproportion des barres","pas a l echelle","barres pas a l echelle"],
+  noaxe:   ["sans echelle","pas d echelle","aucune echelle","echelle absente","axe manquant","aucun axe","pas de chiffres sur l axe","pas de chiffre sur l axe","hauteur pas proportionnelle","hauteurs pas proportionnelles","hauteur ne correspond pas","barres ne respectent pas","disproportion des barres"],
   inverse: ["axe inverse","echelle inversee","a l envers","sens inverse","axe retourne","ordre inverse","valeurs inversees","echelle a l envers","haut en bas invers","axe renverse","monte au lieu de descendre","descend au lieu de monter"],
   honnete: ["honnete","rien a redire","pas de piege","aucun piege","fiable","correct","aucun probleme","rien de trompeur","pas trompeur","tout va bien","rien a signaler","semble correct","tout est normal","aucun souci","pas de souci","rien ne cloche","semble fiable","aucune anomalie","tout semble en ordre","ca va","respecte les bonnes pratiques"],
 };
 function normalize(s){
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
 }
+// Une mention du zéro de l'axe est toujours un axe tronqué, jamais une donnée
+// omise : "manqu" (mot-clé large d'omises) matche aussi "il manque le zéro",
+// d'où cette priorité explicite avant le comptage générique.
+const ZERO_AXIS_PHRASES=["manque le zero","manque de zero","commence pas a zero","commence pas a 0","pas a zero","pas a 0","pas de zero","pas de 0"];
 function detectTech(raw){
   const n=normalize(raw);
+  if(ZERO_AXIS_PHRASES.some(p=>n.includes(normalize(p))))return "tronq";
   let bestId=null,bestCount=0,tieCount=0;
   for(const id in KEYWORDS){
     const count=KEYWORDS[id].reduce((acc,k)=>acc+(n.includes(normalize(k))?1:0),0);
     if(count>bestCount){bestId=id;bestCount=count;tieCount=1;}
     else if(count===bestCount && count>0){tieCount++;}
   }
-  if(bestCount===0||tieCount>1)return null;
+  if(bestCount===0)return null;
+  if(tieCount>1)return "__TIE__";
   return bestId;
 }
 
@@ -150,7 +156,8 @@ function renderQ(){
   const ft=$("ftext");
   ft.value="";ft.disabled=false;
   $("fvalidate").disabled=false;
-  ft.focus({preventScroll:true});
+  // Pas d'autofocus sur tactile : le clavier virtuel s'ouvrirait et masquerait le graphique.
+  if(!matchMedia("(pointer: coarse)").matches) ft.focus({preventScroll:true});
   $("aidebtn").style.display="block";
   $("aidebtn").disabled=false;
   $("answers").style.display="none";
@@ -582,9 +589,11 @@ function submitFree(){
   const it=deck[idx];
   const detected=detectTech(raw);
   // Réponse inintelligible ≠ mauvaise technique : une reformulation offerte avant de compter faux
-  if(detected===null && !freeRetryUsed){
+  if((detected===null || detected==="__TIE__") && !freeRetryUsed){
     freeRetryUsed=true;
-    $("freehint").textContent="🤔 Aucune technique reconnue dans ta réponse — reformule en nommant une technique (dernier essai).";
+    $("freehint").textContent = detected==="__TIE__"
+      ? "🤔 Deux techniques reconnues dans ta réponse — précise laquelle (dernier essai)."
+      : "🤔 Aucune technique reconnue dans ta réponse — reformule en nommant une technique (dernier essai).";
     return;
   }
   $("freehint").textContent="";
@@ -596,7 +605,7 @@ function submitFree(){
     b.disabled=true;b.classList.add("dim");
     if(b.dataset.ok==="1"){b.classList.remove("dim");b.classList.add("good");}
   });
-  applyResult(it,ok,detected?TECH[detected].l:null,true);
+  applyResult(it,ok,(detected && detected!=="__TIE__")?TECH[detected].l:null,true);
 }
 
 function nextQ(){
