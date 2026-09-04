@@ -59,7 +59,7 @@ const SCENARIOS = [
         + '<div style="text-align:center"><img src="prise-electrique-male-americaine.jpg" alt="Une prise à l\'américaine, avec des broches plates et une broche de terre ronde" style="max-width:100px;display:block;margin:0 auto 4px;border-radius:10px;border:1px solid #4a3c28"><small>Prise 2</small></div>'
         + '<div style="text-align:center"><img src="prise-male-plate.jpg" alt="Une prise plate à deux broches fines" style="max-width:100px;display:block;margin:0 auto 4px;border-radius:10px;border:1px solid #4a3c28"><small>Prise 3</small></div>'
         + '</div>',
-      followKw: ["1","ronde","rondes","rond","broches rondes","picots ronds","forme ronde","francaise","milieu"],
+      followKw: ["prise 1","premiere prise","celle de gauche","ronde","rondes","rond","broches rondes","picots ronds","forme ronde","francaise","milieu"],
       followReply: "Voilà : cette prise-là, avec ses deux broches rondes, entre parfaitement dans les trous du mur. Une fiche plate n'y serait jamais entrée, ou pire, aurait tout fait sauter en forçant. Merci pour votre vigilance !",
       followRetry: "Non… celle-ci ne rentrera jamais dans les trous de ma prise murale. Si je la forçais, tout pourrait sauter — le bruit et la coupure attireraient l'attention. Nous n'avons pas le droit à la moindre erreur. Laquelle dois-je choisir ?",
       followRetryRisk: 10,

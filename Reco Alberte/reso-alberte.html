@@ -225,6 +225,7 @@
       <span style="font-size:11px;color:var(--muted)">aucune aide : à vous de tout écrire</span>
     </div>
     <button class="btn big" onclick="openFeedback()">💬 Faire un retour au créateur</button>
+    <p style="font-size:11px;color:var(--muted);max-width:300px">Rien n'est envoyé sans que vous le demandiez à la fin.</p>
   </div>
 
   <!-- ===== Win overlay ===== -->
@@ -238,6 +239,7 @@
     <div class="score" id="scoreBox"></div>
     <button class="btn ghost" onclick="openRecap()">📋 Revoir les points clés</button>
     <button class="btn big" onclick="openFeedback()">💬 Faire un retour au créateur</button>
+    <button class="btn ghost" onclick="sendCompletedConversation(this)">📤 Envoyer ma partie au créateur</button>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px">
       <button class="btn" onclick="location.reload()">Recommencer</button>
       <button class="btn ghost" onclick="exportTranscript()">📥 Exporter la conversation</button>
@@ -251,6 +253,7 @@
     <p>Le risque est devenu trop grand : Alberte a été repérée par la Milice. Il faut reprendre la ligne depuis le début.</p>
     <div class="score" id="loseScore"></div>
     <button class="btn" onclick="location.reload()">Recommencer</button>
+    <button class="btn ghost" onclick="sendCompletedConversation(this)">📤 Envoyer ma partie au créateur</button>
   </div>
 
   <!-- ===== Commentaires overlay ===== -->

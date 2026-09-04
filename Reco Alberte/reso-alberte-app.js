@@ -118,7 +118,7 @@ function updateProgress(){ $("progFill").style.width = Math.round(idx / SCENARIO
 
 /* --- Sauvegarde / reprise --- */
 function saveState(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ idx, mode, riskScore, ts: Date.now() })); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ idx, mode, riskScore, transcript, ts: Date.now() })); }catch(e){}
 }
 function clearSavedState(){ try{ localStorage.removeItem(STORAGE_KEY); }catch(e){} }
 function loadSavedState(){
@@ -136,6 +136,7 @@ function resumeGame(){
   mode = saved.mode || "normal";
   idx = saved.idx;
   riskScore = saved.riskScore || 0;
+  if(Array.isArray(saved.transcript)){ transcript.length=0; transcript.push(...saved.transcript); }
   $("intro").classList.add("hidden");
   input.disabled=false; sendBtn.disabled=false;
   updateRisk(0); updateProgress();
@@ -194,10 +195,12 @@ async function sendFeedback(){
   }
 }
 
-/* --- Envoi automatique de la conversation une fois la partie terminée --- */
-function sendCompletedConversation(){
+/* --- Envoi de la conversation, sur demande du joueur (opt-in) --- */
+async function sendCompletedConversation(btn){
+  if(btn){ btn.disabled = true; btn.textContent = "Envoi…"; }
   const header = "Mode : " + mode + " | Niveau de risque final : " + riskScore + "%\n\n";
-  sendWeb3Form("RÉSO — Conversation terminée", "Jeu RÉSO (auto)", "non renseigné", header + transcriptText());
+  const ok = await sendWeb3Form("RÉSO — Conversation terminée", "Jeu RÉSO", "non renseigné", header + transcriptText());
+  if(btn){ btn.textContent = ok ? "✓ Envoyé, merci !" : "Erreur d'envoi, réessaie"; if(!ok) btn.disabled = false; }
 }
 
 /* --- Démarrage --- */
@@ -446,7 +449,6 @@ function endGame(){
   clearSavedState();
   $("scoreBox").innerHTML = "Niveau de risque final : <b>" + riskScore + "%</b>";
   $("win").classList.remove("hidden");
-  sendCompletedConversation();
 }
 
 /* --- Défaite : le risque a atteint 100%, il faut recommencer --- */
@@ -455,7 +457,6 @@ function loseGame(){
   clearSavedState();
   $("loseScore").innerHTML = "Niveau de risque final : <b>" + riskScore + "%</b>";
   $("lose").classList.remove("hidden");
-  sendCompletedConversation();
 }
 
 /* --- Proposer la reprise si une partie était en cours --- */
