@@ -56,6 +56,186 @@ LOTS = [
     ("Le reste", lambda p: True),
 ]
 
+# ── A3 : contraste du texte secondaire sur les pages migrées ────────────────
+# Un deuxième test (présence d'un récapitulatif de fin) est prévu par le plan
+# d'action mais différé : son témoin (`data-col-recap` ou équivalent) est
+# défini par la tâche E1, qui n'est pas encore écrite. Ne pas ajouter ici un
+# test qui renverrait faux partout — l'ajouter quand E1 existe.
+
+SEUIL_CONTRASTE = 4.5
+
+_RE_HEX = re.compile(r'^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$')
+_RE_RGB = re.compile(
+    r'^rgba?\(\s*([\d.]+)\s*[, ]\s*([\d.]+)\s*[, ]\s*([\d.]+)\s*(?:[,/]\s*[\d.%]+\s*)?\)$', re.I)
+
+
+def _parser_couleur(valeur):
+    """#rgb, #rrggbb, rgb()/rgba() — l'alpha est ignoré (seule la couleur compte
+    pour le contraste). Tout le reste (hsl(), couleur nommée, valeur vide…)
+    n'est délibérément pas résolu : le script ne fait pas de vraie cascade CSS
+    et ne doit pas prétendre le contraire."""
+    v = valeur.strip().split("!important")[0].strip()
+    m = _RE_HEX.match(v)
+    if m:
+        h = m.group(1)
+        if len(h) == 3:
+            h = "".join(c * 2 for c in h)
+        return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+    m = _RE_RGB.match(v)
+    if m:
+        try:
+            return tuple(max(0, min(255, int(round(float(m.group(i)))))) for i in (1, 2, 3))
+        except Exception:
+            return None
+    return None
+
+
+def _lin_channel(v):
+    c = v / 255.0
+    return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _luminance(rgb):
+    r, g, b = rgb
+    return 0.2126 * _lin_channel(r) + 0.7152 * _lin_channel(g) + 0.0722 * _lin_channel(b)
+
+
+def _ratio_contraste(rgb1, rgb2):
+    l1, l2 = _luminance(rgb1), _luminance(rgb2)
+    plus_clair, plus_sombre = (l1, l2) if l1 >= l2 else (l2, l1)
+    return (plus_clair + 0.05) / (plus_sombre + 0.05)
+
+
+def _autotest_contraste():
+    """Trois paires de référence WCAG. S'arrête en erreur si l'une échoue :
+    sans cet auto-test, une erreur de linéarisation donne des ratios plausibles
+    et faux, invisibles tant que personne ne les vérifie à la main."""
+    ref = [
+        ((0, 0, 0), (255, 255, 255), 21.00, None),
+        ((0x76, 0x76, 0x76), (255, 255, 255), 4.54, ">="),
+        ((0x77, 0x77, 0x77), (255, 255, 255), 4.48, "<"),
+    ]
+    for rgb1, rgb2, attendu, seuil in ref:
+        ratio = _ratio_contraste(rgb1, rgb2)
+        if abs(ratio - attendu) > 0.01:
+            raise SystemExit(
+                u"AUTOTEST CONTRASTE ÉCHEC : %s sur %s -> %.4f, attendu ≈ %.2f"
+                % (rgb1, rgb2, ratio, attendu))
+        if seuil == ">=" and ratio < SEUIL_CONTRASTE:
+            raise SystemExit(u"AUTOTEST CONTRASTE ÉCHEC : #767676 devrait franchir 4,5:1")
+        if seuil == "<" and ratio >= SEUIL_CONTRASTE:
+            raise SystemExit(u"AUTOTEST CONTRASTE ÉCHEC : #777777 ne devrait pas franchir 4,5:1")
+
+
+def _extraire_declarations(css):
+    """Retourne une liste de (nom_variable, valeur, conditionnel) dans l'ordre
+    d'apparition. conditionnel=True si la déclaration est sous @media/@supports
+    ou un sélecteur contenant [data-theme…], à n'importe quelle profondeur —
+    ces valeurs ne sont jamais retenues comme « la » valeur d'un jeton, seulement
+    comme motif de non-mesure quand rien d'autre n'existe."""
+    texte = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    out = []
+    pile = []
+    buf = []
+    for c in texte:
+        if c == '{':
+            selecteur = "".join(buf).strip()
+            buf = []
+            est_cond = (selecteur.startswith("@media") or selecteur.startswith("@supports")
+                        or "[data-theme" in selecteur)
+            parent_cond = pile[-1] if pile else False
+            pile.append(est_cond or parent_cond)
+            continue
+        if c == '}':
+            if pile:
+                pile.pop()
+            buf = []
+            continue
+        if c == ';':
+            decl = "".join(buf)
+            buf = []
+            m = re.match(r"^\s*(--[\w-]+)\s*:\s*(.+?)\s*$", decl)
+            if m:
+                out.append((m.group(1), m.group(2), pile[-1] if pile else False))
+            continue
+        buf.append(c)
+    return out
+
+
+def _feuilles_liees(html, chemin_page):
+    """Renvoie (liste_de_textes_css, motif_si_introuvable). Une feuille externe
+    (http/https) est ignorée : hors sujet du contraste. `collection.css` est
+    exclu, déjà pris comme première source."""
+    dossier_rel = os.path.dirname(chemin_page)
+    ordre, vus = [], set()
+    for m in re.finditer(r'<link\b([^>]*)>', html, re.I):
+        attrs = m.group(1)
+        if not re.search(r'rel=["\']stylesheet["\']', attrs, re.I):
+            continue
+        mh = re.search(r'href=["\']([^"\']+)["\']', attrs, re.I)
+        if mh and mh.group(1) not in vus:
+            vus.add(mh.group(1))
+            ordre.append(mh.group(1))
+    textes = []
+    for href in ordre:
+        if href.startswith(("http:", "https:", "//")):
+            continue
+        chemin_abs = os.path.normpath(os.path.join(RACINE, dossier_rel, href))
+        rel = os.path.relpath(chemin_abs, RACINE).replace("\\", "/")
+        if rel == "collection.css":
+            continue
+        if not os.path.isfile(chemin_abs):
+            return None, u"feuille liée introuvable : %s" % href
+        textes.append(lire(chemin_abs))
+    return textes, None
+
+
+def _resoudre_jeton(nom, dernier, vu, niveau=0):
+    """Dernière déclaration non conditionnelle de `nom`, résolue en (r,g,b), ou
+    (None, motif). Un var(--autre) est suivi sur un seul niveau."""
+    if nom not in vu:
+        return None, u"%s absent" % nom
+    if nom not in dernier:
+        return None, u"%s déclaré uniquement dans un bloc @media ou [data-theme=…]" % nom
+    val = dernier[nom].strip()
+    m = re.match(r'^var\(\s*(--[\w-]+)', val)
+    if m:
+        if niveau >= 1:
+            return None, u"%s : plus d'un niveau de var()" % nom
+        rgb, motif = _resoudre_jeton(m.group(1), dernier, vu, niveau=niveau + 1)
+        if rgb is None:
+            return None, u"%s renvoie à %s, non résolu (%s)" % (nom, m.group(1), motif)
+        return rgb, None
+    rgb = _parser_couleur(val)
+    if rgb is None:
+        return None, u"%s = %s, format de couleur non reconnu (hsl(), couleur nommée…)" % (nom, val)
+    return rgb, None
+
+
+def _evaluer_contraste(chemin, html, fichiers):
+    """('conforme'|'sous_seuil'|'non_mesuree', motif, ratio, #bg, #txt)."""
+    try:
+        feuilles, motif = _feuilles_liees(html, chemin)
+        if motif:
+            return "non_mesuree", motif, None, None, None
+        sources = [fichiers.get("collection.css", "")] + feuilles + \
+            re.findall(r'<style\b[^>]*>(.*?)</style>', html, re.I | re.S)
+        dernier, vu = {}, set()
+        for css in sources:
+            for nom, val, cond in _extraire_declarations(css):
+                vu.add(nom)
+                if not cond:
+                    dernier[nom] = val
+        rgb_bg, motif_bg = _resoudre_jeton("--bg", dernier, vu)
+        rgb_txt, motif_txt = _resoudre_jeton("--txt-secondaire", dernier, vu)
+        if rgb_bg is None or rgb_txt is None:
+            return "non_mesuree", (motif_bg or motif_txt), None, None, None
+        ratio = _ratio_contraste(rgb_bg, rgb_txt)
+        etat = "conforme" if ratio >= SEUIL_CONTRASTE else "sous_seuil"
+        return etat, None, ratio, "#%02x%02x%02x" % rgb_bg, "#%02x%02x%02x" % rgb_txt
+    except Exception as e:
+        return "non_mesuree", u"erreur d'analyse : %s" % e, None, None, None
+
 
 def lire(chemin):
     try:
@@ -118,6 +298,25 @@ def mesurer():
     m["lots"] = lots
     m["nonmigrees"] = sorted(p for p, _ in pages if p not in m["migrees"])
 
+    # contraste du texte secondaire (A3) — mesuré sur chaque page migrée
+    pages_par_chemin = dict(pages)
+    conformes = 0
+    sous_seuil, non_mesurees = [], []
+    for chemin in m["migrees"]:
+        etat, motif, ratio, hexbg, hextxt = _evaluer_contraste(
+            chemin, pages_par_chemin[chemin], fichiers)
+        if etat == "conforme":
+            conformes += 1
+        elif etat == "sous_seuil":
+            sous_seuil.append((chemin, ratio, hexbg, hextxt))
+        else:
+            non_mesurees.append((chemin, motif))
+    m["contraste"] = {
+        "conformes": conformes,
+        "sous_seuil": sorted(sous_seuil),
+        "non_mesurees": sorted(non_mesurees),
+    }
+
     # bloquants : chaque test est rejoué, aucun statut n'est saisi
     bl = []
     for entree in BLOQUANTS:
@@ -165,6 +364,20 @@ def rendre(m):
             echapper(lib), etiquette[e][1], etiquette[e][0])
         for lib, e in m["bloquants"])
 
+    contraste_conf = m["contraste"]["conformes"]
+    contraste_nonm = len(m["contraste"]["non_mesurees"])
+    lignes_contraste = []
+    for p, r, bg, txt in m["contraste"]["sous_seuil"]:
+        lignes_contraste.append(
+            '<tr><td><code>{}</code></td><td class="st non">🔴 {}:1 ({} sur {})</td></tr>'.format(
+                echapper(p), echapper(("%.2f" % r).replace(".", ",")), txt, bg))
+    for p, motif in m["contraste"]["non_mesurees"]:
+        lignes_contraste.append(
+            '<tr><td><code>{}</code></td><td class="st inconnue">⚪ non mesurée : {}</td></tr>'.format(
+                echapper(p), echapper(motif)))
+    lignes_contraste = "\n".join(lignes_contraste) if lignes_contraste else \
+        '<tr><td colspan="2">Toutes les pages migrées sont conformes.</td></tr>'
+
     if m["journal"]:
         journal = "<br>\n".join(
             "<b>{}</b> {}".format(echapper(l.split(" ", 1)[0]),
@@ -184,7 +397,9 @@ def rendre(m):
         ok=ok, part=part, n_bl=len(m["bloquants"]),
         gfonts=len(m["gfonts"]), arialive=len(m["arialive"]),
         description=len(m["description"]), souspalier=souspalier,
-        lignes_lots=lignes_lots, lignes_bl=lignes_bl, journal=journal)
+        lignes_lots=lignes_lots, lignes_bl=lignes_bl, journal=journal,
+        contraste_conf=contraste_conf, contraste_nonm=contraste_nonm,
+        lignes_contraste=lignes_contraste)
 
 
 
@@ -217,6 +432,8 @@ def rendre_md(m):
     a(u"| Fichiers avec une taille en dur sous 12,8 px | %d |" % len(m["souspalier"]))
     a(u"| Pages avec `aria-live` | %d / %d |" % (len(m["arialive"]), n_pages))
     a(u"| Pages avec une `meta description` | %d / %d |" % (len(m["description"]), n_pages))
+    a(u"| Pages migrées au contraste secondaire ≥ 4,5:1 | **%d / %d** (%d non mesurées) |" % (
+        m["contraste"]["conformes"], n_mig, len(m["contraste"]["non_mesurees"])))
     a(u"")
     a(u"## Migration par lot")
     a(u"")
@@ -230,6 +447,16 @@ def rendre_md(m):
     sym = {"ok": u"✅ levé", "part": u"🟠 à moitié", "non": u"🔴 ouvert"}
     for lib, e in m["bloquants"]:
         a(u"- %s — %s" % (sym[e], lib))
+    a(u"")
+    a(u"## Contraste du texte secondaire")
+    a(u"")
+    if m["contraste"]["sous_seuil"] or m["contraste"]["non_mesurees"]:
+        for p, r, bg, txt in m["contraste"]["sous_seuil"]:
+            a(u"- 🔴 `%s` — %s:1 (%s sur %s)" % (p, ("%.2f" % r).replace(".", ","), txt, bg))
+        for p, motif in m["contraste"]["non_mesurees"]:
+            a(u"- ⚪ `%s` — non mesurée : %s" % (p, motif))
+    else:
+        a(u"- toutes les pages migrées sont conformes.")
     a(u"")
     if m["nonmigrees"]:
         a(u"## Pages non encore migrées (%d)" % len(m["nonmigrees"]))
@@ -301,6 +528,7 @@ TEMPLATE = u"""<!DOCTYPE html>
   .mini i{{display:block;height:100%;background:var(--s3)}}
   .st{{white-space:nowrap;font-weight:700;font-size:.82rem}}
   .st.ok{{color:var(--ok)}} .st.part{{color:var(--warn)}} .st.non{{color:var(--crit)}}
+  .st.inconnue{{color:var(--ink-3)}}
   .journal{{font:.82rem/1.9 var(--mono);color:var(--ink-2)}}
   .journal b{{color:var(--ink);font-weight:600}}
   .note{{font-size:.82rem;color:var(--ink-3);margin-top:26px;border-top:1px solid var(--line);padding-top:14px}}
@@ -327,6 +555,7 @@ TEMPLATE = u"""<!DOCTYPE html>
     <div class="stat"><span class="n">{souspalier}</span><span class="l">fichiers avec une taille en dur sous 12,8 px</span></div>
     <div class="stat"><span class="n">{arialive} / {n_pages}</span><span class="l">pages avec <code>aria-live</code></span></div>
     <div class="stat"><span class="n">{description} / {n_pages}</span><span class="l">pages avec une <code>meta description</code></span></div>
+    <div class="stat"><span class="n">{contraste_conf} / {n_mig}</span><span class="l">pages migrées au contraste secondaire ≥ 4,5:1 ({contraste_nonm} non mesurées)</span></div>
   </div>
 </section>
 
@@ -349,6 +578,16 @@ TEMPLATE = u"""<!DOCTYPE html>
     <table><thead><tr><th scope="col">Défaut</th><th scope="col">Statut</th></tr></thead>
     <tbody>
 {lignes_bl}
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <h2>Contraste du texte secondaire</h2>
+  <div class="carte" style="padding:0">
+    <table><thead><tr><th scope="col">Page</th><th scope="col">Mesure</th></tr></thead>
+    <tbody>
+{lignes_contraste}
     </tbody></table>
   </div>
 </section>
@@ -377,6 +616,7 @@ document.getElementById('tb').addEventListener('click',function(){{
 
 
 def main():
+    _autotest_contraste()
     m = mesurer()
     html = rendre(m)
     dossier = os.path.dirname(SORTIE)
@@ -394,6 +634,8 @@ def main():
     print(u"  bloquants levés      : %d / %d  (%d à moitié)" % (ok, len(m["bloquants"]), part))
     print(u"  encore Google Fonts  : %d pages" % len(m["gfonts"]))
     print(u"  tailles sous 12,8 px : %d fichiers" % len(m["souspalier"]))
+    print(u"  contraste secondaire : %d / %d conformes (%d non mesurées)" % (
+        m["contraste"]["conformes"], len(m["migrees"]), len(m["contraste"]["non_mesurees"])))
     for nom, f, t in m["lots"]:
         print(u"    %-14s %d / %d" % (nom, f, t))
 
