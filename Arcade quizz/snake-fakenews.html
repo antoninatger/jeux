@@ -194,6 +194,18 @@
     line-height: 1.5; color: #d8d8f0;
   }
 
+  /* F4 : feedback superposé au canvas — toujours visible, y compris en 390 px
+     où le panneau latéral passe sous le pli. */
+  .canvas-feedback {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+    max-width: 92%; padding: 8px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 700; text-align: center; line-height: 1.45;
+    opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 12;
+  }
+  .canvas-feedback.show { opacity: 1; }
+  .canvas-feedback.good { background: rgba(16,185,129,.92); color: #04150f; box-shadow: 0 0 20px rgba(16,185,129,.5); }
+  .canvas-feedback.bad  { background: rgba(239,68,68,.92);  color: #210505; box-shadow: 0 0 20px rgba(239,68,68,.5); }
+
   /* Overlay */
   .overlay {
     position: absolute;
@@ -288,13 +300,17 @@
 
 <!-- Question bar above the game -->
 <div class="question-box" id="question-bar">
-  <span class="question-label">❓ QUESTION</span>
+  <span class="question-label">❓ <span id="q-num">1</span>/<span id="q-total">10</span></span>
   <div id="current-q" data-i18n="currentQ">Lance le jeu pour commencer !</div>
 </div>
+<!-- F4 : au-delà de 26 caractères × 4 lignes, une case affiche une lettre —
+     le texte complet correspondant vit ici, sous la question. -->
+<div id="long-items-legend" style="font-size:13px;color:#9a9ad0;text-align:center;max-width:min(766px,100%);line-height:1.5"></div>
 
 <div class="main-layout">
   <div class="arena-wrap">
     <canvas id="c" width="546" height="546"></canvas>
+    <div class="canvas-feedback" id="canvasFeedback"></div>
     <div class="overlay" id="overlay">
       <h2 data-i18n-html="overlayH2">SNAKE<br>ESPRIT CRITIQUE</h2>
       <p data-i18n-html="overlayP"><strong style="color:#69f0ae">Mange UNIQUEMENT la bonne réponse !</strong><br>Manger une mauvaise réponse = −1 vie.<br><br>Toutes les réponses sont en <strong style="color:#4fc3f7">BLEU</strong> — à toi de trouver la bonne. Après chaque bouchée, la bonne devient 🟢 verte et les mauvaises 🔴 rouges.</p>
@@ -324,12 +340,12 @@
       <h3 data-i18n="speedTitle">VITESSE</h3>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span style="font-size:14px;color:#9a9ad0">🐢</span>
-        <input type="range" id="speedSlider" min="1" max="5" value="3" step="1"
+        <input type="range" id="speedSlider" min="1" max="5" value="2" step="1"
           aria-label="Vitesse du serpent"
           style="flex:1;accent-color:#4fc3f7;cursor:pointer">
         <span style="font-size:14px;color:#9a9ad0">🐇</span>
       </div>
-      <div style="text-align:center;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;color:#4fc3f7" id="speedLabel" data-i18n="speedNormal">NORMALE</div>
+      <div style="text-align:center;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;color:#4fc3f7" id="speedLabel" data-i18n="speedSlow">LENTE</div>
     </div>
   </div>
 </div>
@@ -353,7 +369,8 @@ I18N.register({
     colorsReveal: "Les couleurs se révèlent<br>après chaque réponse.", feedbackIdle: "Prêt à jouer ?", speedTitle: "VITESSE",
     hudScore: "SCORE:", hudLives: "VIE:", hudLevel: "NIVEAU:", best: "MEILLEUR:",
     speedVerySlow: "TRÈS LENTE", speedSlow: "LENTE", speedNormal: "NORMALE", speedFast: "RAPIDE", speedTurbo: "TURBO",
-    eatOnly: "Mange UNIQUEMENT la bonne réponse !", goodA: "✅ Bonne réponse ! +", goodB: " pts", wrongFb: "❌ Fausse réponse ! -1 vie", noLives: "Plus de vies !"
+    eatOnly: "Mange UNIQUEMENT la bonne réponse !", goodA: "✅ Bonne réponse ! +", goodB: " pts", wrongFb: "❌ Fausse réponse ! -1 vie", noLives: "Plus de vies !",
+    winTitle: "TOUTES LES<br>QUESTIONS<br>RÉPONDUES !", winMsg: "Tu as fini la série sans perdre toutes tes vies !"
   },
   en: {
     pageTitle: "Snake - Fake News & Critical Thinking", colRetour: "Back to the arcade",
@@ -368,7 +385,8 @@ I18N.register({
     colorsReveal: "Colours are revealed<br>after each answer.", feedbackIdle: "Ready to play?", speedTitle: "SPEED",
     hudScore: "SCORE:", hudLives: "LIVES:", hudLevel: "LEVEL:", best: "BEST:",
     speedVerySlow: "VERY SLOW", speedSlow: "SLOW", speedNormal: "NORMAL", speedFast: "FAST", speedTurbo: "TURBO",
-    eatOnly: "Eat ONLY the correct answer!", goodA: "✅ Correct! +", goodB: " pts", wrongFb: "❌ Wrong answer! -1 life", noLives: "Out of lives!"
+    eatOnly: "Eat ONLY the correct answer!", goodA: "✅ Correct! +", goodB: " pts", wrongFb: "❌ Wrong answer! -1 life", noLives: "Out of lives!",
+    winTitle: "ALL<br>QUESTIONS<br>ANSWERED!", winMsg: "You finished the set without running out of lives!"
   }
 });
 </script>
@@ -398,20 +416,32 @@ const ROWS = Math.floor(canvas.height / GRID);
 let snake, dir, nextDir, items, score, lives, level, gameLoop, running, paused, particles, correctCount;
 let currentQuestion = null;
 let feedbackTimeout = null;
+// F4 : meilleur score persistant d'une partie à l'autre.
 let highScore = 0;
+try { highScore = parseInt(localStorage.getItem('snake-arcade-highscore') || '0', 10) || 0; } catch (e) {}
 let revealed = false; // true = show green/red after wrong answer
 let resolving = false; // true pendant l'affichage de l'explication : plus rien n'est mangeable
 let revealTimeout = null;
+// F4 : session ordonnée (une question ne revient pas avant que le paquet soit épuisé),
+// à la place du tirage entièrement aléatoire d'avant qui pouvait répéter une question.
+let sessionQuestions = [];
+let qIndex = 0;
 
 const ITEM_COUNT_CORRECT = 1;
 const ITEM_COUNT_WRONG = 3;
+const LONG_TEXT_LIMIT = 104; // 4 lignes de 26 caractères : au-delà, repli lettre + texte dans la barre
 
-function pickQuestion() {
-  return DEFAULT_QCM[Math.floor(Math.random() * DEFAULT_QCM.length)];
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 // How many grid cells the label needs vertically (label rendered below item)
-const LABEL_ROWS = 3; // reserve space below each item for text
+const LABEL_ROWS = 4; // reserve space below each item for text (4 lignes max, §F4)
 const BORDER_PAD = 3; // cells from edge to keep items away from border
 
 function itemsOverlap(a, b) {
@@ -427,8 +457,9 @@ function itemsOverlap(a, b) {
 }
 
 function spawnItems() {
-  if (!currentQuestion) currentQuestion = pickQuestion();
   currentQEl.textContent = currentQuestion.q;
+  document.getElementById('q-num').textContent = qIndex + 1;
+  document.getElementById('q-total').textContent = sessionQuestions.length;
   items = [];
 
   const snakeSet = new Set(snake.map(s => `${s.x},${s.y}`));
@@ -474,6 +505,18 @@ function spawnItems() {
     const p = rndPos(items);
     items.push({...p, text: wrongPool[i], good: false});
   }
+
+  // F4 : la lettre de repli (au-delà de LONG_TEXT_LIMIT) est assignée après
+  // mélange — sinon la bonne réponse (toujours poussée en premier ci-dessus)
+  // porterait toujours la même lettre, un indice involontaire.
+  items = shuffleArr(items);
+  items.forEach((it, i) => { it.letter = String.fromCharCode(65 + i); });
+
+  const longOnes = items.filter(it => it.text.length > LONG_TEXT_LIMIT);
+  const legendEl = document.getElementById('long-items-legend');
+  legendEl.textContent = longOnes.length
+    ? longOnes.map(it => `${it.letter} — ${it.text}`).join('   |   ')
+    : '';
 }
 
 function init() {
@@ -488,9 +531,22 @@ function init() {
   revealed = false;
   resolving = false;
   clearTimeout(revealTimeout);
-  currentQuestion = pickQuestion();
+  // F4 : tout le paquet actif, mélangé une fois, joué dans l'ordre — plus de
+  // question qui revient avant que les autres soient passées.
+  sessionQuestions = shuffleArr(DEFAULT_QCM);
+  qIndex = 0;
+  currentQuestion = sessionQuestions[qIndex];
   spawnItems();
   updateHUD();
+}
+
+// F4 : avance à la question suivante de la session ; déclenche l'écran de
+// victoire une fois le paquet épuisé (le jeu n'avait jusqu'ici aucune fin).
+function nextQuestion() {
+  qIndex++;
+  if (qIndex >= sessionQuestions.length) { winGame(); return; }
+  currentQuestion = sessionQuestions[qIndex];
+  spawnItems();
 }
 
 const speedSlider = document.getElementById('speedSlider');
@@ -529,7 +585,9 @@ function startGame() {
 }
 
 function tick() {
-  if (paused) return;
+  // F4 : le serpent reste figé tant que l'explication de la réponse précédente
+  // est affichée — avant, il continuait d'avancer et pouvait se mordre en lisant.
+  if (paused || resolving) return;
   dir = {...nextDir};
   const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
 
@@ -542,17 +600,18 @@ function tick() {
 
   snake.unshift(head);
 
-  // Check item collision
-  // Chantier 04 : `resolving` verrouille la question pendant qu'on affiche son
-  // explication — sans ça, allonger le délai de lecture laisserait le serpent
-  // manger une seconde réponse de la question déjà résolue.
-  const hitIdx = resolving ? -1 : items.findIndex(it => it.x === head.x && it.y === head.y);
+  // Check item collision (resolving bloque déjà tick() plus haut, donc le
+  // serpent ne peut pas manger une seconde réponse pendant l'explication).
+  const hitIdx = items.findIndex(it => it.x === head.x && it.y === head.y);
   if (hitIdx !== -1) {
     const item = items[hitIdx];
     if (item.good) {
       // Correct!
       score += 10 * level;
-      if (score > highScore) highScore = score;
+      if (score > highScore) {
+        highScore = score;
+        try { localStorage.setItem('snake-arcade-highscore', String(highScore)); } catch (e) {}
+      }
       correctCount++;
       spawnParticles(head.x, head.y, '#69f0ae');
       setFeedback('good', I18N.t('goodA') + (10*level) + I18N.t('goodB'), currentQuestion.expl);
@@ -566,8 +625,7 @@ function tick() {
       clearTimeout(revealTimeout);
       revealTimeout = setTimeout(() => {
         revealed = false; resolving = false;
-        currentQuestion = pickQuestion();
-        spawnItems();
+        nextQuestion();
       }, currentQuestion.expl ? 4500 : 1200);
     } else {
       // Wrong!
@@ -582,8 +640,7 @@ function tick() {
       if (lives <= 0) return die(I18N.t('noLives'));
       revealTimeout = setTimeout(() => {
         revealed = false; resolving = false;
-        currentQuestion = pickQuestion();
-        spawnItems();
+        nextQuestion();
       }, currentQuestion.expl ? 5000 : 2000);
     }
     updateHUD();
@@ -606,10 +663,21 @@ function setFeedback(type, msg, expl) {
     e.textContent = '💡 ' + expl;
     feedbackEl.appendChild(e);
   }
+  // F4 : le même message est superposé au canvas — le panneau latéral passe
+  // sous le pli en mobile (feedback invisible sans défiler), le canvas non.
+  const cfEl = document.getElementById('canvasFeedback');
+  if (type === 'idle') {
+    cfEl.className = 'canvas-feedback';
+    cfEl.textContent = '';
+  } else {
+    cfEl.className = 'canvas-feedback show ' + type;
+    cfEl.textContent = expl ? msg + ' — ' + expl : msg;
+  }
   if (type !== 'idle') {
     feedbackTimeout = setTimeout(() => {
       feedbackEl.className = 'feedback-box idle';
       feedbackEl.textContent = I18N.t('eatOnly');
+      cfEl.className = 'canvas-feedback';
     }, expl ? 4500 : 2000);
   }
 }
@@ -641,6 +709,25 @@ function die(reason) {
     <div class="score-display">${I18N.t('hudScore')} ${score}<br>${I18N.t('best')} ${highScore}</div>
     <p style="font-size:14px;color:#b9b9e0">${reason}</p>
     ${expl}
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+      <button class="btn" id="startBtn">${I18N.t('replay')}</button>
+      <button class="btn-menu" onclick="location.href='index.html'">${I18N.t('menuQ')}</button>
+    </div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', startGame);
+}
+
+// F4 : écran de victoire quand la session est épuisée — le jeu n'en avait
+// aucun, la seule sortie possible était GAME OVER.
+function winGame() {
+  clearInterval(gameLoop);
+  running = false;
+  draw();
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = `
+    <div class="game-over-title" style="color:var(--green);text-shadow:0 0 20px var(--green)">${I18N.t('winTitle')}</div>
+    <div class="score-display">${I18N.t('hudScore')} ${score}<br>${I18N.t('best')} ${highScore}</div>
+    <p style="font-size:14px;color:#b9b9e0">${I18N.t('winMsg')}</p>
     <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
       <button class="btn" id="startBtn">${I18N.t('replay')}</button>
       <button class="btn-menu" onclick="location.href='index.html'">${I18N.t('menuQ')}</button>
@@ -712,12 +799,14 @@ function draw() {
     ctx.strokeRect(item.x*GRID+2, item.y*GRID+2, GRID-4, GRID-4);
     ctx.shadowBlur = 0;
 
-    // Icon: ? when hidden, ✓/✗ when revealed
-    ctx.font = 'bold 13px Exo 2';
+    // Icon: ? when hidden, ✓/✗ when revealed — au-delà de LONG_TEXT_LIMIT,
+    // repli sur la lettre (le texte complet est listé dans la barre au-dessus).
+    const isLong = item.text.length > LONG_TEXT_LIMIT;
+    ctx.font = isLong ? 'bold 15px Exo 2' : 'bold 13px Exo 2';
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(revealed ? (item.good ? '✓' : '✗') : '?', cx, cy);
+    ctx.fillText(revealed ? (item.good ? '✓' : '✗') : (isLong ? item.letter : '?'), cx, cy);
   });
 
   // Labels below each item
@@ -725,21 +814,26 @@ function draw() {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   items.forEach(item => {
+    // F4 : au-delà de LONG_TEXT_LIMIT, le texte n'est plus tenté sur la case —
+    // la case montre la lettre (dessinée plus haut) et le texte complet vit
+    // dans la barre de question (#long-items-legend).
+    if (item.text.length > LONG_TEXT_LIMIT) return;
+
     const cx = item.x * GRID + GRID/2;
     const ty = item.y * GRID + GRID + 3;
 
     const color = revealed ? (item.good ? '#69f0ae' : '#ff5252') : ITEM_BLUE;
 
-    // Word-wrap to ~16 chars per line, max 3 lines (texte complet lisible)
+    // Word-wrap à 26 caractères par ligne, 4 lignes maximum (§F4).
     const words = item.text.split(' ');
     let lines = [], cur = '';
     words.forEach(w => {
       const test = cur ? cur + ' ' + w : w;
-      if (test.length > 16) { if (cur) lines.push(cur); cur = w; }
+      if (test.length > 26) { if (cur) lines.push(cur); cur = w; }
       else cur = test;
     });
     if (cur) lines.push(cur);
-    lines = lines.slice(0, 3);
+    lines = lines.slice(0, 4);
 
     // Dark background behind label for readability
     const maxW = Math.max(...lines.map(l => ctx.measureText(l).width));
@@ -808,6 +902,31 @@ document.addEventListener('keydown', e => {
 });
 
 startBtn.addEventListener('click', startGame);
+
+// F4 : commande tactile par glissement — jusqu'ici Snake ne répondait qu'au
+// clavier, injouable au doigt (bloquant §9.1).
+(function () {
+  const arena = document.querySelector('.arena-wrap');
+  let touchStartX = 0, touchStartY = 0;
+  const MIN_SWIPE = 20; // px, en dessous on considère que ce n'est pas un geste
+  arena.addEventListener('touchstart', e => {
+    if (!e.touches || !e.touches.length) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  arena.addEventListener('touchend', e => {
+    if (!running) return;
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t) return;
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    if (Math.abs(dx) < MIN_SWIPE && Math.abs(dy) < MIN_SWIPE) return;
+    const nd = Math.abs(dx) > Math.abs(dy)
+      ? { x: dx > 0 ? 1 : -1, y: 0 }
+      : { x: 0, y: dy > 0 ? 1 : -1 };
+    if (nd.x !== -dir.x || nd.y !== -dir.y) nextDir = nd;
+  }, { passive: true });
+})();
 
 function animFrame() {
   if (running && !paused) draw();
