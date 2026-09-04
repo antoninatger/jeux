@@ -10,6 +10,12 @@
    apparaît alors sur toutes les pages, sur cette machine et ce navigateur
    seulement, jusqu'à « ?retours=0 ».
 
+   Ouvrir une page en local (double-clic, `file://`) active aussi le bouton
+   sans rien demander : un élève n'arrive jamais sur une page en `file://`,
+   il passe toujours par le site publié, donc ce cas ne peut être qu'Antonin
+   qui relit un fichier sur sa machine. « ?retours=0 » reste prioritaire si
+   besoin de voir la page « comme un élève » même en local.
+
    ── Ce qu'il capture ─────────────────────────────────────────────────────
    À l'ouverture du panneau, sans qu'Antonin ait à écrire quoi que ce soit :
    le jeu, l'URL complète, la langue, la largeur de fenêtre, l'écran visible
@@ -30,12 +36,20 @@
   /* ---------- activation ---------- */
   try {
     var param = new URLSearchParams(location.search).get('retours');
+    /* « 0 » est stocké explicitement (pas juste retiré) pour pouvoir
+       distinguer « jamais réglé » (valeur par défaut ci-dessous) de
+       « explicitement désactivé », y compris en file://. */
     if (param === '1') localStorage.setItem(CLE_ACTIF, '1');
-    else if (param === '0') localStorage.removeItem(CLE_ACTIF);
+    else if (param === '0') localStorage.setItem(CLE_ACTIF, '0');
   } catch (e) {}
 
   var actif = false;
-  try { actif = localStorage.getItem(CLE_ACTIF) === '1'; } catch (e) {}
+  try {
+    var stocke = localStorage.getItem(CLE_ACTIF);
+    if (stocke === '1') actif = true;
+    else if (stocke === '0') actif = false;
+    else actif = location.protocol === 'file:';
+  } catch (e) {}
   if (!actif) return;
 
   /* ---------- stockage ---------- */
