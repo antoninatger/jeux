@@ -86,6 +86,16 @@
     font-family:'Nunito', sans-serif; font-size:1rem;
     color:#ccc; line-height:1.9; max-width:500px; padding:0 16px;
   }
+  /* Intro raccourcie en mobile : le cadre du canvas ne fait que ~300 px de
+     haut à 390 px de large, JOUER doit rester visible sans défiler (§9.3). */
+  @media (max-width:480px){
+    #overlay{gap:8px; padding:8px 0}
+    #overlay h1{font-size:1.4rem}
+    #overlay .sub{font-size:0.8125rem; line-height:1.5}
+    #overlay .sub .mob-hide{display:none}
+    #overlay .col-meta{display:none}
+    #overlay button{padding:9px 30px; font-size:0.8125rem}
+  }
   #overlay button {
     padding:12px 44px; background:transparent;
     border:2px solid #00ffcc; color:#00ffcc;
@@ -197,9 +207,9 @@
       🎯 Une question s'affiche en haut.<br>
       Des réponses tombent du ciel.<br>
       <strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>
-      ⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>
+      <span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>
       ⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>
-      ✅ La bonne réponse, elle, peut passer sans risque.<br><br>
+      ✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>
       ← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
     <ul class="col-meta">
@@ -217,9 +227,9 @@
 <div id="controls"><span data-i18n-html="controlsHint">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE ou CLIC tirer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Détruis les FAUSSES réponses</span> <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
 <div id="speed-row">
   🐢
-  <input type="range" id="speed-slider" min="1" max="5" value="3" step="1">
+  <input type="range" id="speed-slider" min="1" max="5" value="2" step="1">
   🚀
-  <span id="speed-label">NORMALE</span>
+  <span id="speed-label">LENTE</span>
   &nbsp;&nbsp;
   <button id="mute-btn" onclick="toggleMute()">🔊</button>
 </div>
@@ -235,13 +245,14 @@ I18N.register({
     controlsHint: "← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE ou CLIC tirer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Détruis les FAUSSES réponses",
     metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou souris",
     speedVerySlow: "TRÈS LENTE", speedSlow: "LENTE", speedNormal: "NORMALE", speedFast: "RAPIDE", speedTurbo: "TURBO",
-    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>✅ La bonne réponse, elle, peut passer sans risque.<br><br>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br><span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>MISSION ACCOMPLIE !", loseTitle: "GAME OVER",
     winMsg: "Tu es un vrai chasseur de Fake News !", loseMsg: "Continue à développer ton esprit critique !",
     shotGood: "❌ Tu as tiré sur la BONNE réponse ! -1 vie",
-    wrongEscaped: "💨 Une fausse réponse s'est échappée ! -1 vie",
-    goodPassed: "✅ Bonne réponse laissée passer"
+    wrongEscaped: "💨 Une fausse réponse s'est échappée",
+    goodPassed: "✅ Bonne réponse laissée passer",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P ou ECHAP pour continuer", ptsLabel: "pts"
   },
   en: {
     pageTitle: "Fake News Defender", colRetour: "Back to the arcade",
@@ -250,13 +261,14 @@ I18N.register({
     controlsHint: "← → or MOUSE to move &nbsp;|&nbsp; SPACE or CLICK to shoot &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Destroy the FALSE answers",
     metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or mouse",
     speedVerySlow: "VERY SLOW", speedSlow: "SLOW", speedNormal: "NORMAL", speedFast: "FAST", speedTurbo: "TURBO",
-    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br>⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Don't let a FALSE answer reach the bottom — you'll lose a life!<br>✅ The correct answer, though, can safely pass through.<br><br>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br><span class="mob-hide">⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Don't let a FALSE answer reach the bottom — you'll lose a life!<br>✅ The correct answer, though, can safely pass through.<br><br></span>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>MISSION ACCOMPLISHED!", loseTitle: "GAME OVER",
     winMsg: "You're a real fake-news hunter!", loseMsg: "Keep developing your critical thinking!",
     shotGood: "❌ You shot the CORRECT answer! -1 life",
-    wrongEscaped: "💨 A false answer escaped! -1 life",
-    goodPassed: "✅ Correct answer let through"
+    wrongEscaped: "💨 A false answer escaped",
+    goodPassed: "✅ Correct answer let through",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P or ESC to continue", ptsLabel: "pts"
   }
 });
 </script>
@@ -281,7 +293,7 @@ const SPEED_LEVELS = [
   { label: I18N.t('speedFast'),     mult: 1.7  },
   { label: I18N.t('speedTurbo'),    mult: 2.8  },
 ];
-let speedMult = SPEED_LEVELS[2].mult;
+let speedMult = SPEED_LEVELS[1].mult; // LENTE par défaut (décision V6)
 
 const speedSlider = document.getElementById('speed-slider');
 const speedLabelEl = document.getElementById('speed-label');
@@ -383,6 +395,7 @@ function spawnAnswers() {
   const q = activeQCM[qIndex];
   const cols = q.options.length;
   const colors = shuffleColors();
+  const bannerH = getBannerCanvasH();
 
   // Blocs adaptés au texte : la largeur suit le texte, et si c'est long
   // le bloc GRANDIT en hauteur (2-3 lignes) au lieu de rétrécir.
@@ -414,7 +427,7 @@ function spawnAnswers() {
     answers.push({
       text,
       x,
-      y: -60 - i*90,
+      y: -bannerH - i*90,
       w: blocks[i].w, h: blocks[i].h,
       isCorrect: i === q.answer,
       speed: 0.55 + Math.random()*0.2,
@@ -499,9 +512,23 @@ function showFeedback(msg, type, ms) {
 }
 
 // Message d'erreur + l'explication pédagogique de la question en cours.
+// Renvoie la durée d'affichage choisie : la chute doit rester gelée le temps
+// que le message reste lisible (chantier F2), pas une durée devinée à part.
 function feedbackKO(msg) {
   const expl = currentQ && currentQ.expl;
-  showFeedback(expl ? msg + ' — ' + expl : msg, 'ko', expl ? 6000 : 2800);
+  const duration = expl ? 6000 : 2800;
+  showFeedback(expl ? msg + ' — ' + expl : msg, 'ko', duration);
+  return duration;
+}
+
+// Hauteur réelle du bandeau de question, mesurée en coordonnées canvas
+// (et non devinée) : sert à faire apparaître les réponses sous le bandeau.
+function getBannerCanvasH() {
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.height) return 90;
+  const scale = H / rect.height;
+  const bannerRect = document.getElementById('question-banner').getBoundingClientRect();
+  return Math.max(60, Math.round(bannerRect.height * scale));
 }
 
 // ── CHECK ALL WRONG ANSWERS GONE ─────────────────────────────
@@ -627,9 +654,9 @@ function gameLoop() {
   if(paused) {
     ctx.font='700 20px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.9)';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('⏸ PAUSE', W/2, H/2);
+    ctx.fillText(I18N.t('pauseLabel'), W/2, H/2);
     ctx.font='400 13px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.6)';
-    ctx.fillText('P ou ECHAP pour continuer', W/2, H/2+32);
+    ctx.fillText(I18N.t('pauseHint'), W/2, H/2+32);
     return;
   }
 
@@ -667,8 +694,11 @@ function gameLoop() {
             playSound(150,.3,'sawtooth');
             // Chantier 04 : c'est LE moment pédagogique — le joueur vient d'abattre
             // la bonne réponse, on lui dit pourquoi c'était la bonne.
-            feedbackKO(I18N.t('shotGood'));
-            if(lives<=0){ setTimeout(()=>endGame(false),2600); return; }
+            // F2 : geler la chute des autres blocs pendant que ça se lit.
+            questionActive = false;
+            const d = feedbackKO(I18N.t('shotGood'));
+            if(lives<=0){ setTimeout(()=>endGame(false), d); return; }
+            setTimeout(() => { questionActive = true; }, d);
           }
         }
       });
@@ -690,24 +720,28 @@ function gameLoop() {
           lives--;
           updateUI();
           playSound(150,.4,'sawtooth');
-          showFeedback(I18N.t('wrongEscaped'),'ko');
-          if(lives<=0){ feedbackKO(I18N.t('wrongEscaped')); setTimeout(()=>endGame(false),2600); return; }
-          // Si toutes les mauvaises réponses sont parties (tirées ou échappées), avancer sans bonus
-          if(questionActive && answers.filter(a=>!a.isCorrect&&!a.dead).length===0){
-            questionActive=false;
-            // Chantier 04 : ne pas enchaîner sans avoir expliqué la question.
-            showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
-            setTimeout(()=>{ qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1200);
-          }
-        } else {
-          // Chantier 04 (§4.5) : la consigne dit de laisser passer la bonne réponse —
-          // la pénaliser ici punissait le joueur pour avoir suivi la règle. Plus de -1 vie.
-          playSound(660,.25,'sine');
-          showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
+          // F2 : nommer la réponse échappée, geler la chute pendant la lecture,
+          // et ne clore la question que si c'était la dernière fausse réponse.
           questionActive = false;
-          qIndex++;
-          setTimeout(loadQuestion, currentQ.expl ? 4200 : 1200);
+          const expl = currentQ && currentQ.expl;
+          const base = `${I18N.t('wrongEscaped')} : « ${a.text} »`;
+          const msg = expl ? `${base} — ${expl}` : base;
+          const d = expl ? 6000 : 2800;
+          showFeedback(msg, 'ko', d);
+          if(lives<=0){ setTimeout(()=>endGame(false), d); return; }
+          setTimeout(() => {
+            const stillWrong = answers.filter(a=>!a.isCorrect&&!a.dead).length > 0;
+            questionActive = true;
+            if (!stillWrong) {
+              // Toutes les fausses réponses sont parties (tirées ou échappées) : avancer sans bonus.
+              questionActive = false;
+              showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
+              setTimeout(()=>{ qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1200);
+            }
+          }, d);
         }
+        // La bonne réponse qui sort par le bas ne clôt plus la question : elle peut
+        // passer sans risque, et il peut rester des fausses réponses à traiter (F2).
       }
       drawAnswer(a);
     });
@@ -728,7 +762,7 @@ function gameLoop() {
   ctx.font='600 13px Orbitron';
   ctx.fillStyle='rgba(0,255,204,0.45)';
   ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score}pts`, W-10, H-8);
+  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score}${I18N.t('ptsLabel')}`, W-10, H-8);
 }
 </script>
 </body>
