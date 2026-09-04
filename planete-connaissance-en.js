@@ -166,9 +166,15 @@ document.addEventListener('keydown', e=>{
       toggleModalSelection();
     }
     if((e.code==='Enter' || e.code==='Space') && !answered){
-      e.preventDefault();
-      const sel = document.querySelector('.ans-btn.kb-focus');
-      if(sel) answer(sel.id === 'btn-fait' ? 'fait' : 'opinion');
+      const active = document.activeElement;
+      if(!(active && active.classList && active.classList.contains('ans-btn'))){
+        // Pas de bouton réellement focalisé (sélection au clavier par flèches) :
+        // on répond selon le cadre kb-focus. Si un bouton a le vrai focus (Tab),
+        // on laisse le navigateur déclencher son clic natif — même id, forcément.
+        e.preventDefault();
+        const sel = document.querySelector('.ans-btn.kb-focus');
+        if(sel) answer(sel.id === 'btn-fait' ? 'fait' : 'opinion');
+      }
     }
     if((e.code==='Enter' || e.code==='Space') && answered){
       e.preventDefault();
@@ -185,19 +191,22 @@ document.addEventListener('keyup', e=>{
 
 /* Toggle keyboard focus between FACT and OPINION buttons */
 let kbSelected = 'fait'; // default selection
+let kbFocusActive = false; // n'affiche le cadre qu'après une première flèche
 function initModalKeyboard(){
   kbSelected = 'fait';
+  kbFocusActive = false;
   applyModalFocus();
 }
 function applyModalFocus(){
   const bF = document.getElementById('btn-fait');
   const bO = document.getElementById('btn-op');
   if(!bF || !bO) return;
-  bF.classList.toggle('kb-focus', kbSelected === 'fait');
-  bO.classList.toggle('kb-focus', kbSelected === 'opinion');
+  bF.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'fait');
+  bO.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'opinion');
 }
 function toggleModalSelection(){
   if(answered) return;
+  kbFocusActive = true;
   kbSelected = kbSelected === 'fait' ? 'opinion' : 'fait';
   applyModalFocus();
 }
@@ -306,8 +315,6 @@ function destroyAsteroid(ast){
       s:4+Math.random()*10, life:1, rot:0, rotV:(Math.random()-.5)*.4
     });
   }
-  score += 100;
-  destroyedCount++;
   updateHUD();
 }
 
@@ -694,6 +701,7 @@ function update(t, dt){
 /* ═══════════════════════════════════════════════════
    HIT SHIP
 ═══════════════════════════════════════════════════ */
+let pendingGameOver = false;
 function hitShip(){
   lives--;
   ship.invincible = 90;
@@ -702,7 +710,9 @@ function hitShip(){
   updateHUD();
   spawnParticles(ship.x*W, ship.y*H, '#ff4466', 14);
   addReplacementQuestion(); // ensure there's always a question to replace the missed one
-  if(lives<=0) triggerGameOver();
+  // Ne pas fermer la modale tout de suite : l'explication doit rester lisible
+  // jusqu'au clic sur « Continuer » (closeQuestion() déclenche alors le game over).
+  if(lives<=0) pendingGameOver = true;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -745,6 +755,8 @@ function answer(chosen){
     chosenBtn.classList.add('correct-sel');
     showQFeedback(true,q.exp);
     flashScreen('rgba(0,255,136,.18)');
+    score += 100;
+    destroyedCount++;
     destroyAsteroid(activeAsteroid);
     spawnParticles(activeAsteroid.x*W,activeAsteroid.y*H,'#00ff88',22);
     questionAnsweredCorrectly=true;
@@ -767,6 +779,7 @@ function showQFeedback(ok,txt){
 
 function closeQuestion(){
   document.getElementById('q-modal').classList.remove('show');
+  if(pendingGameOver){ pendingGameOver=false; triggerGameOver(); return; }
   if(lives>0) state='playing';
 }
 
