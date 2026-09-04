@@ -37,3 +37,6 @@ desktop.ini
 
 # === Brouillons et notes internes (ne pas publier) ===
 /_prive/
+
+# Cache Python des outils
+/outils/__pycache__/
