@@ -12,6 +12,23 @@ détail fichier par fichier de ce qui reste à faire. **Le chantier en cours n'e
 répété ici** (écrit en dur, il se périmait) : il est marqué « ← ICI » dans l'ordre des
 chantiers du §1 de `REFONTE-UX.md`, et l'avancement mesuré est dans `_prive/ETAT.md`.
 
+## 👉 Audit et plan d'action du 4 septembre 2026 — lire en entrée de session
+
+Un audit complet (graphisme, contenu, ergonomie) des 34 jeux a été fait le 4 septembre
+2026, et un plan d'action en 8 lots en découle, avec les décisions d'Antonin déjà prises.
+Tout est dans `_prive/audit-2026-09/` :
+
+- `HANDOFF.md` — la passation : ce qui a été fait, ce qui est décidé, ce qui attend une
+  réponse. **À lire en premier.**
+- `PLAN-ACTION.md` — le plan : chaque tâche avec fichiers, outil (Claude Code / Codex),
+  modèle (Sonnet / Opus / Fable 5), taille, recette d'acceptation ; décisions en §1.
+- `PROMPTS.md` — les prompts prêts à coller pour chaque tâche.
+- `RAPPORT.md` et `rapport-A..D.md` — l'audit et ses lectures détaillées, tout cité
+  `fichier:ligne`. Pour vérifier un constat, pas pour être relus en entier.
+
+Ne pas relancer l'audit, ne pas rouvrir les décisions du §1 du plan. Le plan s'intercale
+dans `REFONTE-UX.md` sans le réordonner.
+
 ## Règles non négociables
 
 - **HTML/CSS/JS vanilla. Pas de framework, pas d'étape de build, pas de npm.**
@@ -26,6 +43,10 @@ chantiers du §1 de `REFONTE-UX.md`, et l'avancement mesuré est dans `_prive/ET
 - **Ne pas reformater** un fichier existant : indentation hétérogène assumée, un
   reformatage rendrait la revue impossible.
 - Commentaires et messages de commit **en français**.
+- **RÉSO · Alberte (`Reco Alberte/`) et `echecs.html` ne sont jamais liés depuis
+  `index.html` ni depuis Exploration** (décision d'Antonin, 4 septembre 2026). Les Échecs
+  restent sur `hors-interventions.html`. `REFONTE-UX.md` §11.1 et §11.3 disent encore le
+  contraire : c'est le brief qui doit changer (tâche A1 du plan), pas le portail.
 
 ## 👉 En début de session : lire `_prive/ETAT.md`
 

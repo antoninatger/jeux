@@ -183,7 +183,7 @@ Contenu du commit `65f8b5d` :
 - `user-scalable=no` retiré (`Planète connaissance.html`, `recrutement-de-mehdi/index.html`,
   `recrutement-de-mehdi/participant.html`).
 - `Reco Alberte/reso-alberte.html` : `<a class="back-hub" href="reso-alberte.html">`
-  pointait sur lui-même → `../index.html`.
+  pointait sur lui-même → `../index.html`. Lien supprimé le 4 septembre — A5.
 - Pastille « ← Retour aux illusions » ajoutée aux 10 pages d'illusions, **en flux**
   (`display:inline-flex`, pas `position:fixed`) : ces pages ont leur titre en haut à
   gauche, un élément flottant le recouvrait.
@@ -1089,15 +1089,32 @@ C'est aussi la seule page de l'arcade non traduite.
 
 ## 11. Chantier 07 — Vitrine & découvrabilité ≈ 3 j
 
+> **Règle préalable — deux jeux ne figurent jamais sur le portail.**
+> *(Décision d'Antonin, 4 septembre 2026.)*
+>
+> **RÉSO · Alberte** (`Reco Alberte/`) et les **Ouvertures aux échecs** (`echecs.html`) ne
+> sont liés ni depuis `index.html`, ni depuis Exploration, ni depuis aucune carte de ce
+> chantier. Ce n'est pas un oubli à réparer : RÉSO se joue accompagné, en conférence, et
+> se referme sur lui-même — son lien « ← Retour au menu » est supprimé (tâche A5) ; les
+> Échecs restent sur `hors-interventions.html`, page à part volontairement conservée.
+>
+> Les deux sont donc absents de la taxonomie du §11.1 et de la liste du §11.3. Une session
+> qui croit voir là un trou doit relire cette règle **avant** de « publier » quoi que ce soit.
+
 ### 11.1 — La taxonomie à implémenter dans `index.html`
 
 **Quatre** sections. Un jeu n'apparaît que dans **une** section.
 
 **🎮 Jeux** — ce à quoi on joue
 > FakeMètre · **Radar'naque** · Radar de la désinfo · Més·Dés·Mal · Répare la Une ·
-> Arène rhétorique · Le Grand Oral · Chasse aux biais · **RÉSO · Alberte** ·
-> Arcade quizz (hub) · Planète Connaissance · Mine la planète · Snake · Échecs ·
-> Biais de confirmation CM1
+> Arène rhétorique · Le Grand Oral · Chasse aux biais · Arcade quizz (hub) ·
+> Planète Connaissance · Mine la planète · Biais de confirmation CM1
+
+> *Retirés le 4 septembre : **RÉSO · Alberte** et **Échecs** (règle en tête du §11) ;
+> **Snake**, qui n'a plus de carte propre — l'adresse racine redirige vers l'Arcade, où le
+> jeu vit désormais (D10, tâche F5). Les trois catalogues (Perceptio, Cobaye, Rhetor)
+> rejoindront cette famille avec le sous-libellé « catalogue » (D12) au moment de G4, pas
+> avant.*
 
 **👁️ Illusions & démonstrations** — ce qu'on montre, sans gagner ni perdre
 > Les 10 illusions d'optique (via leur hub) · Terre ronde ou plate ? ·
@@ -1110,14 +1127,15 @@ C'est aussi la seule page de l'arcade non traduite.
 > Recrutement de Mehdi · Lignes numérotées · Éditeur de questions ·
 > Exploration (parcours + avatar)
 
-> **Affectation arrêtée par Antonin le 14 août.** « Sensibilisation » ne contient
-> **qu'Emprise** (le jeu et sa conversation `texto total.html`). Radar'naque et
-> RÉSO · Alberte sont des **jeux** et restent dans la famille « Jeux » — j'avais proposé
-> de les basculer, c'était à tort.
+> **Affectation arrêtée par Antonin le 14 août, amendée le 4 septembre.** « Sensibilisation »
+> ne contient **qu'Emprise** (le jeu et sa conversation `texto total.html`). Radar'naque est
+> un **jeu** et reste dans la famille « Jeux » — j'avais proposé de le basculer, c'était à
+> tort. RÉSO · Alberte en est un aussi, mais la question ne se pose plus : il ne figure pas
+> sur le portail (règle en tête du §11), il n'a donc pas de famille à recevoir.
 >
-> La famille peut donc n'afficher qu'une ou deux cartes au lancement : c'est assumé, elle
-> existe parce que le registre est différent, pas parce qu'il y a du volume à ranger.
-> Prévoir une mise en page qui reste digne avec une seule carte.
+> La famille peut n'afficher qu'une ou deux cartes au lancement : c'est assumé, elle existe
+> parce que le registre est différent, pas parce qu'il y a du volume à ranger. Prévoir une
+> mise en page qui reste digne avec une seule carte.
 
 **Marqueur transversal :** un badge « 🎤 utilisable en conférence » posable sur
 n'importe quelle carte des quatre sections, avec un filtre correspondant. Une illusion
@@ -1131,14 +1149,18 @@ langue disponible.
 Sur chaque carte : **durée**, **niveau scolaire**, **support**, **langue**. Aujourd'hui
 un enseignant voit 12 cartes alignées sans savoir laquelle dure 10 minutes.
 
-### 11.3 — Publier les jeux orphelins
+### 11.3 — Publier le jeu orphelin
 
-**Vérifié :** `jeu-lignes-numerotees/` et `Reco Alberte/` ne sont liés **depuis aucune
-page**. Ce sont deux jeux finis, invisibles. Les ajouter au portail.
+**Vérifié :** `jeu-lignes-numerotees/` n'est lié **depuis aucune page**. C'est un jeu fini,
+invisible : à ajouter au portail.
 
-`jeu-lignes-numerotees/index.html` est par ailleurs la seule page à n'avoir reçu
-**aucune** passe d'harmonisation : ni lien retour, ni `focus-visible`, ni
-`prefers-reduced-motion`, ni i18n. À rattraper avec le gabarit du chantier 05.
+`Reco Alberte/` n'est lié depuis aucune page non plus, et c'est **voulu** — voir la règle
+en tête du §11. Ne pas l'ajouter.
+
+`jeu-lignes-numerotees/index.html` est par ailleurs la seule page à n'avoir reçu **aucune**
+passe d'harmonisation : ni lien retour, ni `focus-visible`, ni `prefers-reduced-motion`, ni
+i18n. À rattraper avec le gabarit du chantier 05 — c'est la tâche H2 du plan d'action, qui
+ajoute aussi les raccourcis et le mode projection.
 
 ### 11.4 — Métadonnées de page
 
