@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperçu — carte « faux CAPTCHA »</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <div class="logo"><span class="radar">🛰️</span> Radar’naque <span style="font-size:.8rem;font-weight:600;opacity:.6">— aperçu d’une carte</span></div>
+      <div class="spacer"></div>
+      <button class="topbtn" id="menu-btn" title="Revenir au menu" style="display:none">🏠 Menu</button>
+      <button class="topbtn" id="gloss-btn" title="Les mots à connaître">📖 Définitions</button>
+      <div class="textsize" aria-label="Taille du texte">
+        <span>Texte</span>
+        <button data-t="1" class="on">A</button>
+        <button data-t="1.18">A+</button>
+        <button data-t="1.4">A++</button>
+      </div>
+    </div>
+
+    <div class="hud" id="hud" style="display:none">
+      <div class="prog">
+        <div class="bar"><i id="barfill"></i></div>
+        <div class="lbl" id="barlbl">Message 1</div>
+      </div>
+      <div class="score" id="score">✔ <b>0</b>&nbsp;/&nbsp;0</div>
+    </div>
+
+    <main id="app"><!-- contenu injecté par app.js --></main>
+
+  </div>
+
+  <script src="../i18n.js"></script>
+  <script src="_apercu-faux-captcha.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
