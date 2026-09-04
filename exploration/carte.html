@@ -56,8 +56,9 @@
   .stop.lock{ cursor:not-allowed; filter:grayscale(.85) brightness(.98); opacity:.72; }
   .stop.lock .roof{ background:var(--lock) !important; }
   .stop.lock:hover{ transform:translate(-50%,-50%); box-shadow:0 6px 16px rgba(20,40,70,.14); }
-  .stop .lockicon{ position:absolute; inset:0; display:none; align-items:center; justify-content:center;
-    font-size:1.8em; background:rgba(255,255,255,.35); }
+  .stop .lockicon{ position:absolute; bottom:8px; right:8px; width:22px; height:22px; border-radius:50%;
+    display:none; align-items:center; justify-content:center;
+    font-size:.82em; background:rgba(255,255,255,.92); }
   .stop.lock .lockicon{ display:flex; }
   .shake{ animation:shake .4s; }
   @keyframes shake{ 0%,100%{transform:translate(-50%,-50%)} 20%,60%{transform:translate(-54%,-50%)} 40%,80%{transform:translate(-46%,-50%)} }
@@ -95,7 +96,7 @@
 
   <header>
     <h1 data-i18n="h1">🗺️ Le parcours de l'explorateur</h1>
-    <div class="greet" id="greet" data-i18n-html="greet">Avance de lieu en lieu&nbsp;: chaque étape en débloque une nouvelle.</div>
+    <div class="greet" id="greet">Avance de lieu en lieu&nbsp;: chaque étape en débloque une nouvelle.</div>
     <div class="progress" id="progress"></div>
   </header>
 
@@ -129,6 +130,8 @@ I18N.register({
     visited: "Lieux visités :", done: " — parcours terminé, bravo ! 🎉",
     lockA: "🔒 Termine d'abord l'étape ", lockB: " pour débloquer celle-ci.",
     unlockA: "🎉 Nouveau lieu débloqué : ", resetMsg: "Parcours réinitialisé.",
+    greetOnRouteA: "En route, ", greetOnRouteB: "&nbsp;! ",
+    confirmReset: "Recommencer le parcours à zéro ? (ton avatar est conservé)",
     n_radarnaque: "Radar'naque", d_radarnaque: "Déjouer les arnaques",
     n_fakemetre: "Fakemètre", d_fakemetre: "Mesurer la fiabilité",
     n_chasse: "Chasse aux biais", d_chasse: "Débusquer les biais",
@@ -146,6 +149,8 @@ I18N.register({
     visited: "Places visited:", done: " — journey complete, well done! 🎉",
     lockA: "🔒 Finish step ", lockB: " first to unlock this one.",
     unlockA: "🎉 New place unlocked: ", resetMsg: "Journey reset.",
+    greetOnRouteA: "Off we go, ", greetOnRouteB: "&nbsp;! ",
+    confirmReset: "Restart the journey from scratch? (your avatar is kept)",
     n_radarnaque: "Radar'naque", d_radarnaque: "Outsmart scams",
     n_fakemetre: "Fakemètre", d_fakemetre: "Measure reliability",
     n_chasse: "Bias Hunt", d_chasse: "Track down biases",
@@ -190,7 +195,7 @@ I18N.register({
 
   // Salutation
   var nom = (avatar && avatar.nom) ? String(avatar.nom).replace(/[<>&]/g,'') : '';
-  document.getElementById('greet').innerHTML = (nom ? 'En route, <b>'+nom+'</b>&nbsp;! ' : '')
+  document.getElementById('greet').innerHTML = (nom ? I18N.t('greetOnRouteA')+'<b>'+nom+'</b>'+I18N.t('greetOnRouteB') : '')
     + I18N.t('stepHint');
 
   // Route (SVG) reliant les étapes
@@ -316,7 +321,7 @@ I18N.register({
   document.addEventListener('keydown', function(e){ if(e.key==='Escape' && player.classList.contains('open')) fermer(); });
 
   document.getElementById('reset').onclick = function(){
-    if(confirm('Recommencer le parcours à zéro ? (ton avatar est conservé)')){
+    if(confirm(I18N.t('confirmReset'))){
       prog = { reached:1, visited:{}, pos:0 }; save(PROG_KEY, prog);
       placer(0); refresh(); dire(I18N.t('resetMsg'));
     }
