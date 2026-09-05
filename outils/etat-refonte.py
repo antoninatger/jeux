@@ -266,6 +266,22 @@ def _scripts_lies(html, chemin_page):
             continue
         if os.path.isfile(chemin_abs):
             textes.append(lire(chemin_abs))
+    # Huit jeux chargent leur logique par document.write('<scr'+'ipt src="' +
+    # (en ? 'app-en.js' : 'app.js') + '"…') : la balise n'existe pas dans le
+    # HTML, seuls les noms de fichiers y sont. On lit donc aussi tout fichier
+    # .js local nommé en clair dans un script en ligne (tâche E2).
+    deja = set(textes)
+    for code in list(textes):
+        for nom in re.findall(r'["\']([\w./-]+\.js)["\']', code):
+            chemin_abs = os.path.normpath(os.path.join(RACINE, dossier_rel, nom))
+            rel = os.path.relpath(chemin_abs, RACINE).replace("\\", "/")
+            if rel in ("collection.js", "i18n.js", "retours.js"):
+                continue
+            if os.path.isfile(chemin_abs):
+                contenu = lire(chemin_abs)
+                if contenu not in deja:
+                    deja.add(contenu)
+                    textes.append(contenu)
     return textes
 
 
@@ -361,7 +377,12 @@ def mesurer():
     pages, fichiers = collecter()
     m = {}
     m["pages"] = len(pages)
-    m["migrees"] = [p for p, s in pages if "collection.css" in s]
+    # Une page est sur le socle quand elle charge collection.css ET laisse
+    # collection.js construire l'en-tête. Depuis la tâche E2, les jeux non
+    # migrés chargent le socle pour le seul écran de fin (ColFin) en gardant
+    # `data-col-entete="non"` : ils ne sont pas migrés pour autant.
+    m["migrees"] = [p for p, s in pages
+                    if "collection.css" in s and 'data-col-entete="non"' not in s]
     m["gfonts"] = [p for p, s in pages if "fonts.googleapis" in s]
     m["arialive"] = [p for p, s in pages if "aria-live" in s]
     m["description"] = [p for p, s in pages if re.search(r'name=["\']description["\']', s)]
