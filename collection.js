@@ -234,16 +234,31 @@
     window.addEventListener('resize', mesurer);
     if (window.ResizeObserver) new ResizeObserver(mesurer).observe(entete);
 
-    /* ── Lien d'évitement ──────────────────────────────────────────────── */
+    /* ── Lien d'évitement ──────────────────────────────────────────────────
+       Il cherchait `main, #game, #jeu, #app, #contenu` et n'apparaissait pas
+       si la page n'avait aucun des cinq : les pages sans conteneur nommé —
+       la moitié de la collection — n'avaient donc pas de lien d'évitement du
+       tout, alors que ce sont justement celles dont le contenu commence
+       après un en-tête et une rangée de boutons.
+
+       À défaut de conteneur, on pose une ancre vide juste après l'en-tête.
+       `tabindex="-1"` la rend cible de focus sans l'ajouter à l'ordre de
+       tabulation : le lien y amène le focus, et le Tab suivant repart sur le
+       premier élément réellement focusable du contenu. */
     var cible = document.querySelector('main, #game, #jeu, #app, #contenu');
-    if (cible) {
-      if (!cible.id) cible.id = 'col-contenu';
-      var skip = document.createElement('a');
-      skip.className = 'col-skip';
-      skip.href = '#' + cible.id;
-      skip.textContent = txt('skip');
-      document.body.insertBefore(skip, entete);
+    if (!cible) {
+      cible = document.createElement('span');
+      cible.id = 'col-contenu';
+      cible.tabIndex = -1;
+      entete.insertAdjacentElement('afterend', cible);
     }
+    if (!cible.id) cible.id = 'col-contenu';
+    if (!cible.hasAttribute('tabindex')) cible.tabIndex = -1;
+    var skip = document.createElement('a');
+    skip.className = 'col-skip';
+    skip.href = '#' + cible.id;
+    skip.textContent = txt('skip');
+    document.body.insertBefore(skip, entete);
   }
 
   /* i18n.js injecte son bouton flottant sur DOMContentLoaded. On passe après

@@ -8,19 +8,17 @@
   --warn: #8a5a00;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 
-  /* Jetons du socle (chantier 05). Emprise est le seul jeu en thème CLAIR :
-     sans ces valeurs, il hériterait du texte quasi blanc prévu pour les fonds
-     sombres, illisible ici. La douceur voulue du jeu est conservée.
-     --txt-secondaire est volontairement plus foncé que --muted : c'est le
-     rôle contraint du socle (4,8:1 sur --bg). --muted lui-même, à 3,38:1,
-     relève du chantier 02 §8.4 et n'est pas touché ici. */
+  /* Emprise est en thème CLAIR : la page porte `data-theme="clair"` sur
+     <html>, et le socle fournit --surface, --bordure, --txt,
+     --txt-secondaire, --acc-txt et --focus. Ne restent ici que l'identité
+     du jeu — son fond bleuté (--bg, plus haut), son bleu doux, ses bulles —
+     et la police.
+
+     --txt reste redéfini : #1d2733 est le gris bleuté du jeu, plus doux que
+     le presque-noir du socle, et il tient 13,3:1 sur --bg.
+     --muted, à 3,38:1, relève du chantier 02 §8.4 et n'est pas touché ici. */
   --txt: #1d2733;
-  --txt-secondaire: #5d6875;
-  --surface: #ffffff;
-  --bordure: rgba(29, 39, 51, .14);
   --acc: #0b74de;
-  --acc-txt: #ffffff;
-  --focus: #0b74de;
   --font-texte: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-titre: var(--font-texte);
 }

@@ -16,17 +16,15 @@
    ========================================================================= */
 
 :root {
-  /* Identité des illusions : fond blanc, une seule couleur d'accent.
-     C'est le seul endroit où elle est déclarée — les dix pages en héritent. */
-  --bg:             #ffffff;
-  --surface:        #f7f7f8;
-  --bordure:        #e2e2e5;
-  --txt:            #1a1a1c;
-  --txt-secondaire: #63636b;   /* 6,1:1 sur blanc — les pages écrivaient #999,
-                                  soit 2,85:1 (§8.4 du brief) */
-  --acc:            #e0662a;   /* 4,6:1 sur blanc */
-  --acc-txt:        #ffffff;
-  --focus:          #0b6fb8;   /* l'anneau jaune du socle est illisible ici */
+  /* Identité des illusions, et rien d'autre : une couleur d'accent et une
+     police. Le fond blanc, la surface, la bordure, le texte, le texte
+     secondaire et l'anneau de focus viennent maintenant du thème clair du
+     socle — les pages portent `data-theme="clair"` sur <html>. Les recopier
+     ici les figeait : une correction du socle ne les atteignait pas.
+
+     --acc sert de fond de bouton sous --acc-txt (3,4:1 sur blanc, au-dessus
+     du seuil de 3:1 des composants) ; il n'est jamais du texte sur --bg. */
+  --acc:            #e0662a;
   --font-texte:     system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-titre:     var(--font-texte);
 }

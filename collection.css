@@ -43,7 +43,11 @@
   --acc-txt:        #06121c;   /* texte posé SUR --acc */
   --ok:             #3ecf8e;
   --alerte:         #f75f5f;
-  --focus:          #ffd54f;   /* anneau de focus, contrasté sur clair ET sombre */
+  --focus:          #ffd54f;   /* anneau de focus — 12,4:1 sur --bg sombre.
+                                  Il ne vaut QUE pour les fonds sombres : sur
+                                  blanc il tombe à 1,41:1, invisible. Une page
+                                  claire prend [data-theme="clair"] ci-dessous,
+                                  qui redéfinit ce jeton. */
 
   /* ── Échelle typographique ────────────────────────────────────────────
      Bornée en bas à 12,8 px : `mine.html` descendait à .28rem, soit 4,5 px,
@@ -86,6 +90,40 @@
 
   /* Hauteur réservée par l'en-tête unifié — lue par collection.js. */
   --entete-h: 56px;
+}
+
+/* =========================================================================
+   Thème clair — le pendant du :root ci-dessus, pour les pages à fond clair.
+
+   Il se pose sur la racine :  <html lang="fr" data-theme="clair">
+
+   Il ne fournit que l'ÉCHAFAUDAGE : fond, surface, bordure, texte, texte
+   secondaire, anneau de focus. L'identité du jeu reste chez le jeu — c'est
+   la règle du socle, et elle vaut dans les deux sens. Emprise garde son fond
+   bleuté et son bleu doux, les illusions gardent leur orange : ils
+   redéfinissent --bg et --acc APRÈS avoir chargé collection.css, et n'ont
+   plus à recopier les huit autres jetons.
+
+   Contrastes mesurés (script outils/, méthode WCAG 2.1) :
+     --txt            #1a1a1c sur #ffffff  17,4:1
+     --txt-secondaire #5b6470 sur #ffffff   6,0:1
+                              sur #e9eef5   5,1:1  (le fond d'Emprise)
+                              sur #f7f7f8   5,6:1  (--surface)
+     --focus          #0b6fb8 sur #ffffff   5,3:1
+                              sur #e9eef5   4,5:1
+   ========================================================================= */
+[data-theme="clair"] {
+  --bg:             #ffffff;
+  --surface:        #f7f7f8;
+  --bordure:        #e2e2e5;
+  --txt:            #1a1a1c;
+  --txt-secondaire: #5b6470;
+  --acc:            #0b6fb8;
+  --acc-txt:        #ffffff;
+  --ok:             #1b7a4b;   /* le vert du thème sombre passe à 2,3:1 sur blanc */
+  --alerte:         #c2261f;   /* idem pour le rouge */
+  --focus:          #0b6fb8;
+  --entete-voile:   var(--bg);
 }
 
 /* =========================================================================
