@@ -116,7 +116,7 @@ const SCENARIOS = [
     canal: 'chat',
     plateforme: 'Messenger',
     contact: 'Brad Pitt (Officiel) ✔',
-    avatar: 'img/celebrite-roses.jpg',
+    avatar: '',
     messages: [
       { from: 'eux', texte: 'Bonjour ma chérie ❤️ Je pense à toi chaque jour. Tu es la seule qui me comprend vraiment.' },
       { from: 'eux', texte: 'Mon équipe garde notre relation secrète à cause des médias. Je viendrai bientôt en France pour toi.' },
@@ -128,7 +128,7 @@ const SCENARIOS = [
       'Une célébrité qui vous écrit en privé et tombe amoureuse en quelques messages : impossible.',
       'Le secret imposé (« ne le dis à personne ») isole la victime.',
       { risque: 'La demande d’argent finit toujours par arriver — souvent en cartes cadeaux, intraçables.' },
-      'La photo peut être vraie (célébrité) ou générée par IA : une image ne prouve rien.'
+      'Une photo de profil ne prouve rien : elle se copie sur internet ou se fabrique avec une IA en quelques secondes.'
     ],
     reflexe: 'Dès qu’un « amour » rencontré en ligne demande de l’argent, c’est une arnaque. Aucune exception.',
     explication: 'Des victimes ont perdu des dizaines de milliers d’euros avec de faux « Brad Pitt ». Les escrocs jouent longtemps la carte de l’affection avant de demander de l’argent « pour un imprévu ». Une vraie relation ne commence jamais par un virement ou des cartes cadeaux.'
@@ -523,6 +523,7 @@ const SCENARIOS = [
   {
     id: 'notif-connexion-ok',
     canal: 'notif',
+    entete: 'Notification apparue en pleine soirée, alors que vous n’avez allumé aucun ordinateur',
     app: 'Compte Google',
     appIcon: '🔐',
     fond: 'info',
@@ -533,11 +534,11 @@ const SCENARIOS = [
     indices: [
       'Aucun lien pressant ni bouton « urgent » à cliquer.',
       'On vous invite à agir depuis l’application officielle, pas via un lien du message.',
-      '« Si c’était vous, aucune action nécessaire » : ton informatif, sans menace.',
+      'Le message envisage les deux cas (c’était vous / ce n’était pas vous) au lieu de vous faire peur.',
       'Pas de demande de mot de passe ni de coordonnées bancaires.'
     ],
     reflexe: 'Une vraie notification vous renvoie vers l’appli/site officiel que vous ouvrez vous-même — jamais vers un lien à cliquer en urgence.',
-    explication: 'Les vraies alertes de connexion existent et sont utiles. Le bon réflexe reste le même : ne cliquez pas dans le message, ouvrez directement l’application concernée pour vérifier. Ici, rien ne cloche : c’est légitime.'
+    explication: 'Le contexte est inquiétant : personne n’a touché à un ordinateur chez vous ce soir-là. Cela ne rend pas la notification fausse — c’est même exactement à cela qu’elle sert. Un message peut être à la fois vrai et alarmant. La question n’est donc jamais « est-ce que ce message me fait peur ? », mais « qu’est-ce qu’il me demande de faire ? ». Celui-ci ne demande rien : ouvrez vous-même l’application Google, rubrique Sécurité, et changez votre mot de passe depuis l’appli.'
   },
 
   /* ---------- 14. Message d’un ami — FIABLE --------------------------- */
@@ -720,7 +721,7 @@ const SCENARIOS = [
     canal: 'chat',
     plateforme: 'Appli de rencontre',
     contact: 'Philippe M. 😊',
-    avatar: 'img/visage-ia-homme.jpg',
+    avatar: '',
     messages: [
       { from:'eux', texte:'Bonjour ! Ton profil m’a tout de suite plu 😊' },
       { from:'eux', texte:'Je suis ingénieur, actuellement en mission sur une plateforme pétrolière offshore. On discute depuis 3 semaines, j’ai l’impression de te connaître depuis toujours.' },
@@ -732,10 +733,10 @@ const SCENARIOS = [
       'Une relation qui devient intense en quelques semaines seulement, sans jamais s’être vus.',
       'Un métier qui justifie d’être loin et injoignable (plateforme offshore, mission à l’étranger…) : très classique.',
       { risque: 'La demande d’argent finit toujours par arriver — ici sous forme de « frais de douane ».' },
-      'Le profil a l’air tout à fait normal, pas une célébrité : une photo crédible ne prouve rien, elle peut être générée par IA.'
+      'Le profil a l’air tout à fait normal, pas une célébrité : c’est justement ce qui le rend efficace. Une photo de profil crédible se fabrique aujourd’hui en quelques secondes.'
     ],
     reflexe: 'Dès qu’une rencontre en ligne demande de l’argent, même une petite somme « à rembourser vite », c’est une arnaque. Aucune exception.',
-    explication: 'Contrairement au faux « Brad Pitt », ce genre de profil ne cherche pas à impressionner par la célébrité, mais par la normalité et la proximité construite au fil des messages. La photo, générée par IA, est indétectable à l’œil nu : c’est le comportement (argent demandé) qui doit alerter, pas l’apparence.'
+    explication: 'Contrairement au faux « Brad Pitt », ce genre de profil ne cherche pas à impressionner par la célébrité, mais par la normalité et la proximité construite au fil des messages. Les photos de ces profils sont souvent générées par IA, indétectables à l’œil nu : c’est le comportement (l’argent demandé) qui doit alerter, jamais l’apparence.'
   },
 
   /* ---------- 27. Fausse vendeuse, acompte hors plateforme — ARNAQUE --- */
@@ -744,7 +745,7 @@ const SCENARIOS = [
     canal: 'chat',
     plateforme: 'Leboncoin (contact WhatsApp)',
     contact: 'Camille D.',
-    avatar: 'img/visage-ia-femme.jpg',
+    avatar: '',
     messages: [
       { from:'eux', texte:'Bonjour ! Oui, l’article est toujours disponible 😊' },
       { from:'eux', texte:'Comme j’ai beaucoup de messages, je vous demande un acompte de 30 € par virement direct pour bloquer l’annonce, en dehors de Leboncoin (ça évite les frais de la plateforme).' },
@@ -760,6 +761,28 @@ const SCENARIOS = [
     ],
     reflexe: 'Sur une plateforme d’annonces, le paiement doit toujours passer par le système sécurisé du site. Aucun « acompte » par virement direct, jamais.',
     explication: 'C’est l’inverse exact du scénario "vente Leboncoin sécurisée" : ici, dès qu’on vous fait sortir du système protégé, vous perdez toute garantie. Le prétexte (« éviter les frais ») est presque toujours signe d’arnaque.'
+  },
+
+  /* ---------- 28. Faux CAPTCHA « ClickFix » — ARNAQUE ----------------- */
+  {
+    id: 'popup-faux-captcha',
+    canal: 'notif',
+    entete: 'Fenêtre apparue en consultant un site internet habituel',
+    app: 'Vérification de sécurité',
+    appIcon: '☁️',
+    fond: 'info',
+    titre: 'Vérification humaine — confirmez que vous n’êtes pas un robot',
+    texte: 'Suivez ces 3 étapes sur votre clavier : 1) appuyez sur la touche Windows + R — 2) appuyez sur Ctrl + V — 3) appuyez sur Entrée. Cette vérification est obligatoire pour accéder à la page. Ray ID : b2f705a9136c2f36',
+    verdict: 'arnaque',
+    categorie: 'Faux CAPTCHA (« ClickFix ») — commande collée à votre insu',
+    indices: [
+      'Une vérification « je ne suis pas un robot » se fait en cochant une case, jamais en tapant des touches.',
+      'On vous fait ouvrir une fenêtre de l’ordinateur (Windows + R) : aucun site web n’a besoin de ça.',
+      'Le « Ctrl + V » colle un texte que vous n’avez jamais copié : la page l’a glissé dans le presse-papiers à votre insu.',
+      { risque: 'Ce texte est une commande déguisée en code de vérification. Elle installe un voleur qui envoie mots de passe, cookies et accès bancaires à l’escroc.' }
+    ],
+    reflexe: 'Aucun contrôle anti-robot ne demande d’appuyer sur des touches ni d’ouvrir une fenêtre de l’ordinateur. Si on vous le demande : fermez l’onglet, ne collez rien.',
+    explication: 'Cette page apparaît souvent sur un site tout à fait normal qui s’est fait pirater : l’adresse est la bonne, le décor est parfaitement imité, il n’y a ni faute ni urgence. C’est pourquoi le seul repère fiable n’est pas l’apparence, mais la demande elle-même. Sur Mac, la même arnaque demande d’ouvrir le « Terminal » (Cmd+Espace) au lieu de Windows + R. Si vous avez déjà collé et validé : coupez la connexion internet et faites-vous aider pour changer vos mots de passe depuis un autre appareil.'
   },
 
   /* ======================================================================
@@ -807,7 +830,7 @@ const SCENARIOS = [
       'Vous attendez effectivement ce colis : le message correspond à votre vie réelle.',
       'Aucun lien cliquable, aucun « frais de 2 € » à régler.',
       'On vous renvoie vers l’application ou le site officiel, que vous ouvrez vous-même.',
-      'Expéditeur nommé (Colissimo), pas un numéro de portable personnel.'
+      'Le nom affiché (« Colissimo ») ne prouve rien, il s’écrit librement : ce qui compte, c’est que rien ne vous soit demandé.'
     ],
     reflexe: 'Un vrai transporteur informe. Il ne réclame jamais de petits frais par carte pour « libérer » un colis.',
     explication: 'C’est le jumeau honnête du SMS de colis piégé. La différence tient à trois détails : pas de lien, pas de paiement, et vous attendiez vraiment ce colis. Un colis que vous n’avez pas commandé reste toujours suspect.'
@@ -840,6 +863,7 @@ const SCENARIOS = [
   {
     id: 'notif-ameli-ok',
     canal: 'notif',
+    entete: 'Notification reçue le lendemain d’un SMS « ameli » que vous aviez trouvé douteux',
     app: 'ameli',
     appIcon: '🩺',
     fond: 'info',
@@ -854,7 +878,7 @@ const SCENARIOS = [
       'Aucune menace de suspension de droits.'
     ],
     reflexe: 'L’Assurance maladie verse directement sur le compte qu’elle connaît déjà. Elle ne demande jamais de RIB par SMS ou par mail.',
-    explication: 'Le faux SMS Ameli du jeu, lui, promet un remboursement et réclame vos coordonnées bancaires. Ici, rien n’est demandé : c’est une simple information dans l’appli. Consultez toujours vos remboursements depuis l’application, jamais depuis un lien reçu.'
+    explication: 'Recevoir un faux SMS ameli la veille ne transforme pas cette notification en piège : les deux n’ont aucun rapport. Le faux SMS promettait un remboursement et réclamait vos coordonnées bancaires ; cette notification-ci ne demande rien et ne mène nulle part, elle vous renvoie à l’application que vous avez installée vous-même. Se méfier du contexte est un mauvais réflexe : c’est le message qu’il faut lire, pas le moment où il arrive.'
   },
 
   /* ---------- 37. Confirmation d’une commande que vous avez passée — FIABLE */
@@ -1058,22 +1082,22 @@ const SCENARIOS = [
   {
     id: 'email-facture-energie-ok',
     canal: 'email',
-    entete: 'E-mail mensuel de votre fournisseur d’électricité',
+    entete: 'E-mail de votre fournisseur d’électricité, avec un montant trois fois plus élevé que d’habitude',
     de: 'EDF',
     deAdresse: 'contact@edf.fr',
     objet: 'Votre facture du mois d’août est disponible',
     date: 'Lun. 11/08, 05:40',
-    corps: 'Bonjour,<br><br>Votre facture de 61,20 € est consultable dans votre espace client EDF.<br><br>Elle sera prélevée le 20 du mois sur le compte habituel, conformément à votre mensualisation. Vous n’avez aucune démarche à effectuer.',
+    corps: 'Bonjour,<br><br>Votre facture du mois d’août s’élève à 214,60 €. Elle est consultable dans votre espace client EDF.<br><br>Ce montant comprend la régularisation annuelle de votre consommation : vos mensualités de 61,20 € étaient inférieures à l’électricité réellement consommée cette année.<br><br>Il sera prélevé le 20 du mois sur le compte habituel, comme les mois précédents. Vous n’avez aucune démarche à effectuer.',
     verdict: 'fiable',
     categorie: 'Message légitime — mise à disposition d’une facture',
     indices: [
-      'Montant cohérent avec vos consommations habituelles.',
+      'Le montant surprend, mais le message explique lui-même d’où il vient (la régularisation annuelle) au lieu de vous presser.',
       'Prélèvement sur le compte déjà connu : aucun nouveau RIB n’est annoncé.',
-      'Aucun lien de paiement, aucune menace de coupure.',
+      'Aucun lien de paiement, aucune menace de coupure, aucun délai couperet.',
       '« Aucune démarche à effectuer » : le message informe, il ne réclame pas.'
     ],
-    reflexe: 'Une vraie facture s’ouvre depuis votre espace client. Une facture qui menace de coupure sous 24h est une arnaque.',
-    explication: 'Les faux mails d’énergie jouent sur la peur de la coupure et sur un lien de paiement immédiat. Ici, ni menace ni lien : simplement une facture déjà prévue, prélevée sur un compte que vous connaissez.'
+    reflexe: 'Un montant qui fait sursauter n’est pas un signe d’arnaque. Regardez ce qu’on vous demande de faire : ici, rien — et tout est vérifiable depuis votre espace client.',
+    explication: 'Un message inquiétant n’est pas forcément un faux message : une vraie facture peut très bien annoncer une mauvaise surprise. Les faux mails d’énergie, eux, ajoutent toujours deux choses que celui-ci n’a pas : un lien de paiement immédiat et une menace de coupure sous 24 ou 48 heures. Le réflexe ne change pas — n’ouvrez pas le lien d’un mail, ouvrez vous-même votre espace client et comparez le montant.'
   }
 
 ];
@@ -1134,7 +1158,13 @@ const GLOSSAIRE = [
     def:'Un acheteur prétend avoir envoyé trop d’argent par erreur (souvent avec une fausse capture d’écran de virement) et demande de lui rembourser la différence avant que l’argent ne soit réellement arrivé. Le premier virement n’existe pas ou sera annulé : la victime perd le vrai virement qu’elle a renvoyé.' },
   { key:'fausse-boutique', terme:'Fausse boutique en ligne',
     aliases:['fausse boutique en ligne','faux site marchand'],
-    def:'Un site de vente factice, souvent avec des réductions extrêmes et une urgence artificielle (« liquidation », « stock limité »), qui encaisse le paiement sans jamais livrer, ou vole les données bancaires.' }
+    def:'Un site de vente factice, souvent avec des réductions extrêmes et une urgence artificielle (« liquidation », « stock limité »), qui encaisse le paiement sans jamais livrer, ou vole les données bancaires.' },
+  { key:'clickfix', terme:'Faux CAPTCHA (« ClickFix »)',
+    aliases:['clickfix','faux captcha'],
+    def:'Fausse page « je ne suis pas un robot » qui, au lieu de cocher une case, vous demande d’appuyer sur des touches (Windows + R, ou le Terminal sur Mac) pour coller un « code de vérification ». Ce code est en réalité une commande qui installe un logiciel voleur. Règle absolue : un contrôle anti-robot ne demande jamais d’ouvrir une fenêtre de l’ordinateur.' },
+  { key:'presse-papiers', terme:'Presse-papiers',
+    aliases:['presse-papiers'],
+    def:'Mémoire invisible de l’ordinateur où atterrit tout ce que vous copiez, et d’où sort tout ce que vous collez (Ctrl + V). Une page web peut y déposer un texte sans vous prévenir : ce que vous collez n’est donc pas forcément ce que vous croyez avoir copié.' }
 ];
 
 /* =========================================================================
@@ -1204,7 +1234,7 @@ const REPERES = {
     { texte:'carte Vitale expire', bon:true, aide:'Une carte Vitale « expire »-t-elle vraiment au point de bloquer vos remboursements ? Cherchez cette affirmation.', note:'La carte Vitale n’a pas de date qui « suspend » les remboursements : fausse info.' },
     { texte:'remboursements seront suspendus', bon:true, aide:'Cherchez la menace censée vous faire peur.', note:'Menace pour vous faire agir dans la panique.' },
     { texte:'http://ameli-mise-a-jour.info-fr.net', bon:true, aide:'Le vrai site de l’Assurance Maladie, c’est ameli.fr. Cette adresse lui ressemble-t-elle vraiment ?', note:'Le vrai site est ameli.fr — cette adresse est trompeuse.' },
-    { texte:'AMELI-INFO', bon:false, note:'Un nom d’expéditeur se falsifie facilement : il ne garantit rien.' }
+    { texte:'AMELI-INFO', bon:false, note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « AMELI-INFO ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
   ],
   'popup-support': [
     { texte:'5 virus détectés', bon:true, aide:'Cherchez l’alerte spectaculaire censée vous effrayer.', note:'Fausse alerte spectaculaire pour vous effrayer.' },
@@ -1241,13 +1271,14 @@ const REPERES = {
   'sms-banque-ok': [
     { texte:'Appelez le numéro figurant au dos de votre carte', bon:true, aide:'Cherchez ce qui vous renvoie vers un moyen sûr, que vous contrôlez vous-même.', note:'On vous renvoie vers un canal officiel que VOUS maîtrisez.' },
     { texte:'Nous ne vous demanderons jamais vos codes', bon:true, aide:'Cherchez la phrase qui promet de ne jamais réclamer vos codes.', note:'Une vraie banque le rappelle : elle ne demande jamais vos codes.' },
-    { texte:'CIC', bon:true, aide:'Reconnaissez-vous l’expéditeur ? Si CIC est bien VOTRE banque, c’est un petit signe rassurant.', note:'Indice faible mais réel : si CIC est votre banque, reconnaître l’expéditeur rassure un peu. Attention tout de même : un nom d’expéditeur peut être usurpé — ne vous fiez jamais qu’à lui.' },
+    { texte:'CIC', bon:false, note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « CIC ». Reconnaître sa banque ne prouve donc rien — ce qui rend ce message fiable, c’est qu’il ne demande ni code, ni clic.' },
     { texte:'54,90 € chez FNAC', bon:false, note:'C’est juste l’info de l’achat : ni bon ni mauvais signe en soi.' }
   ],
   'notif-connexion-ok': [
-    { texte:'Compte Google', bon:true, aide:'D’où vient cette notification ? Cherchez ce qui montre qu’elle vient de l’application officielle.', note:'La notification provient de l’application officielle.' },
-    { texte:'aucune action n’est nécessaire', bon:true, aide:'Cherchez la phrase qui montre qu’il n’y a rien à faire en urgence.', note:'Ton informatif, sans menace : rien à faire en urgence.' },
-    { texte:'depuis l’application Google, rubrique Sécurité', bon:true, aide:'Cherchez ce qui vous renvoie vers l’appli officielle plutôt que vers un lien à cliquer.', note:'On vous renvoie vers l’appli officielle, pas vers un lien à cliquer.' }
+    { texte:'Compte Google', bon:true, aide:'D’où vient cette notification ? Cherchez ce qui montre qu’elle vient de l’application officielle.', note:'La notification est poussée par l’application Google installée sur ce téléphone : son origine est vérifiable, contrairement au nom d’expéditeur d’un SMS ou d’un e-mail, qui s’écrit librement.' },
+    { texte:'aucune action n’est nécessaire', bon:true, aide:'Cherchez la phrase qui montre qu’il n’y a rien à faire en urgence.', note:'Ton informatif, sans menace : on vous laisse le temps de vérifier au lieu de vous presser.' },
+    { texte:'depuis l’application Google, rubrique Sécurité', bon:true, aide:'Cherchez ce qui vous renvoie vers l’appli officielle plutôt que vers un lien à cliquer.', note:'On vous renvoie vers l’appli que vous ouvrez vous-même, pas vers un lien à cliquer : c’est vous qui gardez la main.' },
+    { texte:'Nouvelle connexion sur Windows', bon:false, note:'Cette phrase fait peur, et c’est normal : elle décrit un vrai risque. Mais une phrase alarmante n’est ni une preuve d’arnaque, ni une preuve du contraire. Ce qui départage, c’est ce qu’on vous demande de faire — ici, rien d’urgent.' }
   ],
   'chat-ami-ok': [
     { texte:'Jacqueline (voisine)', bon:true, aide:'Regardez qui écrit : est-ce un contact que vous connaissez et avez enregistré ?', note:'Contact connu et enregistré : c’est bien votre voisine.' },
@@ -1260,9 +1291,9 @@ const REPERES = {
     { texte:'483 920', bon:false, note:'Le code lui-même n’est pas un indice : ce qui compte, c’est de ne jamais le donner.' }
   ],
   'notif-virement-ok': [
-    { texte:'Ma Banque', bon:true, aide:'D’où vient cette notification ? Cherchez ce qui montre qu’elle vient de votre appli bancaire.', note:'Notification issue de votre application bancaire.' },
-    { texte:'Solde consultable dans votre application', bon:true, aide:'Cherchez ce qui vous renvoie à l’appli, sans lien ni urgence.', note:'On vous renvoie à l’appli, sans lien ni action urgente.' },
-    { texte:'Paul Durand', bon:true, aide:'Reconnaissez-vous l’émetteur du virement ? Un nom que vous connaissez est plutôt rassurant.', note:'Si vous connaissez réellement un Paul Durand, reconnaître l’émetteur est un bon signe. Attention toutefois : un nom seul ne prouve rien — c’est l’ensemble (l’appli, l’absence de demande) qui rassure.' }
+    { texte:'Ma Banque', bon:true, aide:'D’où vient cette notification ? Cherchez ce qui montre qu’elle vient de votre appli bancaire.', note:'Retenez la différence, elle vaut pour tout le jeu. Une notification est POUSSÉE par une application que vous avez installée vous-même : personne d’autre ne peut en envoyer à sa place, son origine est donc fiable. Le nom d’expéditeur d’un SMS ou d’un e-mail, lui, est simplement du texte que l’expéditeur choisit : n’importe qui peut signer « CIC », « DGFIP » ou « ameli ». Un nom affiché ne prouve jamais rien ; une notification d’application, si.' },
+    { texte:'Solde consultable dans votre application', bon:true, aide:'Cherchez ce qui vous renvoie à l’appli, sans lien ni urgence.', note:'On vous renvoie à l’appli, sans lien ni action urgente : c’est vous qui allez vérifier, à votre rythme.' },
+    { texte:'Paul Durand', bon:false, note:'Le nom de l’émetteur n’est qu’une ligne de texte recopiée avec le virement : la banque ne l’a pas vérifiée pour vous. Le connaître ne prouve rien, ne pas le connaître non plus. Ce qui rassure ici, c’est l’origine de la notification et le fait qu’on ne vous demande rien.' }
   ],
   'email-newsletter-ok': [
     { texte:'contact@restosducoeur.org', bon:true, aide:'Regardez l’adresse de l’expéditeur : est-elle cohérente avec l’organisme ?', note:'Adresse cohérente avec l’organisme : bon signe.' },
@@ -1298,7 +1329,7 @@ const REPERES = {
     { texte:'200 €', bon:false, note:'Le prix de l’objet lui-même n’est pas un indice : c’est autour de lui que se joue l’arnaque.' }
   ],
   'sms-remboursement-impots': [
-    { texte:'DGFIP', bon:false, note:'Un nom d’expéditeur se falsifie facilement : il ne garantit rien à lui seul.' },
+    { texte:'DGFIP', bon:false, note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « DGFIP ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' },
     { texte:'https://remboursement-impots-particuliers.com', bon:true, aide:'Le vrai site des impôts, c’est impots.gouv.fr. Cette adresse lui ressemble-t-elle ?', note:'Ce n’est pas impots.gouv.fr : lien piégé.' },
     { texte:'complétez vos coordonnées bancaires', bon:true, aide:'Si vous avez déjà été remboursé par le passé, l’administration a-t-elle besoin que vous ressaisissiez vos coordonnées bancaires ?', note:'L’administration a déjà votre RIB si vous avez déjà été remboursé : elle ne le redemande pas par SMS.' }
   ],
@@ -1309,7 +1340,7 @@ const REPERES = {
   ],
   'image-deepfake-manifestation': [
     { texte:'__IMG__', bon:true, aide:'Regardez l’image de près : les visages dans la foule, les inscriptions sur les casques vous paraissent-ils cohérents ? Cliquez dessus.', note:'Zoomez : chiffres sans signification sur les casques, visages flous ou déformés en arrière-plan — signes d’une image générée par IA.' },
-    { texte:'ce qu’ils ne veulent pas que vous voyiez', bon:true, aide:'Cherchez la formule qui joue sur le complot et l’émotion.', note:'Formule complotiste classique pour faire réagir sans vérifier.' },
+    { texte:'Ce qu’ils ne veulent pas que vous voyiez', bon:true, aide:'Cherchez la formule qui joue sur le complot et l’émotion.', note:'Formule complotiste classique pour faire réagir sans vérifier.' },
     { texte:'Partagé 62 000 fois', bon:false, note:'Le nombre de partages ne prouve rien : le faux circule aussi vite, voire plus vite, que le vrai.' }
   ],
   'chat-faux-profil-rencontre': [
@@ -1335,6 +1366,100 @@ const REPERES = {
     { texte:'Madame, Monsieur', bon:true, aide:'Comment vous appelle-t-on ? L’Assurance Maladie sait-elle qui vous êtes ?', note:'L’Assurance Maladie vous appelle par votre nom : cette formule passe-partout sert un envoi de masse.' },
     { texte:'Accéder à mon espace', bon:true, aide:'Que vous propose-t-on de faire, alors que l’argent serait déjà versé ? Où mène ce bouton ?', note:'Le bouton mène à une fausse page ameli qui vole vos identifiants, puis votre RIB.' },
     { texte:'virement bancaire', bon:false, note:'C’est bien ainsi que l’Assurance Maladie rembourse : cette ligne-là est vraie, elle ne trahit rien. Le piège est ailleurs.' }
+  ],
+  'popup-faux-captcha': [
+    { texte:'Windows + R', bon:true, aide:'Que vous demande-t-on de faire, exactement ? Un site web a-t-il besoin d’ouvrir une fenêtre de votre ordinateur ?', note:'Aucun site n’a besoin que vous ouvriez une fenêtre de l’ordinateur. C’est le vrai signal d’alarme.' },
+    { texte:'Ctrl + V', bon:true, aide:'« Coller »… mais qu’avez-vous copié ? Cherchez l’étape qui vous fait coller quelque chose.', note:'On vous fait coller un texte que vous n’avez jamais copié : c’est la page qui l’a mis dans le presse-papiers, à votre insu.' },
+    { texte:'appuyez sur Entrée', bon:true, aide:'Cherchez le geste qui déclenche tout, celui après lequel on ne peut plus revenir en arrière.', note:'C’est ce dernier geste qui exécute la commande. Tant qu’on n’a pas validé, rien n’est fait.' },
+    { texte:'obligatoire pour accéder à la page', bon:true, aide:'Cherchez ce qui vous laisse croire que vous n’avez pas le choix.', note:'On vous fait croire qu’il n’y a pas d’alternative. Il y en a toujours une : fermer l’onglet.' },
+    { texte:'b2f705a9136c2f36', bon:false, note:'Un vrai contrôle anti-robot affiche bien un identifiant de ce genre. Ce n’est pas lui qui trahit l’arnaque — c’est ce qu’on vous demande de faire.' }
+  ],
+
+  /* ---- Cartes fiables : elles ont autant besoin d'une enquête que les autres.
+     Sans repères, l'absence d'étape « Enquêtez » trahissait le verdict. ---- */
+  'email-impots-ok': [
+    { texte:'ne-pas-repondre@dgfip.finances.gouv.fr', bon:true, aide:'Le nom affiché ne prouve rien : regardez l’adresse complète, juste en dessous. Par quoi se termine-t-elle ?', note:'L’adresse se termine par .gouv.fr, un domaine que seul l’État peut utiliser. C’est l’adresse complète qui est vérifiable, jamais le nom affiché au-dessus.' },
+    { texte:'consultable dans votre espace particulier', bon:true, aide:'Où vous envoie-t-on pour lire ce document ? Vers un lien du message, ou vers un espace que vous ouvrez vous-même ?', note:'On vous renvoie vers votre espace, que vous ouvrez vous-même en tapant l’adresse. Aucun lien à cliquer dans le message : c’est vous qui gardez la main.' },
+    { texte:'Aucune démarche n’est nécessaire', bon:true, aide:'Cherchez ce qui vous dit qu’il n’y a rien à faire, ni tout de suite ni plus tard.', note:'Rien ne vous est demandé, et aucun délai ne vous est imposé. Une arnaque a besoin que vous fassiez quelque chose : celle-ci ne vous demande rien.' },
+    { texte:'Mes documents', bon:false, note:'Le nom exact d’une rubrique fait sérieux, mais il se recopie depuis le vrai site en deux minutes. Un faux mail cite lui aussi les bonnes rubriques : ce détail ne rend pas ce message fiable.' }
+  ],
+  'sms-livraison-ok': [
+    { texte:'Suivi disponible dans l’application La Poste', bon:true, aide:'Comment vous propose-t-on de suivre le colis ? Par un lien, ou par quelque chose que vous ouvrez vous-même ?', note:'On vous renvoie vers l’application officielle que vous ouvrez vous-même. Le SMS piégé, lui, contient toujours un lien : c’est la différence qui compte.' },
+    { texte:'avec votre numéro de colis', bon:true, aide:'De quoi avez-vous besoin pour vérifier ? D’une information que vous détenez déjà, ou d’une information à donner ?', note:'On vous demande de vérifier avec une information que vous avez déjà. À aucun moment on ne vous réclame vos coordonnées ni votre carte.' },
+    { texte:'sera livré aujourd’hui entre 14h et 16h', bon:true, aide:'Que fait ce message, au fond : vous annonce-t-il quelque chose, ou vous demande-t-il quelque chose ?', note:'Le message annonce un créneau et s’arrête là. Un vrai transporteur informe ; il ne réclame jamais deux euros de « frais » pour libérer un colis.' },
+    { texte:'Colissimo', bon:false, note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « Colissimo ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
+  ],
+  'appel-banque-fraude-ok': [
+    { texte:'Je ne vous demanderai aucun code', bon:true, aide:'Que vous demande-t-on de dire ou de faire pendant l’appel ? Cherchez la phrase qui répond à cette question.', note:'C’est la phrase qui tranche. Un faux conseiller a besoin d’un code, d’un mot de passe ou d’une validation dans l’appli : sans cela, il n’a rien.' },
+    { texte:'rappelez le numéro au dos de votre carte', bon:true, aide:'Vers quel numéro vous renvoie-t-on : un numéro donné pendant l’appel, ou un numéro que vous possédez déjà ?', note:'On vous renvoie vers un numéro que vous détenez déjà, sur votre propre carte. Un escroc ne peut pas vous envoyer là : il perdrait la main.' },
+    { texte:'a été bloqué sur votre carte', bon:true, aide:'L’opération est-elle encore en cours, ou déjà réglée ? Cherchez ce qui vous dit qu’il n’y a rien à faire dans l’urgence.', note:'L’achat est déjà bloqué : il n’y a plus d’urgence, donc plus de raison de vous précipiter. Une vraie banque bloque d’abord et informe ensuite.' },
+    { texte:'CIC — service fraude', bon:false, note:'Le nom et le numéro qui s’affichent pendant un appel se truquent (« spoofing ») : ils ne prouvent ni que c’est votre banque, ni le contraire. Ce qui rend cet appel fiable, c’est qu’on ne vous demande rien.' }
+  ],
+  'notif-ameli-ok': [
+    { texte:'ameli', bon:true, aide:'D’où sort cette notification : d’une application installée sur votre téléphone, ou d’un message envoyé par quelqu’un ?', note:'Cette notification est poussée par l’application ameli, que vous avez installée vous-même : personne d’autre ne peut en envoyer à sa place. C’est là toute la différence avec un SMS signé « AMELI-INFO », dont le nom s’écrit librement.' },
+    { texte:'consultable dans l’onglet', bon:true, aide:'Où vous emmène-t-on pour voir le détail : vers l’extérieur, ou à l’intérieur de l’application ?', note:'Tout se passe dans l’application, sans aucun lien vers l’extérieur. Le faux SMS ameli, lui, ne sert qu’à vous faire sortir vers une fausse page.' },
+    { texte:'Le détail de vos derniers remboursements', bon:true, aide:'Que vous demande-t-on de fournir en échange de cette information ?', note:'Rien ne vous est réclamé : ni RIB, ni numéro de sécurité sociale, ni identifiant. Une notification qui informe sans rien demander n’a aucun intérêt pour un escroc.' },
+    { texte:'Un nouveau remboursement est disponible', bon:false, note:'« Un remboursement disponible », c’est exactement l’appât du faux SMS ameli. La phrase est la même : ce qui change, c’est qu’ici on ne vous demande rien pour l’obtenir.' }
+  ],
+  'email-commande-ok': [
+    { texte:'commandes@natureetdecouvertes.com', bon:true, aide:'Le nom affiché ne prouve rien : regardez l’adresse complète. Correspond-elle vraiment à l’enseigne ?', note:'L’adresse complète correspond au site où vous avez acheté. C’est elle qui est vérifiable — le nom affiché au-dessus, lui, s’écrit librement.' },
+    { texte:'Bonjour Madame Renard', bon:true, aide:'Comment vous appelle-t-on : par votre nom, ou par une formule qui vaut pour tout le monde ?', note:'On vous nomme correctement, parce que la boutique vous connaît. Un envoi de masse écrit « Cher client » : il ignore à qui il parle.' },
+    { texte:'à l’adresse enregistrée dans votre compte', bon:true, aide:'Vous redemande-t-on quelque chose que vous avez déjà donné ?', note:'Rien ne vous est redemandé : ni adresse, ni carte, ni identifiant. Le faux « problème de paiement » qui arrive après un vrai achat, lui, réclame toujours de ressaisir la carte.' },
+    { texte:'n° 4471902', bon:false, note:'Un numéro de commande fait sérieux, mais il s’invente en trois secondes. Ce qui rend ce message fiable, c’est que la commande existe et que rien ne vous est demandé.' }
+  ],
+  'sms-pharmacie-ok': [
+    { texte:'votre traitement commandé mardi', bon:true, aide:'Ce message parle-t-il de quelque chose que vous avez engagé vous-même ?', note:'Le message répond à une démarche que vous avez faite vous-même, mardi. Une arnaque, elle, tombe sur un événement que vous n’avez jamais déclenché.' },
+    { texte:'Vous pouvez le retirer aux horaires d’ouverture', bon:true, aide:'Que vous propose-t-on de faire : cliquer, payer, ou vous déplacer ?', note:'On vous invite à passer à la boutique, en personne. Il n’y a rien à cliquer, rien à payer en ligne, rien à confirmer.' },
+    { texte:'du lundi au samedi 9h-19h30', bon:true, aide:'Le contenu du message est-il vérifiable sans rien donner de vous ?', note:'Une information pratique, vérifiable en passant devant la pharmacie. Le message ne contient ni lien, ni pièce jointe, ni question : il n’y a rien à voler dedans.' },
+    { texte:'PharmacieCentrale', bon:false, note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « PharmacieCentrale ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
+  ],
+  'chat-petitfils-ok': [
+    { texte:'Théo (petit-fils)', bon:true, aide:'D’où vient ce nom : la personne l’a-t-elle écrit elle-même, ou est-ce vous qui l’avez enregistré ?', note:'Ce nom n’est pas écrit par l’expéditeur : c’est vous qui avez enregistré ce contact dans votre téléphone, et le message arrive dans la conversation habituelle. Un inconnu, lui, apparaîtrait comme un numéro.' },
+    { texte:'je suis pris à la fac de Rennes', bon:true, aide:'Ce contenu est-il vérifiable auprès de quelqu’un d’autre que la personne qui écrit ?', note:'Un fait précis, que n’importe qui dans la famille peut confirmer. Le faux proche, lui, reste vague et coupe court dès qu’on veut vérifier.' },
+    { texte:'tu me feras ton gratin ?', bon:true, aide:'De quoi parle ce message : d’argent, ou de votre vie commune ?', note:'La conversation continue une histoire que vous partagez depuis longtemps. Aucune demande d’argent, aucun code, aucun lien : rien à faire.' },
+    { texte:'Salut Mamie !', bon:false, note:'Un escroc commence lui aussi par « Salut Mamie ». L’appellation affectueuse ne prouve rien : ce qui rassure ici, c’est le numéro déjà enregistré et l’absence de toute demande.' }
+  ],
+  'email-mutuelle-ok': [
+    { texte:'info@harmonie-mutuelle.fr', bon:true, aide:'Regardez l’adresse complète de l’expéditeur : le domaine, après l’arobase, correspond-il à l’organisme ?', note:'Le domaine après l’arobase correspond à la mutuelle, et il ne s’invente pas comme un simple nom affiché. C’est la seule partie de l’en-tête qui se vérifie.' },
+    { texte:'au numéro figurant sur votre carte de tiers payant', bon:true, aide:'Quel numéro vous donne-t-on pour rappeler : un numéro écrit dans le mail, ou un numéro que vous avez déjà ?', note:'On vous renvoie au numéro inscrit sur VOTRE carte, pas à un numéro donné dans le message. C’est exactement ce qu’un escroc ne peut pas se permettre.' },
+    { texte:'versés automatiquement sur votre compte habituel', bon:true, aide:'Vous demande-t-on vos coordonnées bancaires ? Cherchez ce qui montre que non.', note:'Aucun RIB n’est demandé, parce que la mutuelle a déjà le vôtre : elle vous rembourse depuis des années. Un organisme qui vous redemande votre RIB par mail est un faux.' },
+    { texte:'Harmonie Mutuelle', bon:false, note:'Le nom affiché s’écrit librement : un faux message peut afficher « Harmonie Mutuelle » aussi bien qu’un vrai. C’est l’adresse complète, juste en dessous, qui est vérifiable.' }
+  ],
+  'notif-maj-appli-ok': [
+    { texte:'Play Store', bon:true, aide:'D’où sort cette notification : d’une application du téléphone, ou d’une fenêtre apparue en naviguant ?', note:'Cette notification est poussée par le magasin d’applications du téléphone, qui gère lui-même les mises à jour. La fausse alerte au virus, elle, apparaît dans le navigateur, sur une page web.' },
+    { texte:'Aucune action n’est requise', bon:true, aide:'Que vous demande-t-on d’installer, de cliquer ou d’appeler ?', note:'Rien à cliquer, rien à installer, aucun numéro à appeler. Le faux support technique, lui, ne vit que de l’action qu’il vous arrache.' },
+    { texte:'ont été mises à jour automatiquement', bon:true, aide:'La chose est-elle encore à faire, ou déjà faite ?', note:'C’est déjà fait : le message constate, il ne réclame pas. Une vraie mise à jour est discrète et ne vous met jamais en scène.' },
+    { texte:'Ma Banque', bon:false, note:'Voir le nom de vos vraies applications rassure, mais cette notification vient du magasin d’applications, pas d’elles. Un nom cité dans un texte ne prouve rien : c’est l’origine de la notification qui compte.' }
+  ],
+  'email-abonnement-ok': [
+    { texte:'abonnements@lemonde.fr', bon:true, aide:'Regardez l’adresse complète : le domaine, après l’arobase, est-il bien celui du journal ?', note:'Le domaine après l’arobase est celui du journal auquel vous êtes abonné. C’est la partie vérifiable de l’en-tête, contrairement au nom affiché.' },
+    { texte:'modifier ou résilier votre abonnement à tout moment depuis votre compte', bon:true, aide:'Vous laisse-t-on le choix ? Cherchez ce qui vous rend la main.', note:'On vous rappelle que vous pouvez partir, depuis votre compte que vous ouvrez vous-même. Une arnaque ne vous rend jamais la main : elle vous enferme.' },
+    { texte:'Aucune action n’est nécessaire', bon:true, aide:'Y a-t-il un bouton de paiement, une carte à ressaisir, une date couperet ?', note:'Aucun bouton de paiement, aucune carte à ressaisir, et un mois de délai. Le faux avis de renouvellement, lui, annonce un échec de paiement et exige la carte tout de suite.' },
+    { texte:'au tarif de 99 €', bon:false, note:'Le montant saute aux yeux, et c’est justement sur lui que jouent les faux avis de prélèvement. Un chiffre ne prouve rien : ce qui compte, c’est qu’on ne vous demande ni carte, ni clic.' }
+  ],
+  'appel-mairie-ok': [
+    { texte:'Vous recevrez une invitation par courrier', bon:true, aide:'Cet appel restera-t-il une parole en l’air, ou en aurez-vous une trace ?', note:'Une confirmation écrite est annoncée : vous pourrez tout relire à tête reposée. Un escroc a besoin que tout se règle pendant l’appel, sans trace.' },
+    { texte:'Rien à régler, rien à signer aujourd’hui', bon:true, aide:'Que vous demande-t-on de décider tout de suite ?', note:'Aucune décision immédiate ne vous est arrachée. Le démarchage abusif, lui, vit de la signature obtenue avant que vous ayez pu réfléchir.' },
+    { texte:'C’est offert par la commune', bon:true, aide:'Y a-t-il de l’argent en jeu ? Cherchez la réponse à votre propre question.', note:'On répond franchement à votre question sur l’argent : il n’y en a pas. Aucune coordonnée bancaire n’est demandée, à aucun moment.' },
+    { texte:'02 96 41 12 08', bon:false, note:'Un numéro local, qui ressemble à celui de votre commune, ne prouve rien : l’afficheur se truque (« spoofing »). Ce qui rend cet appel fiable, c’est qu’on ne vous demande ni argent, ni signature.' }
+  ],
+  'sms-rdv-ok': [
+    { texte:'Pour annuler, connectez-vous à votre compte Doctolib', bon:true, aide:'Comment vous propose-t-on d’annuler : par un lien du message, ou par votre compte ?', note:'On vous renvoie à votre compte, que vous ouvrez vous-même. Aucun lien ne figure dans le message : c’est vous qui allez chercher l’information.' },
+    { texte:'Dr Nguyen (cardiologie)', bon:true, aide:'Le rendez-vous annoncé correspond-il à quelque chose que vous avez fait vous-même ?', note:'Le praticien est nommé, et c’est vous qui avez pris ce rendez-vous. Un faux rappel reste flou sur l’essentiel, parce qu’il ne sait rien de vous.' },
+    { texte:'demain 15/08 à 10h30, 4 rue des Lilas', bon:true, aide:'Ces informations sont-elles vérifiables sans rien donner de vous ?', note:'Date, heure et adresse sont précises et se recoupent avec votre agenda. Surtout, rien n’est demandé en retour : ni paiement, ni « confirmation » par carte.' },
+    { texte:'Doctolib', bon:false, note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « Doctolib ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
+  ],
+  'email-syndic-ok': [
+    { texte:'Le même dossier vous parviendra par courrier recommandé', bon:true, aide:'Ce message est-il le seul moyen d’obtenir ce document ? Cherchez le second canal.', note:'Le même dossier arrive aussi par la poste : vous pourrez recouper les deux. Un escroc évite soigneusement tout second canal, parce qu’il ne le contrôle pas.' },
+    { texte:'copropriete@cabinet-berthier.fr', bon:true, aide:'Regardez l’adresse complète : le domaine correspond-il au syndic que vous connaissez ?', note:'Le domaine après l’arobase est celui de votre syndic, celui qui figure sur vos appels de charges. C’est la partie vérifiable de l’en-tête.' },
+    { texte:'les devis reçus pour la réfection du hall', bon:true, aide:'Le contenu correspond-il à quelque chose de réel dans votre immeuble ?', note:'Le message parle d’un dossier réellement en cours chez vous, que vos voisins connaissent aussi. Un faux syndic, lui, invente un motif générique.' },
+    { texte:'en pièce jointe', bon:false, note:'Une pièce jointe fait peur, à juste titre : c’est le véhicule favori des virus. Mais celle-ci est attendue, elle vient d’un expéditeur connu, et son contenu arrive aussi par la poste. Ce n’est pas la pièce jointe qui décide, c’est le fait qu’elle soit attendue ou non.' }
+  ],
+  'email-facture-energie-ok': [
+    { texte:'contact@edf.fr', bon:true, aide:'Regardez l’adresse complète de l’expéditeur : le domaine est-il celui du fournisseur ?', note:'Le domaine après l’arobase est celui du fournisseur, et il ne s’invente pas comme un nom affiché. C’est la partie de l’en-tête que vous pouvez vérifier.' },
+    { texte:'Ce montant comprend la régularisation annuelle de votre consommation', bon:true, aide:'Le message explique-t-il d’où sort la somme, ou se contente-t-il de vous alarmer ?', note:'Le message explique lui-même d’où vient la somme, calcul à l’appui. Un faux mail ne fait jamais cela : il a besoin que vous paniquiez, pas que vous compreniez.' },
+    { texte:'sur le compte habituel', bon:true, aide:'Vous annonce-t-on un changement de compte bancaire ? Cherchez la réponse.', note:'Aucun nouveau compte n’est annoncé : le prélèvement se fait comme les mois précédents. C’est précisément là qu’opère la fraude au changement de RIB, et il n’y en a pas trace ici.' },
+    { texte:'214,60 €', bon:false, note:'C’est le chiffre qui saute aux yeux, et c’est bien celui qu’on regarde en premier. Mais un montant élevé n’est ni une preuve d’arnaque, ni une preuve du contraire : ce qui compte, c’est qu’on ne vous demande ni lien, ni carte, ni nouveau RIB.' }
   ]
 };
 
