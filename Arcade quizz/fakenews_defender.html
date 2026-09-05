@@ -46,6 +46,10 @@
     width:min(660px,100%);
   }
   canvas { display:block; width:100%; height:auto; }
+  /* E2 : à la fin de la partie, l'overlay quitte le canvas et prend sa place dans le
+     flux : le récapitulatif a la hauteur qu'il lui faut au lieu de défiler dans le cadre. */
+  #canvas-wrap.fin canvas, #canvas-wrap.fin #feedback, #canvas-wrap.fin #question-banner { display:none; }
+  #canvas-wrap.fin #overlay { position:relative; inset:auto; min-height:520px; }
 
   /* Question banner */
   #question-banner {
@@ -306,6 +310,16 @@ speedLabelEl.textContent = SPEED_LEVELS[+speedSlider.value - 1].label;
 
 // ── ACTIVE QCM (used during game) ────────────────────────────
 let activeQCM = DEFAULT_QCM;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est ratée dès qu'elle coûte une vie (bonne réponse abattue, fausse échappée).
+let joue = [], qNotee = false, erreurQ = false;
+function noterQuestion() {
+  if (!currentQ || qNotee) return;
+  qNotee = true;
+  joue.push({ id: currentQ.q, titre: currentQ.q, reussi: !erreurQ, explication: currentQ.expl || '' });
+}
+function titreBrut(html) { const d = document.createElement('div'); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, ' '); return d.textContent; } // les clés de titre contiennent des <br>
 
 // ── GAME STATE ───────────────────────────────────────────────
 const canvas = document.getElementById('game');
@@ -536,6 +550,7 @@ function checkAllWrongGone() {
   if (!questionActive) return;
   const wrongAlive = answers.filter(a => !a.isCorrect && !a.dead);
   if (wrongAlive.length === 0) {
+    noterQuestion();
     score += 100;
     updateUI();
     playSound(660, .3, 'sine');
@@ -550,6 +565,7 @@ function checkAllWrongGone() {
 function loadQuestion() {
   if (qIndex >= activeQCM.length) { endGame(true); return; }
   currentQ = activeQCM[qIndex];
+  qNotee = false; erreurQ = false;
   document.getElementById('question-text').textContent = currentQ.q;
   document.getElementById('q-num').textContent = qIndex+1;
   document.getElementById('q-total').textContent = activeQCM.length;
@@ -588,10 +604,12 @@ function updateUI() {
 }
 
 // ── START ────────────────────────────────────────────────────
-function startDefaultGame() {
-  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
-  if (typeof QCMStore !== 'undefined') {
-    var _p = QCMStore.getSessionQuestions();
+function startDefaultGame(pool) {
+  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub) — E2 : les jamais
+  // vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs ».
+  if (Array.isArray(pool)) window.DEFAULT_QCM = pool;
+  else if (typeof QCMStore !== 'undefined') {
+    var _p = QCMStore.getSessionQuestions(QCMStore.cleMemoire());
     if (_p && _p.length) window.DEFAULT_QCM = _p;
   }
   activeQCM = DEFAULT_QCM;
@@ -600,6 +618,9 @@ function startDefaultGame() {
 
 function startGame() {
   document.getElementById('overlay').style.display='none';
+  document.getElementById('canvas-wrap').classList.remove('fin');
+  joue = [];
+  ColFin.protegerSortie(true);
   activeQCM = withShuffledOptions(activeQCM);
   score=0; lives=3; qIndex=0; bullets=[]; answers=[]; particles=[];
   plane.x=W/2; shootCooldown=0; feedbackTimer=null; paused=false;
@@ -614,24 +635,22 @@ function startGame() {
 function endGame(win) {
   gameRunning=false;
   document.getElementById('question-banner').style.display='none';
+  // E2 : sur une défaite, la question en cours est ratée (elle vient de coûter la dernière vie).
+  if (!win) noterQuestion();
   const ov=document.getElementById('overlay');
   ov.style.display='flex';
-  // Chantier 04 : sur une défaite, la question en cours reste sans réponse —
-  // on affiche son explication plutôt que de laisser le joueur sur son erreur.
-  const lastExpl = (!win && currentQ && currentQ.expl)
-    ? `<div class="sub" style="color:#ffd479;border-left:3px solid #ffaa00;padding-left:12px;text-align:left">💡 ${currentQ.expl}</div>`
-    : '';
-  ov.innerHTML=`
-    <h1 style="color:${win?'#00ffcc':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
-    <div class="sub">${I18N.t('finalScore')} <strong style="color:#00ffcc">${score}</strong><br>
-    ${win?I18N.t('winMsg'):I18N.t('loseMsg')}
-    </div>
-    ${lastExpl}
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-      <button onclick="startDefaultGame()">${I18N.t('replay')}</button>
-      <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menu')}</button>
-    </div>
-  `;
+  document.getElementById('canvas-wrap').classList.add('fin');
+  // E2 : titre, score « bonnes / jouées », message, questions ratées avec leur explication et
+  // boutons (rejouer mes erreurs, rejouer, retour au hub) sont rendus par ColFin.
+  ov.innerHTML = '<div class="col-fin" id="ecran-fin"></div>';
+  ColFin.rendre({
+    cible: ov.firstElementChild, jeu: (typeof QCMStore !== 'undefined') ? QCMStore.cleMemoire() : 'arcade',
+    titre: titreBrut(win ? I18N.t('winTitle') : I18N.t('loseTitle')),
+    message: I18N.t('finalScore') + ' ' + score + ' — ' + (win ? I18N.t('winMsg') : I18N.t('loseMsg')),
+    score: joue.filter(j => j.reussi).length, total: joue.length, items: joue,
+    onRejouer: rates => startDefaultGame(activeQCM.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startDefaultGame()
+  });
 }
 
 // ── MAIN LOOP ────────────────────────────────────────────────
@@ -690,6 +709,7 @@ function gameLoop() {
             setTimeout(()=>{ a.dead=true; checkAllWrongGone(); }, 400);
           } else {
             lives--;
+            erreurQ = true;
             updateUI();
             playSound(150,.3,'sawtooth');
             // Chantier 04 : c'est LE moment pédagogique — le joueur vient d'abattre
@@ -718,6 +738,7 @@ function gameLoop() {
         a.dead=true;
         if(!a.isCorrect) {
           lives--;
+          erreurQ = true;
           updateUI();
           playSound(150,.4,'sawtooth');
           // F2 : nommer la réponse échappée, geler la chute pendant la lecture,
@@ -735,6 +756,7 @@ function gameLoop() {
             if (!stillWrong) {
               // Toutes les fausses réponses sont parties (tirées ou échappées) : avancer sans bonus.
               questionActive = false;
+              noterQuestion();
               showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
               setTimeout(()=>{ qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1200);
             }
