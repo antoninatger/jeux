@@ -157,12 +157,23 @@ let mi=0, sel={ethos:-1,pathos:-1,logos:-1}, order={}, stars=0;
 // Chantier 04 : les missions passaient toujours dans le même ordre. DECK est le
 // tirage mélangé de la partie en cours ; c'est lui qu'on indexe, pas MISSIONS.
 let DECK=[];
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les missions n'ont pas d'identifiant : leur objectif (goal) en tient lieu d'une partie à l'autre.
+// Une mission est « réussie » quand l'auditoire est convaincu (2 ou 3 étoiles).
+const JEU="grand-oral";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startGame(){
-  DECK=shuffle([...MISSIONS]);
+function startGame(sousDeck){
+  // E2 : toutes les missions sont jouées à chaque partie ; « rejouer mes erreurs » impose un paquet réduit
+  DECK=shuffle(sousDeck || [...MISSIONS]);
   mi=0; stars=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  $("hud-stars").textContent="⭐ 0"; // la partie repart sans recharger la page
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
@@ -291,6 +302,9 @@ function verdict(total){
   const M=DECK[mi];
   const got = total>=6?3 : total>=4?2 : total>=2?1 : 0;
   stars+=got;
+  // E2 : la leçon de la mission, précédée des réactions aux arguments qui n'ont pas porté
+  joue.push({id:M.goal, titre:M.goal, reussi:got>=2,
+    explication:texteBrut(REGS.filter(r=>M[r][sel[r]].pts<2).map(r=>M[r][sel[r]].fb).join(" ")+" "+M.lesson)});
   $("hud-stars").textContent="⭐ "+stars;
   let t;
   if(got===3) t="🎉 Ovation debout ! L'auditoire est conquis.";
@@ -319,12 +333,16 @@ function endGame(){
   $("hud").style.display="none";
   $("end").style.display="block";
   const max=DECK.length*3;
-  $("end-score").textContent="⭐ "+stars+" / "+max;
   let title,msg;
   if(stars>=max-2){title="🏆 Orateur d'exception !";msg="Tu maîtrises l'art le plus fin de la rhétorique : <b>l'adaptation à l'auditoire</b>. Ethos, pathos, logos… tu sais lequel dégainer, et surtout comment le formuler pour CE public-là.";}
   else if(stars>=Math.round(max*0.55)){title="🎙️ Bon orateur !";msg="Tes discours portent ! Garde le réflexe clé : avant de parler, demande-toi <b>« qu'est-ce qui compte pour EUX ? »</b> — leurs valeurs, leurs craintes, leurs fiertés.";}
   else{title="📢 Orateur en herbe";msg="La rhétorique se <b>pratique</b> plus qu'elle ne s'apprend ! Relis les réactions de l'auditoire : un argument vrai mais mal ciblé convainc moins qu'un argument adapté.";}
   msg+="<br><br>💡 Et souviens-toi : connaître ces techniques sert à <b>convaincre honnêtement</b>… et à repérer quand on les utilise sur toi.";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, étoiles, message, missions manquées et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: texteBrut(msg),
+    score: stars, total: max, items: joue,
+    onRejouer: rates => startGame(MISSIONS.filter(M => rates.some(r => r.id===M.goal))),
+    onRecommencer: () => startGame()
+  });
 }
