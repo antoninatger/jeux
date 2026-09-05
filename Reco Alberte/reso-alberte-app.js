@@ -58,27 +58,55 @@ function addMsg(who, text, cls=""){
   msgs.scrollTop = msgs.scrollHeight;
   transcript.push({ who, text: stripHtml(text) });
 }
+/* La bulle « … » est un vrai bouton : cliquer (ou Entrée / Espace dessus)
+   affiche tout de suite la réplique en attente. Sans ça, une partie de
+   soixante répliques impose trois minutes d'attente cumulée, sans aucun
+   moyen d'accélérer. */
 function typing(){
   const row = document.createElement("div");
   row.className="row";row.id="typing";
-  row.innerHTML='<div class="bubble alberte typing"><span></span><span></span><span></span></div>';
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "bubble alberte typing";
+  b.setAttribute("aria-label", "Afficher tout de suite ce qu'Alberte écrit");
+  b.innerHTML = '<span></span><span></span><span></span>';
+  b.onclick = sauterLaFrappe;
+  row.appendChild(b);
   msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;
+  b.focus({ preventScroll:true });
 }
 function stopTyping(){ const t=$("typing"); if(t) t.remove(); }
 
+/* Pendant qu'Alberte « écrit », cette variable contient de quoi passer à la
+   suite tout de suite. Elle vaut null quand il n'y a rien à sauter. */
+let sauterFrappe = null;
+function sauterLaFrappe(){ if(sauterFrappe) sauterFrappe(); }
+
+/* Un clic n'importe où dans la conversation saute aussi : viser une bulle de
+   sept pixels au doigt n'est pas raisonnable. */
+msgs.addEventListener("click", sauterLaFrappe);
+
 /* --- Alberte parle (avec délai réaliste) --- */
 function alberteSay(lines, cb){
-  let i=0;
+  let i=0, minuteur=null;
+
+  const afficher=()=>{
+    clearTimeout(minuteur);
+    stopTyping();
+    addMsg("alberte", lines[i], "alberte");
+    i++;
+    // pendant la petite pause entre deux répliques, sauter = passer à la suivante
+    sauterFrappe = ()=>{ clearTimeout(minuteur); next(); };
+    minuteur = setTimeout(next, 350);
+  };
+
   const next=()=>{
-    if(i>=lines.length){ cb&&cb(); return; }
+    clearTimeout(minuteur);
+    if(i>=lines.length){ sauterFrappe=null; cb&&cb(); return; }
     typing();
+    sauterFrappe = afficher;
     const visibleLen = stripHtml(lines[i]).length; // le balisage (ex. <img>) ne doit pas gonfler le délai de frappe
-    setTimeout(()=>{
-      stopTyping();
-      addMsg("alberte", lines[i], "alberte");
-      i++;
-      setTimeout(next, 350);
-    }, 650 + visibleLen*12);
+    minuteur = setTimeout(afficher, 650 + visibleLen*12);
   };
   next();
 }
@@ -88,7 +116,10 @@ function showChips(list){
   chipsBox.innerHTML="";
   if(mode === "avance") return;   // mode Avancé : aucune suggestion
   list.forEach(c=>{
-    const el=document.createElement("div");
+    // <button> et non <div onclick> : au clavier, les puces étaient
+    // inatteignables, et le mode Normal repose entièrement sur elles.
+    const el=document.createElement("button");
+    el.type="button";
     el.className="chip";el.textContent=c;
     el.onclick=()=>{ input.value=c; input.focus(); };
     chipsBox.appendChild(el);
@@ -98,10 +129,12 @@ function showChips(list){
 /* --- Puce de fin de conversation (scénario finale) : le joueur choisit quand refermer --- */
 function showEndChip(){
   chipsBox.innerHTML="";
-  const el=document.createElement("div");
+  const el=document.createElement("button");
+  el.type="button";
   el.className="chip";el.textContent="Fin de la conversation";
   el.onclick=()=>{ chipsBox.innerHTML=""; nextScenario(); };
   chipsBox.appendChild(el);
+  el.focus({ preventScroll:true });
 }
 
 /* --- Avatar (photo de profil, réelle dès le départ — c'est justement ce qu'il faudra repérer) --- */
