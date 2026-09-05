@@ -1,4 +1,4 @@
-// Level 2 — Disinformation, Beyond Fake News (high school, 15-18 ans)
+// Level 2 — Disinformation, Beyond Fake News (high school, 15-18)
 // Source : QCM - Désinformation au-delà de la Fake News.txt
 
 var QUESTIONS_NIVEAU2 = [
@@ -7,17 +7,17 @@ var QUESTIONS_NIVEAU2 = [
     cat: "🔍 Fake News & verification",
     q: "What is fake news?",
     options: [
-      "information contrary to reality",
+      "Information that contradicts reality",
       "An opinion disguised as a fact",
       "A humorous hoax",
-      "information placed in the wrong context"
+      "Information stripped of its context"
     ],
     answer: 0,
-    expl: "A fake news is A information deliberement false, contraire au real — to distinguer de the opinion, of the canular ou de the information mal contextualisee."
+    expl: "Fake news is deliberately false information, at odds with reality — to be distinguished from an opinion, a hoax, or information stripped of its context."
   },
   {
     cat: "🔍 Fake News & verification",
-    q: "Who popularized the term “fake news” in 2016?",
+    q: "Who popularised the term \"fake news\" in 2016?",
     options: [
       "Barack Obama",
       "Hillary Clinton",
@@ -25,31 +25,31 @@ var QUESTIONS_NIVEAU2 = [
       "Mark Zuckerberg"
     ],
     answer: 2,
-    expl: "Donald Trump a popularise the expression en 2016 for qualifier Some information vraies who The derangeaient — retournant ainsi The concept against The presse it-same."
+    expl: "Donald Trump popularised the expression in 2016 to label true reporting that he found inconvenient — turning the concept back against the press itself."
   },
   {
     cat: "🔍 Fake News & verification",
-    q: "Which criterion helps check information?",
+    q: "Which criterion helps you check a piece of information?",
     options: [
-      "The number of “likes”",
+      "The number of \"likes\"",
       "The length of the article",
-      "Multiple sources",
+      "The number of separate sources",
       "The presence of images"
     ],
     answer: 2,
-    expl: "Croiser several sources independantes is The method de base of the fact-checking. Likes, longueur et images are not Some indicateurs de reliability."
+    expl: "Cross-checking several independent sources is the basic method of fact-checking. Likes, length and images say nothing about reliability."
   },
   {
     cat: "🔍 Fake News & verification",
-    q: "Why are verification criteria not 100% reliable?",
+    q: "Verification criteria are not 100% reliable because…?",
     options: [
       "They are too complicated",
       "Only journalists can use them",
-      "They only work on the Internet",
+      "They only work online",
       "They are clues, not absolute proof"
     ],
     answer: 3,
-    expl: "Aucun critere de verification ne garantit The verite absolue : ce are Some indices who augmentent ou diminuent The probabilite What A information soit reliable."
+    expl: "No verification criterion guarantees absolute truth: they are clues that raise or lower the probability that a piece of information is reliable."
   },
 
   // ── Disinformation & misinformation ──────────────────────────
@@ -57,25 +57,25 @@ var QUESTIONS_NIVEAU2 = [
     cat: "⚠️ Disinformation & misinformation",
     q: "What is disinformation?",
     options: [
-      "Unintentionally sharing false information",
+      "Sharing false information unintentionally",
       "Publishing an opinion as a fact",
-      "Deliberately transmitting false information",
-      "Spreading information without citing its source"
+      "Passing on false information deliberately",
+      "Circulating a story without naming its source"
     ],
     answer: 2,
-    expl: "The disinformation is intentionnelle : on sait that the information is false et on The diffuse quand same for tromper. It is ce who The distingue of the misinformation."
+    expl: "Disinformation is intentional: you know the story is false and you spread it anyway, in order to deceive. That is what sets it apart from misinformation."
   },
   {
     cat: "⚠️ Disinformation & misinformation",
     q: "What is misinformation?",
     options: [
-      "Refusing to share true information",
-      "Creating false evidence",
-      "Deliberately transmitting false information",
-      "Unintentionally sharing false information"
+      "Refusing to share a true story",
+      "Manufacturing false evidence",
+      "Passing on false information deliberately",
+      "Sharing false information unintentionally"
     ],
     answer: 3,
-    expl: "The misinformation is spread de good foi : on believes the information true, mais it is false. The intention is not malveillante, contrairement to The disinformation."
+    expl: "Misinformation is spread in good faith: you believe the story is true, but it is false. The intent is not malicious, unlike disinformation."
   },
 
   // ── Correlation & causation ───────────────────────────────────
@@ -83,67 +83,67 @@ var QUESTIONS_NIVEAU2 = [
     cat: "🔗 Correlation & causation",
     q: "What is the difference between correlation and causation?",
     options: [
-      "Correlation is stronger",
+      "Correlation is the stronger of the two",
       "They are synonyms",
-      "Correlation links things without one causing the other",
+      "Correlation links without one causing the other",
       "Causation is a statistical link"
     ],
     answer: 2,
-    expl: "correlation = lien statistique between deux variables. causation = the A provoque the autre. Confondre The deux is the A Some sources The plus frequentes de disinformation."
+    expl: "Correlation = a statistical link between two variables. Causation = one brings about the other. Confusing the two is among the most frequent sources of disinformation."
   },
   {
     cat: "🔗 Correlation & causation",
-    q: "What does “concomitance” mean?",
+    q: "What does \"concomitance\" refer to?",
     options: [
       "A cause-and-effect link",
       "A proven correlation",
-      "Two simultaneous events by coincidence",
+      "Two events that coincide by chance",
       "A manipulation technique"
     ],
     answer: 2,
-    expl: "The concomitance, it is quand deux evenements se produisent en same temps without aucun lien between eux. example classique : correlation between The films de Nicolas Cage et The noyades en piscine."
+    expl: "Concomitance is when two events happen at the same time with no link between them. The classic example: the correlation between Nicolas Cage films and swimming-pool drownings."
   },
 
   // ── Disinformation techniques ─────────────────────────────
   {
     cat: "🎭 Disinformation techniques",
-    q: "Disinforming by removing the context from true information is…?",
+    q: "Disinforming by stripping a true story of its context is called…?",
     options: [
       "Astroturfing",
-      "The manufacture of doubt",
-      "Decontextualization",
+      "Manufacturing doubt",
+      "Decontextualisation",
       "Mute news"
     ],
     answer: 2,
-    expl: "Decontextualization consiste to use A information true mais en supprimant its context, ce who en deforme radicalement The sens without mentir directement."
+    expl: "Decontextualisation uses genuinely true information but removes its context, which radically distorts its meaning without any direct lie."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "Decontextualization is dangerous because it…",
+    q: "Decontextualisation is dangerous because it…",
     options: [
-      "Invents non-existent facts",
-      "Uses computer-generated images",
-      "Distorts true information without directly lying",
+      "Invents facts that never existed",
+      "Relies on computer-generated images",
+      "Distorts a true story without lying outright",
       "Deletes online archives"
     ],
     answer: 2,
-    expl: "It is its force : on uses A fact real, ce who The rend difficile to refuter. Mais presentee hors context, A information true can conduire to A conclusion totalement false."
+    expl: "That is its strength: it uses a real fact, which makes it hard to refute. But out of context, a true story can lead to a completely false conclusion."
   },
   {
     cat: "🎭 Disinformation techniques",
     q: "What is astroturfing?",
     options: [
-      "Spreading false information on a large scale",
-      "Suppressing embarrassing information",
-      "Simulating a spontaneous grassroots movement",
+      "Spreading false stories on a massive scale",
+      "Deleting inconvenient information",
+      "Faking a spontaneous grassroots movement",
       "Paying corrupt journalists"
     ],
     answer: 2,
-    expl: "Astroturfing consiste to creer the illusion of A mouvement citoyen spontane (false comptes, false commentaires, false sondages) for donner the impression of A soutien populaire artificiel."
+    expl: "Astroturfing means creating the illusion of a spontaneous citizens' movement — fake accounts, fake comments, fake polls — to suggest an artificial groundswell of support."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "Which country is cited for its paid “trolls” as an example of astroturfing?",
+    q: "Which country is cited for its paid \"trolls\" as an example of astroturfing?",
     options: [
       "China",
       "North Korea",
@@ -151,23 +151,23 @@ var QUESTIONS_NIVEAU2 = [
       "Russia"
     ],
     answer: 3,
-    expl: "Russia is the example The plus documente with its \"usines to trolls\" (Internet Research Agency) who emploient Some milliers de people for simuler A opinion publique favorable."
+    expl: "Russia is the best-documented example, with its \"troll factories\" (the Internet Research Agency) employing thousands of people to simulate favourable public opinion."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "What is the “manufacture of doubt”?",
+    q: "What is \"manufacturing doubt\"?",
     options: [
       "Creating false scientific evidence",
-      "Deleting information from the Internet",
-      "Deliberately spreading confusion on a specific topic",
-      "Multiplying fake news"
+      "Erasing information from the internet",
+      "Sowing confusion about a specific subject",
+      "Producing fake news in volume"
     ],
     answer: 2,
-    expl: "The manufacture of doubt (agnotologie) consiste to semer deliberement The confusion on A consensus scientific etabli for paralyser toute decision ou regulation."
+    expl: "Manufacturing doubt (agnotology) means deliberately sowing confusion about an established scientific consensus, so as to paralyse any decision or regulation."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "Which industry is the best-known example of the manufacture of doubt?",
+    q: "Which industry is the best-known example of manufacturing doubt?",
     options: [
       "The pharmaceutical industry",
       "The oil industry",
@@ -175,11 +175,11 @@ var QUESTIONS_NIVEAU2 = [
       "The tobacco industry"
     ],
     answer: 3,
-    expl: "The tobacco industry a finance pendant Some decennies Some etudes for \"semer The doubt\" on The effets of the tabac, alors that its propres chercheurs savaient des The annees 1950 What it causait The cancer."
+    expl: "The tobacco industry funded studies for decades to \"sow doubt\" about the effects of smoking, when its own researchers had known since the 1950s that it caused cancer."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "Since when have we known cigarettes are dangerous?",
+    q: "Since when have we known that cigarettes are dangerous?",
     options: [
       "The 1970s",
       "The 1990s",
@@ -187,61 +187,61 @@ var QUESTIONS_NIVEAU2 = [
       "The 2000s"
     ],
     answer: 2,
-    expl: "The scientists de the industrie of the tabac savaient des The annees 1950 that The cigarette etait cancerigene. The \"fabrique of the doubt\" a permis de retarder toute regulation pendant Some decennies."
+    expl: "The tobacco industry's own scientists knew from the 1950s that cigarettes were carcinogenic. Manufacturing doubt held off regulation for decades."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "What is “mute news”?",
+    q: "What is \"mute news\"?",
     options: [
-      "spread de fausses information",
+      "Spreading false information",
       "Using bots to amplify messages",
-      "Silencing or minimizing certain information",
-      "Correcting information late"
+      "Silencing or playing down certain information",
+      "Correcting a story far too late"
     ],
     answer: 2,
-    expl: "Mute news, it is desinformer by omission : ne pas couvrir A evenement important, lui accorder peu de temps ou The releguer en bas de page is aussi A forme de manipulation de the information."
+    expl: "Mute news is disinformation by omission: leaving an important event uncovered, giving it little airtime or burying it down the page is also a way of manipulating information."
   },
   {
     cat: "🎭 Disinformation techniques",
-    q: "Which evenement a eclipse The revoltes en Iran (example de mute news)?",
+    q: "Which event eclipsed the uprisings in Iran (an example of mute news)?",
     options: [
-      "The affaire Benalla",
-      "The Gilets Jaunes",
-      "The accident de Pierre Palmade",
-      "The mouvement Me Too"
+      "The Benalla affair",
+      "The Yellow Vests",
+      "Pierre Palmade's car crash",
+      "The Me Too movement"
     ],
     answer: 2,
-    expl: "The accident de Pierre Palmade en fevrier 2023 a capte toute the attention mediatique francaise, eclipsant The revoltes en Iran — illustration parfaite of the mute news by saturation de the espace mediatique."
+    expl: "The car crash involving the comedian Pierre Palmade in February 2023 captured the whole of French media attention, eclipsing the uprisings in Iran — a perfect illustration of mute news by saturation of the media space."
   },
 
-  // ── Cognitive biases & cadrage ─────────────────────────────────
+  // ── Cognitive biases & framing ─────────────────────────────────
   {
     cat: "🧠 Bias & framing",
-    q: "What is “framing bias”?",
+    q: "What is \"framing bias\"?",
     options: [
-      "Inventer A false information",
-      "Suppressing true information",
-      "Spreading rumours massively",
-      "Steering the perception of true information"
+      "Inventing a false story",
+      "Deleting true information",
+      "Spreading rumours on a massive scale",
+      "Steering how a true story is perceived"
     ],
     answer: 3,
-    expl: "Framing bias (framing) consiste to presenter A information true of A facon who oriente the interpretation of the lecteur — without mentir, mais en selectionnant The mots, the angle ou The facts mis en before."
+    expl: "Framing bias means presenting true information in a way that steers the reader's interpretation — without lying, but by selecting the words, the angle and the facts put forward."
   },
   {
     cat: "🧠 Bias & framing",
-    q: "Which bias makes people believe something because many others believe it?",
+    q: "Which bias makes us believe something because a great many people subscribe to it?",
     options: [
       "Survivorship bias",
       "Framing bias",
       "Popularity bias",
-      "confirmation bias"
+      "Confirmation bias"
     ],
     answer: 2,
-    expl: "Popularity bias (ou \"evidence sociale\") nous fact believe What A opinion shared by many is forcement juste. It is A mecanisme tres exploite on The social media."
+    expl: "Popularity bias (or \"social proof\") makes us believe that an opinion shared by many must be right. It is a mechanism heavily exploited on social media."
   },
   {
     cat: "🧠 Bias & framing",
-    q: "Which channel is cited for anti-vaccine framing without direct fake news?",
+    q: "Which channel is cited for anti-vaccine framing without outright fake news?",
     options: [
       "CNN",
       "MSNBC",
@@ -249,23 +249,23 @@ var QUESTIONS_NIVEAU2 = [
       "ABC News"
     ],
     answer: 2,
-    expl: "Fox News a often oriente its traitement Some vaccins against The Covid-19 en choisissant The experts, The angles et The facts mis en before — without spread de fake news au sens strict, mais with A framing tres oriente."
+    expl: "Fox News often steered its coverage of the Covid-19 vaccines through its choice of experts, angles and highlighted facts — without broadcasting fake news in the strict sense, but with heavily loaded framing."
   },
   {
     cat: "🧠 Bias & framing",
-    q: "What is the correct lesson from survivorship bias about war planes?",
+    q: "What is the right lesson of survivorship bias on warplanes?",
     options: [
-      "Reinforce the hit areas",
-      "Replace damaged planes",
-      "The most-hit planes are the strongis",
-      "Reinforce the areas without bullet impacts"
+      "Reinforce the areas that were hit",
+      "Replace the damaged aircraft",
+      "The most heavily hit aircraft are the sturdiest",
+      "Reinforce the areas with no bullet holes"
     ],
     answer: 3,
-    expl: "Abraham Wald a compris that The avions revenus montraient The zones What on pouvait tolerer touchees. The avions abattus, invisibles in The data, avaient ete touches ailleurs — lto ou it fallait renforcer the armure."
+    expl: "Abraham Wald realised that the planes that came back showed the areas a plane could survive being hit. The planes shot down, invisible in the data, had been hit elsewhere — and that is where the armour was needed."
   },
   {
     cat: "🧠 Bias & framing",
-    q: "Which scientist highlighted survivorship bias?",
+    q: "Which scientist brought survivorship bias to light?",
     options: [
       "Charles Darwin",
       "Albert Einstein",
@@ -273,44 +273,44 @@ var QUESTIONS_NIVEAU2 = [
       "Isaac Newton"
     ],
     answer: 2,
-    expl: "Abraham Wald, statisticien hongrois, a demontre The bias of the survivant durant The Seconde Guerre mondiale en analysant The impacts de balles on The avions de the armee americaine."
+    expl: "Abraham Wald, a Hungarian statistician, demonstrated survivorship bias during the Second World War by analysing the bullet holes on United States Army aircraft."
   },
 
-  // ── Médias, neutralité & théories ────────────────────────────
+  // ── Media, neutrality & theories ────────────────────────────
   {
     cat: "📡 Media & neutrality",
-    q: "How did Trump use the term “fake news” in 2016?",
+    q: "How did Trump use the term \"fake news\" in 2016?",
     options: [
-      "To denounce lies about him",
+      "To denounce lies told about him",
       "To censor media outlets",
-      "To describe true information that bothered him",
-      "To promote his own media"
+      "To label true reporting that he found inconvenient",
+      "To promote his own media outlets"
     ],
     answer: 2,
-    expl: "Trump a retourne The terme against The presse en qualifiant de \"fake news\" Some information vraies mais derangeantes — transformant ainsi A outil critique en arme rhetoric against The journalists."
+    expl: "Trump turned the term back against the press, calling true but inconvenient reporting \"fake news\" — converting a critical tool into a rhetorical weapon against journalists."
   },
   {
     cat: "📡 Media & neutrality",
-    q: "Can a media outlet be totally neutral?",
+    q: "Can a media outlet be entirely neutral?",
     options: [
-      "Yes, by publishing only facts",
+      "Yes, by publishing nothing but facts",
       "Yes, with well-trained journalists",
-      "No, because all media have political funders",
-      "No, neutrality always depends on context"
+      "No, because every outlet has political backers",
+      "No, neutrality always depends on the context"
     ],
     answer: 3,
-    expl: "The neutralite absolue is impossible : choisir Which facts publier, in Which ordre, with Which mots, it is dejto A prise de position. The neutralite is subjective et depend always of the context."
+    expl: "Absolute neutrality is impossible: choosing which facts to publish, in what order and in which words is already taking a position. Neutrality is subjective and always depends on the context."
   },
   {
     cat: "📡 Media & neutrality",
-    q: "Which conspiracy theory contributed to Putin’s attack on Ukraine?",
+    q: "Which conspiracy theory contributed to Putin's attack on Ukraine?",
     options: [
-      "The great replacement",
+      "The Great Replacement",
       "The New World Order",
-      "The “golden billion” theory",
+      "The \"golden billion\" theory",
       "Chemtrails"
     ],
     answer: 2,
-    expl: "The theorie russe of the \"milliard of or\" affirme that the Occident veut reduire The population mondiale to A milliard de people (of ou the hostilite envers The Russie). it a servi de justification ideologique to the invasion de the Ukraine."
+    expl: "The Russian \"golden billion\" theory holds that the West wants to cut the world population to one billion people (hence its hostility towards Russia). It served as ideological justification for the invasion of Ukraine."
   }
 ];
