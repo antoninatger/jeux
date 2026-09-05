@@ -286,7 +286,8 @@ body.lvl2 .w.clickable:hover{color:#ffe0a0;background:rgba(255,200,100,.1);borde
   border-top-color:#aaa;border-left-color:#aaa;
   border-right-color:#222;border-bottom-color:#222;
   padding:24px 20px;max-width:450px;width:100%;text-align:center;
-  box-shadow:4px 4px 0 #000,8px 8px 0 #0a0a0a}
+  box-shadow:4px 4px 0 #000,8px 8px 0 #0a0a0a;
+  max-height:calc(100vh - 40px);overflow-y:auto /* E2 : le récapitulatif de fin peut être long */}
 .sico{font-size:2.8rem;display:block;margin-bottom:8px;animation:flt 1s step-end infinite}
 @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .stit{font-family:'Press Start 2P',monospace;font-size:clamp(var(--fs-100),2.6vw,var(--fs-200));
@@ -447,21 +448,18 @@ body.lvl2 .w.clickable:hover{color:#ffe0a0;background:rgba(255,200,100,.1);borde
 <div class="screen" id="win-screen" style="display:none">
   <div class="sbox">
     <span class="sico">💎</span>
-    <div class="stit gold" data-i18n="winTitle">DIAMANT TROUVÉ !</div>
-    <p class="sdsc" data-i18n-html="winDesc">La roche est brisée !<br>Tu maîtrises l'art du mot précis.</p>
-    <div class="spts" id="win-pts">0 PTS</div>
-    <button class="sbtn g" onclick="goMenu()" data-i18n="menuBtn">▶ MENU</button>
-    <button class="sbtn gr" onclick="restart()" data-i18n="replayBtn">▶ REJOUER</button>
+    <!-- E2 : titre, score, phrases ratées avec leur explication et boutons sont rendus par ColFin ;
+         « MENU » (choix du niveau) reste dessous. -->
+    <div class="col-fin" id="fin-win"></div>
+    <button class="sbtn g" onclick="goMenu()" data-i18n="menuBtn" style="margin-top:14px">▶ MENU</button>
   </div>
 </div>
 
 <div class="screen" id="over-screen" style="display:none">
   <div class="sbox">
     <span class="sico" style="animation:none">💀</span>
-    <div class="stit red" data-i18n="overTitle">GALERIE EFFONDRÉE</div>
-    <p class="sdsc" data-i18n-html="overDesc">La roche t'a eu…<br>Un seul mot change tout<br>entre un FAIT et une OPINION !</p>
-    <button class="sbtn r" onclick="restart()" data-i18n="restartBtn">▶ RECOMMENCER</button>
-    <button class="sbtn gr" onclick="goMenu()" data-i18n="menuBtn">▶ MENU</button>
+    <div class="col-fin" id="fin-over"></div>
+    <button class="sbtn gr" onclick="goMenu()" data-i18n="menuBtn" style="margin-top:14px">▶ MENU</button>
   </div>
 </div>
 

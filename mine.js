@@ -227,6 +227,27 @@ let score=0, lives=3, mined=0, lvl=1;
 let qPool=[], qIdx=0, answered=false, tries=0;
 let solvedIdx=new Set(), solvedKeys=new Set(); // phrases déjà réussies : jamais reproposées
 function qKeyOf(q){ return q.avant+q.mot+q.apres+'_'+q.type; }
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Identifiant stable d'une phrase : qKeyOf(q), la clé que le jeu utilise déjà. Une phrase
+// ratée puis réussie plus tard dans la même partie reste « à revoir ».
+const JEU='mine';
+let joue=[];
+let dureeChoisie=10;    // 5 ou 10 blocs, choisi au menu ; « rejouer mes erreurs » joue autant de blocs que d'erreurs
+function noter(q,ok){
+  const id=qKeyOf(q), deja=joue.find(j=>j.id===id);
+  if(deja){ if(!ok) deja.reussi=false; return; }
+  joue.push({id, titre:q.avant+q.mot+q.apres, reussi:ok, explication:q.exp});
+}
+function texteBrut(html){ const d=document.createElement('div'); d.innerHTML=String(html).replace(/<br\s*\/?>/gi,' '); return d.textContent; }
+function finDePartie(cibleId, titre, message){
+  ColFin.rendre({
+    cible:document.getElementById(cibleId), jeu:JEU, titre, message,
+    score:joue.filter(j=>j.reussi).length, total:joue.length, items:joue,
+    retour:'index.html', // la page est à la racine : le repli « ../index.html » du composant ne convient pas
+    onRejouer: rates => restart(QUESTIONS.filter(q => rates.some(r => r.id===qKeyOf(q)))),
+    onRecommencer: () => restart()
+  });
+}
 let blockClicks=0;       // clicks on current block (0→3 to reveal phrase)
 let questionsToWin=10;   // 10 for normal, 5 for quick mode
 let phase='mining';      // 'mining' | 'question'
@@ -576,6 +597,7 @@ function pickChoice(btn,idx,q){
   document.querySelectorAll('.cbtn').forEach(b=>b.disabled=true);
   const fb=document.getElementById('panel-fb');
   const nx=document.getElementById('panel-next');
+  noter(q, idx===q.correct);
   if(idx===q.correct){
     btn.classList.add('ok');
     fb.className='fb ok';fb.textContent='✔ '+q.exp;fb.style.display='block';
@@ -651,6 +673,7 @@ function validateInput(){
   const extra=getExtraList(q);
   if(chk(val,list)||chk(val,extra)){
     answered=true;
+    noter(q,true);
     fb.className='fb ok';fb.textContent='✔ '+q.exp;fb.style.display='block';
     document.getElementById('btn-force')?.style.setProperty('display','none');
     document.getElementById('ip-row').style.display='none';tr.textContent='';
@@ -666,6 +689,7 @@ function validateInput(){
     tries++;
     if(tries>=2){
       answered=true;
+      noter(q,false);
       fb.className='fb ko';fb.textContent='✘ '+q.exp+I18N.t('exampleA')+list[0]+I18N.t('exampleB');fb.style.display='block';
       document.getElementById('ip-row').style.display='none';tr.textContent='';
       document.getElementById('btn-force')?.style.setProperty('display','block');
@@ -791,11 +815,14 @@ function launchConfetti(){
 ══════════════════════════════════════ */
 function doWin(){
   closePanel();
-  document.getElementById('win-pts').textContent=score+' PTS';
   document.getElementById('win-screen').style.display='flex';
+  finDePartie('fin-win', I18N.t('winTitle'), texteBrut(I18N.t('winDesc'))+' '+score+' PTS');
   launchConfetti();
 }
-function showOver(){document.getElementById('over-screen').style.display='flex';}
+function showOver(){
+  document.getElementById('over-screen').style.display='flex';
+  finDePartie('fin-over', I18N.t('overTitle'), score+' PTS — '+texteBrut(I18N.t('overDesc')));
+}
 function goMenu(){
   document.getElementById('win-screen').style.display='none';
   document.getElementById('over-screen').style.display='none';
@@ -814,6 +841,7 @@ function showDurationPicker(l){
 function selectDuration(n){
   lvl=pendingLvl;
   questionsToWin=n;
+  dureeChoisie=n;
   document.getElementById('duration-screen').style.display='none';
   // show tuto adapted to level
   document.getElementById('tuto-step-lvl1').style.display=lvl===1?'flex':'none';
@@ -827,10 +855,10 @@ function selectLvl(l){
   document.getElementById('menu-screen').style.display='none';
   startGame();
 }
-function restart(){
+function restart(pool){
   document.getElementById('win-screen').style.display='none';
   document.getElementById('over-screen').style.display='none';
-  startGame();
+  startGame(pool);
 }
 
 /* ══════════════════════════════════════
@@ -840,15 +868,23 @@ function closeTuto(){
   document.getElementById('tuto').style.display='none';
 }
 
-function startGame(){
+function startGame(pool){
+  // appelée aussi depuis un onclick : l'événement n'est pas un paquet
+  pool = Array.isArray(pool) ? pool : null;
   score=0;lives=3;mined=0;qIdx=0;answered=false;tries=0;
+  joue=[];
+  ColFin.protegerSortie(true);
   solvedIdx=new Set();solvedKeys=new Set();
   blockClicks=0;phase='mining';totalCracks=0;crackDrawnCount=0;
   document.getElementById('cracks').innerHTML='';
   document.getElementById('click-hint').style.display='block';
   document.getElementById('click-counter').textContent='';
+  // E2 : « rejouer mes erreurs » — autant de blocs que de phrases ratées, sinon la durée choisie au menu
+  questionsToWin = pool ? pool.length : dureeChoisie;
   updateHUD();
-  if(questionsToWin===5){
+  if(pool){
+    qPool=[...pool].sort(()=>Math.random()-.5);
+  } else if(questionsToWin===5){
     // balanced 5-question pool: at least 2 to-fait + 2 to-opinion
     const toFait=QUESTIONS.filter(q=>q.type==='to-fait').sort(()=>Math.random()-.5);
     const toOp  =QUESTIONS.filter(q=>q.type==='to-opinion').sort(()=>Math.random()-.5);
