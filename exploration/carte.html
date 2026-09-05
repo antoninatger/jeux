@@ -168,7 +168,9 @@ I18N.register({
 
   var LIEUX = [
     { id:'radarnaque',    nom:I18N.t('n_radarnaque'),   emoji:'🛡️', desc:I18N.t('d_radarnaque'),   url:'../radarnaque/index.html',              col:'#ef4444' },
-    { id:'fakemetre',     nom:I18N.t('n_fakemetre'),    emoji:'🕵️', desc:I18N.t('d_fakemetre'),    url:'https://antoninatger.github.io/fakemetre/', col:'#f59e0b' },
+    // sansFin : le Fakemètre vit dans un dépôt séparé et n'émet pas (encore) le message
+    // « col:fin-de-partie » — pour lui seul, l'ouverture vaut fin d'étape (voir ouvrir()).
+    { id:'fakemetre',     nom:I18N.t('n_fakemetre'),    emoji:'🕵️', desc:I18N.t('d_fakemetre'),    url:'https://antoninatger.github.io/fakemetre/', col:'#f59e0b', sansFin:true },
     { id:'chasse-biais',  nom:I18N.t('n_chasse'),       emoji:'🎯', desc:I18N.t('d_chasse'),       url:'../chasse-aux-biais/index.html',        col:'#10b981' },
     { id:'radar-desinfo', nom:I18N.t('n_radardesinfo'), emoji:'📡', desc:I18N.t('d_radardesinfo'), url:'../radar-desinfo/index.html',           col:'#3b82f6' },
     { id:'arene',         nom:I18N.t('n_arene'),        emoji:'⚔️', desc:I18N.t('d_arene'),        url:'../arene-rhetorique/index.html',        col:'#8b5cf6' },
@@ -307,9 +309,11 @@ I18N.register({
     frame.src = l.url;
     player.classList.add('open');
     document.body.style.overflow='hidden';
-    // REPLI E2 — marque visité + débloque la suite dès l'ouverture. À
-    // retirer quand les 14 jeux enverront « col:fin-de-partie » : le
-    // déblocage passera alors entièrement par terminer().
+    // Depuis E2, les jeux du parcours envoient « col:fin-de-partie » : l'étape se
+    // termine et la suite se débloque dans terminer(), à la fin réelle de la
+    // partie. Seul le Fakemètre (dépôt séparé, hors E2) garde l'ancien repli :
+    // pour lui, l'ouverture vaut fin d'étape — sinon le parcours s'y arrêterait.
+    if(!l.sansFin) return;
     var etaitFront = (i === prog.reached - 1);
     prog.visited[l.id] = true;
     if(etaitFront && prog.reached < LIEUX.length){ prog.reached++; }
@@ -331,12 +335,12 @@ I18N.register({
      antoninatger.github.io, les autres jeux depuis ce domaine-ci. Une liste
      d'origines serait à tenir à jour ; celle-ci se vérifie toute seule.
 
-     Transitoire : tant que les 14 jeux n'émettent pas encore le message
-     (tâche E2 du plan), `ouvrir()` continue de débloquer la suite comme
-     avant — sinon le parcours ne débloquerait plus rien du tout. Quand E2
-     sera passée, il n'y aura qu'à retirer les trois lignes marquées
-     « REPLI E2 » dans ouvrir() : le déblocage se fera alors uniquement à la
-     fin réelle d'une partie, ce que la tâche demande. */
+     Depuis la tâche E2 (5 septembre 2026), les cinq jeux du parcours servis
+     par ce dépôt émettent le message : le déblocage passe par terminer(),
+     à la fin réelle d'une partie. Le Fakemètre, dépôt séparé, ne l'émet pas
+     encore : `ouvrir()` garde pour lui seul (LIEUX[].sansFin) l'ancien
+     déblocage à l'ouverture. À retirer quand le Fakemètre appellera
+     Collection.finDePartie(). */
   window.addEventListener('message', function(e){
     if(lieuOuvert < 0 || !frame.contentWindow) return;
     if(e.source !== frame.contentWindow) return;
