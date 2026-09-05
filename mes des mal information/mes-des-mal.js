@@ -8,6 +8,15 @@ let streak = 0;
 let answered = false;
 let chatTimer = null;
 let stats = { mes:{ok:0,tot:0}, des:{ok:0,tot:0}, mal:{ok:0,tot:0} };
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication, i}.
+// Les scénarios n'ont pas d'identifiant : leur étiquette et leur texte principal en tiennent lieu.
+const JEU = "mes-des-mal";
+let joue = [];
+function texteBrut(html){ const d = document.createElement("div"); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, " "); return d.textContent; }
+function titreScenario(s){
+  const corps = s.headline || s.title || s.subject || s.query || s.body || (s.chat ? s.chat.map(m => m.t).join(" ") : "");
+  return texteBrut((s.tag ? s.tag + " — " : "") + corps);
+}
 
 const $ = id => document.getElementById(id);
 
@@ -83,7 +92,7 @@ function revealChatNow(){
   document.querySelectorAll("#scenario .chat .bubble").forEach(b => b.classList.add("in"));
 }
 
-function startGame(diff){
+function startGame(diff, indices){
   difficulty = diff || "normal";
   pool = difficulty === "hard" ? HARD : SCENARIOS;
   if(difficulty === "hard"){
@@ -93,6 +102,10 @@ function startGame(diff){
   } else {
     order = shuffle([...Array(pool.length).keys()]);
   }
+  // E2 : « rejouer mes erreurs » impose les seuls scénarios ratés
+  if(indices) order = shuffle(indices.slice());
+  joue = [];
+  ColFin.protegerSortie(true);
   idx = 0; score = 0; streak = 0;
   stats = { mes:{ok:0,tot:0}, des:{ok:0,tot:0}, mal:{ok:0,tot:0} };
   $("intro").classList.add("hidden");
@@ -146,6 +159,7 @@ function answer(choice){
   stats[correct].tot++;
 
   const isRight = choice === correct;
+  joue.push({ id: titreScenario(s), titre: titreScenario(s), reussi: isRight, explication: texteBrut(s.why), i: order[idx] });
   if(isRight){
     streak++;
     const bonus = streak >= 3 ? 5 : 0;        // bonus de série
@@ -191,8 +205,6 @@ function endGame(){
   $("game").classList.add("hidden");
   $("end").classList.remove("hidden");
   const max = order.length * 10;
-  $("finalScore").textContent = score;
-  $("maxScore").textContent = max;
 
   const totalOk = stats.mes.ok + stats.des.ok + stats.mal.ok;
   const pct = Math.round(totalOk / order.length * 100);
@@ -202,7 +214,14 @@ function endGame(){
   else if(pct >= 60) grade = I18N.t('grade60');
   else if(pct >= 40) grade = I18N.t('grade40');
   else grade = I18N.t('grade0');
-  $("grade").textContent = grade + " (" + totalOk + "/" + order.length + I18N.t('answersSuffix');
+  // E2 : verdict, score, scénarios ratés et boutons sont rendus par ColFin ; le bilan par catégorie suit.
+  ColFin.rendre({
+    jeu: JEU, titre: grade, message: score + " / " + max + " pts",
+    score: totalOk, total: order.length, items: joue,
+    onRejouer: rates => startGame(difficulty, rates.map(r => r.i)),
+    onRecommencer: () => startGame(difficulty),
+    rejouerTexte: I18N.t('replayLevel')
+  });
 
   // récap par catégorie
   const recap = $("recap");

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Més / Dés / Mal — Le tri de l'info</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<link rel="stylesheet" href="../collection.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -260,7 +262,7 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-entete="non">
 <a class="back-hub" href="../index.html">← Retour aux jeux</a>
 <div class="app">
 
@@ -363,12 +365,12 @@
   </section>
 
   <!-- ÉCRAN FIN -->
-  <section id="end" class="panel hidden" role="status" aria-live="assertive">
-    <h2 data-i18n="endTitle">🏁 Terminé !</h2>
-    <div class="final-score"><span id="finalScore">0</span><small> / <span id="maxScore">0</span></small></div>
-    <div class="grade" id="grade"></div>
+  <section id="end" class="panel hidden">
+    <!-- E2 : l'écran de fin est rendu par ColFin (collection.js) : verdict, score,
+         scénarios ratés avec leur explication, « rejouer mes erreurs », rejouer.
+         Le bilan par catégorie (#recap) reste dessous. -->
+    <div class="col-fin" id="ecran-fin"></div>
     <div class="legend" id="recap"></div>
-    <button class="btn-primary" onclick="startGame(difficulty)" data-i18n="replayLevel">🔄 Rejouer ce niveau</button>
     <button class="btn-ghost" onclick="backToIntro()" data-i18n="changeLevel">📖 Changer de niveau / revoir les définitions</button>
   </section>
 
@@ -376,6 +378,14 @@
 </div>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
+<script>
+/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
+   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
+   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
+   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
+window.__COLLECTION_ENTETE__ = false;
+</script>
 <script>
 I18N.register({
   fr: {
