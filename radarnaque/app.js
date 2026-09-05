@@ -12,7 +12,7 @@
 
   /* phase de repérage des indices (après la décision) */
   var REP = (typeof REPERES !== 'undefined') ? REPERES : {};
-  var reperesActifs = [], foundBon = 0, currentChoix = null;
+  var reperesActifs = [], currentChoix = null;
   /* coup de pouce à deux niveaux : 1 = indice écrit, 2 = on montre l'emplacement */
   var hintIdx = -1, hintStep = 0;
 
@@ -127,7 +127,6 @@
     reperesActifs = c.reperes || REP[c.id] || [];
     // les repères sont des objets partagés entre parties : on efface le jugement précédent
     reperesActifs.forEach(function(r){ delete r._juge; delete r._choix; delete r._why; });
-    foundBon = 0;
     app.innerHTML =
       '<div class="panel">' +
         '<div class="entete">' + esc(c.entete || contexteParDefaut(c)) + '</div>' +
@@ -331,36 +330,78 @@
     return typeRepere(r) === 'indice' ? (estArnaque ? 'louche' : 'rassurant') : 'neutre';
   }
 
+  /* --- Où en est l'enquête ---------------------------------------------------
+     On distingue ce qui est REPÉRÉ de ce qui RESTE à trouver : un indice mal
+     jugé reste trouvé, sinon le compteur réclame éternellement un indice qui
+     n'existe plus. */
+  function statsReperes(){
+    var estArnaque = deck[idx] && deck[idx].verdict === 'arnaque';
+    var st = { total:0, reperes:0, mal:0, restants:0 };
+    reperesActifs.forEach(function(r){
+      if (typeRepere(r) !== 'indice') return;
+      st.total++;
+      if (!r._juge) return;
+      st.reperes++;
+      if (r._choix !== attenduPour(r, estArnaque)) st.mal++;
+    });
+    st.restants = st.total - st.reperes;
+    return st;
+  }
+
   /* ---------- 1) Phase d'ENQUÊTE : repérer les indices AVANT de décider ---------- */
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
-    var totalBon = reperesActifs.filter(function(r){ return r.bon; }).length;
     el('lower').innerHTML =
       '<div class="spot-consigne"><b>Étape 1 — Enquêtez.</b> Cliquez, dans le message, sur les <b>éléments qui vous interpellent</b> 👆<small>À chaque clic, <b>c’est vous qui jugez</b> : placez le curseur (louche / rien de spécial / rassurant) et, si vous voulez, dites pourquoi. On vous répond ensuite. Rien n’est surligné&nbsp;: à vous de fouiller.</small></div>' +
-      '<div class="spot-compteur" id="spot-compteur" data-total="' + totalBon + '" aria-live="polite">Indices trouvés&nbsp;: <b>0</b> / ' + totalBon + '</div>' +
+      '<div class="spot-compteur" id="spot-compteur" aria-live="polite"></div>' +
       '<div class="spot-actions">' +
         '<button class="hint-btn" id="coup-pouce">💡 Coup de pouce</button>' +
       '</div>' +
       '<div class="hint-box" id="hint-box" hidden></div>' +
-      '<button class="next" id="go-decide">J’ai enquêté, je décide ▶</button>';
+      '<div id="zone-decision"></div>';
     el('coup-pouce').onclick = coupDePouce;
-    el('go-decide').onclick = phaseDecision;
     majCompteur();
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
   /* ---------- 2) Phase de DÉCISION : après l'enquête, on tranche ---------- */
-  function phaseDecision(){
-    hidePop();
-    el('lower').innerHTML =
-      '<div class="consigne"><b>Étape 2 — Votre verdict.</b> D’après les indices, que faites-vous de ce message&nbsp;?<small>On s’en méfie, ou on peut lui faire confiance&nbsp;?</small></div>' +
+  function blocDecision(consigne){
+    return '<div class="consigne">' + consigne + '</div>' +
       '<div class="decide">' +
         '<button class="btn-arnaque" id="b-arnaque" aria-pressed="false"><span class="em">🚨</span>Se méfier<small>C’est une arnaque</small></button>' +
         '<button class="btn-fiable" id="b-fiable" aria-pressed="false"><span class="em">✅</span>Faire confiance<small>C’est fiable</small></button>' +
-      '</div>' +
-      '<button class="hint-btn" id="retour-enquete" style="margin-top:10px">↩ Revenir à l’enquête</button>';
+      '</div>';
+  }
+  function brancherDecision(){
     el('b-arnaque').onclick = function(){ repondre('arnaque'); };
     el('b-fiable').onclick  = function(){ repondre('fiable'); };
+  }
+
+  /* Tant qu'il reste un indice à trouver, un bouton mène à la décision. Dès que
+     tout est repéré, les deux verdicts sont là, directement cliquables : l'enquête
+     est finie, on n'impose pas un écran de plus. */
+  function majZoneDecision(){
+    var z = el('zone-decision'); if (!z) return;
+    var etat = statsReperes().restants > 0 ? 'attente' : 'pret';
+    if (z.getAttribute('data-etat') === etat) return;
+    z.setAttribute('data-etat', etat);
+    if (etat === 'attente'){
+      z.innerHTML = '<button class="next" id="go-decide">J’ai enquêté, je décide ▶</button>';
+      el('go-decide').onclick = phaseDecision;
+    } else {
+      var cp = el('coup-pouce');
+      if (cp){ cp.disabled = true; cp.textContent = '💡 Tout est repéré ✓'; hideAide(); }
+      z.innerHTML = blocDecision('<b>Étape 2 — Votre verdict.</b> Vous avez repéré tous les indices. Que faites-vous de ce message&nbsp;?<small>On s’en méfie, ou on peut lui faire confiance&nbsp;?</small>');
+      brancherDecision();
+    }
+  }
+
+  function phaseDecision(){
+    hidePop();
+    el('lower').innerHTML =
+      blocDecision('<b>Étape 2 — Votre verdict.</b> D’après les indices, que faites-vous de ce message&nbsp;?<small>On s’en méfie, ou on peut lui faire confiance&nbsp;?</small>') +
+      '<button class="hint-btn" id="retour-enquete" style="margin-top:10px">↩ Revenir à l’enquête</button>';
+    brancherDecision();
     var rb = el('retour-enquete'); if (rb) rb.onclick = entrerSpotting;
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -549,9 +590,17 @@
   }
 
   function majCompteur(){
-    foundBon = reperesActifs.filter(function(r){ return typeRepere(r) === 'indice' && r._juge; }).length;
     var cmp = el('spot-compteur');
-    if (cmp) cmp.innerHTML = 'Indices repérés&nbsp;: <b>' + foundBon + '</b> / ' + cmp.getAttribute('data-total');
+    if (cmp){
+      var st = statsReperes();
+      cmp.innerHTML =
+        'Indices repérés&nbsp;: <b>' + st.reperes + '</b> / ' + st.total + ' · ' +
+        (st.restants
+          ? 'il en reste <b>' + st.restants + '</b> à trouver'
+          : '<b>vous les avez tous trouvés</b> ✓') +
+        (st.mal ? '<small>Dont <b>' + st.mal + '</b> que vous avez mal jugé.</small>' : '');
+    }
+    majZoneDecision();
   }
 
   /* ---------- Coup de pouce à deux niveaux ----------
@@ -683,7 +732,7 @@
       root.classList.remove('mode-spot');
       root.classList.add('mode-corrige');
       reperesActifs.forEach(function(r, i){
-        if (!r.bon) return;
+        if (typeRepere(r) !== 'indice') return;
         var span = root.querySelector('.repere[data-i="' + i + '"]');
         if (span && !span.classList.contains('trouve')) span.classList.add('manque');
       });
@@ -706,9 +755,10 @@
         : 'En réalité, ce message était fiable — pas besoin de s’alarmer ici.';
     }
 
-    var totalBon = reperesActifs.filter(function(r){ return r.bon; }).length;
-    var recap = totalBon
-      ? '<div class="spot-recap">Vous avez repéré <b>' + foundBon + '</b> indice(s) sur ' + totalBon +
+    var st = statsReperes();
+    var recap = st.total
+      ? '<div class="spot-recap">Vous avez repéré <b>' + st.reperes + '</b> indice(s) sur ' + st.total +
+        (st.mal ? ', dont <b>' + st.mal + '</b> mal jugé' + (st.mal > 1 ? 's' : '') : '') +
         '. Les éléments <span class="lg-manque">encadrés</span> dans le message sont ceux à retenir.</div>'
       : '';
 

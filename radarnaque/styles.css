@@ -351,6 +351,10 @@ img.repere.hint-flash{ animation:hintPulseImg 1.1s ease 2; }
 .spot-consigne small{ display:block; font-weight:500; color:var(--texte-doux); font-size:.72em; margin-top:4px; }
 .spot-compteur{ text-align:center; background:#eef4ff; border:1px solid #cfe0ff; border-radius:12px;
   padding:9px; font-weight:700; color:var(--bleu-fonce); margin-bottom:14px; }
+/* seconde ligne du compteur : les indices trouves mais mal juges */
+.spot-compteur small{ display:block; font-weight:600; font-size:.78em; color:var(--texte-doux); margin-top:3px; }
+/* les deux verdicts quand ils apparaissent au bas de l'ecran d'enquete */
+#zone-decision .consigne{ margin-top:4px; }
 .spot-recap{ background:#f7f9fc; border:1px solid var(--bord); border-radius:12px;
   padding:12px 14px; margin-bottom:14px; font-size:.93em; }
 .lg-manque{ box-shadow:inset 0 0 0 2px var(--vert); border-radius:5px; padding:0 5px; }
