@@ -150,7 +150,7 @@
    * Questions de la partie : tirage aléatoire de sessionCount questions
    * dans la série active (toute la série si elle est plus courte).
    */
-  function getSessionQuestions() {
+  function getSessionQuestions(cleMemoire) {
     var demandee = getSerieDemandee();
     var qs = demandee ? demandee.questions : loadActiveQuestions();
     if (!qs || !qs.length) return null;
@@ -159,7 +159,23 @@
       var j = Math.floor(Math.random() * (i + 1));
       var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
     }
+    /* E2 : avec une clé de mémoire, les questions jamais vues passent en tête du
+       tirage (ColFin.nonVusDabord) — deux parties de suite ne reposent pas les
+       mêmes questions tant que la série n'est pas épuisée. Les questions n'ont
+       pas d'id : leur énoncé (q) en tient lieu, et nonVusDabord lit item.id,
+       d'où l'enveloppe. Sans clé, le tirage est celui d'avant. */
+    if (cleMemoire && global.ColFin && global.ColFin.nonVusDabord) {
+      pool = global.ColFin.nonVusDabord(cleMemoire, pool.map(function (q) { return { id: q.q, src: q }; }))
+                   .map(function (o) { return o.src; });
+    }
     return pool.slice(0, Math.min(loadSessionCount(), pool.length));
+  }
+
+  /* E2 : la clé sous laquelle ColFin retient les questions vues — une par série,
+     commune aux six jeux : une question vue au Snake ne revient pas au QCM. */
+  function cleMemoire() {
+    var info = getActiveInfo();
+    return 'arcade.' + (info.setId || 'import');
   }
 
   // ── Export ────────────────────────────────────────────────
@@ -174,7 +190,8 @@
     saveSessionCount    : saveSessionCount,
     loadSessionCount    : loadSessionCount,
     getSessionQuestions : getSessionQuestions,
-    getSerieDemandee    : getSerieDemandee
+    getSerieDemandee    : getSerieDemandee,
+    cleMemoire          : cleMemoire
   };
 
 })(window);
