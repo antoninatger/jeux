@@ -85,6 +85,10 @@ I18N.register({
   #ui span { font-size:1.125rem; font-weight:700; }
 
   /* ── GAME BOARD ─────────────────────────────── */
+  /* E2 : à la fin de la partie, l'overlay prend sa place dans le flux du plateau : le
+     récapitulatif a la hauteur qu'il lui faut au lieu de défiler dans le cadre. */
+  #board-wrap.fin #overlay { position:relative; inset:auto; }
+  #board-wrap.fin #feedback, #board-wrap.fin #hammer { display:none; }
   #board-wrap {
     position:relative; width:100%; max-width:900px; flex:1; min-height:320px;
     border:2px solid #cc44ff;
@@ -421,6 +425,16 @@ I18N.register({
 <script>
 
 let activeQCM = DEFAULT_QCM;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est ratée dès qu'elle coûte une vie (bonne réponse tapée, temps écoulé).
+let joue = [], qNotee = false, erreurQ = false;
+function noterQuestion() {
+  if (!currentQ || qNotee) return;
+  qNotee = true;
+  joue.push({ id: currentQ.q, titre: currentQ.q, reussi: !erreurQ, explication: currentQ.expl || '' });
+}
+function titreBrut(html) { const d = document.createElement('div'); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, ' '); return d.textContent; } // les clés de titre contiennent des <br>
 
 // ── MUTE ─────────────────────────────────────────────────────
 let muted = false;
@@ -585,10 +599,12 @@ const hitOptions = new Set();
 let gameLevel = 'easy'; // 'easy' | 'hard' — FACILE par défaut (décision V6)
 
 // ── START / END ───────────────────────────────────────────────
-function startDefaultGame(level='easy') {
-  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
-  if (typeof QCMStore !== 'undefined') {
-    var _p = QCMStore.getSessionQuestions();
+function startDefaultGame(level='easy', pool) {
+  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub) — E2 : les jamais
+  // vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs ».
+  if (Array.isArray(pool)) window.DEFAULT_QCM = pool;
+  else if (typeof QCMStore !== 'undefined') {
+    var _p = QCMStore.getSessionQuestions(QCMStore.cleMemoire());
     if (_p && _p.length) window.DEFAULT_QCM = _p;
   }
   activeQCM = DEFAULT_QCM; gameLevel = level; startGame();
@@ -596,6 +612,9 @@ function startDefaultGame(level='easy') {
 
 function startGame() {
   document.getElementById('overlay').style.display = 'none';
+  document.getElementById('board-wrap').classList.remove('fin');
+  joue = [];
+  ColFin.protegerSortie(true);
   score=0; lives=3; qIndex=0; gameRunning=true;
   updateUI();
   loadQuestion();
@@ -609,23 +628,32 @@ function endGame(win) {
   document.getElementById('timer-bar-wrap').style.display  = 'none';
   board.querySelectorAll('.hole').forEach(h=>h.remove());
 
+  // E2 : sur une défaite, la question en cours est ratée (elle vient de coûter la dernière vie).
+  if (!win) noterQuestion();
   const ov = document.getElementById('overlay');
   ov.style.display = 'flex';
-  const lvlColor  = gameLevel === 'easy' ? '#3ecf8e' : '#ff6633';
-  const lvlLabel  = gameLevel === 'easy' ? '🟢 FACILE' : '🔴 DIFFICILE';
-  ov.innerHTML = `
-    <h1 style="color:${win?'#cc44ff':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
-    <div class="sub">${I18N.t('finalScore')} <strong style="color:#cc44ff">${score}</strong><br>
-    ${win?I18N.t('winMsg'):I18N.t('loseMsg')}</div>
-    <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%">
-      <button onclick="startDefaultGame('easy')" style="border-color:#3ecf8e;color:#3ecf8e;text-shadow:0 0 10px #3ecf8e;width:320px;font-size:0.875rem">
-        ${I18N.t('easyBtnShort')}
-      </button>
-      <button onclick="startDefaultGame('hard')" style="border-color:#ff6633;color:#ff6633;text-shadow:0 0 10px #ff6633;width:320px;font-size:0.875rem">
-        ${I18N.t('hardBtnShort')}
-      </button>
-      <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menuQ')}</button>
-    </div>`;
+  document.getElementById('board-wrap').classList.add('fin');
+  // E2 : titre, score « bonnes / jouées », message, questions ratées avec leur explication et
+  // boutons sont rendus par ColFin ; « Rejouer » garde le niveau en cours, et le bouton de
+  // l'autre niveau reste sous le récapitulatif.
+  ov.innerHTML = '<div class="col-fin" id="ecran-fin"></div>';
+  ColFin.rendre({
+    cible: ov.firstElementChild, jeu: (typeof QCMStore !== 'undefined') ? QCMStore.cleMemoire() : 'arcade',
+    titre: titreBrut(win ? I18N.t('winTitle') : I18N.t('loseTitle')),
+    message: I18N.t('finalScore') + ' ' + score + ' — ' + (win ? I18N.t('winMsg') : I18N.t('loseMsg')),
+    score: joue.filter(j => j.reussi).length, total: joue.length, items: joue,
+    rejouerTexte: I18N.t(gameLevel === 'easy' ? 'easyBtnShort' : 'hardBtnShort'),
+    onRejouer: rates => startDefaultGame(gameLevel, activeQCM.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startDefaultGame(gameLevel)
+  });
+  const autre = document.createElement('button');
+  const autreLvl = gameLevel === 'easy' ? 'hard' : 'easy';
+  autre.textContent = I18N.t(autreLvl === 'easy' ? 'easyBtnShort' : 'hardBtnShort');
+  autre.style.cssText = autreLvl === 'easy'
+    ? 'border-color:#3ecf8e;color:#3ecf8e;text-shadow:0 0 10px #3ecf8e;width:320px;max-width:100%;font-size:0.875rem;margin:14px auto 0'
+    : 'border-color:#ff6633;color:#ff6633;text-shadow:0 0 10px #ff6633;width:320px;max-width:100%;font-size:0.875rem;margin:14px auto 0';
+  autre.onclick = () => startDefaultGame(autreLvl);
+  ov.appendChild(autre);
 }
 
 // ── SOUND / UI ────────────────────────────────────────────────
@@ -683,6 +711,7 @@ function shuffle(arr) {
     if (qIndex >= activeQCM.length) { endGame(true); return; }
 
     currentQ = activeQCM[qIndex];
+    qNotee = false; erreurQ = false;
     document.getElementById('question-text').textContent = currentQ.q;
     document.getElementById('q-num').textContent   = qIndex+1;
     document.getElementById('q-total').textContent = activeQCM.length;
@@ -697,6 +726,7 @@ function shuffle(arr) {
       pendingTimeouts.forEach(clearTimeout); pendingTimeouts = [];
       moleSlots.forEach(s => { if (s.up) retractMoleClean(s, null); });
       lives--;
+      erreurQ = true; noterQuestion();
       updateUI();
       playSound(120, 0.4, 'sawtooth');
       const msg = currentQ.expl ? I18N.t('timeUp') + ' ' + currentQ.expl : I18N.t('timeUp');
@@ -799,7 +829,7 @@ function shuffle(arr) {
 
       if (isCorrect) {
         slot.face.className = 'mole-face penalty' + (isLong ? ' rect' : '');
-        lives--; updateUI();
+        lives--; erreurQ = true; updateUI();
         playSound(110, 0.4, 'sawtooth');
         setTimeout(() => retractMoleClean(slot, onRetract), 500);
         const msg = currentQ.expl ? I18N.t('hitGood') + ' ' + currentQ.expl : I18N.t('hitGood');
@@ -848,6 +878,7 @@ function shuffle(arr) {
     }
     questionActive = false;
     cancelQTimer();
+    noterQuestion();
     score += 100; updateUI();
     playSound(660, 0.35, 'sine');
     showFeedback(currentQ.expl || I18N.t('allHit'), 'ok');
