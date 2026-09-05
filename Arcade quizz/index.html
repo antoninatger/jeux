@@ -291,7 +291,7 @@ body::before{
     <span class="session-label" data-i18n="sessionLabel">Questions par partie :</span>
     <button class="count-chip" data-count="5">5</button>
     <button class="count-chip" data-count="10">10</button>
-    <button class="count-chip" data-count="30">30</button>
+    <button class="count-chip" data-count="30" data-i18n="countAll" data-i18n-title="countAllTitle" title="Toute la série, dans la limite de 30 questions">Tout</button>
   </div>
   <div class="hub-status empty" id="hub-status">Aucune série sélectionnée</div>
 </div>
@@ -356,6 +356,7 @@ I18N.register({
     pageTitle: "QCM Arcade", siteTitle: "QCM ARCADE", siteSub: "Fake News & Esprit Critique",
     hubStep: "— 1. Choisir une série de questions —", uploadZone: "⬆ Importer un fichier (.xlsx / .json)",
     sessionLabel: "Questions par partie :", noSet: "Aucune série sélectionnée",
+    countAll: "Tout", countAllTitle: "Toute la série, dans la limite de 30 questions",
     loadedA: "questions chargées —", errPrefix: "❌ Erreur :", badFormat: "❌ Format non supporté (.xlsx ou .json uniquement)",
     hubFormatHint: "Format Excel attendu : question · bonne réponse · 1 à 3 mauvaises réponses · explication (optionnel) · catégorie (optionnel).",
     hubTemplateLink: "Télécharger le modèle",
@@ -376,6 +377,7 @@ I18N.register({
     pageTitle: "Arcade Quiz", siteTitle: "ARCADE QUIZ", siteSub: "Fake News & Critical Thinking",
     hubStep: "— 1. Choose a question set —", uploadZone: "⬆ Import a file (.xlsx / .json)",
     sessionLabel: "Questions per game:", noSet: "No set selected",
+    countAll: "All", countAllTitle: "The whole set, up to 30 questions",
     loadedA: "questions loaded —", errPrefix: "❌ Error:", badFormat: "❌ Unsupported format (.xlsx or .json only)",
     hubFormatHint: "Expected Excel format: question · correct answer · 1 to 3 wrong answers · explanation (optional) · category (optional).",
     hubTemplateLink: "Download the template",
@@ -867,7 +869,10 @@ function apercuRAF(cv, fn){
   if(info.setId) markActive(info.setId);
   setStatus(info);
 
-  // Longueur de partie (5 / 10 / 30 questions, tirées au hasard)
+  /* Longueur de partie. La troisième puce vaut toujours 30 dans le code, mais
+     aucune série n'atteint 30 depuis le retrait de D21 (la plus longue en fait 32,
+     les autres 20 à 26) : elle sert donc de « toute la série ». Le libellé le dit,
+     le titre précise le plafond. */
   var countChips = document.querySelectorAll('.count-chip');
   function markCount(n){
     countChips.forEach(function(c){ c.classList.toggle('active', +c.dataset.count === n); });
