@@ -9,6 +9,11 @@
   var CARTES_PAR_PARTIE = 14;   // nombre de cartes jouées par partie (équilibré)
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
+  /* E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+     Chaque carte a un id stable dans scenarios.js : c'est lui que ColFin mémorise. */
+  var JEU = 'radarnaque';
+  var joue = [];
+  function texteBrut(html){ var d = document.createElement('div'); d.innerHTML = html; return d.textContent; }
 
   /* phase de repérage des indices (après la décision) */
   var REP = (typeof REPERES !== 'undefined') ? REPERES : {};
@@ -92,18 +97,26 @@
   /* =====================================================================
      DÉMARRAGE D'UNE PARTIE
      ===================================================================== */
-  function demarrer(){
+  function demarrer(sousDeck){
+    // appelé aussi comme gestionnaire de clic : l'événement n'est pas un paquet
+    sousDeck = Array.isArray(sousDeck) ? sousDeck : null;
     fermerGlossaire();
     // tirage ÉQUILIBRÉ : autant d'arnaques que de messages fiables (au possible)
     var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
     var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
+    // E2 : dans chaque moitié, les cartes jamais vues passent d'abord (mémoire ColFin)
+    arnaques = ColFin.nonVusDabord(JEU, arnaques);
+    fiables  = ColFin.nonVusDabord(JEU, fiables);
     var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
     var moitie = Math.floor(total/2);
     var nbFiables  = Math.min(moitie, fiables.length);
     var nbArnaques = Math.min(total - nbFiables, arnaques.length);
     nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
-    deck = shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
+    // E2 : « rejouer mes erreurs » impose les seules cartes ratées
+    deck = sousDeck ? shuffle(sousDeck) : shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
     idx = 0; score = 0;
+    joue = [];
+    ColFin.protegerSortie(true);
     hud.style.display = 'flex';
     var mb = el('menu-btn'); if (mb) mb.style.display = '';
     montrerCarte();
@@ -310,6 +323,8 @@
     currentChoix = choix;
     var c = deck[idx];
     var bon = (choix === c.verdict);
+    joue.push({ id: c.id, titre: c.categorie || c.entete || contexteParDefaut(c), reussi: bon,
+                explication: (c.reflexe ? c.reflexe + ' ' : '') + (c.explication || '') });
     if (bon) score++;
 
     var ba = el('b-arnaque'), bf = el('b-fiable');
@@ -809,9 +824,7 @@
 
     app.innerHTML =
       '<div class="panel hero">' +
-        '<div class="gauge">' + jauge + '</div>' +
-        '<div class="result-score">Score&nbsp;: <span class="n">' + score + '</span> / ' + total + '</div>' +
-        '<p class="lead">' + msg + '</p>' +
+        '<div class="col-fin" id="ecran-fin"></div>' +
         '<div class="reflexes-carte">' +
           '<h3>🛡️ Les 6 réflexes à garder en tête</h3>' +
           '<ul>' +
@@ -831,11 +844,17 @@
           '<div class="r"><b>cybermalveillance.gouv.fr</b><span>Aide et démarches si vous avez été piégé.</span></div>' +
           '<div class="r"><b>signal-arnaques.com</b><span>Vérifier un numéro, un site ou un message douteux.</span></div>' +
         '</div>' +
-        '<button class="btn-start" id="rejouer" style="margin-top:22px">Rejouer&nbsp;🔄</button>' +
         '<button class="btn-gloss" id="fin-avis" style="margin-top:10px">💬 Donner mon avis</button>' +
         '<p class="footer-note">Parlez-en autour de vous&nbsp;: en parler, c’est déjà se protéger.</p>' +
       '</div>';
-    el('rejouer').onclick = demarrer;
+    /* E2 : jauge, score, message, cartes ratées avec leur réflexe et boutons sont rendus
+       par ColFin. Pas de lien de retour : la page n'en a jamais eu. */
+    ColFin.rendre({
+      cible: el('ecran-fin'), jeu: JEU, message: jauge + ' ' + texteBrut(msg),
+      score: score, total: total, items: joue, retour: false,
+      onRejouer: function(rates){ demarrer(SCENARIOS.filter(function(c){ return rates.some(function(r){ return r.id === c.id; }); })); },
+      onRecommencer: function(){ demarrer(); }
+    });
     var fa = el('fin-avis'); if (fa) fa.onclick = openFeedback;
     window.scrollTo({top:0, behavior:'smooth'});
   }
