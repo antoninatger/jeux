@@ -1,572 +1,734 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="clair">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Éditeur de Questions — QCM Arcade</title>
+<title>Éditeur de questions — QCM Arcade</title>
+<meta name="description" content="Outil d'auteur : modifier, ajouter et exporter les questions des séries de l'Arcade.">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- Bibliothèque Excel servie depuis le dépôt : en classe, le réseau n'est
+     pas garanti. Voir vendor/LISEZMOI.md. -->
+<script src="../vendor/xlsx.full.min.js"></script>
+
+<!-- Les six séries connues. L'éditeur les propose toutes : c'est la fusion
+     des trois pages editeur-niveauN.html, qui n'existaient que parce que
+     celle-ci ne savait ouvrir que DEFAULT_QCM. -->
 <script src="questions.js"></script>
+<script src="questions-6e5e.js"></script>
+<script src="questions-niveau1.js"></script>
+<script src="questions-niveau2.js"></script>
+<script src="questions-niveau3.js"></script>
+<script src="questions-influenceurs.js"></script>
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* Page outil en thème clair : `data-theme="clair"` sur <html> apporte fond,
+   surface, bordure, texte, texte secondaire et anneau de focus (collection.css).
+   Ne reste ici que la couleur d'accent de l'outil et sa mise en page.
+   Pas d'i18n.js : outil d'auteur non traduit, la bascule de langue
+   promettrait une traduction absente (même choix que pour les échecs). */
 :root{
-  --bg:#060612;--panel:#0c0c22;--panel2:#10103a;
-  --blue:#4fc3f7;--green:#69f0ae;--red:#ff5252;
-  --yellow:#ffd740;--dim:#7070c9;--text:#e0e0ff;--border:rgba(79,195,247,.18);
-  /* Jetons du socle (chantier 05) — page outil, non traduite (cf. echecs). */
-  --surface:var(--panel);
-  --bordure:var(--border);
-  --txt:#e0e0ff;
-  --txt-secondaire:#9a9ad0;  /* 7,6:1 sur --bg */
-  --acc:#69f0ae;
-  --acc-txt:#03160c;
-  --font-texte:'Exo 2',sans-serif;
-  --font-titre:'Press Start 2P',monospace;
+  --acc:#0f7a55;
+  --acc-txt:#ffffff;
+  --font-texte:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-titre:var(--font-texte);
+  --barre:#1a1a2e;          /* la barre d'outils reste sombre, comme l'Arcade */
 }
-/* Press Start 2P est très large : le titre de l'en-tête unifié redescend. */
-.col-entete__titre{font-size:var(--fs-300);color:var(--green);text-shadow:0 0 14px rgba(105,240,174,.45)}
+
 body{
-  background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--text);
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;
-  padding:0 20px 120px;gap:28px
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(79,195,247,.01) 3px,rgba(79,195,247,.01) 4px);
-  pointer-events:none;z-index:200
-}
-/* ── HEADER ── */
-.hdr{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
-h1{
-  font-family:'Press Start 2P',monospace;font-size:clamp(13px,3vw,22px);
-  color:var(--green);text-shadow:0 0 20px var(--green),0 0 50px rgba(105,240,174,.3);
-  letter-spacing:3px;text-align:center;line-height:1.7
-}
-.back{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  text-decoration:none;color:var(--dim);border:1px solid var(--dim);
-  padding:7px 12px;letter-spacing:1px;transition:all .15s
-}
-.back:hover{color:var(--blue);border-color:var(--blue)}
-.counter{font-family:'Press Start 2P',monospace;font-size:var(--fs-100);color:var(--dim)}
-.counter span{color:var(--yellow)}
-
-/* ── SECTIONS ── */
-.section{
-  background:var(--panel);border:1px solid var(--border);border-radius:8px;
-  padding:20px 24px;width:100%;max-width:820px
-}
-.section-title{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  color:var(--blue);letter-spacing:2px;margin-bottom:16px;line-height:1.6
+  background:var(--bg);color:var(--txt);font-family:var(--font-texte);
+  min-height:100vh;line-height:var(--lh-normal);
 }
 
-/* ── IMPORT EXCEL ── */
+/* Barre d'outils sous son propre nom de classe : `header` au sélecteur de
+   type retomberait sur l'en-tête unifié du socle. */
+.ed-header{
+  background:var(--barre);color:#fff;padding:var(--sp-3) var(--sp-5);
+  display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);
+  flex-wrap:wrap;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.ed-header h1{font-size:var(--fs-400);font-weight:800;letter-spacing:.02em}
+.ed-serie-nom{font-size:var(--fs-400);font-weight:800;color:#5ee0a8}
+.ed-header .subtitle{font-size:var(--fs-100);color:#b3bccb;margin-top:2px;font-family:var(--font-mono)}
+.header-right{display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap}
+#count{font-size:var(--fs-200);color:#b3bccb}
+
+.btn{
+  min-height:var(--cible);padding:0 var(--sp-4);border:none;border-radius:8px;
+  cursor:pointer;font-size:var(--fs-200);font-weight:700;font-family:inherit;
+  display:inline-flex;align-items:center;gap:6px;transition:opacity .15s;
+}
+.btn:hover{opacity:.85}
+.btn-add{background:var(--acc);color:var(--acc-txt)}
+.btn-export{background:#fff;color:#1a1a2e}
+.btn-fin{background:var(--acc);color:var(--acc-txt)}
+
+.container{max-width:880px;margin:0 auto;padding:var(--sp-5) var(--sp-4) var(--sp-7)}
+
+.bloc{
+  background:var(--surface);border:1px solid var(--bordure);border-radius:var(--radius);
+  padding:var(--sp-4) var(--sp-5);margin-bottom:var(--sp-5);
+}
+.bloc h2{
+  font-size:var(--fs-200);font-weight:800;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--txt-secondaire);margin-bottom:var(--sp-3);
+}
+
+/* ── Choix de la série ── */
+.serie-bar{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+.serie-chip{
+  min-height:var(--cible);padding:6px var(--sp-4);cursor:pointer;
+  border:2px solid var(--bordure);border-radius:8px;background:var(--bg);
+  color:var(--txt);font-family:inherit;font-size:var(--fs-200);font-weight:700;
+  display:flex;flex-direction:column;justify-content:center;text-align:left;
+  transition:border-color .15s,background .15s;
+}
+.serie-chip small{font-weight:600;color:var(--txt-secondaire);font-size:var(--fs-100)}
+.serie-chip:hover{border-color:var(--acc)}
+.serie-chip[aria-pressed="true"]{border-color:var(--acc);background:#e8f5ef}
+.serie-chip[aria-pressed="true"] small{color:var(--acc)}
+
+/* ── Bandeau de brouillon ── */
+.brouillon{
+  margin-top:var(--sp-3);padding:var(--sp-3) var(--sp-4);border-radius:8px;
+  background:#fff6e0;border:1px solid #e2c48a;color:#5a4200;
+  font-size:var(--fs-200);display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;
+}
+.brouillon[hidden]{display:none}
+.brouillon button{
+  min-height:36px;padding:0 var(--sp-3);border:1px solid #8a6a1a;border-radius:6px;
+  background:#fff;color:#5a4200;font-family:inherit;font-size:var(--fs-100);
+  font-weight:700;cursor:pointer;
+}
+
+/* ── Import ── */
 .import-zone{
-  border:2px dashed rgba(79,195,247,.3);border-radius:6px;
-  padding:20px;text-align:center;cursor:pointer;
-  transition:border-color .2s,background .2s;position:relative
+  position:relative;border:2px dashed var(--bordure);border-radius:var(--radius);
+  padding:var(--sp-5);text-align:center;color:var(--txt-secondaire);
+  font-size:var(--fs-200);transition:border-color .15s,background .15s;
 }
-.import-zone:hover,.import-zone.drag{border-color:var(--blue);background:rgba(79,195,247,.04)}
-.import-zone input[type=file]{
-  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%
-}
-.import-zone p{font-size:var(--fs-200);color:var(--dim);line-height:1.8;pointer-events:none}
-.import-zone strong{color:var(--blue)}
-/* Phrases : police étroite du jeu (Exo 2), pas Press Start 2P (règle de mine.html). */
-.format-hint{
-  font-size:var(--fs-200);color:var(--dim);margin-top:10px;line-height:1.8;
-  background:rgba(79,195,247,.04);border:1px solid var(--border);
-  border-radius:4px;padding:10px 14px
-}
-.format-hint code{color:var(--yellow);font-family:monospace;font-size:var(--fs-200)}
-.btn-template{
-  font-family:'Exo 2',sans-serif;font-size:var(--fs-200);font-weight:700;
-  background:transparent;border:1px solid var(--yellow);color:var(--yellow);
-  padding:8px 14px;cursor:pointer;letter-spacing:1px;margin-top:12px;
-  transition:all .15s
-}
-.btn-template:hover{background:var(--yellow);color:var(--bg)}
-
-/* ── QUESTION CARDS ── */
-.q-list{display:flex;flex-direction:column;gap:10px;width:100%;max-width:820px}
-.q-card{
-  background:var(--panel);border:1px solid var(--border);border-radius:6px;
-  padding:16px 18px;display:flex;flex-direction:column;gap:0;
-  transition:border-color .15s
-}
-.q-card:hover{border-color:rgba(79,195,247,.4)}
-.q-card-head{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
-.q-num{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  color:var(--dim);flex-shrink:0;padding-top:2px;min-width:36px
-}
-.q-text{flex:1;min-width:120px;font-size:13px;font-weight:700;color:var(--text);line-height:1.5;overflow-wrap:anywhere}
-.q-actions{display:flex;gap:6px;flex-shrink:0}
-.q-actions button{
-  background:transparent;border:1px solid var(--dim);color:var(--dim);
-  width:32px;height:32px;min-height:32px;cursor:pointer;font-size:13px;border-radius:3px;
-  transition:all .15s;display:flex;align-items:center;justify-content:center
-}
-.q-actions button:hover{border-color:var(--text);color:var(--text)}
-.q-actions .del:hover{border-color:var(--red);color:var(--red)}
-.q-options{margin-top:10px;display:flex;flex-direction:column;gap:4px;padding-left:42px}
-.q-opt{font-size:var(--fs-200);display:flex;align-items:center;gap:8px;color:var(--dim)}
-.q-opt.correct{color:var(--green)}
-.q-opt .icon{font-size:13px;flex-shrink:0}
-.q-expl{
-  margin-top:8px;padding-left:42px;font-size:var(--fs-200);
-  color:rgba(255,215,64,.75);font-style:italic
+.import-zone.drag{border-color:var(--acc);background:#e8f5ef}
+.import-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.import-zone strong{color:var(--txt)}
+.format-hint{margin-top:var(--sp-3);font-size:var(--fs-100);color:var(--txt-secondaire);line-height:1.6}
+.format-hint code{
+  font-family:var(--font-mono);background:var(--bg);border:1px solid var(--bordure);
+  border-radius:4px;padding:1px 5px;color:var(--txt);
 }
 
-/* ── EDIT MODE ── */
-.q-card.editing{border-color:var(--blue);background:var(--panel2)}
-.edit-form{margin-top:12px;display:flex;flex-direction:column;gap:8px;padding-left:42px}
-.edit-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.edit-row label{font-size:var(--fs-100);width:120px;flex-shrink:0;color:var(--dim)}
-.edit-row input{
-  flex:1;min-width:140px;background:rgba(79,195,247,.05);border:1px solid var(--border);
-  color:var(--text);padding:7px 10px;font-size:var(--fs-200);font-family:'Exo 2',sans-serif;
-  border-radius:3px;outline:none;transition:border-color .15s
+/* ── Cartes de question ── */
+.card{
+  background:var(--surface);border:1px solid var(--bordure);border-radius:var(--radius);
+  border-left:4px solid var(--acc);padding:var(--sp-4) var(--sp-5);margin-bottom:var(--sp-4);
 }
-.edit-row input:focus{border-color:var(--blue)}
-.edit-row .radio-correct{
-  width:18px;height:18px;accent-color:var(--green);cursor:pointer;flex-shrink:0
+.card-top{display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-3);flex-wrap:wrap}
+.qnum{
+  background:var(--acc);color:var(--acc-txt);font-weight:800;font-size:var(--fs-100);
+  padding:3px 9px;border-radius:4px;white-space:nowrap;flex-shrink:0;
 }
-.edit-btns{display:flex;gap:8px;margin-top:4px}
-.btn-save,.btn-cancel{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  border:1px solid;padding:8px 14px;cursor:pointer;letter-spacing:1px;
-  transition:all .15s;background:transparent
-}
-.btn-save{border-color:var(--green);color:var(--green)}
-.btn-save:hover{background:var(--green);color:var(--bg)}
-.btn-cancel{border-color:var(--dim);color:var(--dim)}
-.btn-cancel:hover{border-color:var(--red);color:var(--red)}
+.cat-input{flex:1;min-width:180px}
 
-/* ── ADD FORM ── */
-.add-form{display:flex;flex-direction:column;gap:10px}
-.add-row{display:flex;flex-direction:column;gap:4px}
-.add-row label{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  color:var(--dim);letter-spacing:1px;line-height:1.6
+label{
+  font-size:var(--fs-100);font-weight:800;color:var(--txt-secondaire);
+  text-transform:uppercase;letter-spacing:.06em;display:block;margin:var(--sp-3) 0 4px;
 }
-.add-row input,.add-row textarea{
-  background:rgba(79,195,247,.05);border:1px solid var(--border);
-  color:var(--text);padding:10px 12px;font-size:13px;
-  font-family:'Exo 2',sans-serif;border-radius:4px;outline:none;
-  transition:border-color .15s;resize:none
+.correct-hint{text-transform:none;letter-spacing:0;font-weight:600;color:var(--acc)}
+
+input[type=text],textarea,select{
+  width:100%;padding:9px 11px;border:1px solid var(--bordure);border-radius:6px;
+  font-size:var(--fs-300);font-family:inherit;background:var(--bg);color:var(--txt);
+  transition:border-color .15s;
 }
-.add-row input:focus,.add-row textarea:focus{border-color:var(--blue)}
-.add-row.correct input{border-color:rgba(105,240,174,.4);background:rgba(105,240,174,.04)}
-.add-row.correct label{color:var(--green)}
-.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width:480px){.options-grid{grid-template-columns:1fr}}
-.btn-add{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  background:transparent;border:2px solid var(--blue);color:var(--blue);
-  padding:14px;cursor:pointer;letter-spacing:2px;width:100%;line-height:1.6;
-  transition:all .15s;margin-top:4px
+input[type=text]:focus,textarea:focus{border-color:var(--acc)}
+textarea{resize:vertical;min-height:54px;line-height:1.5}
+
+.options-grid{display:flex;flex-direction:column;gap:var(--sp-2)}
+.opt-row{display:flex;align-items:center;gap:var(--sp-2)}
+.opt-row input[type=radio]{width:22px;height:22px;flex-shrink:0;accent-color:var(--acc);cursor:pointer}
+.opt-idx{
+  font-family:var(--font-mono);font-size:var(--fs-100);color:var(--txt-secondaire);
+  width:1.4em;text-align:center;flex-shrink:0;
 }
-.btn-add:hover{background:var(--blue);color:var(--bg)}
+.btn-opt-del{
+  min-width:var(--cible);min-height:var(--cible);flex-shrink:0;
+  border:1px solid var(--bordure);border-radius:6px;background:var(--bg);
+  color:var(--txt-secondaire);cursor:pointer;font-size:var(--fs-300);
+}
+.btn-opt-del:hover:not(:disabled){background:#fde8e8;border-color:#c2261f;color:#c2261f}
+.btn-opt-del:disabled{opacity:.35;cursor:not-allowed}
+.btn-opt-add{
+  align-self:flex-start;min-height:36px;padding:0 var(--sp-3);
+  border:1px dashed var(--bordure);border-radius:6px;background:var(--bg);
+  color:var(--txt-secondaire);font-family:inherit;font-size:var(--fs-100);
+  font-weight:700;cursor:pointer;
+}
+.btn-opt-add:hover{border-color:var(--acc);color:var(--acc)}
+.btn-opt-add[hidden]{display:none}
+
+.card-footer{display:flex;justify-content:flex-end;margin-top:var(--sp-4)}
+.btn-del{
+  min-height:var(--cible);padding:0 var(--sp-4);border:1px solid #e6b8b8;
+  border-radius:8px;background:#fde8e8;color:#8f1d17;
+  font-family:inherit;font-size:var(--fs-200);font-weight:700;cursor:pointer;
+}
+.btn-del:hover{background:#fbd5d5}
+
+.vide{
+  text-align:center;color:var(--txt-secondaire);font-size:var(--fs-300);
+  padding:var(--sp-6) var(--sp-4);
+}
+.fin{display:flex;justify-content:center;gap:var(--sp-3);flex-wrap:wrap;margin-top:var(--sp-5)}
+
 .msg{
-  font-family:'Exo 2',sans-serif;font-size:var(--fs-200);font-weight:700;text-align:center;
-  padding:10px;border-radius:4px;display:none
+  margin-top:var(--sp-3);padding:var(--sp-3) var(--sp-4);border-radius:8px;
+  font-size:var(--fs-200);font-weight:700;
 }
-.msg.ok{display:block;background:rgba(105,240,174,.1);color:var(--green);border:1px solid rgba(105,240,174,.3)}
-.msg.err{display:block;background:rgba(255,82,82,.1);color:var(--red);border:1px solid rgba(255,82,82,.3)}
+.msg.ok{background:#e6f4ec;color:#0f5c3d;border:1px solid #9ed3ba}
+.msg.err{background:#fde8e8;color:#8f1d17;border:1px solid #e6b8b8}
+.msg[hidden]{display:none}
 
-/* ── EXPORT BAR ── */
-/* flex-wrap : au plancher de 12,8 px, la rangée dépassait sous ~700 px —
-   c'était déjà le débordement constaté à 459 px avant reprise (§9.3). */
-.export-bar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(6,6,18,.96);border-top:1px solid var(--border);
-  padding:10px 16px;display:flex;align-items:center;justify-content:center;
-  gap:10px 20px;flex-wrap:wrap;z-index:100;backdrop-filter:blur(8px)
+@media (max-width:600px){
+  .ed-header{flex-direction:column;align-items:stretch}
+  .header-right{justify-content:flex-start}
 }
-.export-bar p{font-family:'Press Start 2P',monospace;font-size:var(--fs-100);color:var(--dim)}
-.export-bar p span{color:var(--yellow)}
-.btn-export{
-  font-family:'Press Start 2P',monospace;font-size:var(--fs-100);
-  background:transparent;border:2px solid var(--green);color:var(--green);
-  padding:10px 18px;cursor:pointer;letter-spacing:2px;
-  text-shadow:0 0 10px var(--green);box-shadow:0 0 20px rgba(105,240,174,.15);
-  transition:all .15s
-}
-.btn-export:hover{background:var(--green);color:var(--bg);box-shadow:0 0 40px rgba(105,240,174,.5)}
 </style>
 </head>
-<body>
+<body data-col-retour="index.html">
 
-<div class="hdr">
-  <a class="back" href="index.html">← RETOUR ARCADE</a>
-  <h1>ÉDITEUR DE QUESTIONS</h1>
-  <p class="counter">Questions chargées : <span id="count">0</span></p>
-</div>
-
-<!-- Import Excel -->
-<div class="section" style="max-width:820px;width:100%">
-  <div class="section-title">⬆ IMPORTER DEPUIS EXCEL</div>
-  <div class="import-zone" id="drop-zone">
-    <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.json">
-    <p>
-      <strong>Glisse ton fichier ici</strong> ou clique pour choisir<br>
-      Formats acceptés : .xlsx · .xls · .csv · .json
-    </p>
+<header class="ed-header">
+  <div>
+    <!-- Le <h1> part dans l'en-tête unifié du socle, qui le masque ensuite :
+         il reste donc générique. Le nom de la série vit à côté, visible. -->
+    <h1>Éditeur de questions</h1>
+    <div class="ed-serie-nom" id="ed-serie">Par défaut</div>
+    <div class="subtitle" id="ed-fichier">questions.js · DEFAULT_QCM</div>
   </div>
-  <div class="format-hint">
-    Format attendu (une ligne = une question) — c'est le même format que lit le hub :<br>
-    <code>Col A</code> Question &nbsp;·&nbsp;
-    <code>Col B</code> ✅ Bonne réponse &nbsp;·&nbsp;
-    <code>Col C D E</code> ❌ Mauvaises réponses &nbsp;·&nbsp;
-    <code>Col F</code> 💡 Explication (optionnel) &nbsp;·&nbsp;
-    <code>Col G</code> 🏷️ Catégorie (optionnel)
-    <br><br>La première ligne peut être une ligne d'en-tête (elle sera ignorée automatiquement).
+  <div class="header-right">
+    <span id="count">0 question</span>
+    <button class="btn btn-add" type="button" id="btn-add">+ Question</button>
+    <button class="btn btn-export" type="button" id="btn-js">⬇ Exporter .js</button>
+    <button class="btn btn-export" type="button" id="btn-json">⬇ Exporter .json</button>
   </div>
-  <button class="btn-template" onclick="downloadTemplate()">⬇ TÉLÉCHARGER LE MODÈLE EXCEL</button>
-</div>
+</header>
 
-<!-- Liste des questions -->
-<div class="q-list" id="q-list"></div>
+<main class="container" id="contenu">
 
-<!-- Ajouter une question -->
-<div class="section" style="max-width:820px;width:100%">
-  <div class="section-title">+ AJOUTER UNE QUESTION</div>
-  <div class="add-form">
-    <div class="add-row">
-      <label>❓ QUESTION / AFFIRMATION</label>
-      <textarea id="in-q" rows="2" placeholder="Ex : Qu'est-ce qu'une Fake News ?"></textarea>
-    </div>
-    <div class="options-grid">
-      <div class="add-row correct">
-        <label>✅ BONNE RÉPONSE</label>
-        <input id="in-correct" type="text" placeholder="La bonne réponse…">
-      </div>
-      <div class="add-row">
-        <label>❌ MAUVAISE RÉPONSE 1</label>
-        <input id="in-w1" type="text" placeholder="Mauvaise réponse…">
-      </div>
-      <div class="add-row">
-        <label>❌ MAUVAISE RÉPONSE 2</label>
-        <input id="in-w2" type="text" placeholder="Mauvaise réponse…">
-      </div>
-      <div class="add-row">
-        <label>❌ MAUVAISE RÉPONSE 3</label>
-        <input id="in-w3" type="text" placeholder="Mauvaise réponse…">
-      </div>
-    </div>
-    <div class="add-row">
-      <label>💡 EXPLICATION (optionnel)</label>
-      <input id="in-expl" type="text" placeholder="Explication affichée après la réponse…">
-    </div>
-    <div id="add-msg" class="msg"></div>
-    <button class="btn-add" onclick="addQuestion()">+ AJOUTER CETTE QUESTION</button>
-  </div>
-</div>
+  <section class="bloc">
+    <h2>1. Choisir la série à modifier</h2>
+    <div class="serie-bar" id="serie-bar"></div>
+    <p class="brouillon" id="brouillon" hidden></p>
+  </section>
 
-<!-- Barre export -->
-<div class="export-bar">
-  <p><span id="exp-count">0</span> question(s) prête(s)</p>
-  <button class="btn-export" onclick="exportQCM()">⬇ EXPORTER questions.js</button>
-  <button class="btn-export" onclick="exportJSON()">⬇ EXPORTER en JSON</button>
-</div>
+  <section class="bloc">
+    <h2>2. Ou importer un fichier</h2>
+    <div class="import-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.json" aria-label="Choisir un fichier de questions">
+      <p><strong>Glissez votre fichier ici</strong> ou cliquez pour le choisir<br>
+         Formats acceptés : .xlsx · .xls · .csv · .json</p>
+    </div>
+    <div class="format-hint">
+      Format attendu (une ligne = une question) — le même que lit le hub :<br>
+      <code>Col A</code> Question ·
+      <code>Col B</code> ✅ Bonne réponse ·
+      <code>Col C D E</code> ❌ Mauvaises réponses (1 à 3) ·
+      <code>Col F</code> 💡 Explication (optionnel) ·
+      <code>Col G</code> 🏷️ Catégorie (optionnel)
+      <br><br>La première ligne peut être une ligne d'en-tête : elle est ignorée automatiquement.
+    </div>
+    <div style="margin-top:var(--sp-3)">
+      <button class="btn btn-export" type="button" id="btn-modele" style="background:var(--bg);border:1px solid var(--bordure);color:var(--txt)">⬇ Télécharger le modèle Excel</button>
+    </div>
+    <div class="msg" id="msg" hidden></div>
+  </section>
+
+  <div id="list"></div>
+
+  <p class="fin">
+    <button class="btn btn-fin" type="button" id="btn-add-bas">+ Ajouter une question</button>
+  </p>
+
+</main>
 
 <script>
-// ── STATE ─────────────────────────────────────────────────────
-let questions = (typeof DEFAULT_QCM !== 'undefined' && Array.isArray(DEFAULT_QCM))
-  ? DEFAULT_QCM.map(q => ({...q, options:[...q.options]}))
-  : [];
+/* ═══════════════════════════════════════════════════════════════════════
+   Éditeur de questions de l'Arcade
 
-// ── RENDER ────────────────────────────────────────────────────
-function render() {
-  const list = document.getElementById('q-list');
-  list.innerHTML = '';
-  document.getElementById('count').textContent = questions.length;
-  document.getElementById('exp-count').textContent = questions.length;
+   Fusion des quatre éditeurs qui coexistaient : celui-ci, qui ne savait
+   ouvrir que DEFAULT_QCM et exigeait exactement quatre options, et les trois
+   editeur-niveauN.html, qui savaient éditer une série mais ni importer, ni
+   exporter en JSON, ni garder un brouillon. Les trois pages redirigent
+   maintenant ici.
 
-  questions.forEach((q, i) => {
-    const card = document.createElement('div');
-    card.className = 'q-card';
-    card.id = 'card-' + i;
-    card.innerHTML = viewMode(q, i);
-    list.appendChild(card);
+   Trois choses à savoir en lisant :
+
+   1. L'état vit dans le DOM, pas dans un tableau. `collect()` relit les
+      champs à chaque fois. C'est le fonctionnement des editeur-niveauN, et
+      il évite la classe de bugs où le tableau et l'écran divergent.
+   2. Chaque série a son brouillon dans localStorage. Un rechargement, une
+      fermeture d'onglet, une coupure : rien n'est perdu. Le brouillon est
+      annoncé et peut être abandonné d'un clic.
+   3. Une question accepte 2 à 4 options. L'ancien éditeur en exigeait
+      quatre et refusait silencieusement le reste ; les séries, elles, en
+      contiennent déjà à deux (une question Vrai/Faux).
+   ═══════════════════════════════════════════════════════════════════════ */
+(function () {
+'use strict';
+
+var MIN_OPT = 2, MAX_OPT = 4;
+var CLE = 'qcm-editeur.brouillon.';   // + id de série
+
+/* Les séries connues, dans l'ordre du hub. `variable` sert à l'export : un
+   fichier de série se recharge tel quel par-dessus l'ancien. */
+var SERIES = [
+  { id:'default',      nom:'Par défaut',      fichier:'questions.js',                variable:'DEFAULT_QCM' },
+  { id:'6e5e',         nom:'6e-5e',           fichier:'questions-6e5e.js',           variable:'QUESTIONS_6E5E' },
+  { id:'niveau1',      nom:'N1 · Fake News',  fichier:'questions-niveau1.js',        variable:'QUESTIONS_NIVEAU1' },
+  { id:'niveau2',      nom:'N2 · Désinfo',    fichier:'questions-niveau2.js',        variable:'QUESTIONS_NIVEAU2' },
+  { id:'niveau3',      nom:'N3 · Rhétorique', fichier:'questions-niveau3.js',        variable:'QUESTIONS_NIVEAU3' },
+  { id:'influenceurs', nom:'Influenceurs',    fichier:'questions-influenceurs.js',   variable:'QUESTIONS_INFLUENCEURS' },
+  { id:'import',       nom:'Fichier importé', fichier:'questions.json',              variable:'DEFAULT_QCM' }
+];
+
+var serie = SERIES[0];
+
+var $ = function (id) { return document.getElementById(id); };
+var liste = $('list');
+
+/* ── Séries d'origine ──────────────────────────────────────────────────── */
+
+function origine(s) {
+  var src = (s.id === 'import') ? [] : window[s.variable];
+  if (!Array.isArray(src)) return [];
+  return src.map(function (q) {
+    return {
+      cat: q.cat || '',
+      q: q.q || '',
+      options: (q.options || []).slice(),
+      answer: q.answer || 0,
+      expl: q.expl || ''
+    };
   });
 }
 
-function viewMode(q, i) {
-  const opts = q.options.map((o, oi) => {
-    const ok = oi === q.answer;
-    return `<div class="q-opt ${ok?'correct':''}"><span class="icon">${ok?'✅':'❌'}</span>${esc(o)}</div>`;
-  }).join('');
-  const expl = q.expl ? `<div class="q-expl">💡 ${esc(q.expl)}</div>` : '';
-  return `
-    <div class="q-card-head">
-      <div class="q-num">Q.${i+1}</div>
-      <div class="q-text">${esc(q.q)}</div>
-      <div class="q-actions">
-        <button title="Monter" onclick="move(${i},-1)">↑</button>
-        <button title="Descendre" onclick="move(${i},1)">↓</button>
-        <button title="Modifier" onclick="startEdit(${i})">✎</button>
-        <button class="del" title="Supprimer" onclick="remove(${i})">🗑</button>
-      </div>
-    </div>
-    <div class="q-options">${opts}</div>
-    ${expl}`;
+/* ── Brouillons ────────────────────────────────────────────────────────── */
+
+function lireBrouillon(id) {
+  try {
+    var brut = localStorage.getItem(CLE + id);
+    if (!brut) return null;
+    var o = JSON.parse(brut);
+    return (o && Array.isArray(o.questions)) ? o : null;
+  } catch (e) { return null; }
 }
 
-function editMode(q, i) {
-  const opts = q.options.map((o, oi) => `
-    <div class="edit-row">
-      <label>${oi===q.answer?'✅':'❌'} Option ${oi+1}</label>
-      <input type="radio" class="radio-correct" name="correct-${i}" value="${oi}" ${oi===q.answer?'checked':''} onchange="setCorrect(${i},${oi})">
-      <input type="text" id="opt-${i}-${oi}" value="${esc(o)}">
-    </div>`).join('');
-  return `
-    <div class="q-card-head">
-      <div class="q-num">Q.${i+1}</div>
-      <div class="q-text" style="color:var(--blue)">Mode édition</div>
-      <div class="q-actions">
-        <button class="btn-save" onclick="saveEdit(${i})" style="width:auto;padding:0 10px;border-color:var(--green);color:var(--green)">✓</button>
-        <button class="btn-cancel del" onclick="cancelEdit(${i})" style="width:auto;padding:0 10px">✗</button>
-      </div>
-    </div>
-    <div class="edit-form">
-      <div class="edit-row">
-        <label>Question</label>
-        <input type="text" id="eq-${i}" value="${esc(q.q)}">
-      </div>
-      ${opts}
-      <div class="edit-row">
-        <label>💡 Explication</label>
-        <input type="text" id="ex-${i}" value="${esc(q.expl||'')}">
-      </div>
-      <div class="edit-btns">
-        <button class="btn-save" onclick="saveEdit(${i})">✓ ENREGISTRER</button>
-        <button class="btn-cancel" onclick="cancelEdit(${i})">✗ ANNULER</button>
-      </div>
-    </div>`;
+function ecrireBrouillon(id, questions) {
+  try {
+    localStorage.setItem(CLE + id, JSON.stringify({ date: Date.now(), questions: questions }));
+  } catch (e) { /* quota plein ou stockage refusé : l'éditeur reste utilisable */ }
 }
 
-// ── ACTIONS ───────────────────────────────────────────────────
-function move(i, dir) {
-  const j = i + dir;
-  if(j < 0 || j >= questions.length) return;
-  [questions[i], questions[j]] = [questions[j], questions[i]];
-  render();
+function oublierBrouillon(id) {
+  try { localStorage.removeItem(CLE + id); } catch (e) {}
 }
 
-function remove(i) {
-  if(!confirm(`Supprimer la question ${i+1} ?`)) return;
-  questions.splice(i, 1);
-  render();
+/* La sauvegarde suit la frappe, mais pas à chaque touche : un brouillon
+   écrit toutes les 600 ms suffit pour ne rien perdre à un rechargement. */
+var minuteur = null;
+function sauverPlusTard() {
+  clearTimeout(minuteur);
+  minuteur = setTimeout(function () {
+    ecrireBrouillon(serie.id, collect());
+    afficherBandeau(true);
+  }, 600);
 }
 
-function startEdit(i) {
-  const card = document.getElementById('card-' + i);
-  card.classList.add('editing');
-  card.innerHTML = editMode(questions[i], i);
-}
-
-function cancelEdit(i) {
-  const card = document.getElementById('card-' + i);
-  card.classList.remove('editing');
-  card.innerHTML = viewMode(questions[i], i);
-}
-
-function setCorrect(i, oi) {
-  questions[i].answer = oi;
-  const card = document.getElementById('card-' + i);
-  // Update labels
-  card.querySelectorAll('.edit-row label').forEach((lbl, li) => {
-    // Only option labels (skip Question + Expl rows)
-    if(li >= 1 && li <= 4) {
-      const optIdx = li - 1;
-      lbl.textContent = (optIdx === oi ? '✅' : '❌') + ` Option ${optIdx+1}`;
-    }
-  });
-}
-
-function saveEdit(i) {
-  const q = document.getElementById('eq-' + i).value.trim();
-  if(!q) return;
-  const opts = [0,1,2,3].map(oi => document.getElementById(`opt-${i}-${oi}`).value.trim());
-  if(opts.some(o=>!o)) return;
-  questions[i] = {
-    q,
-    options: opts,
-    answer: questions[i].answer,
-    expl: document.getElementById('ex-' + i).value.trim()
+function afficherBandeau(vientDEtreEcrit) {
+  var b = $('brouillon');
+  var d = lireBrouillon(serie.id);
+  if (!d) { b.hidden = true; b.textContent = ''; return; }
+  var quand = new Date(d.date);
+  var heure = ('0' + quand.getHours()).slice(-2) + ':' + ('0' + quand.getMinutes()).slice(-2);
+  b.hidden = false;
+  b.textContent = '';
+  var txt = document.createElement('span');
+  txt.textContent = (vientDEtreEcrit ? 'Brouillon enregistré à ' : 'Brouillon retrouvé, enregistré à ')
+                  + heure + ' — ' + d.questions.length + ' question' + (d.questions.length > 1 ? 's' : '')
+                  + '. Il reste dans ce navigateur, il ne modifie pas le fichier du jeu.';
+  var bouton = document.createElement('button');
+  bouton.type = 'button';
+  bouton.textContent = '↺ Repartir de la série d’origine';
+  bouton.onclick = function () {
+    if (!confirm('Abandonner le brouillon et recharger « ' + serie.nom + ' » telle qu’elle est dans le jeu ?')) return;
+    oublierBrouillon(serie.id);
+    rendre(origine(serie));
+    afficherBandeau(false);
   };
-  render();
+  b.appendChild(txt);
+  b.appendChild(bouton);
 }
 
-function addQuestion() {
-  const q = document.getElementById('in-q').value.trim();
-  const correct = document.getElementById('in-correct').value.trim();
-  const w1 = document.getElementById('in-w1').value.trim();
-  const w2 = document.getElementById('in-w2').value.trim();
-  const w3 = document.getElementById('in-w3').value.trim();
-  const expl = document.getElementById('in-expl').value.trim();
-  const msg = document.getElementById('add-msg');
+/* ── Rendu ─────────────────────────────────────────────────────────────── */
 
-  if(!q || !correct || !w1 || !w2 || !w3) {
-    showMsg(msg, 'err', '⚠ Remplis la question et les 4 réponses !');
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function ligneOption(i, j, texte, coche) {
+  return '<div class="opt-row">'
+       +   '<span class="opt-idx" aria-hidden="true">' + j + '</span>'
+       +   '<input type="radio" name="r' + i + '" value="' + j + '"' + (coche ? ' checked' : '')
+       +          ' aria-label="Option ' + (j + 1) + ' : bonne réponse">'
+       +   '<input type="text" class="f-opt" value="' + esc(texte) + '" placeholder="Option ' + (j + 1) + '">'
+       +   '<button type="button" class="btn-opt-del" title="Supprimer cette option" aria-label="Supprimer l’option ' + (j + 1) + '">✕</button>'
+       + '</div>';
+}
+
+function rendre(questions) {
+  liste.textContent = '';
+  if (!questions.length) {
+    var vide = document.createElement('p');
+    vide.className = 'vide';
+    vide.textContent = 'Aucune question dans cette série. Ajoutez-en une, ou importez un fichier.';
+    liste.appendChild(vide);
+  }
+  questions.forEach(function (q, i) {
+    var opts = q.options.length ? q.options : ['', ''];
+    var carte = document.createElement('div');
+    carte.className = 'card';
+    carte.innerHTML =
+      '<div class="card-top">'
+    +   '<span class="qnum">Q.' + (i + 1) + '</span>'
+    +   '<input type="text" class="cat-input" value="' + esc(q.cat) + '" placeholder="Catégorie (ex : 🔍 Définir l’info)" aria-label="Catégorie de la question ' + (i + 1) + '">'
+    + '</div>'
+    + '<label>Question</label>'
+    + '<textarea class="f-q" rows="2">' + esc(q.q) + '</textarea>'
+    + '<label>Options <span class="correct-hint">— cochez la bonne réponse (2 à 4 options)</span></label>'
+    + '<div class="options-grid">'
+    +   opts.map(function (o, j) { return ligneOption(i, j, o, j === q.answer); }).join('')
+    +   '<button type="button" class="btn-opt-add">+ Ajouter une option</button>'
+    + '</div>'
+    + '<label>Explication</label>'
+    + '<textarea class="f-expl" rows="2">' + esc(q.expl) + '</textarea>'
+    + '<div class="card-footer"><button type="button" class="btn-del">🗑 Supprimer la question</button></div>';
+    liste.appendChild(carte);
+  });
+  majBoutonsOptions();
+  majCompteur();
+}
+
+/* Le bouton « ajouter » disparaît à 4 options, les croix se désactivent à 2 :
+   la règle « 2 à 4 » se voit à l'écran au lieu d'être refusée après coup. */
+function majBoutonsOptions() {
+  Array.prototype.forEach.call(liste.querySelectorAll('.card'), function (c) {
+    var n = c.querySelectorAll('.opt-row').length;
+    c.querySelector('.btn-opt-add').hidden = (n >= MAX_OPT);
+    Array.prototype.forEach.call(c.querySelectorAll('.btn-opt-del'), function (b) {
+      b.disabled = (n <= MIN_OPT);
+    });
+  });
+}
+
+function majCompteur() {
+  var n = liste.querySelectorAll('.card').length;
+  $('count').textContent = n + ' question' + (n > 1 ? 's' : '');
+}
+
+function collect() {
+  return Array.prototype.map.call(liste.querySelectorAll('.card'), function (c, i) {
+    var coche = c.querySelector('input[name="r' + i + '"]:checked');
+    return {
+      cat: c.querySelector('.cat-input').value.trim(),
+      q: c.querySelector('.f-q').value.trim(),
+      options: Array.prototype.map.call(c.querySelectorAll('.f-opt'), function (e) { return e.value.trim(); }),
+      answer: coche ? +coche.value : 0,
+      expl: c.querySelector('.f-expl').value.trim()
+    };
+  });
+}
+
+/* ── Choix de la série ─────────────────────────────────────────────────── */
+
+function chargerSerie(s, forcerOrigine) {
+  serie = s;
+  $('ed-serie').textContent = s.nom;
+  $('ed-fichier').textContent = s.fichier + ' · ' + s.variable;
+  Array.prototype.forEach.call(document.querySelectorAll('.serie-chip'), function (c) {
+    c.setAttribute('aria-pressed', String(c.dataset.id === s.id));
+  });
+  var d = forcerOrigine ? null : lireBrouillon(s.id);
+  rendre(d ? d.questions : origine(s));
+  afficherBandeau(false);
+}
+
+function construireBarre() {
+  var barre = $('serie-bar');
+  SERIES.forEach(function (s) {
+    if (s.id !== 'import' && !Array.isArray(window[s.variable])) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'serie-chip';
+    b.dataset.id = s.id;
+    b.setAttribute('aria-pressed', 'false');
+    var n = (s.id === 'import') ? 0 : origine(s).length;
+    b.innerHTML = esc(s.nom) + '<small>' + (s.id === 'import' ? 'vide au départ' : n + ' questions') + '</small>';
+    b.onclick = function () {
+      if (aDesModifsNonEnregistrees() &&
+          !confirm('Changer de série ? Le brouillon de « ' + serie.nom + ' » est conservé de son côté.')) return;
+      chargerSerie(s, false);
+      $('serie-bar').scrollIntoView({ block: 'nearest' });
+    };
+    barre.appendChild(b);
+  });
+}
+
+function aDesModifsNonEnregistrees() {
+  return !!lireBrouillon(serie.id);
+}
+
+/* ── Actions ───────────────────────────────────────────────────────────── */
+
+function ajouterQuestion() {
+  var qs = collect();
+  qs.push({ cat: '', q: '', options: ['', '', '', ''], answer: 0, expl: '' });
+  rendre(qs);
+  sauverPlusTard();
+  var cartes = liste.querySelectorAll('.card');
+  var derniere = cartes[cartes.length - 1];
+  derniere.scrollIntoView({ block: 'center' });
+  derniere.querySelector('.f-q').focus();
+}
+
+/* Un seul écouteur pour toutes les cartes : le contenu est reconstruit à
+   chaque rendu, des écouteurs posés carte par carte fuiraient. */
+liste.addEventListener('click', function (e) {
+  var carte = e.target.closest('.card');
+  if (!carte) return;
+  var i = Array.prototype.indexOf.call(liste.querySelectorAll('.card'), carte);
+
+  if (e.target.closest('.btn-del')) {
+    if (!confirm('Supprimer la question ' + (i + 1) + ' ?')) return;
+    var qs = collect(); qs.splice(i, 1); rendre(qs); sauverPlusTard();
     return;
   }
-
-  // Shuffle options
-  const opts = [correct, w1, w2, w3];
-  for(let i=opts.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [opts[i],opts[j]]=[opts[j],opts[i]];
+  if (e.target.closest('.btn-opt-del')) {
+    var rangee = e.target.closest('.opt-row');
+    var j = Array.prototype.indexOf.call(carte.querySelectorAll('.opt-row'), rangee);
+    var qs2 = collect();
+    if (qs2[i].options.length <= MIN_OPT) return;
+    qs2[i].options.splice(j, 1);
+    if (qs2[i].answer === j) qs2[i].answer = 0;
+    else if (qs2[i].answer > j) qs2[i].answer--;
+    rendre(qs2); sauverPlusTard();
+    return;
   }
-  const answer = opts.indexOf(correct);
+  if (e.target.closest('.btn-opt-add')) {
+    var qs3 = collect();
+    if (qs3[i].options.length >= MAX_OPT) return;
+    qs3[i].options.push('');
+    rendre(qs3); sauverPlusTard();
+    carte = liste.querySelectorAll('.card')[i];
+    var champs = carte.querySelectorAll('.f-opt');
+    champs[champs.length - 1].focus();
+  }
+});
 
-  questions.push({ q, options: opts, answer, expl });
-  render();
-  showMsg(msg, 'ok', '✅ Question ajoutée !');
-  ['in-q','in-correct','in-w1','in-w2','in-w3','in-expl'].forEach(id => document.getElementById(id).value = '');
+liste.addEventListener('input', sauverPlusTard);
+liste.addEventListener('change', sauverPlusTard);
+
+$('btn-add').onclick = ajouterQuestion;
+$('btn-add-bas').onclick = ajouterQuestion;
+
+/* ── Messages ──────────────────────────────────────────────────────────── */
+
+function dire(type, texte) {
+  var m = $('msg');
+  m.className = 'msg ' + type;
+  m.textContent = texte;
+  m.hidden = false;
 }
 
-function showMsg(el, type, text) {
-  el.className = 'msg ' + type;
-  el.textContent = text;
-  setTimeout(() => el.style.display = 'none', 3000);
+/* ── Import ────────────────────────────────────────────────────────────── */
+
+function xlsxPresent() {
+  if (typeof XLSX !== 'undefined') return true;
+  dire('err', '❌ Le lecteur de fichiers Excel n’est pas disponible. Rechargez la page, ou importez un fichier .json.');
+  return false;
 }
 
-// ── IMPORT EXCEL ──────────────────────────────────────────────
-document.getElementById('file-input').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if(!file) return;
-  readFile(file);
+function normaliser(item) {
+  if (!item || !item.q || !Array.isArray(item.options)) return null;
+  var opts = item.options.map(function (o) { return String(o == null ? '' : o).trim(); })
+                         .filter(Boolean).slice(0, MAX_OPT);
+  if (opts.length < MIN_OPT) return null;
+  var a = +item.answer || 0;
+  if (a < 0 || a >= opts.length) a = 0;
+  return { cat: item.cat || '', q: String(item.q).trim(), options: opts, answer: a, expl: item.expl || '' };
+}
+
+function importerJSON(texte) {
+  var parsed = JSON.parse(texte);
+  if (!Array.isArray(parsed) || !parsed.length) throw new Error('le fichier ne contient pas une liste de questions');
+  var qs = collect(), ajoutes = 0, ignores = 0;
+  parsed.forEach(function (it) {
+    var q = normaliser(it);
+    if (q) { qs.push(q); ajoutes++; } else ignores++;
+  });
+  rendre(qs); sauverPlusTard();
+  dire('ok', '✅ ' + ajoutes + ' question(s) importée(s)' + (ignores ? ' — ' + ignores + ' ligne(s) ignorée(s), il faut une question et au moins deux options.' : '.'));
+}
+
+function importerTableur(donnees) {
+  var wb = XLSX.read(donnees, { type: 'array' });
+  var ws = wb.Sheets[wb.SheetNames[0]];
+  var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+  var qs = collect(), ajoutes = 0, ignores = 0;
+  rows.forEach(function (row, ri) {
+    var q = String(row[0] || '').trim();
+    if (ri === 0 && q.toLowerCase().indexOf('question') >= 0) return;   // ligne d'en-tête
+    var bonne = String(row[1] || '').trim();
+    if (!q && !bonne) return;                                          // ligne vide
+    var mauvaises = [row[2], row[3], row[4]]
+      .map(function (x) { return String(x == null ? '' : x).trim(); }).filter(Boolean);
+    if (!q || !bonne || !mauvaises.length) { ignores++; return; }
+    qs.push({
+      cat: String(row[6] || '').trim(),
+      q: q,
+      options: [bonne].concat(mauvaises).slice(0, MAX_OPT),
+      answer: 0,
+      expl: String(row[5] || '').trim()
+    });
+    ajoutes++;
+  });
+  rendre(qs); sauverPlusTard();
+  dire('ok', '✅ ' + ajoutes + ' question(s) importée(s)' + (ignores ? ' — ' + ignores + ' ligne(s) ignorée(s), il faut une question, une bonne réponse et au moins une mauvaise.' : '.'));
+}
+
+function lireFichier(fichier) {
+  var ext = fichier.name.split('.').pop().toLowerCase();
+  var lecteur = new FileReader();
+  lecteur.onerror = function () { dire('err', '❌ Le fichier n’a pas pu être lu.'); };
+
+  if (ext === 'json') {
+    lecteur.onload = function (e) {
+      try { importerJSON(e.target.result); }
+      catch (err) { dire('err', '❌ Erreur de lecture : ' + err.message); }
+    };
+    lecteur.readAsText(fichier);
+    return;
+  }
+  if (!xlsxPresent()) return;
+  lecteur.onload = function (e) {
+    try { importerTableur(e.target.result); }
+    catch (err) { dire('err', '❌ Erreur de lecture : ' + err.message); }
+  };
+  lecteur.readAsArrayBuffer(fichier);
+}
+
+$('file-input').addEventListener('change', function () {
+  if (this.files[0]) lireFichier(this.files[0]);
   this.value = '';
 });
 
-const dropZone = document.getElementById('drop-zone');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault(); dropZone.classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if(file) readFile(file);
+var zone = $('drop-zone');
+zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', function () { zone.classList.remove('drag'); });
+zone.addEventListener('drop', function (e) {
+  e.preventDefault(); zone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) lireFichier(e.dataTransfer.files[0]);
 });
 
-function readFile(file) {
-  const ext = file.name.split('.').pop().toLowerCase();
+/* ── Export ────────────────────────────────────────────────────────────── */
 
-  if(ext === 'json'){
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const parsed = JSON.parse(e.target.result);
-        if(!Array.isArray(parsed) || !parsed.length) throw new Error('Format invalide');
-        parsed.forEach(item => {
-          if(!item.q || !Array.isArray(item.options) || item.options.length < 2) return;
-          questions.push({ q: item.q, options: item.options, answer: item.answer || 0, expl: item.expl || '', cat: item.cat || '' });
-        });
-        render();
-        alert(`✅ ${parsed.length} question(s) importée(s) depuis le fichier !`);
-      } catch(err) {
-        alert('❌ Erreur de lecture du fichier : ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(e.target.result, {type:'binary'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-
-      let imported = 0;
-      rows.forEach((row, ri) => {
-        const q = String(row[0]||'').trim();
-        const b = String(row[1]||'').trim();
-        const m1 = String(row[2]||'').trim();
-        const m2 = String(row[3]||'').trim();
-        const m3 = String(row[4]||'').trim();
-        const expl = String(row[5]||'').trim();
-        const cat = String(row[6]||'').trim();
-
-        // Skip header row or empty rows
-        if(!q || !b || !m1) return;
-        if(ri === 0 && q.toLowerCase().includes('question')) return;
-
-        const opts = [b, m1, m2, m3].filter(o => o);
-
-        // Shuffle
-        for(let i=opts.length-1;i>0;i--){
-          const j=Math.floor(Math.random()*(i+1));
-          [opts[i],opts[j]]=[opts[j],opts[i]];
-        }
-        const answer = opts.indexOf(b) !== -1 ? opts.indexOf(b) : 0;
-
-        questions.push({ q, options: opts, answer, expl, cat });
-        imported++;
-      });
-
-      render();
-      alert(`✅ ${imported} question(s) importée(s) depuis le fichier !`);
-    } catch(err) {
-      alert('❌ Erreur de lecture du fichier : ' + err.message);
-    }
-  };
-  reader.readAsBinaryString(file);
+function valides() {
+  var qs = collect();
+  var mauvaises = [];
+  qs.forEach(function (q, i) {
+    var opts = q.options.filter(Boolean);
+    if (!q.q) mauvaises.push('Q.' + (i + 1) + ' : pas de question');
+    else if (opts.length < MIN_OPT) mauvaises.push('Q.' + (i + 1) + ' : moins de ' + MIN_OPT + ' options remplies');
+  });
+  return { questions: qs, erreurs: mauvaises };
 }
 
-// ── EXPORT questions.js ───────────────────────────────────────
-function exportQCM() {
-  if(!questions.length) { alert('Aucune question à exporter !'); return; }
-  const json = JSON.stringify(questions, null, 2);
-  const content = `const DEFAULT_QCM = ${json};\n`;
-  const blob = new Blob([content], {type:'application/javascript;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'questions.js';
+function telecharger(nom, contenu, type) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([contenu], { type: type + ';charset=utf-8' }));
+  a.download = nom;
   a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
 }
 
-// ── EXPORT JSON ────────────────────────────────────────────────
-function exportJSON() {
-  if(!questions.length) { alert('Aucune question à exporter !'); return; }
-  const json = JSON.stringify(questions, null, 2);
-  const blob = new Blob([json], {type:'application/json;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'questions.json';
-  a.click();
+/* L'export reproduit la mise en forme des fichiers du dépôt — `var`, une
+   clé par ligne, deux espaces d'indentation — pour que le fichier exporté
+   remplace l'ancien sans produire un diff illisible. */
+function exporterJS() {
+  var v = valides();
+  if (!v.questions.length) { dire('err', '❌ Aucune question à exporter.'); return; }
+  if (v.erreurs.length) { dire('err', '❌ À corriger avant export — ' + v.erreurs.join(' · ')); return; }
+  var corps = v.questions.map(function (q) {
+    return '  {\n'
+         + (q.cat ? '    cat: ' + JSON.stringify(q.cat) + ',\n' : '')
+         + '    q: ' + JSON.stringify(q.q) + ',\n'
+         + '    options: [\n      ' + q.options.filter(Boolean).map(function (o) { return JSON.stringify(o); }).join(',\n      ') + '\n    ],\n'
+         + '    answer: ' + q.answer + ',\n'
+         + '    expl: ' + JSON.stringify(q.expl) + '\n'
+         + '  }';
+  }).join(',\n');
+  var entete = '// ' + serie.nom + '\n// ' + v.questions.length + ' questions\n\n';
+  telecharger(serie.fichier, entete + 'var ' + serie.variable + ' = [\n' + corps + '\n];\n', 'text/javascript');
+  dire('ok', '✅ ' + serie.fichier + ' exporté (' + v.questions.length + ' questions). Remplacez le fichier du même nom dans « Arcade quizz ».');
 }
 
-// ── MODÈLE EXCEL ─────────────────────────────────────────────
-function downloadTemplate() {
-  const wb = XLSX.utils.book_new();
-  const data = [
+function exporterJSON() {
+  var v = valides();
+  if (!v.questions.length) { dire('err', '❌ Aucune question à exporter.'); return; }
+  if (v.erreurs.length) { dire('err', '❌ À corriger avant export — ' + v.erreurs.join(' · ')); return; }
+  telecharger('questions.json', JSON.stringify(v.questions, null, 2), 'application/json');
+  dire('ok', '✅ questions.json exporté. Il se réimporte ici, et se charge depuis le hub de l’Arcade.');
+}
+
+$('btn-js').onclick = exporterJS;
+$('btn-json').onclick = exporterJSON;
+
+/* ── Modèle Excel ──────────────────────────────────────────────────────── */
+
+$('btn-modele').onclick = function () {
+  if (!xlsxPresent()) return;
+  var wb = XLSX.utils.book_new();
+  var data = [
     ['Question / Affirmation', 'Bonne réponse ✅', 'Mauvaise réponse 1 ❌', 'Mauvaise réponse 2 ❌', 'Mauvaise réponse 3 ❌', 'Explication 💡', 'Catégorie (optionnel)'],
-    ["Qu'est-ce qu'une Fake News ?", 'Une information fausse', 'Une vraie information', 'Un fait prouvé', 'Un avis personnel', "Une Fake News, c'est une info fausse !", 'Définitions'],
-    ['Que boit une vache ?', "De l'eau", 'Du lait', 'Du jus', 'Du café', "C'est la vache qui produit le lait, elle boit de l'eau !", ''],
+    ["Qu'est-ce qu'une fake news ?", 'Une information fausse', 'Une vraie information', 'Un fait prouvé', 'Un avis personnel', "Une fake news, c'est une information fausse.", 'Définitions'],
+    ['Que boit une vache ?', "De l'eau", 'Du lait', 'Du jus', '', "La vache produit le lait, elle boit de l'eau. Trois options suffisent.", '']
   ];
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = [{wch:40},{wch:30},{wch:30},{wch:30},{wch:30},{wch:40},{wch:20}];
+  var ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [{ wch: 40 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 40 }, { wch: 20 }];
   XLSX.utils.book_append_sheet(wb, ws, 'Questions');
   XLSX.writeFile(wb, 'modele_questions.xlsx');
-}
+};
 
-// ── UTILS ─────────────────────────────────────────────────────
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+/* ── Départ ────────────────────────────────────────────────────────────── */
 
-// ── INIT ──────────────────────────────────────────────────────
-render();
+construireBarre();
+
+/* editeur-niveau1.html et consorts redirigent ici avec ?serie=niveauN. */
+var demandee = null;
+try {
+  var id = new URLSearchParams(location.search).get('serie');
+  demandee = SERIES.filter(function (s) { return s.id === id; })[0] || null;
+} catch (e) {}
+chargerSerie(demandee || SERIES[0], false);
+
+})();
 </script>
-<!-- En-tête unifié (chantier 05) — pas d'i18n.js : page outil non traduite,
-     la bascule de langue promettrait une traduction absente (cf. echecs). -->
+
+<!-- En-tête unifié (chantier 05) — pas d'i18n.js : outil d'auteur non traduit. -->
 <script src="../collection.js"></script>
-  <script src="../retours.js" defer></script>
+<script src="../retours.js" defer></script>
 </body>
 </html>
