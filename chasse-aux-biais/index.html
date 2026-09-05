@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chasse aux Biais 🧠</title>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<link rel="stylesheet" href="../collection.css">
 <style>
 :root {
   --bg:#07211d; --panel:#0c2e29; --card:#123c35;
@@ -80,9 +82,6 @@ header{text-align:center;}
 
 #end{display:none;max-width:580px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:30px;}
 #end h2{font-family:'Lilita One',cursive;font-size:1.7rem;color:var(--acc);margin-bottom:10px;}
-#end .score-big{font-family:'Lilita One',cursive;font-size:3rem;color:#fff;margin:10px 0;}
-#end p{color:var(--mu);font-weight:700;margin-bottom:18px;line-height:1.55;}
-#end p b{color:var(--tx);}
 @media(max-width:520px){#answers{grid-template-columns:1fr;}}
 
 /* Boutons secondaires + menu intro */
@@ -113,7 +112,7 @@ header{text-align:center;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-entete="non">
 <a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
 
 <header>
@@ -163,11 +162,10 @@ header{text-align:center;}
 </div>
 <button id="nextbtn" onclick="nextQ()" data-i18n="next">Question suivante ➜</button>
 
-<div id="end" role="status" aria-live="assertive">
-  <h2 id="end-title"></h2>
-  <div class="score-big" id="end-score"></div>
-  <p id="end-msg"></p>
-  <button class="bigbtn gold" onclick="location.reload()" data-i18n="replay">🔄 Rejouer</button>
+<div id="end">
+  <!-- E2 : l'écran de fin est rendu par ColFin (collection.js) : titre, score,
+       dossiers ratés avec leur explication, « rejouer mes erreurs ». -->
+  <div class="col-fin" id="ecran-fin"></div>
 </div>
 
 <div id="fiches">
@@ -178,6 +176,14 @@ header{text-align:center;}
 </div>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
+<script>
+/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
+   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
+   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
+   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
+window.__COLLECTION_ENTETE__ = false;
+</script>
 <script>
 I18N.register({
   fr: {

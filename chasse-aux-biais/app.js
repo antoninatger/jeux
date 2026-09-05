@@ -157,12 +157,26 @@ const ITEMS = [
 
 const QTIME=15; // secondes pour répondre une fois la respiration passée
 let deck=[],idx=0,score=0,streak=0,best=0,locked=true,timer=null,countdown=null,timeLeft=QTIME,timedOut=0;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les dossiers n'ont pas d'identifiant : leur énoncé (t) en tient lieu d'une partie à l'autre.
+const JEU="chasse-aux-biais";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
+function noter(it,ok){ joue.push({id:it.t, titre:it.t, reussi:ok, explication:texteBrut(it.e)}); }
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startGame(){
-  deck=shuffle([...ITEMS]).slice(0,12);
+function startGame(sousDeck){
+  // E2 : les dossiers jamais vus d'abord (mémoire ColFin), ou le paquet imposé par « rejouer mes erreurs »
+  // (nonVusDabord lit item.id : on enveloppe les dossiers, qui n'en ont pas)
+  deck=sousDeck ? shuffle(sousDeck)
+                : ColFin.nonVusDabord(JEU, shuffle(ITEMS.map(it=>({id:it.t, src:it})))).map(o=>o.src).slice(0,12);
   idx=0;score=0;streak=0;best=0;timedOut=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  // la partie repart sans recharger la page : le HUD repart de zéro lui aussi
+  $("score").textContent=0; $("streak").textContent="";
   $("fiches").style.display="none";
   $("intro").style.display="none";
   $("hud").style.display="flex";
@@ -241,6 +255,7 @@ function timeUp(it){
     if(b.dataset.ok==="1"){b.classList.remove("dim");b.classList.add("good");}
   });
   streak=0;timedOut++;
+  noter(it,false);
   $("streak").textContent="";
   $("fb-title").textContent="⏱ Trop tard ! Ton Système 1 a hésité…";
   const fb=$("feedback");fb.className="ko";fb.style.display="block";
@@ -257,6 +272,7 @@ function answer(it,btn){
   clearInterval(countdown);
   $("timer-wrap").style.display="none";
   const ok=btn.dataset.ok==="1";
+  noter(it,ok);
   document.querySelectorAll(".abtn").forEach(b=>{
     b.disabled=true;b.classList.add("dim");
     if(b.dataset.ok==="1"){b.classList.remove("dim");b.classList.add("good");}
@@ -299,7 +315,6 @@ function endGame(){
   $("nextbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  $("end-score").textContent=score+" pts";
   const ratio=score/(deck.length*10);
   let title,msg;
   if(ratio>=0.9){title="🏆 Maître de la métacognition !";msg="Ton cerveau analytique est aux commandes. Tu sais prendre du recul sur ton propre fonctionnement — c'est exactement ça, la <b>métacognition</b>.";}
@@ -308,8 +323,13 @@ function endGame(){
   if(best>=5)msg+="<br><br>Ta meilleure série : <b>"+best+" 🔥</b>";
   if(timedOut>0)msg+="<br><br>⏱ Hors-délai : <b>"+timedOut+"</b> — sous pression, garde la tête froide : respire, puis tranche.";
   msg+="<br><br>💡 <i>« L'ennemi de la connaissance, ce n'est pas l'ignorance : c'est l'illusion de la connaissance. »</i>";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, score, message, liste des dossiers ratés et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: score+" pts — "+texteBrut(msg),
+    score: joue.filter(j=>j.reussi).length, total: joue.length, items: joue,
+    onRejouer: rates => startGame(ITEMS.filter(it => rates.some(r => r.id===it.t))),
+    onRecommencer: () => startGame()
+  });
 }
 
 // ===== Fiches anti-biais =====
