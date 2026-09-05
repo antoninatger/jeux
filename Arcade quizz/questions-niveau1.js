@@ -1,5 +1,5 @@
 // Niveau 1 — Fake News & Esprit Critique
-// 30 questions
+// 26 questions
 
 var QUESTIONS_NIVEAU1 = [
 
@@ -254,18 +254,6 @@ var QUESTIONS_NIVEAU1 = [
   // ── Attitude critique ─────────────────────────────────────────
   {
     cat: "💡 Attitude critique",
-    q: "Quel conseil pratique donne la formation avant de partager une info ?",
-    options: [
-      "Vérifier sur Google",
-      "Demander à un ami",
-      "Compter jusqu'à 2",
-      "Attendre 24 heures"
-    ],
-    answer: 2,
-    expl: "2 secondes suffisent pour reconsidérer une info avant de la partager. Ce petit délai permet de passer du mode intuitif au mode analytique."
-  },
-  {
-    cat: "💡 Attitude critique",
     q: "\"Si une information est trop belle pour être vraie…\"",
     options: [
       "Elle vient probablement d'un expert fiable",
@@ -287,18 +275,6 @@ var QUESTIONS_NIVEAU1 = [
     ],
     answer: 1,
     expl: "Si un problème complexe (comme le SIDA) avait une solution simple (le jus de citron), on l'aurait trouvée. La simplicité trop grande doit alerter."
-  },
-  {
-    cat: "💡 Attitude critique",
-    q: "Quelle question essentielle faut-il se poser selon la formation ?",
-    options: [
-      "\"Cette information est-elle récente ?\"",
-      "\"Qui a partagé cette information ?\"",
-      "\"Pourquoi est-ce que je crois ce que je crois ?\"",
-      "\"Combien de sources citent cette information ?\""
-    ],
-    answer: 2,
-    expl: "Interroger l'origine de ses propres croyances est la base de l'esprit critique. D'où viennent mes certitudes ? Sont-elles fondées sur des sources fiables ?"
   },
   {
     cat: "💡 Attitude critique",
@@ -326,18 +302,6 @@ var QUESTIONS_NIVEAU1 = [
   },
   {
     cat: "💡 Attitude critique",
-    q: "Quelle citation est attribuée à Stephen Hawking dans la formation ?",
-    options: [
-      "\"Le doute est le début de la connaissance\"",
-      "\"L'ennemi de la connaissance c'est l'illusion de la connaissance\"",
-      "\"La science progresse grâce à l'erreur\"",
-      "\"Croire sans preuves est dangereux\""
-    ],
-    answer: 1,
-    expl: "Stephen Hawking : \"L'ennemi de la connaissance n'est pas l'ignorance, mais l'illusion de la connaissance.\" Croire qu'on sait empêche d'apprendre."
-  },
-  {
-    cat: "💡 Attitude critique",
     q: "Pourquoi admettre son ignorance est-il utile face aux fake news ?",
     options: [
       "Pour éviter de blesser les autres",
@@ -359,17 +323,5 @@ var QUESTIONS_NIVEAU1 = [
     ],
     answer: 2,
     expl: "La métacognition, c'est penser à sa propre façon de penser. Prendre conscience de ses biais permet de mieux les contrôler face aux fake news."
-  },
-  {
-    cat: "💡 Attitude critique",
-    q: "Pourquoi le présentateur ne révèle-t-il pas au début qu'il est docteur en psychologie ?",
-    options: [
-      "Pour tester la mémoire des élèves",
-      "Pour montrer qu'on fait confiance sans vraiment savoir pourquoi",
-      "Pour rendre la formation plus ludique",
-      "Car ce n'est pas important pour le sujet"
-    ],
-    answer: 1,
-    expl: "Les élèves lui font confiance dès le début sans savoir pourquoi. C'est une expérience méta : on accorde souvent une légitimité sans la vérifier."
   }
 ];

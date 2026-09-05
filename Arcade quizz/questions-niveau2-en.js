@@ -29,18 +29,6 @@ var QUESTIONS_NIVEAU2 = [
   },
   {
     cat: "🔍 Fake News & verification",
-    q: "Which information is true according to The training?",
-    options: [
-      "The immortal jellyfish exists",
-      "The veganes veulent interdire The biscuits animaux",
-      "The deux information are vraies",
-      "The deux information are fausses"
-    ],
-    answer: 0,
-    expl: "The meduse Turritopsis dohrnii is reellement biológiquement immortelle. En revanche, the article on The biscuits en forme of animaux is satirique (Gorafi) — example parfait de canular pris au serieux."
-  },
-  {
-    cat: "🔍 Fake News & verification",
     q: "Which criterion helps check information?",
     options: [
       "The number of “likes”",
@@ -324,31 +312,5 @@ var QUESTIONS_NIVEAU2 = [
     ],
     answer: 2,
     expl: "The theorie russe of the \"milliard of or\" affirme that the Occident veut reduire The population mondiale to A milliard de people (of ou the hostilite envers The Russie). it a servi de justification ideologique to the invasion de the Ukraine."
-  },
-
-  // ── Fact-checking & limits ───────────────────────────────────
-  {
-    cat: "✅ Fact-checking & limits",
-    q: "According to the training, what is the main limit of fact-checking?",
-    options: [
-      "It is too slow",
-      "Fact-checkers are poorly trained",
-      "Fake news is only the tree hiding the foris",
-      "It is too expensive"
-    ],
-    answer: 2,
-    expl: "Se concentrer uniquement on The fake news pures, it is ignorer tout The continuum of the disinformation : decontextualisation, framing, mute news, astroturfing… The fake news n'is that The partie visible de the iceberg."
-  },
-  {
-    cat: "✅ Fact-checking & limits",
-    q: "Which one is NOT a disinformation technique seen in the training?",
-    options: [
-      "Astroturfing",
-      "Mute news",
-      "The manufacture of doubt",
-      "Fact-checking"
-    ],
-    answer: 3,
-    expl: "Fact-checking is au contraire A outil de lutte against The disinformation. The trois autres (astroturfing, mute news, fabrique of the doubt) are Some techniques de manipulation de the information."
   }
 ];

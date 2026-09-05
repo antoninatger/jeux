@@ -1,5 +1,5 @@
 // Level 1 — Fake News & Critical Thinking
-// 30 questions
+// 26 questions
 
 var QUESTIONS_NIVEAU1 = [
 
@@ -254,18 +254,6 @@ var QUESTIONS_NIVEAU1 = [
   // ── Critical attitude ─────────────────────────────────────────
   {
     cat: "💡 Critical attitude",
-    q: "Which conseil pratique donne The training before de share A information?",
-    options: [
-      "check on Google",
-      "Ask a friend",
-      "Count to 2",
-      "Wait 24 hours"
-    ],
-    answer: 2,
-    expl: "2 secondes suffisent for reconsiderer A information before of the share. Ce petit delai allows de passer of the mode intuitif au mode analytique."
-  },
-  {
-    cat: "💡 Critical attitude",
     q: "\"If information is too good to be true…\"",
     options: [
       "it vient probably of A expert reliable",
@@ -287,18 +275,6 @@ var QUESTIONS_NIVEAU1 = [
     ],
     answer: 1,
     expl: "Si A probleme complexe (as The SIDA) avait A solution simple (The jus de citron), on the aurait trouvee. The simplicite trop grande must alerter."
-  },
-  {
-    cat: "💡 Critical attitude",
-    q: "Which quision essentielle must-it se poser according to The training?",
-    options: [
-      "\"this information is-it recente?\"",
-      "\"who a shared this information?\"",
-      "\"Why is it that je crois ce that je crois?\"",
-      "\"Combien de sources citent this information?\""
-    ],
-    answer: 2,
-    expl: "Interroger the origine de its propres croyances is The base de the esprit critique. D'ou viennent mes certitudes? Sont-they fondees on Some sources fiables?"
   },
   {
     cat: "💡 Critical attitude",
@@ -326,18 +302,6 @@ var QUESTIONS_NIVEAU1 = [
   },
   {
     cat: "💡 Critical attitude",
-    q: "Which citation is attribuee to Stephen Hawking in The training?",
-    options: [
-      "\"The doubt is The debut of the connaissance\"",
-      "\"The ennemi of the connaissance it is the illusion of the connaissance\"",
-      "\"The science progresse grâce to the error\"",
-      "\"believe without evidence is dangerous\""
-    ],
-    answer: 1,
-    expl: "Stephen Hawking : \"The ennemi of the connaissance is not the ignorance, mais the illusion of the connaissance.\" believe What on sait empeche of apprendre."
-  },
-  {
-    cat: "💡 Critical attitude",
     q: "Why admettre its ignorance is-it utile face aux fake news?",
     options: [
       "for eviter de blesser The autres",
@@ -359,17 +323,5 @@ var QUESTIONS_NIVEAU1 = [
     ],
     answer: 2,
     expl: "The metacognition, it is penser to its propre facon de penser. Prendre conscience de its bias allows de mieux The controler face aux fake news."
-  },
-  {
-    cat: "💡 Critical attitude",
-    q: "Why The presentateur ne revele-t-it pas au debut What it is docteur en psychologie?",
-    options: [
-      "for tiser The memoire Some eleves",
-      "for montrer What on fact confiance without vraiment savoir Why",
-      "for rendre The training plus ludique",
-      "because ce is not important for The topic"
-    ],
-    answer: 1,
-    expl: "The eleves lui font confiance des The debut without savoir Why. It is A experience meta : on accorde often A legitimite without The check."
   }
 ];

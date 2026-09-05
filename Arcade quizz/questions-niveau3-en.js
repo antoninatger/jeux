@@ -165,30 +165,6 @@ var QUESTIONS_NIVEAU3 = [
     answer: 1,
     expl: "The endogroupe = its propre groupe (ceux who partagent dejto its valeurs). The exogroupe = The autres, ceux What on veut persuade. The strategie rhetoric is radicalement differente according to The cible."
   },
-  {
-    cat: "🏘️ Ingroup & outgroup",
-    q: "according to The training, Which strategie Biden a-t-it choisie for The elections americaines?",
-    options: [
-      "persuade uniquement its camp democrate",
-      "Ignorer The republicains for mobiliser its base",
-      "persuade to The fois its endogroupe et A partie de the exogroupe (republicains moderes)",
-      "Viser uniquement The electeurs independants"
-    ],
-    answer: 2,
-    expl: "Biden voulait seduire aussi The republicains moderes → strategie endogroupe + exogroupe. Trump, lui, misait on The mobilisation intensive de its seul camp republicain radical."
-  },
-  {
-    cat: "🏘️ Ingroup & outgroup",
-    q: "according to The training, Trump visait principalement :",
-    options: [
-      "The ensemble Some Americains without distinction",
-      "The Democrates for The convertir",
-      "The independants hesitants",
-      "its propre camp (endogroupe republicain) for The mobiliser massivement"
-    ],
-    answer: 3,
-    expl: "\"Trump veut persuade uniquement its propre groupe (republicains assez radicaux) en esperant What it y en ait assez who soient motives for aller voter.\" it ne cherche pas to convertir the exogroupe."
-  },
 
   // ── Ethos, Pathos, Logos ──────────────────────────────────────
   {
@@ -263,18 +239,6 @@ var QUESTIONS_NIVEAU3 = [
     answer: 3,
     expl: "Attention aux false syllogismes! Ce reasoning ressemble to of the logos mais The structure is fallacieuse : etre mortel ne suffit pas to etre A homme. It is A sophisme classique."
   },
-  {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "Harrison Ford fact A discours against The changement climatique to Cannes, puis repart en jet prive. Which effet rhetoric this produit-it?",
-    options: [
-      "Renforce its ethos en montrant its engagement",
-      "Affaiblit its ethos en revelant A contradiction between its paroles et its actes",
-      "Renforce its pathos en montrant What it souffre of the crise climatique",
-      "N'a aucun effet rhetoric because The actes ne comptent pas in A discours"
-    ],
-    answer: 1,
-    expl: "\"The seule chose What on a retenue de its intervention, it is this hypocrisie.\" Attaquer the ethos (credibilite) of A orateur en montrant The contradiction between its actes et its paroles can ruiner tout A discours."
-  },
 
   // ── Sophismes & bien débattre ─────────────────────────────────
   {
@@ -312,30 +276,6 @@ var QUESTIONS_NIVEAU3 = [
     ],
     answer: 1,
     expl: "\"this casse The rythme et the engrenage of the violence, this montre What on ne considere pas its contradicteur as A ennemi, et this allows de debattre on The fond.\""
-  },
-  {
-    cat: "🤝 Debating well",
-    q: "according to The training, Why look for A point of accord with its adversaire?",
-    options: [
-      "for lui montrer What on a raison on tous The sujets",
-      "for eviter The debat en trouvant A compromis facile",
-      "for rendre The debat plus serein et progresser on The vrais points de desaccord",
-      "for that the adversaire abandonne its idees plus vite"
-    ],
-    answer: 2,
-    expl: "\"The fact of acter The point of accord ne supprime pas The contradictions. it y a always A pro-vaccin et A anti-vaccin. Mais this rend The debat plus serein.\" On progresse mieux quand on part of A terrain commun."
-  },
-  {
-    cat: "🤝 Debating well",
-    q: "Pro-vaccin et anti-vaccin : Which point of accord The training identifie-t-it?",
-    options: [
-      "The deux are of accord on the efficacite Some vaccins",
-      "The deux veulent proteger The people, mais with Some methodes differentes",
-      "The deux s'accordent for limiter The medicaments non tises",
-      "it n'y a aucun point of accord possible between these deux positions"
-    ],
-    answer: 1,
-    expl: "\"The point of accord : on veut proteger The people. On a juste A method differente.\" Partir de ce terrain commun allows A debat plus constructif that de s'opposer frontalement des The depart."
   },
   {
     cat: "🤝 Debating well",

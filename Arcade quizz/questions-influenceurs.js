@@ -1,6 +1,6 @@
 // Influenceurs — Fake News, influenceurs et esprit critique
 // Source : diapositives de la formation "formation-fake-news-influenceurs"
-// 24 questions
+// 20 questions
 
 var QUESTIONS_INFLUENCEURS = [
 
@@ -28,18 +28,6 @@ var QUESTIONS_INFLUENCEURS = [
     ],
     answer: 2,
     expl: "Les deux exemples sont vrais et coexistent. Le ZEvent 2024 a dépassé 10 millions d'euros de dons ; la DGCCRF a sanctionné un influenceur trading pour pratique commerciale trompeuse. C'est un métier, pas une morale."
-  },
-  {
-    cat: "💅 Qui sont les influenceurs",
-    q: "Dans la formation, le profil « argent facile » désigne :",
-    options: [
-      "Les créateurs qui vivent de dons de leur communauté",
-      "Les comptes trading, crypto et NFT, qui promettent un enrichissement rapide",
-      "Les influenceurs qui affichent leur salaire",
-      "Les marques qui rémunèrent le mieux leurs partenaires"
-    ],
-    answer: 1,
-    expl: "Trois profils sont distingués : divertissement, célébrité déjà construite ailleurs, et argent facile. Ce dernier est celui qui concentre le plus d'arnaques."
   },
   {
     cat: "💅 Qui sont les influenceurs",
@@ -91,18 +79,6 @@ var QUESTIONS_INFLUENCEURS = [
     answer: 0,
     expl: "« De rien à tout » se retient et se transmet, là où une donnée exacte s'oublie. La question utile n'est pas « est-ce que cette histoire est belle ? » mais « qu'est-ce qu'elle prouve ? »."
   },
-  {
-    cat: "🤝 Pourquoi on les croit",
-    q: "Costume, voiture de luxe, montre : dans la formation, cela s'appelle :",
-    options: [
-      "Le pathos",
-      "Le logos",
-      "L'ethos : construire sa crédibilité par l'image",
-      "Le storytelling"
-    ],
-    answer: 2,
-    expl: "L'image de réussite sert de preuve, sans qu'aucune compétence ne soit démontrée. C'est une preuve qui ne prouve rien, et qui fonctionne très bien."
-  },
 
   // ── Nos biais ────────────────────────────────────────────────
   {
@@ -151,7 +127,7 @@ var QUESTIONS_INFLUENCEURS = [
       "Par l'isolement social de la victime"
     ],
     answer: 2,
-    expl: "Et le point le plus contre-intuitif de la formation : celui qui est persuadé qu'il ne peut pas se faire avoir est une cible privilégiée, précisément parce qu'il ne fait pas attention."
+    expl: "Et c'est le point le plus contre-intuitif : celui qui est persuadé qu'il ne peut pas se faire avoir est une cible privilégiée, précisément parce qu'il ne fait pas attention."
   },
   {
     cat: "🧠 Nos biais",
@@ -238,18 +214,6 @@ var QUESTIONS_INFLUENCEURS = [
   // ── Faire attention ──────────────────────────────────────────
   {
     cat: "🔍 Faire attention",
-    q: "Selon la conclusion de la formation, la première question à se poser est :",
-    options: [
-      "Cette personne est-elle sincère ?",
-      "Combien a-t-elle d'abonnés ?",
-      "Quel est l'intérêt de la personne qui parle : financier, symbolique ou réputationnel ?",
-      "Cette information est-elle reprise ailleurs ?"
-    ],
-    answer: 2,
-    expl: "Elle n'accuse personne : tout le monde a des intérêts, y compris en disant la vérité. Repérer un intérêt ne prouve pas que le propos est faux, cela indique où regarder de plus près."
-  },
-  {
-    cat: "🔍 Faire attention",
     q: "Un intérêt « réputationnel », c'est :",
     options: [
       "Un partenariat rémunéré non déclaré",
@@ -259,18 +223,6 @@ var QUESTIONS_INFLUENCEURS = [
     ],
     answer: 1,
     expl: "Souvent plus fort que l'intérêt financier, et beaucoup plus discret : il ne laisse aucune trace comptable, et rien à déclarer."
-  },
-  {
-    cat: "🔍 Faire attention",
-    q: "« Les influenceurs ne sont pas vos amis. » Que veut dire cette phrase de la formation ?",
-    options: [
-      "Qu'il ne faut pas les suivre",
-      "Qu'ils sont malhonnêtes",
-      "Qu'ils peuvent être très sympathiques, et rester des personnes payées pour vous proposer une vie de rêve",
-      "Qu'il faut s'en méfier systématiquement"
-    ],
-    answer: 2,
-    expl: "La formation insiste : on peut profiter de leur contenu. Le point n'est pas de se couper d'eux, c'est de ne pas confondre une relation à sens unique avec une amitié."
   },
   {
     cat: "🔍 Faire attention",
