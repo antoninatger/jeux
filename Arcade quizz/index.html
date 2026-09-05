@@ -106,6 +106,7 @@ body::before{
   padding:13px 18px;cursor:pointer;
   transition:all .18s ease;border-radius:8px;
   display:flex;flex-direction:column;gap:5px;text-align:center;
+  max-width:272px;
 }
 
 .set-chip:hover{
@@ -124,6 +125,14 @@ body::before{
 .set-chip .chip-sub{
   font-family:var(--font-body);font-size:.8125rem;
   opacity:.65;letter-spacing:0;font-weight:700;text-transform:none;
+}
+
+/* Les thèmes de la série, listés sous son nom : un enseignant doit savoir
+   ce qu'il lance sans avoir à ouvrir le fichier de questions. */
+.set-chip .chip-themes{
+  font-family:var(--font-body);font-size:.8125rem;
+  opacity:.8;letter-spacing:0;font-weight:600;text-transform:none;
+  line-height:1.35;
 }
 
 .upload-row{display:flex;justify-content:center}
@@ -294,6 +303,8 @@ body::before{
   <div class="hub-status empty" id="hub-status">Aucune série sélectionnée</div>
 </div>
 
+<div class="hub-step" data-i18n="hubStep2">— 2. Choisir un jeu —</div>
+
 <div class="col-cartes">
   <a class="col-carte" href="snake-fakenews.html" style="--c:var(--cyan)">
     <canvas id="cv-snake" width="420" height="170"></canvas>
@@ -339,9 +350,11 @@ body::before{
 </div>
 
 <a class="btn-edit" href="editeur-questions.html" data-i18n="btnEdit">✏ Intégrer tes questions</a>
-<p class="blink" data-i18n="selectGame">— Sélectionne un jeu —</p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Bibliothèque Excel servie depuis le dépôt : en classe, le réseau n'est
+     pas garanti, et un import qui échoue silencieusement est pire que pas
+     d'import du tout. Voir vendor/LISEZMOI.md. -->
+<script src="../vendor/xlsx.full.min.js"></script>
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script>
@@ -361,7 +374,10 @@ I18N.register({
     descBlaster: "Tire sur les fausses affirmations qui avancent vers toi, esquive les vraies ! Jeu de plateforme arcade.",
     titleQcm: "QCM Classique",
     descQcm: "Réponds aux questions à ton rythme, lis les explications et suis ta progression par thème !",
-    play: "▶ Jouer", btnEdit: "✏ Intégrer tes questions", selectGame: "— Sélectionne un jeu —"
+    play: "▶ Jouer", btnEdit: "✏ Intégrer tes questions",
+    hubStep2: "— 2. Choisir un jeu —",
+    nivCollege: "Collège · 11-13 ans", nivLycee: "Lycée · 15-18 ans",
+    xlsxAbsent: "❌ Le lecteur de fichiers Excel n'est pas disponible. Rechargez la page, ou importez un fichier .json."
   },
   en: {
     pageTitle: "Arcade Quiz", siteTitle: "ARCADE QUIZ", siteSub: "Fake News & Critical Thinking",
@@ -378,7 +394,10 @@ I18N.register({
     descBlaster: "Shoot the false statements advancing toward you, dodge the true ones! An arcade platformer.",
     titleQcm: "Classic Quiz",
     descQcm: "Answer at your own pace, read the explanations and track your progress by topic!",
-    play: "▶ Play", btnEdit: "✏ Add your questions", selectGame: "— Select a game —"
+    play: "▶ Play", btnEdit: "✏ Add your questions",
+    hubStep2: "— 2. Choose a game —",
+    nivCollege: "Middle school · ages 11-13", nivLycee: "High school · ages 15-18",
+    xlsxAbsent: "❌ The Excel file reader is unavailable. Reload the page, or import a .json file."
   }
 });
 </script>
@@ -388,6 +407,37 @@ I18N.register({
 </script>
 <script>
 const CW=420, CH=170;
+
+/* ── Aperçus animés : à l'arrêt hors écran ──────────────────────────
+   Les six aperçus des cartes tournent chacun dans sa propre boucle
+   requestAnimationFrame. Le navigateur continue de les appeler quand la
+   carte est sortie de l'écran : sur un téléphone, cinq boucles dessinent
+   pour personne pendant qu'on lit le haut de la page.
+
+   apercuRAF(canvas, fn) remplace requestAnimationFrame dans ces boucles :
+   tant que la carte est visible elle programme l'image suivante ; sinon
+   elle retient la fonction et la relance quand la carte revient. Sans
+   IntersectionObserver, le comportement d'avant est conservé tel quel. */
+const APERCU_VISIBLE = new Map();   // canvas -> visible ou non
+const APERCU_REPRISE = new Map();   // canvas -> boucle mise en pause
+
+const apercuObs = ('IntersectionObserver' in window) ? new IntersectionObserver(function(entrees){
+  entrees.forEach(function(e){
+    APERCU_VISIBLE.set(e.target, e.isIntersecting);
+    if(e.isIntersecting && APERCU_REPRISE.has(e.target)){
+      const fn = APERCU_REPRISE.get(e.target);
+      APERCU_REPRISE.delete(e.target);
+      requestAnimationFrame(fn);
+    }
+  });
+}, {rootMargin:'120px'}) : null;
+
+function apercuRAF(cv, fn){
+  if(!apercuObs){ requestAnimationFrame(fn); return; }
+  if(!APERCU_VISIBLE.has(cv)){ APERCU_VISIBLE.set(cv, true); apercuObs.observe(cv); }
+  if(APERCU_VISIBLE.get(cv)) requestAnimationFrame(fn);
+  else APERCU_REPRISE.set(cv, fn);
+}
 
 /* ── SNAKE ──────────────────────────────────────────── */
 (()=>{
@@ -421,9 +471,9 @@ const CW=420, CH=170;
       const pad=i===0?1:2; cx.fillRect(s.x*G+pad,s.y*G+pad,G-pad*2,G-pad*2);
     });
     cx.globalAlpha=1; cx.shadowBlur=0;
-    requestAnimationFrame(draw);
+    apercuRAF(cv, draw);
   }
-  requestAnimationFrame(draw);
+  apercuRAF(cv, draw);
 })();
 
 /* ── BRICK BREAKER ──────────────────────────────────── */
@@ -468,9 +518,9 @@ const CW=420, CH=170;
     g.addColorStop(0,'#ffd166'); g.addColorStop(1,'#ff7a3d');
     cx.fillStyle=g; cx.shadowColor='#ffd166'; cx.shadowBlur=10;
     cx.fillRect(padX,CH-18,72,7); cx.shadowBlur=0;
-    requestAnimationFrame(draw);
+    apercuRAF(cv, draw);
   }
-  requestAnimationFrame(draw);
+  apercuRAF(cv, draw);
 })();
 
 /* ── FAKE NEWS DEFENDER ─────────────────────────────── */
@@ -535,9 +585,9 @@ const CW=420, CH=170;
     cx.beginPath(); cx.moveTo(-9,7); cx.lineTo(-17,13); cx.lineTo(-3,5); cx.closePath(); cx.fill();
     cx.beginPath(); cx.moveTo(9,7); cx.lineTo(17,13); cx.lineTo(3,5); cx.closePath(); cx.fill();
     cx.restore();
-    requestAnimationFrame(draw);
+    apercuRAF(cv, draw);
   }
-  requestAnimationFrame(draw);
+  apercuRAF(cv, draw);
 })();
 
 /* ── FAKE BLASTER ───────────────────────────────────── */
@@ -624,9 +674,9 @@ const CW=420, CH=170;
     cx.restore();
     for(const e of enms){e.x-=e.spd;if(e.x<-130)e.x=W+110;if(fr%7===0)e.wF=(e.wF+1)%2;drawE2(e.x,e.y,e.wF,e.bad);drawBub2(e.x,e.y,e.txt,e.bad);}
     drawH2(hero2.x,hero2.y,hero2.walkF,hero2.shootFX);
-    requestAnimationFrame(drawBlaster);
+    apercuRAF(cv, drawBlaster);
   }
-  requestAnimationFrame(drawBlaster);
+  apercuRAF(cv, drawBlaster);
 })();
 
 /* ── QCM CLASSIQUE ──────────────────────────────────── */
@@ -682,9 +732,9 @@ const CW=420, CH=170;
       cx.fillStyle='rgba(255,209,102,.8)';cx.font='12px monospace';cx.textAlign='left';
       cx.fillText('▶',optsL[0].x+optsL[0].w-18,optsL[0].y+23);
     }
-    requestAnimationFrame(draw);
+    apercuRAF(cv, draw);
   }
-  requestAnimationFrame(draw);
+  apercuRAF(cv, draw);
 })();
 
 /* ── WHAC-A-QUIZ ────────────────────────────────────── */
@@ -742,9 +792,9 @@ const CW=420, CH=170;
     cx.fillRect(-6,-26,12,30); cx.fillRect(-12,-40,24,16); cx.shadowBlur=0;
     cx.restore();
 
-    requestAnimationFrame(draw);
+    apercuRAF(cv, draw);
   }
-  requestAnimationFrame(draw);
+  apercuRAF(cv, draw);
 })();
 
 /* ── HUB QCM ────────────────────────────────────────── */
@@ -779,11 +829,39 @@ const CW=420, CH=170;
     }
   }
 
+  /* Niveau de chaque série. Seules celles dont le public est écrit quelque
+     part dans le dépôt en ont un : PRODUCT.md pour 6e-5e (collège) et les
+     en-têtes de questions-niveau2/3.js pour le lycée. « Par défaut » et
+     « Influenceurs » n'ont de public écrit nulle part : leur puce ne
+     l'affiche pas plutôt que d'en inventer un. */
+  var NIVEAUX = {
+    '6e5e'   : 'nivCollege',
+    'niveau1': 'nivLycee',
+    'niveau2': 'nivLycee',
+    'niveau3': 'nivLycee'
+  };
+
+  /* Les thèmes viennent des champs `cat` des questions, pas d'une liste
+     recopiée : ils suivent la série quand elle change, et se traduisent
+     tout seuls puisque les fichiers -en.js ont leurs propres catégories. */
+  function themesDe(questions){
+    var vus = [];
+    questions.forEach(function(q){
+      var c = (q.cat || '').replace(/^[^\p{L}\p{N}]+/u, '').trim();
+      if(c && vus.indexOf(c) < 0) vus.push(c);
+    });
+    return vus.join(' · ');
+  }
+
   sets.forEach(function(s){
     var chip = document.createElement('button');
     chip.className = 'set-chip';
     chip.dataset.id = s.id;
-    chip.innerHTML = s.label + '<span class="chip-sub">' + s.questions.length + ' ' + I18N.t('qWord') + '</span>';
+    var niveau = NIVEAUX[s.id] ? ' · ' + I18N.t(NIVEAUX[s.id]) : '';
+    var themes = themesDe(s.questions);
+    chip.innerHTML = s.label
+      + '<span class="chip-sub">' + s.questions.length + ' ' + I18N.t('qWord') + niveau + '</span>'
+      + (themes ? '<span class="chip-themes">' + themes + '</span>' : '');
     chip.onclick = function(){
       QCMStore.saveActiveSet(s.id);
       markActive(s.id);
@@ -809,8 +887,19 @@ const CW=420, CH=170;
   });
   markCount(QCMStore.loadSessionCount());
 
+  /* Sans XLSX, l'ancien code lançait « XLSX is not defined » dans la console
+     et ne montrait rien à l'écran. Le fichier est maintenant servi en local,
+     mais s'il manque (dépôt incomplet, blocage d'extension), on le dit. */
+  function xlsxPresent(){
+    if(typeof XLSX !== 'undefined') return true;
+    status.className = 'hub-status empty';
+    status.textContent = I18N.t('xlsxAbsent');
+    return false;
+  }
+
   document.getElementById('hub-template-link').addEventListener('click', function(e){
     e.preventDefault();
+    if(!xlsxPresent()) return;
     var wb = XLSX.utils.book_new();
     var data = [
       ['Question / Affirmation', 'Bonne réponse ✅', 'Mauvaise réponse 1 ❌', 'Mauvaise réponse 2 ❌', 'Mauvaise réponse 3 ❌', 'Explication 💡', 'Catégorie (optionnel)'],
@@ -845,6 +934,7 @@ const CW=420, CH=170;
       reader.readAsText(file);
 
     } else if(ext === 'xlsx' || ext === 'xls'){
+      if(!xlsxPresent()){ e.target.value = ''; return; }
       var reader2 = new FileReader();
       reader2.onload = function(ev){
         try{
