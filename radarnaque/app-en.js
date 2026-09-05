@@ -256,10 +256,14 @@
     }
     if (c.canal === 'chat'){
       return c.messages.map(function(m){
+        // dateSep: optional date separator, shown above the message. It makes clear
+        // we are reading an EXCERPT of a long exchange, not a conversation that would
+        // fit in three bubbles.
+        var sep = m.dateSep ? '<div class="datesep"><span>' + esc(m.dateSep) + '</span></div>' : '';
         if (m.voix){
-          return '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
+          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
         }
-        return '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
+        return sep + '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
       });
     }
     if (c.canal === 'appel'){

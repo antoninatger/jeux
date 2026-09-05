@@ -256,10 +256,14 @@
     }
     if (c.canal === 'chat'){
       return c.messages.map(function(m){
+        // dateSep : séparateur de date facultatif, posé au-dessus du message.
+        // Sert à montrer qu'on lit l'EXTRAIT d'un échange long, pas une conversation
+        // qui tiendrait en trois bulles.
+        var sep = m.dateSep ? '<div class="datesep"><span>' + esc(m.dateSep) + '</span></div>' : '';
         if (m.voix){
-          return '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
+          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
         }
-        return '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
+        return sep + '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
       });
     }
     if (c.canal === 'appel'){

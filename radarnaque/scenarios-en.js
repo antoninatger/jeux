@@ -714,8 +714,8 @@ const SCENARIOS = [
     "contact": "Philip M. 😊",
     "avatar": "",
     "messages": [
-      { "from": "eux", "texte": "Hi! I liked your profile right away 😊" },
-      { "from": "eux", "texte": "I’m an engineer, currently working on an offshore oil platform. We’ve been talking for 3 weeks, and I feel like I’ve known you forever." },
+      { "from": "eux", "dateSep": "3 weeks ago", "texte": "Hi! I liked your profile right away 😊" },
+      { "from": "eux", "dateSep": "Today", "texte": "I’m an engineer, currently working on an offshore oil platform. We’ve been talking for 3 weeks, and I feel like I’ve known you forever." },
       { "from": "eux", "texte": "I have a problem getting home: customs is asking me for €400 in fees that I don’t have on me here. Could you lend it to me? I’ll pay you back as soon as I’m back, I promise ❤️" }
     ],
     "verdict": "arnaque",

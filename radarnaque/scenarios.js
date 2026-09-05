@@ -723,8 +723,8 @@ const SCENARIOS = [
     contact: 'Philippe M. 😊',
     avatar: '',
     messages: [
-      { from:'eux', texte:'Bonjour ! Ton profil m’a tout de suite plu 😊' },
-      { from:'eux', texte:'Je suis ingénieur, actuellement en mission sur une plateforme pétrolière offshore. On discute depuis 3 semaines, j’ai l’impression de te connaître depuis toujours.' },
+      { from:'eux', dateSep:'Il y a 3 semaines', texte:'Bonjour ! Ton profil m’a tout de suite plu 😊' },
+      { from:'eux', dateSep:'Aujourd’hui', texte:'Je suis ingénieur, actuellement en mission sur une plateforme pétrolière offshore. On discute depuis 3 semaines, j’ai l’impression de te connaître depuis toujours.' },
       { from:'eux', texte:'J’ai un souci pour rentrer : la douane me réclame 400 € de frais que je n’ai pas sur moi ici. Tu pourrais m’avancer ça ? Je te rembourse dès mon retour, promis ❤️' }
     ],
     verdict: 'arnaque',
