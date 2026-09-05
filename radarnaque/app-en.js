@@ -125,6 +125,8 @@
     majHud();
     var c = deck[idx];
     reperesActifs = c.reperes || REP[c.id] || [];
+    // clue objects are shared between rounds: wipe the previous judgement
+    reperesActifs.forEach(function(r){ delete r._juge; delete r._choix; delete r._why; });
     foundBon = 0;
     app.innerHTML =
       '<div class="panel">' +
@@ -316,6 +318,19 @@
     montrerCorrection(bon);
   }
 
+  /* --- Nature of a clue and the answer expected from the player ---------------
+     Three natures: 'indice' (the detail really is a sign), 'leurre' (a decoy put
+     there by the scammer to reassure) and 'neutre' (a detail that proves nothing
+     either way, that nobody planted to mislead). The « bon » field is still
+     accepted as a synonym: bon:true = indice, bon:false = leurre by default. */
+  function typeRepere(r){
+    if (r && r.type) return r.type;
+    return (r && r.bon) ? 'indice' : 'leurre';
+  }
+  function attenduPour(r, estArnaque){
+    return typeRepere(r) === 'indice' ? (estArnaque ? 'louche' : 'rassurant') : 'neutre';
+  }
+
   /* ---------- 1) INVESTIGATION phase: spot clues BEFORE deciding ---------- */
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
@@ -467,49 +482,60 @@
 
   function validerSonde(i, span, choix, why){
     var r = reperesActifs[i];
-    if (r.bon){
+    if (typeRepere(r) === 'indice'){
       if (!span.classList.contains('trouve')){
         span.classList.add('trouve');
-        foundBon++; majCompteur();
         hintIdx = -1; hintStep = 0; hideAide(); resetHintBtn();
       }
     } else {
       span.classList.add('decoy');
     }
-    r._choix = choix; r._why = why;
+    r._choix = choix; r._why = why; r._juge = true;
+    majCompteur();
     afficherResultatRepere(i, span, choix, why);
   }
 
-  /* --- Educational feedback after the player's judgement --- */
+  /* --- Educational feedback after the player's judgement ---
+     Green and red judge the PLAYER'S CHOICE, never the nature of the detail:
+     we first say whether they were right, then what the detail actually was. */
   function afficherResultatRepere(i, span, choix, why){
     var r = reperesActifs[i];
     var estArnaque = deck[idx].verdict === 'arnaque';
-    var attendu = !r.bon ? 'neutre' : (estArnaque ? 'louche' : 'rassurant');
-    var corps;
+    var type = typeRepere(r);
+    var attendu = attenduPour(r, estArnaque);
+    var juste = (choix === attendu);
+    var tete, nature, defaut, corps;
 
-    if (r.bon){
-      var sens = estArnaque ? '🚩 Suspicious sign — ' : '✅ Reassuring sign — ';
-      var tete;
-      if (choix === attendu)       tete = '🎯 Well spotted, and well placed! ';
-      else if (choix === 'neutre') tete = 'Actually, this detail matters: ';
-      else                         tete = 'Good spotting, but the other way round: ';
-      corps = tete + sens + gl(r.note || '');
+    if (type === 'indice'){
+      nature = estArnaque ? '🚩 It was a suspicious sign — ' : '✅ It was a reassuring sign — ';
+      defaut = 'This detail matters when reading the message.';
+      if (juste)                   tete = '🎯 You were right, and you put your finger on it. ';
+      else if (choix === 'neutre') tete = '❌ You missed it: this detail matters. ';
+      else                         tete = '❌ Good spotting, but the other way round. ';
+    } else if (type === 'leurre'){
+      nature = '🅾️ It was a false trail, put there to reassure you — ';
+      defaut = 'This detail catches the eye, but it is not the real sign.';
+      if (juste)                      tete = '🎯 You were right: this detail proves nothing. ';
+      else if (choix === 'rassurant') tete = '❌ That is exactly the intended effect. ';
+      else                            tete = '❌ This is not the detail that gives the message away. ';
     } else {
-      var teteD = (choix === 'neutre')
-        ? '👍 Correct: this detail is not a real sign. '
-        : '🅾️ False trail — ';
-      corps = teteD + gl(r.note || 'This detail catches the eye, but it is not the real sign.');
+      nature = '😐 It was a neutral detail, that nobody planted to mislead you — ';
+      defaut = 'This detail proves nothing, one way or the other.';
+      if (juste)                   tete = '🎯 You were right: this detail proves nothing. ';
+      else if (choix === 'louche') tete = '❌ Suspicion misplaced: this detail accuses nobody. ';
+      else                         tete = '❌ Do not take it as a guarantee. ';
     }
+    corps = tete + nature + gl(r.note || defaut);
 
     var a = analyserPourquoi(why, r);
     if (a.ecrit){
-      if (r.bon && a.trouves.length)
+      if (type === 'indice' && a.trouves.length)
         corps += '<span class="sonde-fb ok">💬 Exactly: you pointed to “' + esc(a.trouves[0]) + '”, the heart of the problem.</span>';
       else
         corps += '<span class="sonde-fb">💬 Well done for putting it into words: verbalising is already the right reflex.</span>';
     }
 
-    showResultPop(span, (r.bon ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
+    showResultPop(span, (juste ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
   }
 
   // click beside a clue: reassuring feedback at the click location.
@@ -521,6 +547,7 @@
   }
 
   function majCompteur(){
+    foundBon = reperesActifs.filter(function(r){ return typeRepere(r) === 'indice' && r._juge; }).length;
     var cmp = el('spot-compteur');
     if (cmp) cmp.innerHTML = 'Clues spotted: <b>' + foundBon + '</b> / ' + cmp.getAttribute('data-total');
   }

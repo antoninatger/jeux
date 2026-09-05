@@ -125,6 +125,8 @@
     majHud();
     var c = deck[idx];
     reperesActifs = c.reperes || REP[c.id] || [];
+    // les repères sont des objets partagés entre parties : on efface le jugement précédent
+    reperesActifs.forEach(function(r){ delete r._juge; delete r._choix; delete r._why; });
     foundBon = 0;
     app.innerHTML =
       '<div class="panel">' +
@@ -316,6 +318,19 @@
     montrerCorrection(bon);
   }
 
+  /* --- Nature d'un repère et réponse attendue du joueur ---------------------
+     Trois natures : 'indice' (le détail est un vrai signe), 'leurre' (posé là par
+     l'escroc pour rassurer) et 'neutre' (un détail sans valeur probante, que
+     personne n'a placé là pour tromper). Le champ « bon » reste accepté comme
+     synonyme : bon:true = indice, bon:false = leurre par défaut. */
+  function typeRepere(r){
+    if (r && r.type) return r.type;
+    return (r && r.bon) ? 'indice' : 'leurre';
+  }
+  function attenduPour(r, estArnaque){
+    return typeRepere(r) === 'indice' ? (estArnaque ? 'louche' : 'rassurant') : 'neutre';
+  }
+
   /* ---------- 1) Phase d'ENQUÊTE : repérer les indices AVANT de décider ---------- */
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
@@ -467,51 +482,62 @@
 
   function validerSonde(i, span, choix, why){
     var r = reperesActifs[i];
-    if (r.bon){
+    if (typeRepere(r) === 'indice'){
       if (!span.classList.contains('trouve')){
         span.classList.add('trouve');
-        foundBon++; majCompteur();
-        // l'indice est trouvé : le coup de pouce repart de zéro sur le suivant
+        // l'indice est repéré : le coup de pouce repart de zéro sur le suivant
         hintIdx = -1; hintStep = 0; hideAide(); resetHintBtn();
       }
     } else {
       span.classList.add('decoy');
     }
-    r._choix = choix; r._why = why;
+    r._choix = choix; r._why = why; r._juge = true;
+    majCompteur();
     afficherResultatRepere(i, span, choix, why);
   }
 
-  /* --- Retour pédagogique après le jugement du joueur --- */
+  /* --- Retour pédagogique après le jugement du joueur ---
+     Le vert et le rouge jugent le CHOIX DU JOUEUR, jamais la nature du détail :
+     on dit d’abord s’il a eu raison, ensuite seulement ce qu’était ce détail. */
   function afficherResultatRepere(i, span, choix, why){
     var r = reperesActifs[i];
     var estArnaque = deck[idx].verdict === 'arnaque';
-    var attendu = !r.bon ? 'neutre' : (estArnaque ? 'louche' : 'rassurant');
-    var corps;
+    var type = typeRepere(r);
+    var attendu = attenduPour(r, estArnaque);
+    var juste = (choix === attendu);
+    var tete, nature, defaut, corps;
 
-    if (r.bon){
-      var sens = estArnaque ? '🚩 Signe suspect — ' : '✅ Signe rassurant — ';
-      var tete;
-      if (choix === attendu)       tete = '🎯 Bien vu, et bien situé&nbsp;! ';
-      else if (choix === 'neutre') tete = 'En réalité, ce détail compte&nbsp;: ';
-      else                         tete = 'Bon repérage, mais plutôt dans l’autre sens&nbsp;: ';
-      corps = tete + sens + gl(r.note || '');
+    if (type === 'indice'){
+      nature = estArnaque ? '🚩 C’était un signe suspect — ' : '✅ C’était un signe rassurant — ';
+      defaut = 'Ce détail compte dans la lecture du message.';
+      if (juste)                   tete = '🎯 Vous avez eu raison, et vous avez bien situé le détail. ';
+      else if (choix === 'neutre') tete = '❌ Vous êtes passé à côté&nbsp;: ce détail compte. ';
+      else                         tete = '❌ Bon repérage, mais dans l’autre sens. ';
+    } else if (type === 'leurre'){
+      nature = '🅾️ C’était une fausse piste, posée là pour vous rassurer — ';
+      defaut = 'Ce détail attire l’œil, mais ce n’est pas là qu’est le vrai signe.';
+      if (juste)                      tete = '🎯 Vous avez eu raison&nbsp;: ce détail ne prouve rien. ';
+      else if (choix === 'rassurant') tete = '❌ C’est exactement l’effet recherché. ';
+      else                            tete = '❌ Ce n’est pas ce détail qui trahit le message. ';
     } else {
-      var teteD = (choix === 'neutre')
-        ? '👍 Exact&nbsp;: ce détail n’est pas un vrai signe. '
-        : '🅾️ Fausse piste — ';
-      corps = teteD + gl(r.note || 'Ce détail attire l’œil, mais ce n’est pas là qu’est le vrai signe.');
+      nature = '😐 C’était un détail neutre, que personne n’a placé là pour vous tromper — ';
+      defaut = 'Ce détail ne prouve rien, ni dans un sens ni dans l’autre.';
+      if (juste)                   tete = '🎯 Vous avez eu raison&nbsp;: ce détail ne prouve rien. ';
+      else if (choix === 'louche') tete = '❌ Méfiance de trop&nbsp;: ce détail n’accuse personne. ';
+      else                         tete = '❌ À ne pas prendre pour une garantie. ';
     }
+    corps = tete + nature + gl(r.note || defaut);
 
     // retour sur le « pourquoi » facultatif (jamais pénalisant)
     var a = analyserPourquoi(why, r);
     if (a.ecrit){
-      if (r.bon && a.trouves.length)
+      if (type === 'indice' && a.trouves.length)
         corps += '<span class="sonde-fb ok">💬 Exactement&nbsp;: vous avez pointé « ' + esc(a.trouves[0]) + ' », le cœur du problème.</span>';
       else
         corps += '<span class="sonde-fb">💬 Bravo d’avoir mis des mots dessus&nbsp;: verbaliser est déjà le bon réflexe.</span>';
     }
 
-    showResultPop(span, (r.bon ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
+    showResultPop(span, (juste ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
   }
 
   // clic « à côté » (pas sur un indice) : petit retour rassurant à l'endroit cliqué.
@@ -523,6 +549,7 @@
   }
 
   function majCompteur(){
+    foundBon = reperesActifs.filter(function(r){ return typeRepere(r) === 'indice' && r._juge; }).length;
     var cmp = el('spot-compteur');
     if (cmp) cmp.innerHTML = 'Indices repérés&nbsp;: <b>' + foundBon + '</b> / ' + cmp.getAttribute('data-total');
   }
