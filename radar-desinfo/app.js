@@ -72,6 +72,11 @@ let deck=[], idx=0, score=0, lives=3, streak=0, best=0;
 // Chantier 04 : mode entraînement — après la perte des 3 vies, le joueur peut
 // finir le paquet sans score plutôt que d'être coupé du contenu pédagogique.
 let training=false;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {titre, reussi, explication}.
+// Les dépêches n'ont pas d'identifiant : ColFin retient leur texte (le titre) d'une partie à l'autre.
+const JEU="radar-desinfo";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=html; return d.textContent; }
 const $ = id => document.getElementById(id);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -89,9 +94,17 @@ function renderLexicon(){
 }
 renderLexicon();
 
-function startGame(){
-  deck = shuffle([...ITEMS]).slice(0,12);
+function startGame(sousDeck){
+  // E2 : les dépêches jamais vues d'abord (mémoire ColFin), ou le paquet imposé par « rejouer mes erreurs »
+  // (nonVusDabord lit item.id : on enveloppe les dépêches, qui n'en ont pas)
+  deck = sousDeck ? shuffle(sousDeck)
+                  : ColFin.nonVusDabord(JEU, shuffle(ITEMS.map(it=>({id:it.t, src:it})))).map(o=>o.src).slice(0,12);
   idx=0; score=0; lives=3; streak=0; best=0; training=false;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  // la partie repart sans recharger la page : le HUD repart de zéro lui aussi
+  $("score").textContent=0; $("streak").textContent=""; $("lives").textContent="❤️❤️❤️";
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
@@ -122,6 +135,7 @@ function answer(id,btn){
   const it=deck[idx];
   document.querySelectorAll(".cat").forEach(b=>{b.disabled=true; b.classList.add("dim");});
   const ok = id===it.a;
+  joue.push({id:it.t, titre:it.t, reussi:ok, explication:texteBrut(it.e)});
   const goodBtn=[...document.querySelectorAll(".cat")][CATS.findIndex(c=>c.id===it.a)];
   goodBtn.classList.remove("dim"); goodBtn.classList.add("good");
   if(ok){
@@ -204,7 +218,6 @@ function endGame(){
   $("trainbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  $("end-score").textContent=score+" pts";
   renderRecap();
   const ratio = score/(deck.length*10);
   let title,msg;
@@ -214,6 +227,11 @@ function endGame(){
   else if(ratio>=0.6){ title="🕵️ Bon enquêteur !"; msg="Tu repères déjà bien les techniques. Souviens-toi : décontextualiser, cadrer, taire une info… on peut désinformer sans mentir."; }
   else { title="🔍 Apprenti radar"; msg="C'est un bon début ! Les techniques sont nombreuses : décontextualisation, astroturfing, fabrique du doute, mute news, cadrage… Rejoue pour les ancrer."; }
   if(best>=5 && lives>0) msg += " Ta meilleure série : "+best+" 🔥";
-  $("end-title").textContent=title;
-  $("end-msg").textContent=msg;
+  // E2 : titre, score, message, liste des dépêches ratées et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: score+" pts — "+msg,
+    score: joue.filter(j=>j.reussi).length, total: joue.length, items: joue,
+    onRejouer: rates => startGame(ITEMS.filter(it => rates.some(r => r.titre===it.t))),
+    onRecommencer: () => startGame()
+  });
 }
