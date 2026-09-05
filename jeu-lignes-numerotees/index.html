@@ -1,599 +1,718 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lignes numérotées</title>
-<style>
-  :root{
-    --bg:#0b0c0f;
-    --panel:#111318;
-    --line:#2b2e36;
-    --fg:#e7e7e5;
-    --muted:#84888f;
-    --accent:#c96442;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family: ui-monospace, 'SF Mono', 'Consolas', 'Menlo', monospace;
-    background:var(--bg);
-    color:var(--fg);
-    min-height:100vh;
-    padding:28px 16px 60px;
-  }
-  .wrap{
-    max-width:680px;
-    margin:0 auto;
-  }
-  h1{
-    font-size:16px;
-    font-weight:600;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    margin:0 0 4px;
-  }
-  .subtitle{
-    color:var(--muted);
-    font-size:13px;
-    margin:0 0 22px;
-    line-height:1.5;
-  }
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
-    padding:16px;
-    margin-bottom:16px;
-  }
-  .controls{
-    display:flex;
-    gap:20px;
-    flex-wrap:wrap;
-  }
-  .slider-group{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    flex:1;
-    min-width:190px;
-  }
-  .slider-group label{
-    font-size:11px;
-    color:var(--muted);
-    white-space:nowrap;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-  }
-  input[type=range]{
-    flex:1;
-    accent-color:var(--accent);
-    height:2px;
-  }
-  .count-badge{
-    border:1px solid var(--line);
-    padding:3px 8px;
-    font-weight:600;
-    font-size:12px;
-    min-width:34px;
-    text-align:center;
-  }
-  .stepper{
-    display:flex;
-    align-items:center;
-    gap:0;
-  }
-  .stepper-btn{
-    appearance:none;
-    border:1px solid var(--line);
-    background:transparent;
-    color:var(--fg);
-    width:30px;
-    height:30px;
-    font-family:inherit;
-    font-size:15px;
-    font-weight:700;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:background .12s ease, border-color .12s ease, opacity .12s ease;
-  }
-  .stepper-btn:hover:not(:disabled){ border-color:var(--accent); }
-  .stepper-btn:active:not(:disabled){ background:var(--line); }
-  .stepper-btn:disabled{ opacity:.3; cursor:not-allowed; }
-  .stepper-val{
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-    height:30px;
-    min-width:40px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
-    font-size:14px;
-  }
-  .btn-row{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:14px;
-  }
-  .btn{
-    appearance:none;
-    border:1px solid var(--line);
-    background:transparent;
-    color:var(--fg);
-    padding:9px 14px;
-    font-family:inherit;
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:.5px;
-    text-transform:uppercase;
-    cursor:pointer;
-    transition:background .12s ease, border-color .12s ease, opacity .12s ease;
-  }
-  .btn:hover:not(:disabled){ border-color:var(--accent); }
-  .btn:active:not(:disabled){ background:var(--line); }
-  .btn:disabled{ opacity:.35; cursor:not-allowed; }
-  .btn-primary{
-    border-color:var(--accent);
-    color:var(--accent);
-  }
-  .btn-primary:hover:not(:disabled){ background:var(--accent); color:#0b0c0f; }
-  .btn.active{ background:var(--accent); border-color:var(--accent); color:#0b0c0f; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="pageTitle">Lignes numérotées</title>
+<meta name="description" data-i18n-content="metaDesc"
+      content="Outil d'animation : des barres numérotées apparaissent une par une, le public les reclasse de mémoire par ordre de longueur.">
 
-  /* Stage: sequential vertical bar reveal */
-  .stage-wrap{ text-align:center; }
-  .progress{
-    color:var(--muted);
-    font-size:11px;
-    letter-spacing:.5px;
-    text-transform:uppercase;
-    margin-bottom:14px;
-    min-height:14px;
+<!-- Le socle, toujours dans cet ordre : polices du dépôt, collection.css,
+     puis la feuille du jeu. -->
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<style>
+  /* ── L'identité du jeu, et rien d'autre ─────────────────────────────
+     Style « terminal » monospace, accent orangé : la page était déjà comme
+     ça et c'est cohérent. Ne changent que les rôles du socle. */
+  :root{
+    --bg:             #0b0c0f;
+    --surface:        #111318;
+    --bordure:        #2b2e36;
+    --txt:            #e7e7e5;
+    --txt-secondaire: #949aa3;   /* 7,0:1 sur --bg, 6,1:1 sur --surface */
+    --acc:            #c96442;
+    --acc-txt:        #ffffff;   /* 4,6:1 sur --acc */
+    --focus:          #ffd54f;
+    --font-texte:     ui-monospace, 'SF Mono', 'JetBrains Mono', Consolas, Menlo, monospace;
+    --font-titre:     var(--font-texte);
+
+    /* Hauteur de la piste et taille du numéro. Deux variables, parce que ce
+       sont les SEULES choses qui changent entre l'écran et le
+       vidéoprojecteur — voir le bloc « mode projection » plus bas. */
+    --piste:  min(38vh, 240px);
+    --numero: 1.25rem;
   }
-  .stage{
-    height:220px;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:var(--font-texte);
+    padding:0 var(--sp-4) var(--sp-6);
   }
-  .stage-line{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-    opacity:0;
-    transform:scaleY(0.85);
-    transform-origin:bottom;
+
+  .jeu{ max-width:760px; margin:0 auto; }
+
+  /* Pas de règle sur h1 : collection.js reprend le titre de la page dans
+     l'en-tête unifié — lequel est lui-même un <h1> — et masque l'original
+     avec .sr-only. Une règle `h1{…}` ici masquerait les deux. */
+
+  .sous-titre{
+    color:var(--txt-secondaire);
+    font-size:var(--fs-200);
+    line-height:var(--lh-normal);
+    margin:var(--sp-4) 0 var(--sp-4);
+  }
+
+  /* ── Réglages ───────────────────────────────────────────────────── */
+  .reglages{
+    background:var(--surface);
+    border:1px solid var(--bordure);
+    border-radius:var(--radius);
+    margin-bottom:var(--sp-4);
+  }
+  .reglages > summary{
+    cursor:pointer;
+    min-height:var(--cible);
+    display:flex; align-items:center; gap:var(--sp-2);
+    padding:0 var(--sp-4);
+    font-size:var(--fs-100);
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--txt-secondaire);
+  }
+  .reglages > summary::marker{ color:var(--acc); }
+  .reglages__corps{ padding:0 var(--sp-4) var(--sp-4); }
+
+  .controles{ display:flex; gap:var(--sp-5); flex-wrap:wrap; }
+  .groupe{ display:flex; align-items:center; gap:var(--sp-3); flex:1; min-width:200px; }
+  .groupe > .etiquette{
+    font-size:var(--fs-100); color:var(--txt-secondaire);
+    text-transform:uppercase; letter-spacing:.06em; white-space:nowrap;
+  }
+
+  .pas{ display:flex; align-items:center; border:1px solid var(--bordure); border-radius:8px; }
+  .pas button{
+    width:var(--cible); height:var(--cible);
+    background:none; border:0; color:var(--txt);
+    font-family:inherit; font-size:var(--fs-400); cursor:pointer;
+  }
+  .pas button:hover:not(:disabled){ color:var(--acc); }
+  .pas button:disabled{ opacity:.3; cursor:not-allowed; }
+  .pas .valeur{ min-width:2.6em; text-align:center; font-weight:700; font-size:var(--fs-300); }
+
+  input[type=range]{ flex:1; min-width:90px; accent-color:var(--acc); height:var(--cible); }
+  .badge{
+    font-size:var(--fs-100); color:var(--acc);
+    border:1px solid var(--bordure); border-radius:6px;
+    padding:2px 8px; white-space:nowrap;
+  }
+
+  .rangee{ display:flex; gap:var(--sp-2); flex-wrap:wrap; margin-top:var(--sp-4); }
+
+  .btn{
+    min-height:var(--cible); padding:0 var(--sp-4);
+    background:none; border:1px solid var(--bordure); border-radius:8px;
+    color:var(--txt); font-family:inherit; font-size:var(--fs-200); font-weight:700;
+    cursor:pointer; transition:border-color .15s, color .15s;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn:hover:not(:disabled){ border-color:var(--acc); color:var(--acc); }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; }
+  .btn--principal{ background:var(--acc); border-color:var(--acc); color:var(--acc-txt); }
+  .btn--principal:hover:not(:disabled){ color:var(--acc-txt); filter:brightness(1.1); }
+  .btn[aria-pressed="true"]{ border-color:var(--acc); color:var(--acc); }
+  .btn[hidden]{ display:none; }
+
+  .raccourcis{
+    margin-top:var(--sp-3);
+    font-size:var(--fs-100); color:var(--txt-secondaire); line-height:1.7;
+  }
+  kbd{
+    font-family:inherit; font-size:.95em;
+    border:1px solid var(--bordure); border-bottom-width:2px; border-radius:4px;
+    padding:1px 6px; color:var(--txt);
+  }
+
+  /* ── La scène ───────────────────────────────────────────────────── */
+  .scene-cadre{
+    background:var(--surface);
+    border:1px solid var(--bordure);
+    border-radius:var(--radius);
+    padding:var(--sp-4);
+    margin-bottom:var(--sp-4);
+  }
+  .avancement{
+    font-size:var(--fs-100); color:var(--txt-secondaire);
+    letter-spacing:.08em; text-transform:uppercase;
+    min-height:1.2em; margin-bottom:var(--sp-3);
+  }
+  .scene{
+    display:flex; align-items:flex-end; justify-content:center;
+    min-height:calc(var(--piste) + 4rem);
+  }
+  .scene-ligne{
+    display:flex; flex-direction:column; align-items:center; gap:var(--sp-3);
+    opacity:0; transform:scaleY(.85); transform-origin:bottom;
     transition:opacity .16s ease, transform .16s ease;
   }
-  .stage-line.show{
-    opacity:1;
-    transform:scaleY(1);
+  .scene-ligne.vue{ opacity:1; transform:scaleY(1); }
+  .scene-repos{
+    color:var(--txt-secondaire); font-size:var(--fs-200);
+    line-height:var(--lh-normal); margin:auto; text-align:center; max-width:44ch;
   }
-  .stage-idle{
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.7;
-    margin:auto;
-  }
-  .stage-idle strong{ color:var(--fg); }
+  .scene-repos strong{ color:var(--txt); }
 
-  .vbar{
-    width:34px;
-    background:var(--accent);
+  .piste{
+    height:var(--piste);
+    width:clamp(34px, 4.5vw, 90px);
+    display:flex; align-items:flex-end;
   }
-  .vbar-track{
-    height:180px;
-    width:34px;
-    display:flex;
-    align-items:flex-end;
-  }
-  .vnum{
-    font-size:18px;
-    font-weight:700;
-    border:1px solid var(--line);
-    padding:4px 10px;
+  .barre{ width:100%; background:var(--acc); }
+  .numero{
+    font-size:var(--numero); font-weight:700; line-height:1;
+    border:1px solid var(--bordure); border-radius:6px;
+    padding:.25em .5em;
   }
 
-  /* Answer / recap bar chart */
-  .chart{
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    gap:8px;
-    height:150px;
-    padding-top:20px;
-    overflow-x:auto;
+  /* ── Réponse ────────────────────────────────────────────────────── */
+  .reponse-bloc{
+    background:var(--surface); border:1px solid var(--bordure);
+    border-radius:var(--radius); padding:var(--sp-4); margin-bottom:var(--sp-4);
   }
-  .chart-col{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    min-width:26px;
-    opacity:0;
-    animation:fadeUp .3s ease forwards;
+  .reponse-bloc[hidden]{ display:none; }
+  .titre-bloc{
+    font-size:var(--fs-100); color:var(--txt-secondaire);
+    text-transform:uppercase; letter-spacing:.08em; margin-bottom:var(--sp-3);
   }
-  @keyframes fadeUp{
-    from{ opacity:0; transform:translateY(6px); }
-    to{ opacity:1; transform:translateY(0); }
+  .graphe{
+    display:flex; align-items:flex-end; justify-content:center;
+    gap:var(--sp-2); height:min(28vh, 190px); padding-top:var(--sp-4); overflow-x:auto;
   }
-  .chart-rank{
-    font-size:10px;
-    color:var(--accent);
-    font-weight:700;
+  .colonne{ display:flex; flex-direction:column; align-items:center; gap:6px; min-width:30px; }
+  .rang{ font-size:var(--fs-100); color:var(--acc); font-weight:700; }
+  /* Hauteur en dur, pas en % : dans un conteneur en `align-items:flex-end`,
+     un pourcentage ne se résout pas et les barres du récapitulatif
+     disparaissaient — il ne restait que les rangs et les numéros. */
+  .colonne-piste{ height:clamp(70px, 14vh, 130px); width:16px; display:flex; align-items:flex-end; }
+  .colonne-barre{ width:100%; background:var(--txt-secondaire); }
+  .colonne-num{
+    font-size:var(--fs-100); color:var(--txt-secondaire);
+    border-top:1px solid var(--bordure); padding-top:4px; width:100%; text-align:center;
   }
-  .chart-bar-track{
-    height:100px;
-    width:14px;
-    display:flex;
-    align-items:flex-end;
+  .sequence{
+    margin-top:var(--sp-4); padding:var(--sp-3) var(--sp-4);
+    border:1px solid var(--bordure); border-radius:8px;
   }
-  .chart-bar{
-    width:14px;
-    background:var(--muted);
+  .sequence__val{
+    font-size:var(--fs-400); font-weight:700; color:var(--acc);
+    letter-spacing:.05em; line-height:1.6;
   }
-  .chart-num{
-    font-size:11px;
-    color:var(--muted);
-    border-top:1px solid var(--line);
-    padding-top:4px;
-    width:100%;
-    text-align:center;
+
+  /* ── Encart animateur ───────────────────────────────────────────── */
+  .animateur{
+    background:var(--surface); border:1px solid var(--bordure);
+    border-left:3px solid var(--acc); border-radius:var(--radius);
+    margin-bottom:var(--sp-5);
   }
-  .answer-box{
-    margin-top:16px;
-    padding:12px 14px;
-    border:1px solid var(--line);
-    font-size:13px;
-    line-height:1.6;
+  .animateur > summary{
+    cursor:pointer; min-height:var(--cible);
+    display:flex; align-items:center; gap:var(--sp-2); padding:0 var(--sp-4);
+    font-size:var(--fs-100); text-transform:uppercase; letter-spacing:.08em;
+    color:var(--acc); font-weight:700;
   }
-  .answer-box .label{
-    color:var(--muted);
-    font-size:10px;
-    text-transform:uppercase;
-    letter-spacing:.6px;
-    margin-bottom:6px;
+  .animateur__corps{
+    padding:0 var(--sp-4) var(--sp-4);
+    font-size:var(--fs-200); line-height:var(--lh-normal);
+    color:var(--txt-secondaire);
   }
-  .answer-seq{
-    font-size:16px;
-    font-weight:700;
-    letter-spacing:.5px;
-    color:var(--accent);
+  .animateur__corps p + p{ margin-top:var(--sp-3); }
+  .animateur__corps strong{ color:var(--txt); }
+
+  /* ── Mode projection ─────────────────────────────────────────────
+     Une seule chose change : l'échelle. La page était dessinée pour un
+     écran de bureau — conteneur de 680 px, barre de 34 × 180 px, numéro à
+     18 px. Projetée dans une salle, la barre occupait un dixième de la
+     hauteur : le public ne pouvait pas comparer ce qu'on lui demandait de
+     comparer.
+
+     Au-delà de 1500 px, la piste passe donc à 62 vh et le numéro à 8 vh
+     SANS que personne ait rien à cliquer — c'est la largeur d'une sortie
+     vidéoprojecteur (1920 × 1080 le plus souvent). Le seuil est au-dessus
+     des portables courants (1440) : sur un écran de bureau, la scène reste
+     compacte et la page lisible. Le bouton ⛶ donne la même échelle à
+     n'importe quelle largeur, avec le plein écran et les réglages repliés. */
+  @media (min-width: 1500px){
+    :root{ --piste:62vh; --numero:8vh; }
+    .jeu{ max-width:1100px; }
   }
-  .hint{
-    color:var(--muted);
-    font-size:12px;
-    margin-top:14px;
-    line-height:1.6;
-  }
-  .panel-title{
-    font-size:11px;
-    color:var(--muted);
-    text-transform:uppercase;
-    letter-spacing:.6px;
-    margin:0 0 12px;
-  }
+
+  body.projection .jeu{ max-width:none; }
+  body.projection :root, body.projection{ --piste:66vh; --numero:9vh; }
+  body.projection .sous-titre,
+  body.projection .raccourcis,
+  body.projection .animateur{ display:none; }
+  body.projection .scene-cadre{ border:0; background:none; padding:0; }
+  body.projection .avancement{ font-size:var(--fs-300); text-align:center; }
+  body.projection .numero{ border-width:2px; }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <h1>Lignes numérotées</h1>
-  <p class="subtitle">Les lignes apparaissent une par une. Mémorise leur taille, puis dis à voix haute les numéros dans l'ordre croissant de longueur.</p>
+<body data-col-retour="../index.html">
 
-  <div class="panel">
-    <div class="controls">
-      <div class="slider-group">
-        <label>Lignes</label>
-        <div class="stepper">
-          <button class="stepper-btn" id="countMinus">−</button>
-          <div class="stepper-val" id="countVal">8</div>
-          <button class="stepper-btn" id="countPlus">+</button>
+<main class="jeu" id="jeu">
+
+  <h1 data-i18n="pageTitle">Lignes numérotées</h1>
+
+  <p class="sous-titre" data-i18n="sousTitre">Les lignes apparaissent une par une, jamais deux à la fois. Mémorisez leur taille, puis annoncez les numéros dans l'ordre croissant de longueur.</p>
+
+  <!-- ── Réglages ─────────────────────────────────────────────────── -->
+  <details class="reglages" id="reglages" open>
+    <summary data-i18n="reglages">Réglages</summary>
+    <div class="reglages__corps">
+      <div class="controles">
+        <div class="groupe">
+          <span class="etiquette" id="lbl-lignes" data-i18n="lignes">Lignes</span>
+          <div class="pas" role="group" aria-labelledby="lbl-lignes">
+            <button type="button" id="moins" data-i18n-aria-label="moinsAria" aria-label="Une ligne de moins">−</button>
+            <span class="valeur" id="valeur" aria-live="polite">8</span>
+            <button type="button" id="plus" data-i18n-aria-label="plusAria" aria-label="Une ligne de plus">+</button>
+          </div>
+        </div>
+
+        <div class="groupe">
+          <span class="etiquette" id="lbl-mode" data-i18n="mode">Mode</span>
+          <div class="rangee" style="margin-top:0" role="group" aria-labelledby="lbl-mode">
+            <button type="button" class="btn" id="mode-auto" aria-pressed="true" data-i18n="auto">Auto</button>
+            <button type="button" class="btn" id="mode-manuel" aria-pressed="false" data-i18n="manuel">Manuel</button>
+          </div>
+        </div>
+
+        <div class="groupe" id="groupe-vitesse">
+          <label class="etiquette" for="vitesse" data-i18n="vitesse">Vitesse</label>
+          <input type="range" id="vitesse" min="500" max="2500" step="100" value="1200">
+          <span class="badge" id="vitesse-val">1,2 s</span>
         </div>
       </div>
-      <div class="slider-group">
-        <label>Mode</label>
-        <div class="btn-row" style="margin-top:0;">
-          <button class="btn active" id="modeAuto">Auto</button>
-          <button class="btn" id="modeManual">Manuel</button>
-        </div>
+
+      <div class="rangee">
+        <button type="button" class="btn btn--principal" id="nouvelle" data-i18n="nouvelle">Nouvelle grille</button>
+        <button type="button" class="btn" id="lancer" data-i18n="lancer">Lancer</button>
+        <button type="button" class="btn" id="suivant" hidden data-i18n="suivant">Suivant →</button>
+        <button type="button" class="btn" id="revoir" data-i18n="revoir">Revoir</button>
+        <button type="button" class="btn" id="reponse" aria-pressed="false" data-i18n="reponse">Réponse</button>
+        <button type="button" class="btn" id="projeter" aria-pressed="false" data-i18n="projeter">⛶ Projection</button>
       </div>
-      <div class="slider-group" id="speedGroup">
-        <label for="speed">Vitesse</label>
-        <input type="range" id="speed" min="500" max="2500" step="100" value="1200">
-        <span class="count-badge" id="speedVal">1.2s</span>
-      </div>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" id="newBtn">Nouvelle grille</button>
-      <button class="btn" id="playBtn">Lancer</button>
-      <button class="btn" id="nextBtn" style="display:none;">Suivant →</button>
-      <button class="btn" id="replayBtn">Revoir</button>
-      <button class="btn" id="answerBtn">Réponse</button>
-    </div>
-  </div>
 
-  <div class="panel stage-wrap">
-    <p class="progress" id="progress">&nbsp;</p>
-    <div class="stage" id="stage">
-      <p class="stage-idle" id="stageIdle">Clique sur <strong>Nouvelle grille</strong> puis sur <strong>Lancer</strong> pour commencer.</p>
+      <p class="raccourcis" data-i18n-html="raccourcis">
+        Télécommande et clavier : <kbd>→</kbd> ou <kbd>Espace</kbd> lance la séquence, puis fait avancer d'une ligne. <kbd>R</kbd> tire une nouvelle grille.
+      </p>
+    </div>
+  </details>
+
+  <!-- ── Scène ────────────────────────────────────────────────────── -->
+  <div class="scene-cadre">
+    <p class="avancement" id="avancement" role="status" aria-live="polite">&nbsp;</p>
+    <div class="scene" id="scene">
+      <p class="scene-repos" id="repos" data-i18n-html="reposDepart">Appuyez sur <strong>Lancer</strong> — ou sur <strong>→</strong> — pour commencer.</p>
     </div>
   </div>
 
-  <div class="panel" id="answerPanel" style="display:none;">
-    <p class="panel-title">Réponse</p>
-    <div class="chart" id="chart"></div>
-    <div class="answer-box">
-      <div class="label">Ordre croissant (du plus court au plus long)</div>
-      <div class="answer-seq" id="answerSeq"></div>
+  <!-- ── Réponse ──────────────────────────────────────────────────── -->
+  <div class="reponse-bloc" id="bloc-reponse" hidden>
+    <p class="titre-bloc" data-i18n="reponse">Réponse</p>
+    <div class="graphe" id="graphe"></div>
+    <div class="sequence">
+      <p class="titre-bloc" data-i18n="ordreCroissant">Ordre croissant, du plus court au plus long</p>
+      <p class="sequence__val" id="sequence"></p>
     </div>
   </div>
 
-  <p class="hint">Une fois la séquence terminée, essaie de te souvenir de l'ordre sans regarder, puis clique sur « Réponse » pour te corriger.</p>
-</div>
+  <!-- ── Encart animateur ─────────────────────────────────────────── -->
+  <details class="animateur">
+    <summary data-i18n="animateur">Pour l'animateur</summary>
+    <div class="animateur__corps">
+      <p data-i18n-html="anim1"><strong>Ce que le public va rater.</strong> Passé cinq ou six lignes, presque personne ne restitue l'ordre exact. C'est le résultat attendu : l'exercice est fait pour être manqué.</p>
+      <p data-i18n-html="anim2"><strong>Pourquoi.</strong> Deux difficultés se cumulent. Chaque barre est vue <em>seule</em> : il n'y a jamais deux longueurs à l'écran en même temps, donc rien à quoi comparer — on retient une impression, pas une mesure. Et il faut garder ces impressions en tête pendant que les suivantes arrivent, au-delà de ce que la mémoire de travail tient.</p>
+      <p data-i18n-html="anim3"><strong>La transition.</strong> « Votre intuition classe mal huit barres, alors qu'aucune ne cherche à vous tromper. Imaginez maintenant huit sources d'information, vues à des jours d'intervalle, dont certaines ont intérêt à vous convaincre. »</p>
+      <p data-i18n-html="anim4"><strong>Réglages.</strong> Six à huit lignes suffisent pour que ça échoue ; au-delà de douze, l'écart entre deux barres devient trop faible pour être vu même côte à côte, et la démonstration ne prouve plus rien — c'est pourquoi le compteur s'arrête à douze. En mode manuel, vous tenez le rythme à la télécommande. « Réponse » est disponible même avant d'avoir lancé la séquence.</p>
+    </div>
+  </details>
 
+</main>
+
+<script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
-const countMinus = document.getElementById('countMinus');
-const countPlus = document.getElementById('countPlus');
-const countVal = document.getElementById('countVal');
-const modeAuto = document.getElementById('modeAuto');
-const modeManual = document.getElementById('modeManual');
-const speedGroup = document.getElementById('speedGroup');
-const speedInput = document.getElementById('speed');
-const speedVal = document.getElementById('speedVal');
-const newBtn = document.getElementById('newBtn');
-const playBtn = document.getElementById('playBtn');
-const nextBtn = document.getElementById('nextBtn');
-const replayBtn = document.getElementById('replayBtn');
-const answerBtn = document.getElementById('answerBtn');
-const stage = document.getElementById('stage');
-const stageIdle = document.getElementById('stageIdle');
-const progress = document.getElementById('progress');
-const answerPanel = document.getElementById('answerPanel');
-const chart = document.getElementById('chart');
-const answerSeq = document.getElementById('answerSeq');
+/* ═══════════════════════════════════════════════════════════════════════
+   Lignes numérotées — outil d'animation
 
-let count = 8;
-let mode = 'auto'; // 'auto' | 'manual'
-let round = [];       // {number, length, rank}
-let timers = [];
-let playing = false;
-let hasRound = false;
-let manualIdx = -1;
+   Le mécanisme d'origine est conservé tel quel : n longueurs régulièrement
+   espacées avec un léger bruit, mélangées, numérotées au hasard, montrées
+   une par une. Ce qui change relève de l'usage en salle :
 
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i = a.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+     — trois raccourcis, parce qu'on pilote une conférence avec une
+       télécommande qui envoie → et Espace, pas avec une souris ;
+     — une échelle qui tient sur un vidéoprojecteur (voir « mode projection »
+       dans la feuille de style) ;
+     — un plafond à douze lignes, parce qu'au-delà l'écart entre deux barres
+       descend sous ce que l'œil distingue et que la démonstration se
+       retourne contre elle-même ;
+     — le socle : en-tête, retour, focus, mouvement réduit, FR et EN.
+   ═══════════════════════════════════════════════════════════════════════ */
+I18N.register({
+  fr: {
+    pageTitle: "Lignes numérotées",
+    metaDesc: "Outil d'animation : des barres numérotées apparaissent une par une, le public les reclasse de mémoire par ordre de longueur.",
+    sousTitre: "Les lignes apparaissent une par une, jamais deux à la fois. Mémorisez leur taille, puis annoncez les numéros dans l'ordre croissant de longueur.",
+    reglages: "Réglages",
+    lignes: "Lignes", moinsAria: "Une ligne de moins", plusAria: "Une ligne de plus",
+    mode: "Mode", auto: "Auto", manuel: "Manuel", vitesse: "Vitesse",
+    nouvelle: "Nouvelle grille", lancer: "Lancer", suivant: "Suivant →",
+    terminer: "Terminer", revoir: "Revoir",
+    reponse: "Réponse", masquer: "Masquer", projeter: "⛶ Projection",
+    quitterProjection: "⛶ Quitter la projection",
+    raccourcis: "Télécommande et clavier : <kbd>→</kbd> ou <kbd>Espace</kbd> lance la séquence, puis fait avancer d'une ligne. <kbd>R</kbd> tire une nouvelle grille.",
+    reposDepart: "Appuyez sur <strong>Lancer</strong> — ou sur <strong>→</strong> — pour commencer.",
+    reposPret: "Grille tirée. <strong>Lancer</strong> quand vous voulez.",
+    reposFini: "À vous : annoncez les numéros dans l'ordre croissant de longueur.",
+    ligneSur: "Ligne {n} sur {t}",
+    ordreCroissant: "Ordre croissant, du plus court au plus long",
+    animateur: "Pour l'animateur",
+    anim1: "<strong>Ce que le public va rater.</strong> Passé cinq ou six lignes, presque personne ne restitue l'ordre exact. C'est le résultat attendu : l'exercice est fait pour être manqué.",
+    anim2: "<strong>Pourquoi.</strong> Deux difficultés se cumulent. Chaque barre est vue <em>seule</em> : il n'y a jamais deux longueurs à l'écran en même temps, donc rien à quoi comparer — on retient une impression, pas une mesure. Et il faut garder ces impressions en tête pendant que les suivantes arrivent, au-delà de ce que la mémoire de travail tient.",
+    anim3: "<strong>La transition.</strong> « Votre intuition classe mal huit barres, alors qu'aucune ne cherche à vous tromper. Imaginez maintenant huit sources d'information, vues à des jours d'intervalle, dont certaines ont intérêt à vous convaincre. »",
+    anim4: "<strong>Réglages.</strong> Six à huit lignes suffisent pour que ça échoue ; au-delà de douze, l'écart entre deux barres devient trop faible pour être vu même côte à côte, et la démonstration ne prouve plus rien — c'est pourquoi le compteur s'arrête à douze. En mode manuel, vous tenez le rythme à la télécommande. « Réponse » est disponible même avant d'avoir lancé la séquence."
+  },
+  en: {
+    pageTitle: "Numbered lines",
+    metaDesc: "A facilitation tool: numbered bars appear one at a time, and the audience ranks them from memory by length.",
+    sousTitre: "The lines appear one at a time, never two together. Memorise their size, then call out the numbers from shortest to longest.",
+    reglages: "Settings",
+    lignes: "Lines", moinsAria: "One line fewer", plusAria: "One line more",
+    mode: "Mode", auto: "Auto", manuel: "Manual", vitesse: "Speed",
+    nouvelle: "New grid", lancer: "Start", suivant: "Next →",
+    terminer: "Finish", revoir: "Replay",
+    reponse: "Answer", masquer: "Hide", projeter: "⛶ Projection",
+    quitterProjection: "⛶ Leave projection",
+    raccourcis: "Remote and keyboard: <kbd>→</kbd> or <kbd>Space</kbd> starts the sequence, then steps forward one line. <kbd>R</kbd> draws a new grid.",
+    reposDepart: "Press <strong>Start</strong> — or <strong>→</strong> — to begin.",
+    reposPret: "Grid drawn. <strong>Start</strong> whenever you like.",
+    reposFini: "Over to you: call out the numbers from shortest to longest.",
+    ligneSur: "Line {n} of {t}",
+    ordreCroissant: "Ascending order, shortest to longest",
+    animateur: "For the facilitator",
+    anim1: "<strong>What the audience will get wrong.</strong> Past five or six lines, almost nobody recovers the exact order. That is the intended result: the exercise is built to be failed.",
+    anim2: "<strong>Why.</strong> Two difficulties add up. Each bar is seen <em>alone</em>: there are never two lengths on screen at once, so there is nothing to compare against — you keep an impression, not a measurement. And you have to hold those impressions while the next ones arrive, beyond what working memory carries.",
+    anim3: "<strong>The bridge.</strong> “Your intuition misranks eight bars, and not one of them is trying to fool you. Now picture eight sources of information, seen days apart, some of which have an interest in convincing you.”",
+    anim4: "<strong>Settings.</strong> Six to eight lines are enough for it to fail; past twelve, the gap between two bars gets too small to see even side by side, and the demonstration stops proving anything — hence the cap at twelve. In manual mode you keep the pace on the remote. “Answer” is available even before the sequence has been played."
+  }
+});
+
+(function(){
+'use strict';
+
+var MIN_LIGNES = 2, MAX_LIGNES = 12;   /* plafond : voir l'encart animateur */
+
+var $ = function(id){ return document.getElementById(id); };
+var elMoins = $('moins'), elPlus = $('plus'), elValeur = $('valeur');
+var elAuto = $('mode-auto'), elManuel = $('mode-manuel');
+var elGroupeVitesse = $('groupe-vitesse'), elVitesse = $('vitesse'), elVitesseVal = $('vitesse-val');
+var elNouvelle = $('nouvelle'), elLancer = $('lancer'), elSuivant = $('suivant');
+var elRevoir = $('revoir'), elReponse = $('reponse'), elProjeter = $('projeter');
+var elScene = $('scene'), elRepos = $('repos'), elAvancement = $('avancement');
+var elBlocReponse = $('bloc-reponse'), elGraphe = $('graphe'), elSequence = $('sequence');
+var elReglages = $('reglages');
+
+var nombre = 8;
+var mode = 'auto';          // 'auto' | 'manuel'
+var manche = [];            // [{numero, longueur, rang}]
+var minuteurs = [];
+var enCours = false;
+var indexManuel = -1;
+
+function t(cle){ return I18N.t(cle); }
+
+/* ── Tirage ──────────────────────────────────────────────────────────
+   Longueurs régulièrement espacées avec un bruit borné au tiers de
+   l'espacement : le classement reste toujours non ambigu, y compris à
+   douze lignes. Mécanisme d'origine, conservé. */
+function melanger(tab){
+  var a = tab.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var x = a[i]; a[i] = a[j]; a[j] = x;
   }
   return a;
 }
 
-function clearTimers(){
-  timers.forEach(t => clearTimeout(t));
-  timers = [];
+function purgerMinuteurs(){
+  minuteurs.forEach(clearTimeout);
+  minuteurs = [];
 }
 
-function generate(){
-  clearTimers();
-  playing = false;
-  manualIdx = -1;
-  nextBtn.style.display = 'none';
-  const n = count;
+function tirer(){
+  purgerMinuteurs();
+  enCours = false;
+  indexManuel = -1;
+  elSuivant.hidden = true;
 
-  const minPct = 12;
-  const maxPct = 98;
-  const spacing = (maxPct - minPct) / Math.max(n - 1, 1);
-  const jitterMax = Math.min(1.2, spacing / 3);
-  let lengths = [];
-  for(let i = 0; i < n; i++){
-    const base = minPct + spacing * i;
-    const jitter = (Math.random() * 2 - 1) * jitterMax;
-    lengths.push(Math.max(6, Math.min(100, base + jitter)));
+  var n = nombre, minPct = 12, maxPct = 98;
+  var espacement = (maxPct - minPct) / Math.max(n - 1, 1);
+  var bruitMax = Math.min(1.2, espacement / 3);
+  var longueurs = [];
+  for(var i = 0; i < n; i++){
+    var base = minPct + espacement * i;
+    var bruit = (Math.random() * 2 - 1) * bruitMax;
+    longueurs.push(Math.max(6, Math.min(100, base + bruit)));
   }
-  lengths = shuffle(lengths);
+  longueurs = melanger(longueurs);
 
-  const numbers = shuffle(Array.from({length: n}, (_, i) => i + 1));
-  round = numbers.map((num, i) => ({ number: num, length: lengths[i] }));
+  var numeros = melanger(Array.from({ length:n }, function(_, k){ return k + 1; }));
+  manche = numeros.map(function(num, k){ return { numero:num, longueur:longueurs[k] }; });
+  manche.slice().sort(function(a, b){ return a.longueur - b.longueur; })
+        .forEach(function(item, k){ item.rang = k + 1; });
 
-  const sortedByLength = round.slice().sort((a, b) => a.length - b.length);
-  sortedByLength.forEach((item, idx) => { item.rank = idx + 1; });
-
-  hasRound = true;
-  answerPanel.style.display = 'none';
-  answerBtn.textContent = 'Réponse';
-  answerBtn.classList.remove('active');
-
-  stage.innerHTML = '';
-  stage.appendChild(stageIdle);
-  stageIdle.textContent = 'Prêt. Clique sur « Lancer ».';
-  progress.textContent = ' ';
-
-  playBtn.disabled = false;
-  replayBtn.disabled = true;
+  cacherReponse();
+  poserRepos('reposPret');
+  elAvancement.textContent = ' ';
+  elLancer.disabled = false;
+  elRevoir.disabled = true;
 }
 
-function makeStageLine(item){
-  const row = document.createElement('div');
-  row.className = 'stage-line';
-
-  const track = document.createElement('div');
-  track.className = 'vbar-track';
-  const bar = document.createElement('div');
-  bar.className = 'vbar';
-  bar.style.height = item.length + '%';
-  track.appendChild(bar);
-
-  const num = document.createElement('div');
-  num.className = 'vnum';
-  num.textContent = item.number;
-
-  row.appendChild(track);
-  row.appendChild(num);
-  return row;
+/* ── Scène ───────────────────────────────────────────────────────── */
+function poserRepos(cle){
+  elScene.textContent = '';
+  elRepos.innerHTML = t(cle);
+  elScene.appendChild(elRepos);
 }
 
-function playSequence(){
-  if(!hasRound || playing) return;
-  playing = true;
-  playBtn.disabled = true;
-  replayBtn.disabled = true;
+function faireLigne(item){
+  var rangee = document.createElement('div');
+  rangee.className = 'scene-ligne';
 
-  const speed = parseInt(speedInput.value, 10);
-  const gap = Math.max(120, Math.round(speed * 0.18));
-  stage.innerHTML = '';
+  var piste = document.createElement('div');
+  piste.className = 'piste';
+  var barre = document.createElement('div');
+  barre.className = 'barre';
+  barre.style.height = item.longueur + '%';
+  piste.appendChild(barre);
 
-  round.forEach((item, idx) => {
-    const showAt = idx * speed;
-    const t1 = setTimeout(() => {
-      stage.innerHTML = '';
-      progress.textContent = `Ligne ${idx + 1} / ${round.length}`;
-      const line = makeStageLine(item);
-      stage.appendChild(line);
-      requestAnimationFrame(() => line.classList.add('show'));
-    }, showAt);
-    timers.push(t1);
+  var num = document.createElement('div');
+  num.className = 'numero';
+  num.textContent = item.numero;
 
-    const hideAt = showAt + (speed - gap);
-    const t2 = setTimeout(() => {
-      const line = stage.querySelector('.stage-line');
-      if(line) line.classList.remove('show');
-    }, hideAt);
-    timers.push(t2);
+  rangee.appendChild(piste);
+  rangee.appendChild(num);
+  return rangee;
+}
+
+function direAvancement(i){
+  elAvancement.textContent = t('ligneSur').replace('{n}', i + 1).replace('{t}', manche.length);
+}
+
+function montrer(item, i){
+  elScene.textContent = '';
+  direAvancement(i);
+  var ligne = faireLigne(item);
+  elScene.appendChild(ligne);
+  requestAnimationFrame(function(){ ligne.classList.add('vue'); });
+}
+
+function finirSequence(){
+  purgerMinuteurs();
+  poserRepos('reposFini');
+  elAvancement.textContent = ' ';
+  enCours = false;
+  indexManuel = -1;
+  elLancer.disabled = false;
+  elRevoir.disabled = false;
+  elSuivant.hidden = true;
+}
+
+function jouerAuto(){
+  enCours = true;
+  elLancer.disabled = true;
+  elRevoir.disabled = true;
+  elSuivant.hidden = true;
+
+  var vitesse = parseInt(elVitesse.value, 10);
+  var creux = Math.max(120, Math.round(vitesse * 0.18));
+  elScene.textContent = '';
+
+  manche.forEach(function(item, i){
+    minuteurs.push(setTimeout(function(){ montrer(item, i); }, i * vitesse));
+    minuteurs.push(setTimeout(function(){
+      var l = elScene.querySelector('.scene-ligne');
+      if(l) l.classList.remove('vue');
+    }, i * vitesse + (vitesse - creux)));
   });
-
-  const totalTime = round.length * speed;
-  const t3 = setTimeout(() => {
-    stage.innerHTML = '';
-    stage.appendChild(stageIdle);
-    stageIdle.textContent = "À toi de jouer : dis les numéros dans l'ordre croissant de longueur.";
-    progress.textContent = ' ';
-    playing = false;
-    playBtn.disabled = false;
-    replayBtn.disabled = false;
-  }, totalTime);
-  timers.push(t3);
+  minuteurs.push(setTimeout(finirSequence, manche.length * vitesse));
 }
 
-function startManual(){
-  if(!hasRound || playing) return;
-  playing = true;
-  manualIdx = -1;
-  playBtn.disabled = true;
-  replayBtn.disabled = true;
-  nextBtn.style.display = 'inline-block';
-  nextBtn.disabled = false;
-  manualAdvance();
+function demarrerManuel(){
+  enCours = true;
+  indexManuel = -1;
+  elLancer.disabled = true;
+  elRevoir.disabled = true;
+  elSuivant.hidden = false;
+  elSuivant.disabled = false;
+  avancerManuel();
 }
 
-function manualAdvance(){
-  manualIdx++;
-  if(manualIdx >= round.length){
-    stage.innerHTML = '';
-    stage.appendChild(stageIdle);
-    stageIdle.textContent = "À toi de jouer : dis les numéros dans l'ordre croissant de longueur.";
-    progress.textContent = ' ';
-    playing = false;
-    playBtn.disabled = false;
-    replayBtn.disabled = false;
-    nextBtn.style.display = 'none';
+function avancerManuel(){
+  indexManuel++;
+  if(indexManuel >= manche.length){ finirSequence(); return; }
+  montrer(manche[indexManuel], indexManuel);
+  elSuivant.textContent = (indexManuel === manche.length - 1) ? t('terminer') : t('suivant');
+}
+
+/* Le geste unique de la télécommande : lancer si rien n'est lancé, avancer
+   sinon. En mode auto, une séquence en cours ne se pilote pas — elle a son
+   propre rythme, l'appui est ignoré plutôt que de la casser. */
+function lancerOuAvancer(){
+  if(!manche.length) return;
+  if(!enCours){
+    if(mode === 'auto') jouerAuto();
+    else demarrerManuel();
     return;
   }
-  stage.innerHTML = '';
-  progress.textContent = `Ligne ${manualIdx + 1} / ${round.length}`;
-  const line = makeStageLine(round[manualIdx]);
-  stage.appendChild(line);
-  requestAnimationFrame(() => line.classList.add('show'));
-  nextBtn.textContent = manualIdx === round.length - 1 ? 'Terminer' : 'Suivant →';
+  if(mode === 'manuel') avancerManuel();
 }
 
-function play(){
-  if(mode === 'auto') playSequence();
-  else startManual();
+/* ── Réponse ─────────────────────────────────────────────────────── */
+function cacherReponse(){
+  elBlocReponse.hidden = true;
+  elReponse.textContent = t('reponse');
+  elReponse.setAttribute('aria-pressed', 'false');
 }
 
-function setMode(m){
-  mode = m;
-  modeAuto.classList.toggle('active', m === 'auto');
-  modeManual.classList.toggle('active', m === 'manual');
-  speedGroup.style.display = m === 'auto' ? 'flex' : 'none';
-  generate();
-}
+function dessinerReponse(){
+  elGraphe.textContent = '';
+  manche.forEach(function(item){
+    var col = document.createElement('div');
+    col.className = 'colonne';
 
-function renderAnswer(){
-  chart.innerHTML = '';
-  round.forEach((item, idx) => {
-    const col = document.createElement('div');
-    col.className = 'chart-col';
-    col.style.animationDelay = (idx * 0.03) + 's';
+    var rang = document.createElement('div');
+    rang.className = 'rang';
+    rang.textContent = '#' + item.rang;
 
-    const rank = document.createElement('div');
-    rank.className = 'chart-rank';
-    rank.textContent = '#' + item.rank;
+    var piste = document.createElement('div');
+    piste.className = 'colonne-piste';
+    var barre = document.createElement('div');
+    barre.className = 'colonne-barre';
+    barre.style.height = item.longueur + '%';
+    piste.appendChild(barre);
 
-    const track = document.createElement('div');
-    track.className = 'chart-bar-track';
-    const bar = document.createElement('div');
-    bar.className = 'chart-bar';
-    bar.style.height = item.length + '%';
-    track.appendChild(bar);
+    var num = document.createElement('div');
+    num.className = 'colonne-num';
+    num.textContent = item.numero;
 
-    const num = document.createElement('div');
-    num.className = 'chart-num';
-    num.textContent = item.number;
-
-    col.appendChild(rank);
-    col.appendChild(track);
-    col.appendChild(num);
-    chart.appendChild(col);
+    col.appendChild(rang); col.appendChild(piste); col.appendChild(num);
+    elGraphe.appendChild(col);
   });
 
-  const ordered = round.slice().sort((a, b) => a.length - b.length).map(i => i.number);
-  answerSeq.textContent = ordered.join('  →  ');
+  elSequence.textContent = manche.slice()
+    .sort(function(a, b){ return a.longueur - b.longueur; })
+    .map(function(i){ return i.numero; })
+    .join('  →  ');
 }
 
-function toggleAnswer(){
-  if(!hasRound) return;
-  const showing = answerPanel.style.display !== 'none';
-  if(showing){
-    answerPanel.style.display = 'none';
-    answerBtn.textContent = 'Réponse';
-    answerBtn.classList.remove('active');
-  } else {
-    renderAnswer();
-    answerPanel.style.display = 'block';
-    answerBtn.textContent = 'Masquer';
-    answerBtn.classList.add('active');
-  }
+function basculerReponse(){
+  if(!manche.length) return;
+  if(!elBlocReponse.hidden){ cacherReponse(); return; }
+  dessinerReponse();
+  elBlocReponse.hidden = false;
+  elReponse.textContent = t('masquer');
+  elReponse.setAttribute('aria-pressed', 'true');
 }
 
-function setCount(n){
-  count = Math.max(2, Math.min(20, n));
-  countVal.textContent = count;
-  countMinus.disabled = count <= 2;
-  countPlus.disabled = count >= 20;
-  generate();
+/* ── Réglages ────────────────────────────────────────────────────── */
+function poserNombre(n){
+  nombre = Math.max(MIN_LIGNES, Math.min(MAX_LIGNES, n));
+  elValeur.textContent = nombre;
+  elMoins.disabled = nombre <= MIN_LIGNES;
+  elPlus.disabled = nombre >= MAX_LIGNES;
+  tirer();
 }
 
-countMinus.addEventListener('click', () => setCount(count - 1));
-countPlus.addEventListener('click', () => setCount(count + 1));
-modeAuto.addEventListener('click', () => setMode('auto'));
-modeManual.addEventListener('click', () => setMode('manual'));
-speedInput.addEventListener('input', () => {
-  speedVal.textContent = (speedInput.value / 1000).toFixed(1) + 's';
+function poserMode(m){
+  mode = m;
+  elAuto.setAttribute('aria-pressed', String(m === 'auto'));
+  elManuel.setAttribute('aria-pressed', String(m === 'manuel'));
+  elGroupeVitesse.hidden = (m !== 'auto');
+  elGroupeVitesse.style.display = (m === 'auto') ? '' : 'none';
+  tirer();
+}
+
+/* ── Mode projection ─────────────────────────────────────────────────
+   Le plein écran du navigateur, plus les réglages repliés. L'échelle, elle,
+   est déjà donnée par la media query : la projection reste utilisable même
+   si le navigateur refuse le plein écran (c'est le cas quand l'appel ne
+   vient pas d'un geste de l'utilisateur). */
+function projectionActive(){ return document.body.classList.contains('projection'); }
+
+function basculerProjection(){
+  var vers = !projectionActive();
+  document.body.classList.toggle('projection', vers);
+  elProjeter.setAttribute('aria-pressed', String(vers));
+  elProjeter.textContent = vers ? t('quitterProjection') : t('projeter');
+  elReglages.open = !vers;
+  try{
+    if(vers && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    else if(!vers && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+  }catch(e){ /* refus du navigateur : la media query suffit */ }
+}
+
+document.addEventListener('fullscreenchange', function(){
+  /* Échap quitte le plein écran sans passer par le bouton : on suit. */
+  if(!document.fullscreenElement && projectionActive()) basculerProjection();
 });
-newBtn.addEventListener('click', generate);
-playBtn.addEventListener('click', play);
-nextBtn.addEventListener('click', manualAdvance);
-replayBtn.addEventListener('click', play);
-answerBtn.addEventListener('click', toggleAnswer);
 
-replayBtn.disabled = true;
-setCount(8);
+/* ── Raccourcis ──────────────────────────────────────────────────────
+   Une télécommande de présentation envoie → et Espace ; ce sont les deux
+   seules touches sur lesquelles on peut compter en salle. R tire une
+   nouvelle grille.
+
+   La touche est ignorée quand le focus est sur un contrôle : Espace sur un
+   bouton doit activer ce bouton, pas piloter la scène. */
+document.addEventListener('keydown', function(e){
+  if(e.ctrlKey || e.altKey || e.metaKey) return;
+  var cible = e.target;
+  var dansUnControle = cible && cible.closest &&
+      cible.closest('button, input, select, textarea, summary, a[href], [contenteditable]');
+
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Spacebar'){
+    if(dansUnControle) return;
+    e.preventDefault();
+    lancerOuAvancer();
+    return;
+  }
+  if(e.key === 'r' || e.key === 'R'){
+    if(dansUnControle && cible.tagName !== 'BUTTON') return;
+    e.preventDefault();
+    tirer();
+  }
+});
+
+/* ── Branchements ────────────────────────────────────────────────── */
+elMoins.addEventListener('click', function(){ poserNombre(nombre - 1); });
+elPlus.addEventListener('click', function(){ poserNombre(nombre + 1); });
+elAuto.addEventListener('click', function(){ poserMode('auto'); });
+elManuel.addEventListener('click', function(){ poserMode('manuel'); });
+elVitesse.addEventListener('input', function(){
+  elVitesseVal.textContent = (elVitesse.value / 1000).toFixed(1).replace('.', ',') + ' s';
+});
+elNouvelle.addEventListener('click', tirer);
+elLancer.addEventListener('click', lancerOuAvancer);
+elSuivant.addEventListener('click', avancerManuel);
+elRevoir.addEventListener('click', function(){
+  if(mode === 'auto') jouerAuto(); else demarrerManuel();
+});
+elReponse.addEventListener('click', basculerReponse);
+elProjeter.addEventListener('click', basculerProjection);
+
+/* La bascule FR/EN recharge la page (collection.js réécrit ?lang=) : il n'y
+   a rien à réappliquer à chaud, les libellés repartent du dictionnaire au
+   chargement. Ceux que le JS écrit lui-même — vitesse, « Suivant/Terminer »,
+   « Réponse/Masquer » — sont posés ci-dessous et à chaque changement d'état. */
+elRevoir.disabled = true;
+elVitesseVal.textContent = (elVitesse.value / 1000).toFixed(1).replace('.', ',') + ' s';
+poserNombre(8);
+poserRepos('reposDepart');
+
+})();
 </script>
-  <script src="../retours.js" defer></script>
+<script src="../retours.js" defer></script>
 </body>
 </html>
