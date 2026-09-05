@@ -19,7 +19,14 @@ canvas{display:block;width:100%;height:100%}
   font-family:'Orbitron',monospace;pointer-events:none;
 }
 .hud-block{text-align:center}
-.hud-lbl{font-size:.55rem;letter-spacing:3px;color:rgba(0,220,255,.45);text-transform:uppercase}
+/* Les libellés du HUD étaient à 45 % d'opacité, soit 3,05:1 une fois
+   composés sur le fond : « SCORE », « VIES » et « MISSION » se devinaient
+   plus qu'ils ne se lisaient, et le jeu se joue souvent au vidéoprojecteur.
+   Couleur pleine à 10,7:1, et la taille remonte au plancher de l'échelle
+   du socle, 12,8 px : .55rem valait 8,8 px. La valeur est écrite en dur —
+   cette page ne charge pas encore collection.css, --fs-100 n'y existe pas.
+   Elle deviendra var(--fs-100) à la migration. */
+.hud-lbl{font-size:.8rem;letter-spacing:3px;color:#6FC9DE;text-transform:uppercase}
 .hud-val{font-size:1.25rem;font-weight:700;color:#00dcff;text-shadow:0 0 12px #00dcff;margin-top:1px}
 #lives-row{display:flex;gap:5px;justify-content:center;margin-top:2px}
 .hf{font-size:1rem}

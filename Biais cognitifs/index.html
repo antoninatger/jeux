@@ -134,8 +134,11 @@
     border:0;border-radius:10px;padding:22px 20px;color:#fff;gap:0;
   }
   .col-carte--cat .col-carte__titre{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;margin:0 0 6px;}
-  .col-carte--cat .col-carte__desc{font-size:var(--fs-200);color:inherit;opacity:.92;line-height:1.5;margin:0 0 10px;}
-  .col-carte--cat .count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);opacity:.88;text-transform:uppercase;letter-spacing:.05em;}
+  /* Sans opacite : a 92 % et 88 %, le blanc retombait a 4,0:1 et 3,8:1 sur les
+     aplats, ce qui annulait l'assombrissement des couleurs juste au-dessus.
+     La hierarchie tient deja par la taille, la police et la casse. */
+  .col-carte--cat .col-carte__desc{font-size:var(--fs-200);color:inherit;line-height:1.5;margin:0 0 10px;}
+  .col-carte--cat .count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);text-transform:uppercase;letter-spacing:.05em;}
 
   /* ---------- tabs / views ---------- */
   section.view{display:none;}
@@ -166,9 +169,15 @@
   .card-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--sp-1) var(--sp-2);font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
   .badge-lu{position:absolute;top:10px;right:10px;background:var(--lime);color:#10131C;font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.03em;}
 
-  .c-croyance{background:#2B4CFF;} .c-memoire{background:#7A5CFA;}
-  .c-social{background:#FF6FA5;} .c-decision{background:#17B890;}
-  .c-confiance{background:#FF9F1C;} .c-temps{background:#6FA83C;}
+  /* Les six aplats des cartes de catégorie portent du texte blanc. Quatre des
+     six ne passaient pas : orange 2,05:1, sarcelle 2,53:1, rose 2,60:1, vert
+     2,86:1 — et le violet à 4,43:1 juste sous le seuil. Seule la luminosité
+     a été baissée : la teinte et la saturation sont intactes, la palette
+     reste la même à l'œil, chaque couleur est maintenant à 4,7:1 au moins
+     sur blanc. Le bleu #2B4CFF, déjà à 5,87:1, n'a pas bougé. */
+  .c-croyance{background:#2B4CFF;} .c-memoire{background:#7455FA;}
+  .c-social{background:#E40056;} .c-decision{background:#108366;}
+  .c-confiance{background:#AA6200;} .c-temps{background:#547F2D;}
 
   .empty{text-align:center;padding:50px 20px;color:var(--ink-dim);font-size:14.5px;}
 

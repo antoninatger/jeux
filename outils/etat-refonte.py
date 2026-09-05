@@ -127,12 +127,28 @@ def _autotest_contraste():
             raise SystemExit(u"AUTOTEST CONTRASTE ÉCHEC : #777777 ne devrait pas franchir 4,5:1")
 
 
-def _extraire_declarations(css):
+def _theme_de_page(html):
+    """Le thème déclaré par la page : `<html data-theme="clair">` → "clair".
+
+    Depuis la tâche E4, le socle fournit un thème clair complet sous
+    `[data-theme="clair"]`, et les pages claires (Emprise, les onze pages
+    d'illusions, l'éditeur de l'Arcade) le portent au lieu de recopier les
+    jetons. Sans cette lecture, le script résolvait --txt-secondaire sur la
+    valeur du thème sombre et annonçait 1,80:1 sur une page parfaitement
+    conforme."""
+    m = re.search(r'<html\b[^>]*\bdata-theme\s*=\s*["\']([\w-]+)["\']', html, re.I)
+    return m.group(1) if m else None
+
+
+def _extraire_declarations(css, theme=None):
     """Retourne une liste de (nom_variable, valeur, conditionnel) dans l'ordre
     d'apparition. conditionnel=True si la déclaration est sous @media/@supports
-    ou un sélecteur contenant [data-theme…], à n'importe quelle profondeur —
-    ces valeurs ne sont jamais retenues comme « la » valeur d'un jeton, seulement
-    comme motif de non-mesure quand rien d'autre n'existe."""
+    ou sous un sélecteur [data-theme=…] qui ne correspond PAS au thème de la
+    page — ces valeurs ne sont jamais retenues comme « la » valeur d'un jeton,
+    seulement comme motif de non-mesure quand rien d'autre n'existe.
+
+    Le bloc du thème que la page déclare vraiment, lui, s'applique : il compte
+    comme n'importe quelle règle de `:root`, et il vient après elle."""
     texte = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
     out = []
     pile = []
@@ -141,8 +157,11 @@ def _extraire_declarations(css):
         if c == '{':
             selecteur = "".join(buf).strip()
             buf = []
+            porte_theme = "[data-theme" in selecteur
+            theme_actif = bool(theme) and ('[data-theme="%s"]' % theme in selecteur
+                                           or "[data-theme='%s']" % theme in selecteur)
             est_cond = (selecteur.startswith("@media") or selecteur.startswith("@supports")
-                        or "[data-theme" in selecteur)
+                        or (porte_theme and not theme_actif))
             parent_cond = pile[-1] if pile else False
             pile.append(est_cond or parent_cond)
             continue
@@ -220,9 +239,10 @@ def _evaluer_contraste(chemin, html, fichiers):
             return "non_mesuree", motif, None, None, None
         sources = [fichiers.get("collection.css", "")] + feuilles + \
             re.findall(r'<style\b[^>]*>(.*?)</style>', html, re.I | re.S)
+        theme = _theme_de_page(html)
         dernier, vu = {}, set()
         for css in sources:
-            for nom, val, cond in _extraire_declarations(css):
+            for nom, val, cond in _extraire_declarations(css, theme):
                 vu.add(nom)
                 if not cond:
                     dernier[nom] = val

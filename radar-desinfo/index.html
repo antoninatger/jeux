@@ -9,7 +9,10 @@
 :root {
   --bg:#03141c; --panel:#072330; --card:#0b313f;
   --acc:#22d3ee; --gr:#3ecf8e; --rd:#f75f5f; --bl:#4fa3f7;
-  --tx:#e3f6fd; --mu:#5f93a3; --bord:rgba(255,255,255,0.09);
+  /* --mu tenait 5,5:1 sur --bg mais seulement 4,06:1 sur --card (#0b313f),
+     où il sert le plus (méta des dépêches). Éclairci jusqu'à 4,7:1 sur la
+     carte, donc 6,3:1 sur le fond : conforme partout où il apparaît. */
+  --tx:#e3f6fd; --mu:#709EAD; --bord:rgba(255,255,255,0.09);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(circle at 50% 115%,rgba(34,211,238,.10) 0%,transparent 55%),repeating-radial-gradient(circle at 50% 115%,transparent 0 79px,rgba(34,211,238,.05) 79px 81px);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}

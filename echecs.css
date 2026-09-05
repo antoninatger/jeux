@@ -1,7 +1,11 @@
 /* Jetons du socle (chantier 05) : la palette du jeu, exprimée dans les rôles
    que collection.css attend. --txt-secondaire est le rôle contraint : #8a8a8a
-   donne 4,6:1 sur le fond des panneaux, contre 2,8:1 pour l'ancien #666
-   relevé au §8.4 du brief. */
+   donne 4,6:1 sur le fond des panneaux (#16213e) et 4,9:1 sur --bg, contre
+   2,8:1 pour l'ancien #666 relevé au §8.4 du brief.
+
+   Le jeton avait été créé mais neuf déclarations gardaient une couleur en
+   dur : trois #666 (2,8:1) et cinq #888 (4,48:1, sous le seuil). Elles
+   passent toutes par le rôle, ce qui rend la correction suivante gratuite. */
 :root {
   --bg: #1a1a2e;
   --surface: #16213e;
@@ -119,7 +123,7 @@ main {
    collection.css : la densite invoquee n est pas averee ici. */
 .coords {
   display: flex;
-  color: #888;
+  color: var(--txt-secondaire);
   font-size: var(--fs-100);
   font-weight: 600;
   user-select: none;
@@ -353,7 +357,7 @@ main {
 .opening-category h4 {
   font-size: var(--fs-100);
   text-transform: uppercase;
-  color: #888;
+  color: var(--txt-secondaire);
   letter-spacing: 0.06em;
   cursor: pointer;
   padding: 0.45rem 0.2rem;
@@ -448,7 +452,7 @@ main {
 
 #cours-progress {
   font-size: var(--fs-100);
-  color: #888;
+  color: var(--txt-secondaire);
   margin-bottom: 0.35rem;
 }
 
@@ -499,7 +503,7 @@ main {
 
 #exo-submode legend {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--txt-secondaire);
   padding: 0 0.4rem;
 }
 
@@ -542,7 +546,7 @@ main {
   display: flex;
   gap: 1rem;
   font-size: var(--fs-100);
-  color: #888;
+  color: var(--txt-secondaire);
   margin-bottom: 0.4rem;
 }
 
@@ -581,7 +585,7 @@ main {
   padding: 0.3rem 0.8rem;
   border: 1px solid #0f3460;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--txt-secondaire);
   text-align: center;
   flex-shrink: 0;
 }
@@ -598,7 +602,7 @@ main {
 #moves-history h4 {
   font-size: var(--fs-100);
   text-transform: uppercase;
-  color: #666;
+  color: var(--txt-secondaire);
   letter-spacing: 0.05em;
   margin-bottom: 0.3rem;
 }
@@ -624,7 +628,7 @@ main {
 }
 
 .move-pair .move-num {
-  color: #666;
+  color: var(--txt-secondaire);
 }
 
 .move-pair .move-san {

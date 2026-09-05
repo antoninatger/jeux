@@ -20,7 +20,7 @@
     --bg:     #fdf8f0;
     --card:   #ffffff;
     --text:   #2a2035;
-    --muted:  #7a7090;
+    --muted:  #756B8A;   /* 4,7:1 sur --bg ; #7a7090 n'était qu'à 4,37:1 */
     --radius: 20px;
   }
 
@@ -391,7 +391,9 @@
 
 <header>
   <h1 data-i18n-html="h1">Le <span>biais de confirmation</span> 🧠</h1>
-  <p class="cred-atger" style="text-align:center;font-size:.8rem;font-weight:600;opacity:.65;margin:2px 0 0;">par <a href="https://antoninatger.com" target="_blank" style="color:inherit;">Antonin Atger</a></p>
+  <!-- Sans opacite : --muted est deja le gris discret de la page (4,7:1) ; le
+       reduire encore a 65 % le ramenait a 2,49:1 sur le fond creme. -->
+  <p class="cred-atger" style="text-align:center;font-size:.8rem;font-weight:600;margin:2px 0 0;">par <a href="https://antoninatger.com" target="_blank" style="color:inherit;">Antonin Atger</a></p>
   <p data-i18n-html="subtitle">À qui vas-tu faire confiance&nbsp;? Choisis et découvre pourquoi&nbsp;!</p>
 </header>
 

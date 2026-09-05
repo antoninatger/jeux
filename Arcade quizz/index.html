@@ -244,7 +244,6 @@ body::before{
   box-shadow:0 0 20px rgba(46,229,157,.14);
   text-decoration:none;display:inline-block;
   transition:all .15s;border-radius:8px;
-  animation:green-pulse 3s ease-in-out infinite;
 }
 
 .btn-edit:hover{
@@ -252,18 +251,12 @@ body::before{
   box-shadow:0 0 40px rgba(46,229,157,.5);transform:scale(1.04);
 }
 
-@keyframes green-pulse{
-  0%,100%{box-shadow:0 0 20px rgba(46,229,157,.14)}
-  50%{box-shadow:0 0 32px rgba(46,229,157,.32)}
-}
-
-.blink{
-  font-family:var(--font-body);font-size:.8125rem;font-weight:700;
-  color:var(--muted);letter-spacing:.14em;text-transform:uppercase;
-  animation:blink 1.2s step-end infinite;
-}
-
-@keyframes blink{0%,100%{opacity:.9}50%{opacity:.35}}
+/* Le titre pulse (neon-pulse) : c'est l'identité de l'arcade, et c'est la
+   SEULE animation infinie de cet écran. Le bouton « Intégrer tes questions »
+   pulsait aussi (green-pulse) — deux battements concurrents dont le second
+   sur un bouton secondaire. Son halo au survol suffit à le signaler.
+   La règle .blink et son @keyframes sont partis avec le paragraphe
+   « — Sélectionne un jeu — », remplacé par le titre d'étape 2 (F8). */
 
 @media(max-width:600px){
   .col-cartes{grid-template-columns:1fr}

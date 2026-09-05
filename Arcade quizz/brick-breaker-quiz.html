@@ -81,14 +81,14 @@ I18N.register({
     text-shadow:0 0 10px #00ffcc;
   }
   #ui span { font-size:1.125rem; font-weight:700; }
+  /* La consigne clignotait en permanence, à côté d'un jeu déjà animé — une
+     brique qui tombe, une balle qui rebondit, des particules. Deux mouvements
+     qui se disputent le regard, et le second ne dit rien de nouveau une fois
+     lu. Elle est fixe, avec le halo qui était son point haut. */
   .consigne {
     font-family:'Nunito',sans-serif; font-size:.9375rem; font-weight:800;
     color:#ffaa00; letter-spacing:.05em;
-    animation:consigne-pulse 1.6s ease-in-out infinite;
-  }
-  @keyframes consigne-pulse {
-    0%,100% { text-shadow:0 0 8px rgba(255,170,0,.5); opacity:.85; }
-    50%     { text-shadow:0 0 22px rgba(255,170,0,1), 0 0 44px rgba(255,170,0,.45); opacity:1; }
+    text-shadow:0 0 12px rgba(255,170,0,.7);
   }
   #menu-btn-bottom {
     display:inline-block; margin-left:8px; padding:4px 14px; border-radius:6px;
