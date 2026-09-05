@@ -104,6 +104,10 @@ I18N.register({
     width:min(660px,100%);
   }
   canvas { display:block; width:100%; height:auto; background:#00040f; cursor:none; }
+  /* E2 : à la fin de la partie, l'overlay quitte le canvas et prend sa place dans le
+     flux : le récapitulatif a la hauteur qu'il lui faut au lieu de défiler dans le cadre. */
+  #canvas-wrap.fin canvas, #canvas-wrap.fin #feedback, #canvas-wrap.fin #question-banner { display:none; }
+  #canvas-wrap.fin #overlay { position:relative; inset:auto; min-height:520px; }
 
   #question-banner {
     position:absolute; top:0; left:0; right:0;
@@ -281,6 +285,16 @@ fontSlider.addEventListener('input', () => {
 });
 
 let activeQCM = DEFAULT_QCM;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est réussie quand ses fausses briques sont cassées sans avoir touché la bonne.
+let joue = [], qNotee = false;
+function titreBrut(html) { const d = document.createElement('div'); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, ' '); return d.textContent; } // les clés de titre contiennent des <br>
+function noterQuestion() {
+  if (!currentQ || qNotee) return;
+  qNotee = true;
+  joue.push({ id: currentQ.q, titre: currentQ.q, reussi: !correctPenalized, explication: currentQ.expl || '' });
+}
 
 // ── CANVAS ───────────────────────────────────────────────────
 const canvas = document.getElementById('game');
@@ -514,6 +528,7 @@ function checkAllWrongGone() {
   if (!questionActive) return;
   if (bricks.some(b => !b.isCorrect && !b.dead)) return;
   questionActive = false;
+  noterQuestion();
   score += 100; updateUI();
   playSound(660, 0.35, 'sine');
   const correct = bricks.find(b => b.isCorrect);
@@ -563,6 +578,7 @@ function loadQuestion() {
   BANNER_H  = getBannerCanvasH();
   BRICK_TOP = BANNER_H + 20;
   correctPenalized = false;
+  qNotee = false;
   spawnBricks();
   resetBall();
   questionActive = true;
@@ -570,10 +586,12 @@ function loadQuestion() {
 }
 
 // ── START / END ───────────────────────────────────────────────
-function startDefaultGame() {
-  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
-  if (typeof QCMStore !== 'undefined') {
-    var _p = QCMStore.getSessionQuestions();
+function startDefaultGame(pool) {
+  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub) — E2 : les jamais
+  // vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs ».
+  if (Array.isArray(pool)) window.DEFAULT_QCM = pool;
+  else if (typeof QCMStore !== 'undefined') {
+    var _p = QCMStore.getSessionQuestions(QCMStore.cleMemoire());
     if (_p && _p.length) window.DEFAULT_QCM = _p;
   }
   activeQCM = DEFAULT_QCM;
@@ -582,6 +600,9 @@ function startDefaultGame() {
 
 function startGame() {
   document.getElementById('overlay').style.display = 'none';
+  document.getElementById('canvas-wrap').classList.remove('fin');
+  joue = [];
+  ColFin.protegerSortie(true);
   activeQCM = withShuffledOptions(activeQCM);
   score=0; lives=3; qIndex=0; particles=[]; ballLaunched=false; paused=false;
   paddle.x=W/2; paddle.w=PADDLE_W0; ball.spd=BALL_SPD;
@@ -594,22 +615,22 @@ function startGame() {
 function endGame(win) {
   gameRunning = false;
   document.getElementById('question-banner').classList.remove('visible');
+  // E2 : sur une défaite, la question en cours est ratée (c'est la bonne brique qui a été touchée).
+  if (!win) noterQuestion();
   const ov = document.getElementById('overlay');
   ov.style.display = 'flex';
-  // Chantier 04 : sur une défaite, la question en cours reste sans réponse —
-  // on affiche son explication plutôt que de laisser le joueur sur son erreur.
-  const lastExpl = (!win && currentQ && currentQ.expl)
-    ? `<div class="sub" style="color:#ffd479;border-left:3px solid #ffaa00;padding-left:12px;text-align:left">💡 ${currentQ.expl}</div>`
-    : '';
-  ov.innerHTML = `
-    <h1 style="color:${win?'#00ffcc':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
-    <div class="sub">${I18N.t('finalScore')} <strong style="color:#00ffcc">${score}</strong><br>
-    ${win?I18N.t('winMsg'):I18N.t('loseMsg')}</div>
-    ${lastExpl}
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-      <button onclick="startDefaultGame()">${I18N.t('replay')}</button>
-      <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menu')}</button>
-    </div>`;
+  document.getElementById('canvas-wrap').classList.add('fin');
+  // E2 : titre, score « bonnes / jouées », message, questions ratées avec leur explication et
+  // boutons (rejouer mes erreurs, rejouer, retour au hub) sont rendus par ColFin.
+  ov.innerHTML = '<div class="col-fin" id="ecran-fin"></div>';
+  ColFin.rendre({
+    cible: ov.firstElementChild, jeu: (typeof QCMStore !== 'undefined') ? QCMStore.cleMemoire() : 'arcade',
+    titre: titreBrut(win ? I18N.t('winTitle') : I18N.t('loseTitle')),
+    message: I18N.t('finalScore') + ' ' + score + ' — ' + (win ? I18N.t('winMsg') : I18N.t('loseMsg')),
+    score: joue.filter(j => j.reussi).length, total: joue.length, items: joue,
+    onRejouer: rates => startDefaultGame(activeQCM.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startDefaultGame()
+  });
 }
 
 // ── PARTICLES / SOUND ─────────────────────────────────────────
