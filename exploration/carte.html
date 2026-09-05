@@ -130,6 +130,7 @@ I18N.register({
     visited: "Lieux visités :", done: " — parcours terminé, bravo ! 🎉",
     lockA: "🔒 Termine d'abord l'étape ", lockB: " pour débloquer celle-ci.",
     unlockA: "🎉 Nouveau lieu débloqué : ", resetMsg: "Parcours réinitialisé.",
+    finA: "✅ Étape terminée : ", finB: ". ",
     greetOnRouteA: "En route, ", greetOnRouteB: "&nbsp;! ",
     confirmReset: "Recommencer le parcours à zéro ? (ton avatar est conservé)",
     n_radarnaque: "Radar'naque", d_radarnaque: "Déjouer les arnaques",
@@ -149,6 +150,7 @@ I18N.register({
     visited: "Places visited:", done: " — journey complete, well done! 🎉",
     lockA: "🔒 Finish step ", lockB: " first to unlock this one.",
     unlockA: "🎉 New place unlocked: ", resetMsg: "Journey reset.",
+    finA: "✅ Step completed: ", finB: ". ",
     greetOnRouteA: "Off we go, ", greetOnRouteB: "&nbsp;! ",
     confirmReset: "Restart the journey from scratch? (your avatar is kept)",
     n_radarnaque: "Radar'naque", d_radarnaque: "Outsmart scams",
@@ -296,13 +298,18 @@ I18N.register({
   // Lecteur
   var player = document.getElementById('player');
   var frame = document.getElementById('player-frame');
+  var lieuOuvert = -1;   // index du lieu affiché dans le cadre, -1 si fermé
+
   function ouvrir(i){
     var l = LIEUX[i];
+    lieuOuvert = i;
     document.getElementById('player-ttl').textContent = l.emoji + ' ' + l.nom;
     frame.src = l.url;
     player.classList.add('open');
     document.body.style.overflow='hidden';
-    // marque visité + débloque la suite
+    // REPLI E2 — marque visité + débloque la suite dès l'ouverture. À
+    // retirer quand les 14 jeux enverront « col:fin-de-partie » : le
+    // déblocage passera alors entièrement par terminer().
     var etaitFront = (i === prog.reached - 1);
     prog.visited[l.id] = true;
     if(etaitFront && prog.reached < LIEUX.length){ prog.reached++; }
@@ -312,7 +319,44 @@ I18N.register({
       setTimeout(function(){ dire(I18N.t('unlockA') + LIEUX[i+1].nom + ' !'); }, 400);
     }
   }
-  function fermer(){ player.classList.remove('open'); frame.src='about:blank'; document.body.style.overflow=''; }
+  function fermer(){ lieuOuvert = -1; player.classList.remove('open'); frame.src='about:blank'; document.body.style.overflow=''; }
+
+  /* ── Fin de partie annoncée par le jeu ────────────────────────────────
+     Contrat défini dans collection.js (« CONTRAT FIN DE PARTIE ») : un jeu
+     encadré appelle Collection.finDePartie(...) quand la partie va à son
+     terme, et le message arrive ici.
+
+     La vérification porte sur e.source — « ce message vient-il bien de MON
+     cadre ? » — et pas sur e.origin : le Fakemètre est servi depuis
+     antoninatger.github.io, les autres jeux depuis ce domaine-ci. Une liste
+     d'origines serait à tenir à jour ; celle-ci se vérifie toute seule.
+
+     Transitoire : tant que les 14 jeux n'émettent pas encore le message
+     (tâche E2 du plan), `ouvrir()` continue de débloquer la suite comme
+     avant — sinon le parcours ne débloquerait plus rien du tout. Quand E2
+     sera passée, il n'y aura qu'à retirer les trois lignes marquées
+     « REPLI E2 » dans ouvrir() : le déblocage se fera alors uniquement à la
+     fin réelle d'une partie, ce que la tâche demande. */
+  window.addEventListener('message', function(e){
+    if(lieuOuvert < 0 || !frame.contentWindow) return;
+    if(e.source !== frame.contentWindow) return;
+    if(!e.data || e.data.type !== 'col:fin-de-partie') return;
+    terminer(lieuOuvert);
+  });
+
+  function terminer(i){
+    var l = LIEUX[i];
+    var etaitFront = (i === prog.reached - 1);
+    prog.visited[l.id] = true;
+    prog.termines = prog.termines || {};
+    prog.termines[l.id] = true;
+    if(etaitFront && prog.reached < LIEUX.length) prog.reached++;
+    save(PROG_KEY, prog);
+    refresh();
+    var texte = I18N.t('finA') + l.nom + I18N.t('finB');
+    if(etaitFront && prog.reached - 1 === i + 1) texte += I18N.t('unlockA') + LIEUX[i+1].nom + ' !';
+    dire(texte);
+  }
   document.getElementById('player-back').onclick = fermer;
   document.getElementById('player-fs').onclick = function(){
     var r = frame.requestFullscreen || frame.webkitRequestFullscreen || frame.mozRequestFullScreen || frame.msRequestFullscreen;

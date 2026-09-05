@@ -41,6 +41,23 @@
      rustine `placeToggle()`, que cet en-tête remplace. */
   window.__COLLECTION_ENTETE__ = true;
 
+  /* Le jeu tourne-t-il dans un cadre ? Exploration ouvre chaque jeu dans une
+     <iframe>, et deux commandes de l'en-tête n'y ont aucun sens :
+
+       — « ← Retour » chargeait le portail DANS le cadre : l'explorateur se
+         retrouvait avec le hub de la collection à l'intérieur du lecteur du
+         parcours, sans moyen d'en sortir. Le cadre a déjà son propre bouton
+         « ← Parcours » dans sa barre.
+       — la bascule FR/EN rechargeait le jeu seul avec ?lang=…, sans que la
+         page qui l'entoure change de langue : deux langues à l'écran.
+
+     L'accès à une iframe d'une autre origine lève une exception dans certains
+     navigateurs : le try/catch retombe alors sur « oui, on est encadré », qui
+     est le cas où l'on masque — jamais l'inverse. */
+  var DANS_UN_CADRE = (function () {
+    try { return window.self !== window.top; } catch (e) { return true; }
+  })();
+
   /* Sélecteurs de lien retour rencontrés dans la collection. Ils viennent de
      jeux écrits à des moments différents ; le chantier 06 les unifiera. */
   var SEL_RETOUR = '.back-hub, .back-btn, .back-link, a.back, #menu-btn-bottom, #menu-link';
@@ -131,7 +148,15 @@
     grille.className = 'col-entete__grille';
     entete.appendChild(grille);
 
-    /* ── Retour ────────────────────────────────────────────────────────── */
+    /* ── Retour ──────────────────────────────────────────────────────────
+       Dans un cadre, la case reste (la grille garde ses trois colonnes, donc
+       le titre reste centré) mais elle est vide. */
+    if (DANS_UN_CADRE) {
+      var videRetour = document.createElement('span');
+      videRetour.className = 'col-entete__vide';
+      videRetour.setAttribute('aria-hidden', 'true');
+      grille.appendChild(videRetour);
+    } else {
     var retour = document.createElement('a');
     retour.className = 'col-entete__retour';
     retour.href = hrefRetour(ancienRetour);
@@ -150,13 +175,14 @@
     libRetour = libRetour.replace(/^[\s←◀«<]+/, '').trim();
     retour.querySelector('.col-entete__label').textContent = libRetour;
     retour.setAttribute('aria-label', libRetour);
+    grille.appendChild(retour);
+    }
 
     /* ── Titre ─────────────────────────────────────────────────────────── */
     var h = document.createElement('h1');
     h.className = 'col-entete__titre';
     h.textContent = titre.texte;
 
-    grille.appendChild(retour);
     grille.appendChild(h);
 
     /* ── Emplacement extra ───────────────────────────────────────────────
@@ -183,7 +209,7 @@
        lui afficher une bascule FR/EN promettrait une traduction inexistante
        et rechargerait la page pour rien. La grille reste équilibrée grâce à
        la colonne fantôme ci-dessous. */
-    if (window.I18N) {
+    if (window.I18N && !DANS_UN_CADRE) {
       var langue = document.createElement('button');
       langue.type = 'button';
       langue.className = 'col-entete__langue';
@@ -274,5 +300,68 @@
   }
   demarrer();
 
-  window.Collection = { construireEntete: construire };
+  /* =======================================================================
+     CONTRAT « FIN DE PARTIE » — le message qu'un jeu envoie à la page qui
+     l'encadre. Défini par la tâche E5 ; ColFin (tâche E1) s'y conforme, et
+     Exploration l'écoute. Il n'y en a qu'un : ne pas en inventer un second.
+
+     ── Le message ───────────────────────────────────────────────────────
+       {
+         type   : 'col:fin-de-partie',   // exactement cette chaîne. Obligatoire.
+         jeu    : 'radar-desinfo',       // identifiant stable du jeu. Recommandé.
+         score  : 7,                     // entier, facultatif
+         total  : 10,                    // entier, facultatif
+         reussi : true                   // booléen, facultatif
+       }
+
+     `type` est le seul champ obligatoire : un parcours qui débloque l'étape
+     suivante n'a pas besoin du score. Les autres champs servent à ce qui
+     viendra ensuite (un bilan de parcours, par exemple) ; les envoyer coûte
+     une ligne et évite d'avoir à réécrire les 14 jeux pour les ajouter.
+
+     ── Côté jeu ─────────────────────────────────────────────────────────
+       Collection.finDePartie({ jeu: 'radar-desinfo', score: 7, total: 10 });
+
+     Sans effet hors d'un cadre : un jeu peut l'appeler sans se demander
+     comment il est ouvert. Une partie abandonnée n'envoie rien — le message
+     dit « la partie est allée à son terme », pas « le joueur est parti ».
+
+     ── Côté page encadrante ─────────────────────────────────────────────
+       window.addEventListener('message', function (e) {
+         if (e.source !== monIframe.contentWindow) return;   // ← indispensable
+         if (!e.data || e.data.type !== 'col:fin-de-partie') return;
+         …
+       });
+
+     La vérification porte sur `e.source`, pas sur `e.origin` : le Fakemètre
+     est servi depuis antoninatger.github.io, les autres jeux depuis le même
+     domaine que la page. Une liste d'origines serait à tenir à jour, alors
+     que « ce message vient-il bien de MON cadre ? » se vérifie tout seul et
+     ne laisse rien passer.
+
+     `targetOrigin` est '*' à l'envoi, faute de connaître l'origine du parent.
+     Le message ne contient qu'un score de jeu : rien qui vaille d'être
+     protégé, et rien qui identifie le joueur.
+     ======================================================================= */
+  var TYPE_FIN = 'col:fin-de-partie';
+
+  function finDePartie(details) {
+    if (!DANS_UN_CADRE) return false;
+    var msg = { type: TYPE_FIN };
+    if (details) {
+      if (details.jeu != null)    msg.jeu    = String(details.jeu);
+      if (details.score != null)  msg.score  = Number(details.score);
+      if (details.total != null)  msg.total  = Number(details.total);
+      if (details.reussi != null) msg.reussi = !!details.reussi;
+    }
+    try { window.parent.postMessage(msg, '*'); return true; }
+    catch (e) { return false; }
+  }
+
+  window.Collection = {
+    construireEntete: construire,
+    finDePartie: finDePartie,
+    TYPE_FIN: TYPE_FIN,
+    dansUnCadre: DANS_UN_CADRE
+  };
 })();

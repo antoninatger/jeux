@@ -87,6 +87,26 @@
     background:var(--ok); color:#04231a; padding:14px 22px; border-radius:12px; font-weight:700;
     box-shadow:0 12px 30px rgba(0,0,0,.5); transition:transform .35s cubic-bezier(.2,1.4,.4,1); z-index:50; }
   .toast.show{ transform:translateX(-50%) translateY(0); }
+
+  /* Bandeau « Reprendre le parcours » : n'apparaît que si une progression
+     existe déjà (voir plus bas). Sans lui, quelqu'un qui revenait sur
+     Exploration retombait sur la création d'avatar, et n'avait aucun moyen
+     d'apprendre que sa carte l'attendait — sinon en refaisant un avatar. */
+  .reprise{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    flex-wrap:wrap; margin:0 auto 18px; max-width:640px;
+    padding:14px 18px; border-radius:14px;
+    background:var(--card); border:1px solid var(--bord);
+    font-size:.95rem;
+  }
+  .reprise[hidden]{ display:none; }
+  .reprise .txt{ color:var(--doux); }
+  .reprise .txt b{ color:var(--txt); }
+  .reprise a{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 20px;
+    border-radius:50px; background:var(--acc); color:#04202e;
+    text-decoration:none; font-weight:800; white-space:nowrap;
+  }
 </style>
 </head>
 <body>
@@ -96,6 +116,8 @@
     <p data-i18n="intro">Avant de partir à la découverte des jeux, façonne l'avatar qui te représentera.</p>
     <p class="cred-atger" style="font-size:.8rem;font-weight:600;opacity:.65;margin:6px 0 0;">par <a href="https://antoninatger.com" target="_blank" style="color:var(--acc);text-decoration:none;">Antonin Atger</a></p>
   </header>
+
+  <p class="reprise" id="reprise" hidden></p>
 
   <div class="wrap">
     <!-- Aperçu -->
@@ -180,7 +202,10 @@ I18N.register({
     hBald: "Chauve", hShort: "Court", hBob: "Carré", hLong: "Long", hPigtails: "Couettes", hBun: "Chignon", hMohawk: "Crête", hCurly: "Bouclé",
     cTshirt: "T-shirt", cSweater: "Pull", cShirt: "Chemise", cDress: "Robe", cTank: "Débardeur", cCave: "🦴 Cavernes", cAstro: "🚀 Cosmonaute",
     glasses: "👓 Lunettes", beard: "🧔 Barbe",
-    goSuffix: ", c'est parti !", goAnon: "C'est parti !"
+    goSuffix: ", c'est parti !", goAnon: "C'est parti !",
+    repriseA: "Un parcours est déjà commencé : ", repriseB: " lieu visité sur ",
+    repriseBp: " lieux visités sur ", repriseGo: "🗺️ Reprendre le parcours",
+    repriseNote: "Modifier l'avatar ci-dessous ne remet pas le parcours à zéro."
   },
   en: {
     back: "← Back to games", h1: "🧭 Create your explorer",
@@ -196,7 +221,10 @@ I18N.register({
     hBald: "Bald", hShort: "Short", hBob: "Bob", hLong: "Long", hPigtails: "Pigtails", hBun: "Bun", hMohawk: "Mohawk", hCurly: "Curly",
     cTshirt: "T-shirt", cSweater: "Sweater", cShirt: "Shirt", cDress: "Dress", cTank: "Tank top", cCave: "🦴 Caveman", cAstro: "🚀 Astronaut",
     glasses: "👓 Glasses", beard: "🧔 Beard",
-    goSuffix: ", let's go!", goAnon: "Let's go!"
+    goSuffix: ", let's go!", goAnon: "Let's go!",
+    repriseA: "A journey is already under way: ", repriseB: " place visited out of ",
+    repriseBp: " places visited out of ", repriseGo: "🗺️ Resume the journey",
+    repriseNote: "Changing the avatar below does not reset the journey."
   }
 });
 /* =====================================================================
@@ -312,6 +340,38 @@ I18N.register({
     document.getElementById('page-fade').classList.add('show'); // fondu doux vers la carte (claire)
     setTimeout(()=>{ window.location.href='carte.html'; }, 750);
   };
+
+  /* --- Reprendre le parcours ---------------------------------------------
+     Cette page est l'entrée d'Exploration, mais elle ne parlait que de la
+     création d'avatar. Quelqu'un qui revenait après une première séance
+     n'avait aucun moyen de savoir que sa carte existait toujours : le seul
+     bouton, « Explorer ! », écrase l'avatar avant d'y aller.
+
+     Le bandeau ne s'affiche que si une progression réelle existe — au moins
+     un lieu visité. La clé et la forme de l'objet sont celles de carte.html
+     (`jeux.exploration.progress.v2`). */
+  (function(){
+    var PROG_KEY = 'jeux.exploration.progress.v2';
+    var NB_LIEUX = 6;                       // même liste que carte.html
+    var prog = null;
+    try{ prog = JSON.parse(localStorage.getItem(PROG_KEY)); }catch(e){}
+    if(!prog || !prog.visited) return;
+    var n = Object.keys(prog.visited).filter(function(k){ return prog.visited[k]; }).length;
+    if(!n) return;
+
+    var el = document.getElementById('reprise');
+    var txt = document.createElement('span');
+    txt.className = 'txt';
+    txt.innerHTML = I18N.t('repriseA') + '<b>' + n + '</b>'
+                  + (n > 1 ? I18N.t('repriseBp') : I18N.t('repriseB')) + NB_LIEUX + '. '
+                  + I18N.t('repriseNote');
+    var lien = document.createElement('a');
+    lien.href = 'carte.html';
+    lien.textContent = I18N.t('repriseGo');
+    el.appendChild(txt);
+    el.appendChild(lien);
+    el.hidden = false;
+  })();
 
   /* --- API pour la suite du jeu --- */
   window.Avatar = {
