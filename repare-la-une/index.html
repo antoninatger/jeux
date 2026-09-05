@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="clair">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Répare la Une ! 🗞️</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- E2 : le socle est chargé pour l'écran de fin (ColFin), en thème clair ; la migration complète de la page reste à faire (chantier 05). -->
+<link rel="stylesheet" href="../collection.css">
 <style>
 :root {
   --bg:#e8e1d2; --panel:#faf6ec; --card:#ffffff;
@@ -105,12 +107,9 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 #fb-stars{font-size:1.5rem;margin-top:8px;display:none;}
 #nextbtn{display:none;width:100%;background:#241e12;color:#f5efe0;border:none;border-radius:8px;padding:14px;font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 14px rgba(36,30,18,.3);margin-top:10px;}
 
-#end{display:none;max-width:580px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:6px;padding:30px;box-shadow:0 3px 14px rgba(80,60,20,.12);}
+#end{display:none;width:100%;max-width:580px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:6px;padding:30px;box-shadow:0 3px 14px rgba(80,60,20,.12);}
 #end h2{font-family:'Playfair Display',serif;font-weight:900;font-size:1.7rem;color:var(--acc);margin-bottom:10px;}
-#end .score-big{font-family:'Playfair Display',serif;font-weight:900;font-size:2.4rem;color:var(--tx);margin:10px 0;}
-#end p{color:#5c5340;font-weight:700;margin-bottom:18px;line-height:1.55;}
-#end p b{color:var(--tx);}
-#end-recap{margin:0 0 18px;text-align:left;font-size:.82rem;}
+#end-recap{margin:18px 0 0;text-align:left;font-size:.82rem;}
 .recap-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px solid var(--bord);}
 .recap-row:last-child{border-bottom:none;}
 .recap-row .rr-title{flex:1;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -123,7 +122,7 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 @media(max-width:400px){header{margin-top:40px;}}
 </style>
 </head>
-<body>
+<body data-col-entete="non">
 <a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
 
 <header>
@@ -200,14 +199,22 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 </div>
 
 <div id="end">
-  <h2 id="end-title"></h2>
-  <div class="score-big" id="end-score"></div>
-  <p id="end-msg"></p>
+  <!-- E2 : l'écran de fin est rendu par ColFin (collection.js) : titre, étoiles,
+       unes retoquées avec leur leçon, « rejouer mes erreurs ». Le détail des
+       étoiles par une (#end-recap) reste dessous. -->
+  <div class="col-fin" id="ecran-fin"></div>
   <div id="end-recap"></div>
-  <button class="bigbtn" onclick="location.reload()" data-i18n="replay">🔄 Rejouer</button>
 </div>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
+<script>
+/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
+   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
+   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
+   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
+window.__COLLECTION_ENTETE__ = false;
+</script>
 <script>
 I18N.register({
   fr: {

@@ -267,20 +267,32 @@ const LEVELS = [
 
 const EMO_MAX=30, PREC_MIN=70;
 let lvl=0, sel=[], attempts=0, stars=0, solved=false, optBtns=[], levelResults=[];
+// E2 : DECK est la liste des unes de la partie en cours — toutes (LEVELS), ou les seules
+// unes retoquées pour « rejouer mes erreurs ». Identifiant stable d'une une : son titre d'origine.
+// Une une est « réussie » quand elle est publiée du premier coup.
+let DECK=LEVELS;
+const JEU="repare-la-une";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 const $=id=>document.getElementById(id);
 
-function startGame(){
+function startGame(sousDeck){
+  DECK=sousDeck || LEVELS;
   lvl=0; stars=0; levelResults=[];
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  $("hud-stars").textContent="⭐ 0"; // la partie repart sans recharger la page
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
-  $("qtot").textContent=LEVELS.length;
+  $("qtot").textContent=DECK.length;
   $("draft-date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   renderLevel();
 }
 
 function renderLevel(){
-  const L=LEVELS[lvl];
+  const L=DECK[lvl];
   sel=L.slots.map(()=>0); // par défaut : le segment original (le plus sensationnaliste)
   attempts=0; solved=false;
   $("qnum").textContent=lvl+1;
@@ -349,7 +361,7 @@ function renderLevel(){
 }
 
 function currentScores(){
-  const L=LEVELS[lvl];
+  const L=DECK[lvl];
   let emo=0, prec=0;
   L.slots.forEach((s,i)=>{emo+=s.opts[sel[i]].emo; prec+=s.opts[sel[i]].prec;});
   return {emo:Math.min(100,emo), prec:Math.min(100,prec)};
@@ -357,7 +369,7 @@ function currentScores(){
 
 function updateDraft(){
   // Met à jour l'aperçu de la une, mais PAS les jauges : le verdict n'arrive qu'à la publication.
-  const L=LEVELS[lvl];
+  const L=DECK[lvl];
   const html=L.slots.map((s,i)=>{
     const t=s.opts[sel[i]].t;
     // Segment resté au choix 0 (par défaut) = non modifié : signalé, pas confondu avec un vrai choix.
@@ -379,7 +391,7 @@ function revealGauges(){
 }
 
 function publish(){
-  const L=LEVELS[lvl];
+  const L=DECK[lvl];
   attempts++;
   revealGauges();
   const fb=$("feedback");
@@ -414,6 +426,7 @@ function publish(){
   const got = attempts===1 ? (allRead?3:2) : (attempts===2?2:1);
   stars+=got;
   levelResults.push({orig:L.orig, stars:got});
+  joue.push({id:L.orig, titre:L.orig, reussi:attempts===1, explication:texteBrut(L.lesson)});
   $("hud-stars").textContent="⭐ "+stars;
   fb.className="ok"; fb.style.display="block";
   $("fb-title").textContent="🗞️ Une publiée ! Le rédac chef applaudit.";
@@ -422,14 +435,14 @@ function publish(){
   $("fb-stars").style.display="block";
   $("fb-stars").textContent="⭐".repeat(got)+"☆".repeat(3-got);
   $("publish").style.display="none";
-  $("nextbtn").textContent = lvl===LEVELS.length-1 ? "Voir mon bilan ➜" : "Une suivante ➜";
+  $("nextbtn").textContent = lvl===DECK.length-1 ? "Voir mon bilan ➜" : "Une suivante ➜";
   $("nextbtn").style.display="block";
   fb.scrollIntoView({behavior:"smooth",block:"center"});
   $("nextbtn").focus();
 }
 
 function nextLevel(){
-  if(lvl===LEVELS.length-1){ endGame(); return; }
+  if(lvl===DECK.length-1){ endGame(); return; }
   lvl++; renderLevel();
 }
 
@@ -437,15 +450,19 @@ function endGame(){
   $("game").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  const max=LEVELS.length*3;
-  $("end-score").textContent="⭐ "+stars+" / "+max;
+  const max=DECK.length*3;
   let title,msg;
   if(stars>=max-2){title="🏆 Rédacteur en chef d'exception !";msg="Tes unes informent sans affoler. Tu maîtrises la leçon : <b>une info vraie peut quand même manipuler</b>, selon comment elle est cadrée. Toi, tu choisis le cadre honnête.";}
   else if(stars>=Math.round(max*0.55)){title="📰 Bon rédacteur !";msg="Tu sais désamorcer la plupart des titres anxiogènes. Réflexe à garder : <b>toujours retourner aux sources</b> — c'est là que se cachent les nuances (tâches ≠ emplois, signalements ≠ faits…).";}
   else{title="🗞️ Stagiaire prometteur";msg="Le cadrage est subtil ! Rejoue en lisant bien chaque source avant de publier : les pièges de « fausse précision » ne pardonnent pas.";}
   msg+="<br><br>💡 Souviens-toi : la prochaine fois qu'un titre te fait peur ou t'indigne, demande-toi : <b>« comment cette même info aurait-elle pu être présentée autrement ? »</b>";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, étoiles, message, unes retoquées et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: texteBrut(msg),
+    score: stars, total: max, items: joue,
+    onRejouer: rates => startGame(LEVELS.filter(L => rates.some(r => r.id===L.orig))),
+    onRecommencer: () => startGame()
+  });
   $("end-recap").innerHTML=levelResults.map((r,i)=>
     `<div class="recap-row"><span class="rr-title">${i+1}. ${r.orig}</span><span class="rr-stars">${"⭐".repeat(r.stars)}${"☆".repeat(3-r.stars)}</span></div>`
   ).join("");
