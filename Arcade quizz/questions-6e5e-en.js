@@ -3,237 +3,237 @@ var QUESTIONS_6E5E = [
   {
     cat: "🗞️ Fake News",
     q: "What is fake news?",
-    options: ["True, verified information", "information that is false", "A personal opinion", "An Internet joke"],
+    options: ["Information that is true and checked", "Information that is false", "A personal opinion", "A joke on the internet"],
     answer: 1,
-    expl: "Fake news, it is tout simplement A false information. The but is often de tromper The people!"
+    expl: "Fake news is simply information that is false. The aim is usually to fool people!"
   },
   {
     cat: "🗞️ Fake News",
-    q: "Laquelle de these quisions aide to check si A information is true?",
-    options: ["is it that it is rigolo?", "is it that many de journaux en parlent?", "is it that it is en couleurs?", "is it that it is long to lire?"],
+    q: "Which of these questions helps you check whether a story is true?",
+    options: ["Is it funny?", "Are lots of newspapers reporting it?", "Is it in colour?", "Does it take long to read?"],
     answer: 1,
-    expl: "Si many de sources serieuses parlent of A information, it is A good signe. A seule source inconnue, mefie-toi!"
+    expl: "If plenty of serious sources report a story, that is a good sign. A single source you have never heard of? Be careful!"
   },
   {
     cat: "🗞️ Fake News",
-    q: "Parmi these quisions, laquelle N'aide PAS to check si A information is true?",
-    options: ["Which is The source?", "is it that many de journaux en parlent?", "Combien de fois a-t-it ete shared?", "Est-ce What on a Some evidence?"],
+    q: "Which of these questions does NOT help you check whether a story is true?",
+    options: ["What is the source?", "Are lots of newspapers reporting it?", "How many times has it been shared?", "Is there any proof?"],
     answer: 2,
-    expl: "The nombre de partages ne prouve rien! A false information can etre shared Some millions de fois. Ce who compte : The source, The evidence, et The journaux serieux."
+    expl: "Share counts prove nothing! A false story can be shared millions of times. What counts is the source, the proof, and serious newspapers."
   },
   {
     cat: "🗞️ Fake News",
-    q: "A information credible must avoir…",
-    options: ["Emojis and GIFs", "Evidence and verifiable sources", "Many likes", "Obligatoirement Some images for etre crue"],
+    q: "A story worth believing has to have…",
+    options: ["Emojis and GIFs", "Proof and sources you can check", "Plenty of likes", "Pictures, or nobody will believe it"],
     answer: 1,
-    expl: "The evidence, it is essentiel! A information without evidence, it is juste A opinion ou can-etre A Fake News."
+    expl: "Proof is what matters! A story with no proof is just an opinion — or maybe fake news."
   },
   {
     cat: "🗞️ Fake News",
-    q: "on Internet, si A information te choque many, tu dois of abord…",
-    options: ["Share it immediately", "Check it before believing it", "The imprimer et The coller partout", "The envoyer to toute ta classe"],
+    q: "Online, if a story really shocks you, the first thing to do is…",
+    options: ["Share it straight away", "Check it before believing it", "Print it out and stick it up everywhere", "Send it to your whole class"],
     answer: 1,
-    expl: "Regle of or : check before de share! A information choquante is often false ou exageree."
+    expl: "Golden rule: CHECK before you share! A shocking story is often false or exaggerated."
   },
 
   // ── Fact vs Opinion ──────────────────────────────────────────
   {
     cat: "💭 Fact vs opinion",
     q: "What is the difference between a fact and an opinion?",
-    options: ["A fact change according to The people, A opinion is universelle", "A fact is prouve, A opinion is A avis personal", "it n'y a aucune difference", "A fact is amusant, A opinion is ennuyeuse"],
+    options: ["A fact changes from person to person, an opinion is universal", "A fact is proven, an opinion is what someone thinks", "There is no difference at all", "A fact is fun, an opinion is boring"],
     answer: 1,
-    expl: "A fact is true for tout The monde et can etre prouve. A opinion is A avis personal, chacun can en avoir A different!"
+    expl: "A FACT is true for everyone and can be proven. An OPINION is what one person thinks, and everyone can have a different one!"
   },
   {
     cat: "💭 Fact vs opinion",
-    q: "\"The Sun is a star.\" It is…",
+    q: "\"The Sun is a star.\" That is…",
     options: ["An opinion", "A fact", "Fake news", "A dream"],
     answer: 1,
-    expl: "It is A fact scientifiquement prouve! The Soleil is bien A etoile, as Some millions of autres in the univers."
+    expl: "It is a FACT, proven by science! The Sun really is a star, like millions of others in the universe."
   },
   {
     cat: "💭 Fact vs opinion",
-    q: "\"The glace au chocolat is The meilleure Some glaces.\" It is…",
+    q: "\"Chocolate ice cream is the best ice cream.\" That is…",
     options: ["A universal fact", "A personal opinion", "Proven information", "A scientific law"],
     answer: 1,
-    expl: "It is A opinion! Tout The monde n'aime pas The glace au chocolat. Certains preferent The vanille ou The fraise."
+    expl: "It is an OPINION! Not everyone likes chocolate ice cream. Some people prefer vanilla or strawberry."
   },
   {
     cat: "💭 Fact vs opinion",
-    q: "\"Apples are fruit.\" It is…",
+    q: "\"Apples are fruit.\" That is…",
     options: ["An opinion", "A fact", "Fake news", "A joke"],
     answer: 1,
-    expl: "It is A fact! The pommes appartiennent bien to The categorie Some fruits, it is prouve en botanique."
+    expl: "It is a FACT! Apples really do belong to the fruit family, and botany proves it."
   },
   {
     cat: "💭 Fact vs opinion",
-    q: "\"Emmanuel Macron a rencontre A alien.\" It is…",
-    options: ["A fact verifiable", "Fake news or an unproven claim", "Official information", "A historical fact"],
+    q: "\"Emmanuel Macron met an alien.\" That is…",
+    options: ["A fact you can check", "Fake news, or a claim with no proof", "Official information", "A historical fact"],
     answer: 1,
-    expl: "Aucune evidence n'existe of A telle rencontre! It is A affirmation false ou non proven — exactement The genre de Fake News What on can croiser on Internet."
+    expl: "There is no proof at all that any such meeting happened! It is a false or unproven claim, exactly the kind of fake news you run into online."
   },
 
   // ── Our brain ────────────────────────────────────────────
   {
     cat: "🧠 Our brain",
-    q: "Why our sens can-they nous tromper?",
-    options: ["Parce What on is trop jeunes", "Parce that our brain fact parfois Some errors of interpretation", "Parce What on ne dort pas assez", "Parce What Internet is trop fast"],
+    q: "Why can our senses fool us?",
+    options: ["Because we are too young", "Because our brain sometimes reads things the wrong way", "Because we do not sleep enough", "Because the internet is too fast"],
     answer: 1,
-    expl: "Our brain is puissant mais it fact Some raccourcis et can se tromper! It is ce who arrive with The illusions of optique."
+    expl: "Our brain is powerful, but it takes shortcuts and it can get things wrong! That is what happens with optical illusions."
   },
   {
     cat: "🧠 Our brain",
-    q: "The pareidolies, it is quand…",
-    options: ["On entend Some sons imaginaires", "Our brain voit Some formes ou Some visages who are not vraiment la", "On oublie Some information importantes", "On confond fact et opinion"],
+    q: "Pareidolia is when…",
+    options: ["We hear sounds that are not there", "Our brain sees shapes or faces that are not really there", "We forget important information", "We mix up fact and opinion"],
     answer: 1,
-    expl: "The pareidolies, it is voir Some visages in The nuages ou in The bois of A porte. Our brain adore trouver Some formes connues!"
+    expl: "Pareidolia is seeing faces in the clouds or in the wood of a door. Our brain loves finding shapes it knows!"
   },
   {
     cat: "🧠 Our brain",
-    q: "How The pareidolies can-they etre utilisees for nous pieger on Internet?",
-    options: ["for do Some jeux video plus beaux", "for creer de fausses images who semblent montrer quelque chose de real", "for ameliorer our memoire", "for nous aider to lire plus vite"],
+    q: "How can pareidolia be used to trick us online?",
+    options: ["To make video games look better", "To build fake pictures that seem to show something real", "To improve our memory", "To help us read faster"],
     answer: 1,
-    expl: "Some images ambiguës can nous do believe voir quelque chose who n'existe pas! The Fake News exploitent this."
+    expl: "A blurry picture can make us believe we see something that does not exist! Fake news makes use of that."
   },
   {
     cat: "🧠 Our brain",
-    q: "The systeme intuitif de our brain…",
-    options: ["Works slowly and uses a lot of energy", "Works fast but can make mistakes", "Is always perfectly rational", "Only activates when we sleep"],
+    q: "Our brain's intuitive system…",
+    options: ["Works slowly and uses a lot of energy", "Works fast but can make mistakes", "Is always perfectly rational", "Only switches on when we sleep"],
     answer: 1,
-    expl: "The systeme intuitif is fast et econome en energie, mais it can se tromper. It is lui who reagit en premier on The networks!"
+    expl: "The intuitive system is fast and cheap on energy, but it can get things wrong. It is the one that reacts first on social media!"
   },
   {
     cat: "🧠 Our brain",
-    q: "The systeme analytique de our brain is…",
-    options: ["fast et peu consommateur of energie", "Slow, energy-consuming, but more rational", "Identical to the intuitive system", "Useless for checking information"],
+    q: "Our brain's analytical system is…",
+    options: ["Fast and cheap on energy", "Slow and energy-hungry, but a good deal more rational", "Exactly the same as the intuitive system", "No use for checking a story"],
     answer: 1,
-    expl: "The systeme analytique prend plus de temps mais reflechit mieux. It is lui What it must activer before de share A information!"
+    expl: "The analytical system takes longer but it thinks better. It is the one to switch on before you share a story!"
   },
 
   // ── Cognitive biases ──────────────────────────────────────────
   {
     cat: "🎭 Cognitive biases",
     q: "What is a cognitive bias?",
-    options: ["A technique for memorising lessons better", "A distortion in the way our brain processes information", "A dangerous type of social network", "A method for checking information"],
+    options: ["A trick for learning your lessons better", "A twist in the way our brain handles information", "A dangerous kind of social network", "A method for checking information"],
     answer: 1,
-    expl: "A bias cognitive, it is A sorte de filtre automatique in our brain who can fausser our jugement without What on s'en rende compte."
+    expl: "A cognitive bias is a sort of automatic filter in our brain that can warp our judgement without us noticing."
   },
   {
     cat: "🎭 Cognitive biases",
-    q: "Popularity bias is when we believe information…",
-    options: ["Parce What on the a verified soi-same", "Because many people believe or share it", "Because it is written in large letters", "Because it comes from a stranger"],
+    q: "Popularity bias is when you believe a story…",
+    options: ["Because you checked it yourself", "Because plenty of people believe it or share it", "Because it is written in big letters", "Because it comes from a stranger"],
     answer: 1,
-    expl: "\"Tout The monde The dit, donc it is true!\" It is The bias de popularity. Mais many de people can believe A false information!"
+    expl: "\"Everybody says so, so it must be true!\" That is popularity bias. But plenty of people can believe something false!"
   },
   {
     cat: "🎭 Cognitive biases",
-    q: "Emotional bias makes us believe information when it…",
-    options: ["Is boring and cold", "Triggers strong emotions such as fear or anger", "Is very long to read", "Comes from an expert"],
+    q: "Emotional bias pushes us to believe a story when it…",
+    options: ["Is cold and boring", "Stirs up strong feelings like fear or anger", "Takes a very long time to read", "Comes from an expert"],
     answer: 1,
-    expl: "Quand A information provoque A emotion forte (fear, anger, joie intense), on a moins tendance to The check. It is The bias emotionnel!"
+    expl: "When a story stirs a strong feeling (fear, anger, huge joy), we are much less likely to check it. That is emotional bias!"
   },
   {
     cat: "🎭 Cognitive biases",
-    q: "confirmation bias, it is quand on…",
-    options: ["Confirme A information aupres de 3 sources", "believes plus facilement The information who confirment ce What on pense deja", "checks always The information", "shares The information to its amis"],
+    q: "Confirmation bias is when you…",
+    options: ["Confirm a story with three sources", "Believe more easily the stories that fit what you already think", "Always check your information", "Share stories with your friends"],
     answer: 1,
-    expl: "On aime ce who confirme our idees dejto existantes! Ce bias can nous do rejeter A verite who ne nous plait pas."
+    expl: "We like whatever backs up the ideas we already have! This bias can make us reject a truth we do not like."
   },
   {
     cat: "🎭 Cognitive biases",
-    q: "The true piege Some Fake News, it is parfois de…",
-    options: ["believe toutes The information", "Considerer as false A information true who ne nous plait pas", "Lire trop de journaux", "do confiance aux experts"],
+    q: "The real trap with fake news is sometimes…",
+    options: ["Believing every story you see", "Calling a true story false because you do not like it", "Reading too many newspapers", "Trusting experts"],
     answer: 1,
-    expl: "Attention! confirmation bias can nous do rejeter A true information juste parce What it ne correspond pas to our croyances."
+    expl: "Careful! Confirmation bias can make us reject a true story just because it does not fit what we believe."
   },
 
   // ── Photos & AI ──────────────────────────────────────────────
   {
-    cat: "🤖 photos & AI",
-    q: "How can-on often reperer A image generee by A intelligence artificielle?",
-    options: ["it is always en noir et blanc", "The details as The mains, The oreilles ou The arriere-plans are often bizarres ou flous", "it is always trop petite", "it a forcement A filigrane visible"],
+    cat: "🤖 Photos & AI",
+    q: "How can you often spot a picture made by an artificial intelligence?",
+    options: ["It is always in black and white", "Details like hands, ears or backgrounds are often odd or blurry", "It is always far too small", "It always carries a visible watermark"],
     answer: 1,
-    expl: "The IA ont of the mal with The details complexes : The mains ont trop ou trop peu de doigts, The textes are flous, The arriere-plans incoherents. Observe bien!"
+    expl: "AI struggles with fiddly details: hands with too many or too few fingers, blurry writing, backgrounds that do not add up. Look closely!"
   },
   {
-    cat: "🤖 photos & AI",
-    q: "Why Some photos generees by IA can-they etre utilisees in Some Fake News?",
-    options: ["Parce What they are always gratuites", "Parce What they allow de creer de fausses evidence visuelles tres realistes", "Parce What they are plus jolies that The vraies photos", "Parce that The journaux The preferent"],
+    cat: "🤖 Photos & AI",
+    q: "Why can AI-generated photos be used in fake news?",
+    options: ["Because they are always free", "Because they can build very realistic fake visual proof", "Because they are prettier than real photos", "Because newspapers prefer them"],
     answer: 1,
-    expl: "A image realiste mais false can do believe What A evenement a eu lieu alors What it n'a never existe. It is tres dangerous for The Fake News!"
+    expl: "A realistic but fake picture can make people believe an event happened when it never did. That is very dangerous with fake news!"
   },
   {
-    cat: "🤖 photos & AI",
-    q: "that do si tu vois A photo choquante on The networks et that tu te demandes si it is true?",
-    options: ["Share it right away because it is impressionnante", "do A recherche inversee of image for check its origine", "believe What it is true si it a many de likes", "Ne rien do, ce is not important"],
+    cat: "🤖 Photos & AI",
+    q: "What should you do if you see a shocking photo online and wonder whether it is real?",
+    options: ["Share it at once, because it is striking", "Run a reverse image search to check where it came from", "Believe it is real if it has plenty of likes", "Nothing at all, it does not matter"],
     answer: 1,
-    expl: "The recherche of image inversee (on Google images by example) allows de savoir of ou vient A image et si it a ete modifiee ou generee by IA."
+    expl: "A reverse image search (on Google Images, for example) tells you where a picture comes from and whether it was edited or made by AI."
   },
 
   // ── Social media ──────────────────────────────────────────
   {
     cat: "📱 Social media",
-    q: "for savoir si A information en ligne is reliable, on can…",
-    options: ["check si it a A titre accrocheur", "look for who en is the auteur et s'it is competent on The topic", "Compter The nombre de commentaires positifs", "Regarder si it a ete postee by A ami"],
+    q: "To work out whether a story online is reliable, you can…",
+    options: ["Check whether it has a catchy headline", "Look up who wrote it and whether they know the subject", "Count how many positive comments it has", "See whether a friend posted it"],
     answer: 1,
-    expl: "The auteur et its competence are Some indices cles! A medecin who parle de sante, it is plus reliable What A inconnu without qualification."
+    expl: "Who wrote it, and do they know the subject? Those are the key clues! A doctor talking about health is more reliable than a stranger with no training."
   },
   {
     cat: "📱 Social media",
-    q: "Why The Fake News se propagent-they si vite on The social media?",
-    options: ["Parce What they are always bien ecrites", "Parce What they provoquent Some emotions fortes et What on The shares without check", "Parce that The journalists The publient en premier", "because they paraissent plus serieuses that The vraies information"],
+    q: "Why does fake news spread so fast on social media?",
+    options: ["Because it is always well written", "Because it stirs strong feelings and we share it without checking", "Because journalists publish it first", "Because it looks more serious than real news"],
     answer: 1,
-    expl: "A information choquante ou emouvante is shared en masse, often without verification. It is ainsi that The Fake News se propagent as A virus!"
+    expl: "A shocking or moving story gets shared by the thousand, usually without any checking. That is how fake news spreads like a virus!"
   },
   {
     cat: "📱 Social media",
-    q: "Quand on is fatigue The soir et What on consulte The social media, on is plus susceptible de…",
-    options: ["Mieux analyser The information because on is detendu", "Se laisser pieger because The systeme intuitif prend The dessus on The systeme analytique", "check toutes The sources with soin", "Ignorer toutes The publications"],
+    q: "When you are tired in the evening and scrolling social media, you are more likely to…",
+    options: ["Read things better, because you are relaxed", "Get caught out, because the intuitive system takes over from the analytical one", "Check every source carefully", "Ignore every post you see"],
     answer: 1,
-    expl: "The soir, fatigue, on uses surtout our systeme intuitif (fast mais who fact Some errors). It is The moment ideal for tomber in The piege Some Fake News!"
+    expl: "Late and tired, we run mostly on the intuitive system: fast, but full of mistakes. It is the perfect moment to fall for fake news!"
   },
   {
     cat: "📱 Social media",
-    q: "Si A information semble trop belle ou trop choquante for etre true, it is probably…",
-    options: ["True, because that is why it is shared", "False or exaggerated", "Verified by social media", "Official and serious"],
+    q: "If a story seems too good or too shocking to be true, it is probably…",
+    options: ["True, and that is why it is being shared", "False or exaggerated", "Checked by the social network", "Official and serious"],
     answer: 1,
-    expl: "Regle of or : \"Si it is trop beau (ou trop horrible) for etre true, it is probably false!\" Mefie-toi Some information tres extremes."
+    expl: "Golden rule: \"if it is too good (or too awful) to be true, it probably is not true!\" Be wary of stories at the extremes."
   },
 
   // ── Checking information ──────────────────────────────────────────
   {
     cat: "✅ Checking information",
-    q: "for check A information, on can…",
-    options: ["Compter The nombre de likes", "look for si several sources serieuses en parlent", "Regarder si the auteur a A belle photo de profil", "Voir si the information a ete publiee A vendredi"],
+    q: "To check a story, you can…",
+    options: ["Count the likes", "See whether several serious sources are reporting it", "Check if the author has a nice profile photo", "See whether the story came out on a Friday"],
     answer: 1,
-    expl: "Croiser several sources fiables, it is The method The plus sûre. Si The Monde, France information et of autres en parlent, it is good signe!"
+    expl: "Cross-checking several reliable sources is the safest method. If Le Monde, France Info and other established outlets report it, that is a good sign!"
   },
   {
     cat: "✅ Checking information",
-    q: "Avoir the esprit critique, it is…",
-    options: ["Criticalr tout The monde", "Se poser Some quisions et ne pas tout believe without check", "Ne never do confiance to personne", "Refuser toutes The information"],
+    q: "Thinking critically means…",
+    options: ["Criticising everybody", "Asking questions and not believing everything without checking", "Never trusting anybody", "Turning down every piece of information"],
     answer: 1,
-    expl: "The esprit critique, it is reflechir by soi-same, se poser Some quisions, et check before de believe ou share!"
+    expl: "Thinking critically means thinking for yourself, asking questions, and checking before you believe or share!"
   },
   {
     cat: "✅ Checking information",
-    q: "Face to A information What on ne connait pas bien, it must etre…",
-    options: ["Certain de tout savoir", "Modise et accepter What on ne sait pas tout", "Agressif for defendre its opinion", "Indifferent to toutes The information"],
+    q: "Faced with a story you do not know much about, you should be…",
+    options: ["Certain that you know it all", "Modest, and ready to admit you do not know everything", "Aggressive, to defend your opinion", "Indifferent to any information"],
     answer: 1,
-    expl: "The modisie intellectuelle, it is reconnaitre What on can se tromper et What on ne sait pas tout. It is A grande qualite!"
+    expl: "Intellectual modesty means admitting you can be wrong and that you do not know everything. It is a great quality!"
   },
   {
     cat: "✅ Checking information",
-    q: "Si tu te rends compte that tu as shared A Fake News, tu dois…",
-    options: ["Ignorer The probleme et esperer that personne ne the a vue", "Accepter ton error, The corriger et prevenir The people concernees", "Blâmer celui who t'avait envoye the information", "Supprimer ton compte social media"],
+    q: "If you realise you have shared fake news, you should…",
+    options: ["Ignore it and hope that nobody saw it", "Own up to the mistake, correct it and tell the people concerned", "Blame whoever sent you the story", "Delete your social media account"],
     answer: 1,
-    expl: "Accepter de se tromper, it is courageux! On apprend de our errors. The important it is de corriger et of en parler."
+    expl: "Owning up to a mistake takes courage! We learn from our mistakes. What matters is correcting it and saying so."
   },
   {
     cat: "✅ Checking information",
-    q: "Which is The good attitude face to the information en ligne?",
-    options: ["Tout believe for ne vexer personne", "Tout rejeter because tout is false on Internet", "check, accepter de se tromper, do confiance aux experts et riser modise", "Ne lire that The information who nous plaisent"],
+    q: "What is the right attitude towards information online?",
+    options: ["Believe it all, so as to upset nobody", "Reject it all, because the internet is nothing but lies", "Check, accept being wrong, trust the people who know, and stay modest", "Only read the stories you like"],
     answer: 2,
-    expl: "The cours resume bien : check the information, accepter de se tromper, do confiance aux people who savent, et etre modise. Ce is not grave de se tromper parfois!"
+    expl: "The lesson sums it up: check the story, accept being wrong, trust the people who know, and stay modest. Getting it wrong now and then is no big deal!"
   }
 ];
