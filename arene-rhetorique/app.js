@@ -136,15 +136,26 @@ const FOES = [
 
 let foeIdx=0, lineIdx=0, youHP=6, foeHP=0, order=[];
 let correctCount=0, totalCount=0, matchCorrect=0;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les répliques n'ont pas d'identifiant : leur texte (t) en tient lieu d'une partie à l'autre.
+const JEU="arene-rhetorique";
+let joue=[];
+// « Rejouer mes erreurs » : un adversaire de révision, composé des seules répliques ratées.
+let revision=null;
+function foeActuel(){ return revision || FOES[foeIdx]; }
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 const YOUMAX=6;
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startMatch(i){
+function startMatch(i, foeRevision){
   foeIdx=i; lineIdx=0; matchCorrect=0;
-  const foe=FOES[i];
+  revision=foeRevision||null;
+  const foe=foeActuel();
   foeHP=foe.hp;
-  if(i===0){ youHP=YOUMAX; correctCount=0; totalCount=0; }
+  if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; }
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
   order=shuffle([...foe.lines.keys()]);
   $("intro").style.display="none";
   $("inter").style.display="none";
@@ -169,7 +180,7 @@ function renderBreadcrumb(){
 }
 
 function updateHP(){
-  const foe=FOES[foeIdx];
+  const foe=foeActuel();
   $("hp-you").firstElementChild.style.width=(youHP/YOUMAX*100)+"%";
   $("hp-foe").firstElementChild.style.width=(foeHP/foe.hp*100)+"%";
   $("hp-you-txt").textContent="Conviction : "+youHP+"/"+YOUMAX;
@@ -181,7 +192,7 @@ function updateHP(){
 }
 
 function renderTurn(){
-  const foe=FOES[foeIdx];
+  const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
@@ -213,6 +224,7 @@ function renderTurn(){
 
 function answer(line,id,btn){
   const ok=id===line.a;
+  joue.push({id:line.t, titre:line.t, reussi:ok, explication:texteBrut(line.e)});
   totalCount++;
   if(ok){ correctCount++; matchCorrect++; }
   const all=[...document.querySelectorAll(".abtn")];
@@ -258,6 +270,7 @@ function nextTurn(){
 function winMatch(){
   $("battle").style.display="none";
   $("nextbtn").style.display="none";
+  if(revision){ finDePartie("📝 Révision terminée", scoreLine()); return; }
   if(foeIdx===FOES.length-1){ victory(); return; }
   const next=FOES[foeIdx+1];
   $("inter").style.display="block";
@@ -274,23 +287,35 @@ function scoreLine(){
   return "Score final : "+correctCount+" bonnes réponses sur "+totalCount+" ("+pct+" %)";
 }
 
-function victory(){
+// E2 : l'écran de fin — titre, score, répliques ratées et boutons — est rendu par ColFin.
+function finDePartie(titre, msg){
   $("end").style.display="block";
-  $("end-emoji").textContent="👑";
-  $("end-title").textContent="Maître de l'Arène !";
+  ColFin.rendre({
+    jeu: JEU, titre: titre, message: texteBrut(msg),
+    score: correctCount, total: totalCount, items: joue,
+    onRejouer: rates => {
+      const lines=FOES.flatMap(f=>f.lines).filter(l=>rates.some(r=>r.id===l.t));
+      startMatch(foeIdx, {name:"Révision", emoji:"📝", desc:"les répliques que tu as ratées", hp:lines.length, intro:"", lines:lines});
+    },
+    onRecommencer: () => startMatch(0)
+  });
+}
+
+function victory(){
+  const title="Maître de l'Arène !";
   $("retry-btn").style.display="none";
-  $("end-msg").innerHTML="Tu as vaincu les cinq adversaires ! Tu sais maintenant repérer l'<b>ethos</b>, le <b>pathos</b>, le <b>logos</b>… et les sophismes les plus courants.<br><br>"+scoreLine()+"<br><br>Dernier secret de l'arène : la meilleure technique de débat n'est pas une attaque. C'est l'<b>homme de fer</b> — reformuler fidèlement l'argument de l'autre avant d'y répondre, et chercher un <b>point d'accord</b>. Le débat devient alors plus riche… et plus serein. 🤝";
+  const msg="Tu as vaincu les cinq adversaires ! Tu sais maintenant repérer l'<b>ethos</b>, le <b>pathos</b>, le <b>logos</b>… et les sophismes les plus courants.<br><br>"+scoreLine()+"<br><br>Dernier secret de l'arène : la meilleure technique de débat n'est pas une attaque. C'est l'<b>homme de fer</b> — reformuler fidèlement l'argument de l'autre avant d'y répondre, et chercher un <b>point d'accord</b>. Le débat devient alors plus riche… et plus serein. 🤝";
+  finDePartie("👑 "+title, msg);
 }
 
 function lose(){
   $("battle").style.display="none";
   $("nextbtn").style.display="none";
-  $("end").style.display="block";
-  $("end-emoji").textContent="😵";
-  $("end-title").textContent="Battu… cette fois !";
-  $("end-msg").innerHTML=FOES[foeIdx].name+" t'a submergé de rhétorique. Pas grave : l'art du débat <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
+  const title="Battu… cette fois !";
+  const msg=foeActuel().name+" t'a submergé de rhétorique. Pas grave : l'art du débat <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
+  finDePartie("😵 "+title, msg);
   const rb=$("retry-btn");
   rb.style.display="inline-block";
-  rb.textContent="🔁 Retenter "+FOES[foeIdx].name;
-  rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx); };
+  rb.textContent="🔁 Retenter "+foeActuel().name;
+  rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx, revision); };
 }

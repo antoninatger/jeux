@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L'Arène Rhétorique ⚔️</title>
 <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<link rel="stylesheet" href="../collection.css">
 <style>
 :root {
   --bg:#1b0d11; --panel:#27131a; --card:#351a23;
@@ -81,8 +83,8 @@ header{text-align:center;}
 .screen{display:none;max-width:560px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:30px;}
 .screen h2{font-family:'Alfa Slab One',serif;font-size:1.6rem;color:var(--acc);margin-bottom:10px;}
 .screen .femoji{font-size:3.5rem;display:block;margin-bottom:8px;}
-.screen p{color:var(--mu);font-weight:700;margin-bottom:18px;line-height:1.55;}
-.screen p b{color:var(--tx);}
+.screen > p{color:var(--mu);font-weight:700;margin-bottom:18px;line-height:1.55;}
+.screen > p b{color:var(--tx);}
 @media(max-width:520px){#answers{grid-template-columns:1fr;}}
 /* ── Collection : retour hub + accessibilité ── */
 .back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:var(--panel,rgba(15,20,30,.7));border:1px solid var(--bord,rgba(255,255,255,.15));color:var(--mu,#9fb3cc);text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
@@ -91,7 +93,7 @@ header{text-align:center;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-entete="non">
 <a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
 
 <header>
@@ -151,14 +153,21 @@ header{text-align:center;}
 </div>
 
 <div class="screen" id="end">
-  <span class="femoji" id="end-emoji" aria-hidden="true"></span>
-  <h2 id="end-title"></h2>
-  <p id="end-msg"></p>
-  <button class="bigbtn" id="retry-btn"></button>
-  <button class="bigbtn gold" onclick="location.reload()" data-i18n="replay">🔄 Rejouer</button>
+  <!-- E2 : l'écran de fin est rendu par ColFin (collection.js) : titre, score,
+       répliques ratées avec leur explication, « rejouer mes erreurs ». -->
+  <div class="col-fin" id="ecran-fin"></div>
+  <button class="bigbtn" id="retry-btn" style="margin-top:14px"></button>
 </div>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
+<script>
+/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
+   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
+   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
+   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
+window.__COLLECTION_ENTETE__ = false;
+</script>
 <script>
 I18N.register({
   fr: {
