@@ -1,4 +1,4 @@
-// Level 3 — Rhetoric & Critical Thinking (high school, 15-18 ans)
+// Level 3 — Rhetoric & Critical Thinking (high school, 15-18)
 // Source : rhétorique.txt (transcription formation Antonin J.)
 
 var QUESTIONS_NIVEAU3 = [
@@ -7,49 +7,49 @@ var QUESTIONS_NIVEAU3 = [
     cat: "📣 Influence & rhetoric",
     q: "Rhetoric is defined as:",
     options: [
-      "The art of lying to persuade",
-      "The art of persuading, convincing or impressing an audience using words",
-      "The study of grammar and textual style",
-      "A speech memorization technique"
+      "The art of lying in order to convince",
+      "The art of persuading, convincing or impressing an audience through words",
+      "The study of the grammar and style of texts",
+      "A technique for memorising speeches"
     ],
     answer: 1,
-    expl: "The rhetoric, it is the art of influencer : persuade ou impressionner by The mots (et The images). En avoir conscience allows de ne pas se laisser manipuler."
+    expl: "Rhetoric is the art of influence: convincing or impressing through words (and images). Being aware of it is what keeps you from being manipulated."
   },
   {
     cat: "📣 Influence & rhetoric",
-    q: "Are we all influenceable?",
+    q: "Are we all open to influence?",
     options: [
       "No, only poorly educated people are",
-      "Non, the esprit critique rend totalement impermeable to the influence",
-      "Yes, but it is not necessarily bad — it depends on context",
+      "No, critical thinking makes you completely immune to influence",
+      "Yes, but that is not necessarily a bad thing — it depends on the context",
       "Yes, and it is always negative"
     ],
     answer: 2,
-    expl: "Choisir A chargeur with 2686 bonnes notes plutot What A with 3000 mauvaises notes, it is de the influence sociale utile. The influencabilite is not good ou bad en soi — tout depend of the context."
+    expl: "Picking a charger with 2,686 good reviews over one with 3,000 bad ones is useful social influence. Being open to influence is neither good nor bad in itself — everything depends on the context."
   },
   {
     cat: "📣 Influence & rhetoric",
-    q: "The experience de Asch (\"experience Some lignes\") demontre that :",
+    q: "Asch's experiment (the \"line experiment\") demonstrates that:",
     options: [
-      "The people ignorent The opinions Some autres quand they are sûrs of eux",
-      "The individus adaptent their answers according to ce that disent The autres, same si it is false",
-      "The experts are moins influencables that The novices",
-      "The influence sociale n'existe that in The groupes de plus de 10 people"
+      "People ignore the opinions of others when they are sure of themselves",
+      "Individuals adjust their answers to what others say, even when it is wrong",
+      "Experts are less open to influence than novices",
+      "Social influence only exists in groups of more than ten people"
     ],
     answer: 1,
-    expl: "in this experience, Some participants donnaient de mauvaises answers on The longueur de lignes simplement parce that The autres (complices) The faisaient. Nous adaptons our answers au groupe, same against the evidence."
+    expl: "In this experiment, participants gave wrong answers about the length of lines simply because the others (confederates) had done so. We adjust our answers to the group, even against the evidence."
   },
   {
     cat: "📣 Influence & rhetoric",
-    q: "The rhetoric ne s'appuie that on The mots. true ou false?",
+    q: "Rhetoric relies on words alone. True or false?",
     options: [
-      "true — The rhetoric is exclusivement A discipline orale",
-      "false — The images et The videos can aussi persuade, notamment en jouant on the emotion",
-      "true — The images n'ont aucun effet rhetoric demontre",
-      "false — The rhetoric designe uniquement The techniques de manipulation visuelles"
+      "True — rhetoric is an exclusively spoken discipline",
+      "False — images and videos can convince too, notably by playing on emotion",
+      "True — images have no demonstrated rhetorical effect",
+      "False — rhetoric refers solely to techniques of visual manipulation"
     ],
     answer: 1,
-    expl: "\"On va aussi montrer How The images, The videos can persuade en jouant notamment on the emotion.\" The rhetoric moderne depasse largement The seul discours oral."
+    expl: "\"We are also going to show how images and videos can convince, notably by playing on emotion.\" Modern rhetoric reaches well beyond the spoken word."
   },
 
   // ── Speaker, audience, interlocutor ────────────────────────
@@ -57,248 +57,248 @@ var QUESTIONS_NIVEAU3 = [
     cat: "🎙️ Speaker, audience, interlocutor",
     q: "The speaker is:",
     options: [
-      "The person being persuaded",
-      "The person trying to persuade",
-      "The referee or moderator of a debate",
-      "The audience listening without intervening"
+      "The person you are trying to convince",
+      "The person doing the convincing",
+      "The referee or the moderator of a debate",
+      "The public who listen without taking part"
     ],
     answer: 1,
-    expl: "The orateur tente de persuade. it s'adresse to A interlocuteur et/ou A audience — these trois roles are distincts et pas always occupes by The same people."
+    expl: "The speaker is trying to convince. They address an interlocutor and/or an audience — three distinct roles, and not always filled by the same people."
   },
   {
     cat: "🎙️ Speaker, audience, interlocutor",
-    q: "Which is The difference between the audience et the interlocuteur?",
+    q: "What is the difference between the audience and the interlocutor?",
     options: [
-      "Aucune, ce are Some synonymes",
-      "The audience is The personne to who on s'adresse directement; the interlocuteur is The audience",
-      "The interlocuteur is The personne to who on s'adresse directement; the audience is the ensemble Some people who ecoutent",
-      "The interlocuteur is always The same that the audience"
+      "None, they are synonyms",
+      "The audience is the person addressed directly; the interlocutor is the public",
+      "The interlocutor is the person addressed directly; the audience is everyone who is listening",
+      "The interlocutor is always the same as the audience"
     ],
     answer: 2,
-    expl: "in A debat televise, chaque candidat s'adresse to its interlocuteur adverse — mais its true objectif is de persuade the audience (The telespectateurs). audience et interlocuteur are not forcement The same."
+    expl: "In a televised debate, each candidate addresses their opposing interlocutor — but the real aim is to convince the audience, the viewers at home. Audience and interlocutor are not necessarily the same."
   },
   {
     cat: "🎙️ Speaker, audience, interlocutor",
-    q: "in A debat politique televise, Which is The true audience cible Some candidats?",
+    q: "In a televised political debate, who is the candidates' real target?",
     options: [
-      "their interlocuteur adverse",
-      "The journalists who moderent",
-      "The telespectateurs (the audience)",
-      "The sondeurs who evaluent The debat after"
+      "Their opposing interlocutor",
+      "The journalists moderating",
+      "The viewers (the audience)",
+      "The pollsters who rate the debate afterwards"
     ],
     answer: 2,
-    expl: "\"The but is not de persuade ton opposant politique de venir in ton camp, mais de persuade ceux who regardent The debat.\" The interlocuteur is A do-valoir, the audience is The true cible."
+    expl: "\"The aim is not to convince your political opponent to come over to your side, but to convince the people watching the debate.\" The interlocutor is a foil, the audience is the real target."
   },
 
   // ── Types of rhetoric ───────────────────────────────────────
   {
     cat: "🎭 Types of rhetoric",
-    q: "in A monologue, the audience can-it couper The parole to the orateur?",
+    q: "In a monologue, can the audience cut in on the speaker?",
     options: [
-      "Oui, it is the essence same of the monologue",
-      "Non, the orateur parle without etre interrompu",
-      "Oui, mais uniquement for poser Some quisions",
-      "Non, sauf si the orateur their donne explicitement The parole"
+      "Yes, that is the very essence of a monologue",
+      "No, the speaker talks without being interrupted",
+      "Yes, but only to ask questions",
+      "No, unless the speaker explicitly gives them the floor"
     ],
     answer: 1,
-    expl: "A discours politique devant A foule is A monologue : the orateur parle, The audience ecoute. Personne ne the interrompt ni ne The against-argumente en direct."
+    expl: "A political speech to a crowd is a monologue: the speaker talks, the public listens. Nobody interrupts and nobody counter-argues live."
   },
   {
     cat: "🎭 Types of rhetoric",
-    q: "The deliberation is A mode rhetoric in lequel :",
+    q: "Deliberation is a rhetorical mode in which:",
     options: [
-      "On cherche to impressionner The audience without dialoguer",
-      "The deux parties dialoguent for arriver to A consensus",
-      "The objectif is de battre the adversaire devant The audience",
-      "it n'y a aucune regle — tout is permis"
+      "You try to impress the public without any dialogue",
+      "Both parties talk with each other in order to reach a consensus",
+      "The aim is to beat your opponent in front of the public",
+      "There is no rule at all — anything goes"
     ],
     answer: 1,
-    expl: "in A deliberation (ex : A couple who decide what do ce soir), The deux parties can changer of avis. The objectif is of arriver to A accord, pas de \"gagner\"."
+    expl: "In a deliberation (a couple deciding what to do tonight, for instance), either party can change their mind. The aim is to reach an agreement, not to \"win\"."
   },
   {
     cat: "🎭 Types of rhetoric",
-    q: "A couple discute for decider s'they regardent A serie ou sortent ce soir. It is of the mode :",
+    q: "A couple are talking over whether to watch a series or go out tonight. That is the mode called:",
     options: [
       "Competition",
-      "Conflit",
+      "Conflict",
       "Monologue",
       "Deliberation"
     ],
     answer: 3,
-    expl: "\"A couple who cherche what do ce soir... it is of the rhetoric au quotidien.\" The deux parties s'influencent mutuellement for arriver to A accord : it is A deliberation."
+    expl: "\"A couple working out what to do tonight... that is everyday rhetoric.\" Both parties influence each other in order to reach an agreement: that is deliberation."
   },
   {
     cat: "🎭 Types of rhetoric",
-    q: "The conflit rhetoric se distingue Some autres because :",
+    q: "Rhetorical conflict differs from the other modes because:",
     options: [
-      "it cherche to persuade The audience plus that the adversaire",
-      "it is encadre by Some regles strictes de bienseance",
-      "its but n'is ni de persuade ni of arriver to A consensus : it is A joute verbale",
-      "it aboutit always to A consensus"
+      "It seeks to convince the public more than the opponent",
+      "It is governed by strict rules of decorum",
+      "Its purpose is neither to convince nor to reach a consensus: it is a verbal joust",
+      "It always ends in a consensus"
     ],
     answer: 2,
-    expl: "\"The conflit, it is juste What on aime The plaisir of the joute verbale.\" A repas de famille who degenere, by example — personne ne cherche to persuade, it is juste The joute."
+    expl: "\"Conflict is simply enjoying the pleasure of the verbal joust.\" A family dinner going off the rails, for example — nobody is trying to convince anybody, it is just the joust."
   },
   {
     cat: "🎭 Types of rhetoric",
-    q: "Interpeller publiquement quelthat A on The social media for persuade its propres abonnes who lisent, it is of the :",
+    q: "Calling someone out publicly on social media in order to convince your own followers who are reading is:",
     options: [
       "Deliberation",
       "Competition",
-      "Conflit",
+      "Conflict",
       "Monologue"
     ],
     answer: 1,
-    expl: "The competition : on s'adresse to A interlocuteur, mais The true objectif is de persuade the audience (The abonnes who lisent). The adversaire is A do-valoir, pas The true cible."
+    expl: "Competition: you address an interlocutor, but the real aim is to convince the audience, the followers who are reading. The opponent is a foil, not the real target."
   },
 
   // ── Ingroup & outgroup ────────────────────────────────────
   {
     cat: "🏘️ Ingroup & outgroup",
-    q: "The endogroupe designe :",
+    q: "The ingroup refers to:",
     options: [
-      "The groupe What on cherche to persuade mais who is oppose to nous",
-      "The groupe auquel appartient the orateur et with lequel it shares Some valeurs",
-      "The ensemble of the audience lors of A debat",
-      "The people neutres in A conflit"
+      "The group you are trying to convince but which is opposed to you",
+      "The group the speaker belongs to and with which they share their values",
+      "The whole of the public at a debate",
+      "The people who stay neutral in a conflict"
     ],
     answer: 1,
-    expl: "The endogroupe = its propre groupe (ceux who partagent dejto its valeurs). The exogroupe = The autres, ceux What on veut persuade. The strategie rhetoric is radicalement differente according to The cible."
+    expl: "Ingroup = your own group, the people who already share your values. Outgroup = the others, the ones you want to convince. The rhetorical strategy differs radically with the target."
   },
 
   // ── Ethos, Pathos, Logos ──────────────────────────────────────
   {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "ethos persuades through:",
+    cat: "🏷️ Ethos, Pathos, Logos",
+    q: "Ethos convinces through:",
     options: [
-      "Logic and numbers",
-      "Emotions and compassion",
-      "The speaker's credibility, ethics and status",
-      "Repetition and the strength of the voice"
+      "Logic and figures",
+      "Emotion and compassion",
+      "The credibility, the ethics and the standing of the speaker",
+      "Repetition and force of voice"
     ],
     answer: 2,
-    expl: "ethos = ethique et credibilite. Se decline en ethos universel (invoquer Some grandes valeurs partagees) et ethos contextuel (use its statut ou its reputation personal)."
+    expl: "Ethos = ethics and credibility. It comes in two forms: universal ethos (invoking great shared values) and contextual ethos (using your own standing or reputation)."
   },
   {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "The ethos universel consiste to :",
+    cat: "🏷️ Ethos, Pathos, Logos",
+    q: "Universal ethos consists in:",
     options: [
-      "use its propre statut ou its reussites for persuade",
-      "Invoquer Some grandes valeurs partagees (justice, liberte, fraternite…)",
-      "Mentir on its parcours for paraitre plus credible",
-      "Citer Some experts reconnus in its discours"
+      "Using your own standing or achievements to convince",
+      "Invoking great shared values (justice, liberty, fraternity…)",
+      "Lying about your background to appear more credible",
+      "Quoting recognised experts in your speech"
     ],
     answer: 1,
-    expl: "\"it is scandaleux that in The pays Some Lumieres, Some people dorment encore dehors.\" Invoquer Some valeurs communes (fraternite, solidarite) is A ethos universel — on convoque Some principes partages."
+    expl: "\"It is a scandal that in the country of the Enlightenment, people still sleep on the street.\" Invoking shared values (fraternity, solidarity) is universal ethos — you summon principles everyone holds."
   },
   {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "The ethos contextuel consiste to :",
+    cat: "🏷️ Ethos, Pathos, Logos",
+    q: "Contextual ethos consists in:",
     options: [
-      "Invoquer Some valeurs universelles partagees",
-      "Jouer on the emotion de the audience",
-      "Se baser on its propre situation, reputation ou experience for persuade",
-      "Construire A syllogisme logique"
+      "Invoking shared universal values",
+      "Playing on the emotions of the audience",
+      "Drawing on your own position, reputation or experience to convince",
+      "Building a logical syllogism"
     ],
     answer: 2,
-    expl: "\"J'ai etudie The rechauffement climatique pendant 20 ans, donc faites-moi confiance.\" use its statut of expert is A ethos contextuel — mais attention au bias of autorite."
+    expl: "\"I have studied global warming for twenty years, so trust me.\" Using your standing as an expert is contextual ethos — but beware of the authority bias."
   },
   {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "pathos persuades through:",
+    cat: "🏷️ Ethos, Pathos, Logos",
+    q: "Pathos convinces through:",
     options: [
-      "The logique et The demonstration rationnelle",
-      "The audience's emotions and sensitivity",
-      "Personal status or authority",
+      "Logic and rational demonstration",
+      "The emotions and the sensitivity of the audience",
+      "Your own standing or your personal authority",
       "Shared moral values"
     ],
     answer: 1,
-    expl: "pathos = emotion. Toucher The sensibilite, provoquer the empathie ou the indignation is A outil rhetoric tres puissant — mais it can aussi etre manipulatoire (fausses images tristes on The networks)."
+    expl: "Pathos = emotion. Touching people's feelings, stirring empathy or outrage, is a very powerful rhetorical tool — but it can also be manipulative (fake distressing images on social media)."
   },
   {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "logos persuades through:",
+    cat: "🏷️ Ethos, Pathos, Logos",
+    q: "Logos convinces through:",
     options: [
-      "The emotion et the empathie",
-      "The speaker's reputation",
+      "Emotion and empathy",
+      "The reputation of the speaker",
       "Logic and rational argumentation",
-      "Some valeurs universelles partagees"
+      "Shared universal values"
     ],
     answer: 2,
-    expl: "logos = logique. \"Mon discours is pertinent parce What it is coherent.\" The syllogisme (Tous The hommes are mortels → Socrate is mortel) en is the example classique."
+    expl: "Logos = logic. \"My argument holds because it is coherent.\" The syllogism (all men are mortal → Socrates is mortal) is the classic example."
   },
   {
-    cat: "🏷️ ethos, pathos, logos",
-    q: "\"Tous The hommes are mortels. The reine Margot is mortelle. Donc The reine Margot is A homme.\" Ce reasoning is :",
+    cat: "🏷️ Ethos, Pathos, Logos",
+    q: "\"All men are mortal. Queen Margot is mortal. Therefore Queen Margot is a man.\" This reasoning is:",
     options: [
-      "A syllogisme logique valide (logos correct)",
-      "A pathos reussi",
-      "A ethos contextuel fort",
-      "A sophisme — A reasoning en apparence logique mais false"
+      "A valid logical syllogism (correct Logos)",
+      "A successful Pathos",
+      "A strong contextual Ethos",
+      "A fallacy — reasoning that looks logical but is false"
     ],
     answer: 3,
-    expl: "Attention aux false syllogismes! Ce reasoning ressemble to of the logos mais The structure is fallacieuse : etre mortel ne suffit pas to etre A homme. It is A sophisme classique."
+    expl: "Beware of false syllogisms! This reasoning looks like Logos, but the structure is flawed: being mortal is not enough to be a man. A classic fallacy."
   },
 
-  // ── Sophismes & bien débattre ─────────────────────────────────
+  // ── Fallacies & debating well ─────────────────────────────────
   {
     cat: "🤝 Debating well",
-    q: "A straw man consists of:",
+    q: "The straw man consists in:",
     options: [
-      "Faithfully risating the opposing argument before responding",
-      "Caricaturing or exaggerating an opponent's argument to attack it more easily",
+      "Restating your opponent's argument faithfully before replying",
+      "Caricaturing or exaggerating your opponent's argument to attack it more easily",
       "Looking for a point of agreement before debating",
-      "Using statistics to contradict the opponent"
+      "Using statistics to contradict your opponent"
     ],
     answer: 1,
-    expl: "\"The homme de paille, it is caricaturer The propos de your contradicteur et of attaquer The caricature.\" example : \"Vous The feministes, vous voulez tuer tous The hommes.\" Efficace emotionnellement, mais fallacieux."
+    expl: "\"The straw man is caricaturing what your opponent said and attacking the caricature.\" For example: \"You feminists want to kill all men.\" Emotionally effective, but fallacious."
   },
   {
     cat: "🤝 Debating well",
-    q: "The steel man is a technique that consists of:",
+    q: "The steel man is a technique that consists in:",
     options: [
-      "Exagerer the argument adverse for mieux The refuter",
-      "Honisly risating the opponent's argument before responding",
-      "Attacking the opponent's credibility rather than their arguments",
-      "Using emotional force to crush the opponent"
+      "Exaggerating your opponent's argument to refute it more easily",
+      "Restating your opponent's own argument honestly before you reply to it",
+      "Attacking your opponent's credibility rather than their arguments",
+      "Using emotional force to crush your opponent"
     ],
     answer: 1,
-    expl: "The homme de fer = the exact contraire de the homme de paille. On ecoute, puis on resume fidelement : \"Attends, je vais resumer ton argument et dis-moi si j'ai bien compris.\" this casse The dynamique conflictuelle et allows A debat on The fond."
+    expl: "The steel man is the exact opposite of the straw man. You listen, then sum up faithfully: \"Hold on, let me sum up your argument and tell me whether I have understood.\" It breaks the confrontational dynamic and allows a debate on substance."
   },
   {
     cat: "🤝 Debating well",
-    q: "Why reformuler the argument de its adversaire (homme de fer) is-it benefique?",
+    q: "Why is restating your opponent's argument (the steel man) beneficial?",
     options: [
-      "this allows de perdre of the temps for reflechir to its answer",
-      "this montre What on respecte the adversaire, casse The tension et allows de debattre on The fond",
-      "this oblige the adversaire to changer of argument",
-      "It is utile uniquement in The debats formels et academiques"
+      "It buys you time to think up your reply",
+      "It shows you respect your opponent, defuses the tension and allows a debate on substance",
+      "It forces your opponent to change argument",
+      "It is only useful in formal, academic debates"
     ],
     answer: 1,
-    expl: "\"this casse The rythme et the engrenage of the violence, this montre What on ne considere pas its contradicteur as A ennemi, et this allows de debattre on The fond.\""
+    expl: "\"It breaks the rhythm and the spiral of violence, it shows you do not treat the other person as an enemy, and it allows a debate on substance.\""
   },
   {
     cat: "🤝 Debating well",
-    q: "\"It is to celui who affirme de prouver.\" this regle signifie :",
+    q: "\"The burden of proof lies with whoever makes the claim.\" This rule means:",
     options: [
-      "Tout argument must etre prouve by The deux parties simultanement",
-      "It is to celui who fact A affirmation of apporter The evidence, pas to the autre de prouver What it a tort",
-      "The evidence ne are utiles that in The debats scientists",
-      "Seul the orateur The plus experimente must prouver its affirmations"
+      "Every argument must be proven by both parties at once",
+      "It is up to whoever makes a claim to supply the evidence, not up to the other to prove them wrong",
+      "Evidence is only useful in scientific debates",
+      "Only the more experienced speaker has to prove their claims"
     ],
     answer: 1,
-    expl: "\"Si quelthat A affirme that Biden is A reptilien, je ne peux pas lui prouver What it a tort.\" It is to celui who affirme de prouver — pas to the autre de refuter. Renverser this regle cree Some impasses in The debat."
+    expl: "\"If someone claims that Biden is a reptilian, I cannot prove them wrong.\" It is up to whoever makes the claim to prove it — not up to the other side to refute it. Reversing this rule takes a debate into a dead end."
   },
   {
     cat: "🤝 Debating well",
-    q: "for persuade efficacement, it is recommande of adapter its arguments :",
+    q: "To convince effectively, you are advised to adapt your arguments:",
     options: [
-      "Au plus grand nombre possible, without distinction",
-      "Uniquement to its propre endogroupe",
-      "Aux valeurs et to The perspective de its interlocuteur",
-      "Aux seuls experts who maitrisent The topic"
+      "To as many people as possible, without distinction",
+      "To your own ingroup alone",
+      "To the values and the perspective of your interlocutor",
+      "To the experts who know the subject, and nobody else"
     ],
     answer: 2,
-    expl: "example vaccins Covid : aux Democrates on parlait de solidarite envers The plus vulnerables; aux Republicains de fierte nationale (vaccin americain) et de relance economique. Se mettre in The peau de the autre, it is of the rhetoric efficace."
+    expl: "Take the Covid vaccines: Democrats were addressed on solidarity with the most vulnerable; Republicans on national pride (an American vaccine) and economic recovery. Putting yourself in the other person's shoes is effective rhetoric."
   }
 ];
