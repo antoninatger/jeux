@@ -57,12 +57,52 @@ LOTS = [
 ]
 
 # ── A3 : contraste du texte secondaire sur les pages migrées ────────────────
-# Un deuxième test (présence d'un récapitulatif de fin) est prévu par le plan
-# d'action mais différé : son témoin (`data-col-recap` ou équivalent) est
-# défini par la tâche E1, qui n'est pas encore écrite. Ne pas ajouter ici un
-# test qui renverrait faux partout — l'ajouter quand E1 existe.
 
 SEUIL_CONTRASTE = 4.5
+
+# ── A3 (2) : récapitulatif de fin de partie ─────────────────────────────────
+# Le témoin a été défini par la tâche E1 : une page a un récapitulatif quand
+# son code APPELLE `ColFin.rendre(` — le composant de collection.js qui liste
+# les items ratés, leur explication et le lien de fiche.
+#
+# On cherche l'appel, pas un attribut posé à la main : un `data-col-recap`
+# écrit dans le HTML se coche tout seul et ne prouve rien. L'attribut existe
+# bien (ColFin le pose sur l'écran de fin, avec le nombre d'items ratés) mais
+# il n'apparaît qu'à l'exécution, donc pas dans une lecture statique.
+#
+# Ne sont comptées que les pages qui HÉBERGENT une partie : un hub, un
+# catalogue ou une page d'illusion n'ont pas de fin de partie à récapituler.
+_RE_COLFIN = re.compile(r'\bColFin\s*\.\s*rendre\s*\(')
+
+# Les jeux que la tâche E2 doit équiper, un par un — c'est la liste du plan
+# du 4 septembre (§2, lot E), écrite en chemins réels. Un hub, un éditeur, une
+# page d'illusion ou un outil d'animation n'ont pas de partie à récapituler :
+# ils ne sont pas comptés, ni en numérateur ni en dénominateur.
+#
+# La mesure porte sur cette liste et non sur « les pages migrées » : ce qui
+# nous intéresse est l'avancement du DÉPLOIEMENT, y compris sur les jeux qui
+# n'ont pas encore rejoint le socle.
+JEUX_A_RECAP = (
+    "radarnaque/index.html",
+    "radar-desinfo/index.html",
+    "chasse-aux-biais/index.html",
+    "arene-rhetorique/index.html",
+    "grand-oral/index.html",
+    "repare-la-une/index.html",
+    "graphiques-trompeurs/index.html",
+    "mes des mal information/mes-des-mal-information.html",
+    "Arcade quizz/qcm-classique.html",
+    "Arcade quizz/snake-fakenews.html",
+    "Arcade quizz/brick-breaker-quiz.html",
+    "Arcade quizz/fakenews_defender.html",
+    "Arcade quizz/whac-a-quiz.html",
+    "Arcade quizz/fake-blaster.html",
+    "Planète connaissance.html",
+    "mine.html",
+    "Biais cognitifs/index.html",
+    "cobaye/index.html",
+    "rhetor/index.html",
+)
 
 _RE_HEX = re.compile(r'^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$')
 _RE_RGB = re.compile(
@@ -209,6 +249,34 @@ def _feuilles_liees(html, chemin_page):
     return textes, None
 
 
+def _scripts_lies(html, chemin_page):
+    """Le code que la page exécute vraiment : ses <script> en ligne, plus le
+    contenu des fichiers .js locaux qu'elle charge. Les scripts distants sont
+    ignorés (hors sujet), et collection.js aussi — il DÉFINIT ColFin, il ne
+    l'appelle pas, et le compter ferait passer toutes les pages migrées."""
+    textes = re.findall(r'<script\b[^>]*>(.*?)</script>', html, re.I | re.S)
+    dossier_rel = os.path.dirname(chemin_page)
+    for m in re.finditer(r'<script\b([^>]*)\bsrc=["\']([^"\']+)["\']', html, re.I):
+        src = m.group(2)
+        if src.startswith(("http:", "https:", "//")):
+            continue
+        chemin_abs = os.path.normpath(os.path.join(RACINE, dossier_rel, src))
+        rel = os.path.relpath(chemin_abs, RACINE).replace("\\", "/")
+        if rel in ("collection.js", "i18n.js", "retours.js"):
+            continue
+        if os.path.isfile(chemin_abs):
+            textes.append(lire(chemin_abs))
+    return textes
+
+
+def _a_un_recap(chemin, html):
+    """La page appelle-t-elle ColFin.rendre( ? Voir le commentaire A3 (2)."""
+    for code in _scripts_lies(html, chemin):
+        if _RE_COLFIN.search(code):
+            return True
+    return False
+
+
 def _resoudre_jeton(nom, dernier, vu, niveau=0):
     """Dernière déclaration non conditionnelle de `nom`, résolue en (r,g,b), ou
     (None, motif). Un var(--autre) est suivi sur un seul niveau."""
@@ -337,6 +405,24 @@ def mesurer():
         "non_mesurees": sorted(non_mesurees),
     }
 
+    # récapitulatif de fin de partie (A3, second test)
+    avec, sans, absentes = [], [], []
+    for chemin in JEUX_A_RECAP:
+        html = pages_par_chemin.get(chemin)
+        if html is None:
+            absentes.append(chemin)            # page renommée : à corriger ici
+        elif _a_un_recap(chemin, html):
+            avec.append(chemin)
+        else:
+            sans.append(chemin)
+    # `_gabarit/` est exclu de la collecte (les dossiers en « _ » le sont) :
+    # on le lit à part, c'est l'implémentation de référence du composant.
+    gab = os.path.join(RACINE, "_gabarit", "index.html")
+    m["recap"] = {
+        "avec": sorted(avec), "sans": sorted(sans), "absentes": sorted(absentes),
+        "gabarit": os.path.isfile(gab) and _a_un_recap("_gabarit/index.html", lire(gab)),
+    }
+
     # bloquants : chaque test est rejoué, aucun statut n'est saisi
     bl = []
     for entree in BLOQUANTS:
@@ -398,6 +484,20 @@ def rendre(m):
     lignes_contraste = "\n".join(lignes_contraste) if lignes_contraste else \
         '<tr><td colspan="2">Toutes les pages migrées sont conformes.</td></tr>'
 
+    lignes_recap = ['<tr><td><code>_gabarit/index.html</code></td><td class="st {}">{}</td></tr>'.format(
+        "ok" if m["recap"]["gabarit"] else "non",
+        "✅ implémentation de référence" if m["recap"]["gabarit"] else "🔴 absente")]
+    for p in m["recap"]["avec"]:
+        lignes_recap.append(
+            '<tr><td><code>{}</code></td><td class="st ok">✅ récapitulatif</td></tr>'.format(echapper(p)))
+    for p in m["recap"]["sans"]:
+        lignes_recap.append(
+            '<tr><td><code>{}</code></td><td class="st non">🔴 pas de récapitulatif</td></tr>'.format(echapper(p)))
+    for p in m["recap"]["absentes"]:
+        lignes_recap.append(
+            '<tr><td><code>{}</code></td><td class="st inconnue">⚪ page introuvable</td></tr>'.format(echapper(p)))
+    lignes_recap = "\n".join(lignes_recap)
+
     if m["journal"]:
         journal = "<br>\n".join(
             "<b>{}</b> {}".format(echapper(l.split(" ", 1)[0]),
@@ -419,7 +519,10 @@ def rendre(m):
         description=len(m["description"]), souspalier=souspalier,
         lignes_lots=lignes_lots, lignes_bl=lignes_bl, journal=journal,
         contraste_conf=contraste_conf, contraste_nonm=contraste_nonm,
-        lignes_contraste=lignes_contraste)
+        lignes_contraste=lignes_contraste,
+        recap_avec=len(m["recap"]["avec"]),
+        recap_total=len(m["recap"]["avec"]) + len(m["recap"]["sans"]),
+        lignes_recap=lignes_recap)
 
 
 
@@ -454,6 +557,10 @@ def rendre_md(m):
     a(u"| Pages avec une `meta description` | %d / %d |" % (len(m["description"]), n_pages))
     a(u"| Pages migrées au contraste secondaire ≥ 4,5:1 | **%d / %d** (%d non mesurées) |" % (
         m["contraste"]["conformes"], n_mig, len(m["contraste"]["non_mesurees"])))
+    n_conc = len(m["recap"]["avec"]) + len(m["recap"]["sans"])
+    a(u"| Jeux avec un récapitulatif de fin (E2) | **%d / %d** — gabarit : %s |" % (
+        len(m["recap"]["avec"]), n_conc,
+        u"oui" if m["recap"]["gabarit"] else u"**non**"))
     a(u"")
     a(u"## Migration par lot")
     a(u"")
@@ -477,6 +584,23 @@ def rendre_md(m):
             a(u"- ⚪ `%s` — non mesurée : %s" % (p, motif))
     else:
         a(u"- toutes les pages migrées sont conformes.")
+    a(u"")
+    a(u"## Récapitulatif de fin de partie")
+    a(u"")
+    a(u"> Témoin : la page appelle `ColFin.rendre(` — le composant écrit par la")
+    a(u"> tâche E1, qui liste les items ratés avec leur explication. La liste")
+    a(u"> mesurée est celle des jeux que la tâche E2 doit équiper ; les hubs,")
+    a(u"> éditeurs, illusions et outils d'animation n'ont pas de partie à")
+    a(u"> récapituler et ne sont pas comptés.")
+    a(u"")
+    a(u"- %s `_gabarit/index.html` — l'implémentation de référence" % (
+        u"✅" if m["recap"]["gabarit"] else u"🔴"))
+    for chemin in m["recap"]["avec"]:
+        a(u"- ✅ `%s`" % chemin)
+    for chemin in m["recap"]["sans"]:
+        a(u"- 🔴 `%s`" % chemin)
+    for chemin in m["recap"]["absentes"]:
+        a(u"- ⚪ `%s` — page introuvable, corriger JEUX_A_RECAP" % chemin)
     a(u"")
     if m["nonmigrees"]:
         a(u"## Pages non encore migrées (%d)" % len(m["nonmigrees"]))
@@ -608,6 +732,18 @@ TEMPLATE = u"""<!DOCTYPE html>
     <table><thead><tr><th scope="col">Page</th><th scope="col">Mesure</th></tr></thead>
     <tbody>
 {lignes_contraste}
+    </tbody></table>
+  </div>
+</section>
+
+<section>
+  <h2>Récapitulatif de fin de partie <span class="chiffre">{recap_avec} / {recap_total}</span></h2>
+  <p class="note">Témoin : la page appelle <code>ColFin.rendre(</code>. Les hubs, catalogues et
+  pages d'illusion n'ont pas de partie à récapituler et ne sont pas comptés.</p>
+  <div class="carte" style="padding:0">
+    <table><thead><tr><th scope="col">Page</th><th scope="col">Mesure</th></tr></thead>
+    <tbody>
+{lignes_recap}
     </tbody></table>
   </div>
 </section>

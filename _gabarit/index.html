@@ -50,16 +50,30 @@
   /* Les trois écrans du jeu. Un seul est visible à la fois. */
   .ecran[hidden] { display: none; }
 
-  /* Zone de jeu — à remplacer par le vrai contenu. */
+  /* Zone de jeu — ici, la liste des réponses possibles. */
   .aire {
-    display: grid;
-    place-items: center;
-    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
     margin: var(--sp-4) 0;
-    border: 1px dashed var(--bordure);
-    border-radius: var(--radius);
-    color: var(--txt-secondaire);
   }
+  .reponse-btn {
+    min-height: var(--cible);
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--bordure);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--txt);
+    font-family: var(--font-texte);
+    font-size: var(--fs-300);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .reponse-btn:hover:not(:disabled) { border-color: var(--acc); }
+  .reponse-btn:disabled { cursor: default; opacity: .75; }
+  .reponse-btn.est-juste { border-color: var(--ok); border-left: 3px solid var(--ok); opacity: 1; }
+  .reponse-btn.est-faux  { border-color: var(--alerte); border-left: 3px solid var(--alerte); opacity: 1; }
 </style>
 </head>
 <body data-col-retour="../index.html">
@@ -100,14 +114,16 @@
       <span class="col-enonce__aide" data-i18n="consigne">La consigne d'interaction, en une ligne.</span>
     </p>
 
-    <div class="aire" data-i18n="aire">Zone de jeu — à remplacer.</div>
+    <!-- Les réponses. De vrais <button> : au clavier, Tab les atteint et
+         Entrée les active, sans une ligne de JS de plus. -->
+    <div class="aire" id="reponses"></div>
 
     <!-- aria-live : le résultat d'une réponse doit être ANNONCÉ, pas
          seulement affiché. Quatre fichiers sur 61 le faisaient. -->
     <p class="col-enonce__aide" id="retour" role="status" aria-live="polite"></p>
 
     <div class="col-actions">
-      <button type="button" class="col-btn" id="btn-suivant" data-i18n="suivant">Valider</button>
+      <button type="button" class="col-btn" id="btn-suivant" hidden data-i18n="suivant">Question suivante</button>
     </div>
 
     <!-- Le savoir replié : on laisse le temps de se tromper. <details> est
@@ -121,16 +137,11 @@
     </details>
   </section>
 
-  <!-- ── ÉCRAN 3 : FIN ─────────────────────────────────────────────── -->
-  <section class="ecran col-fin" id="ecran-fin" hidden>
-    <h2 class="col-fin__titre" id="fin-titre" data-i18n="finTitre">Partie terminée</h2>
-    <p class="col-fin__score" id="fin-score">0 / 0</p>
-    <p class="col-fin__msg" id="fin-msg" data-i18n="finMsg">Le mot de la fin : ce qu'il faut retenir, pas seulement le score.</p>
-    <div class="col-actions">
-      <button type="button" class="col-btn" id="btn-rejouer" data-i18n="rejouer">Rejouer</button>
-      <a class="col-btn col-btn--fantome" href="../index.html" data-i18n="retourJeux">Retour aux jeux</a>
-    </div>
-  </section>
+  <!-- ── ÉCRAN 3 : FIN ───────────────────────────────────────────────
+       Vide : c'est ColFin.rendre() qui l'écrit — titre, score, liste des
+       items ratés avec leur explication, « rejouer mes erreurs », retour.
+       Un jeu n'a plus à dessiner son écran de fin, ni à oublier le récap. -->
+  <section class="ecran col-fin" id="ecran-fin" hidden></section>
 
 </main>
 
@@ -156,7 +167,16 @@ I18N.register({
     expl1: `La <span class="reponse">réponse</span> d'abord, puis le mécanisme en jeu et la <span class="cle">notion clé</span> à retenir.`,
     finTitre: "Partie terminée",
     finMsg: "Le mot de la fin : ce qu'il faut retenir, pas seulement le score.",
-    bienJoue: "Bien vu !"
+    bienJoue: "Bien vu !", rate: "Raté.",
+    q1: "Une information fausse partagée de bonne foi, c'est…",
+    q1a: "de la mésinformation", q1b: "de la désinformation", q1c: "une opinion",
+    q1x: "La mésinformation est diffusée de bonne foi ; la désinformation, elle, est intentionnelle.",
+    q2: "Un graphique dont l'axe vertical ne part pas de zéro…",
+    q2a: "est toujours mensonger", q2b: "exagère visuellement les écarts", q2c: "est interdit en presse",
+    q2x: "Tronquer l'axe n'est pas interdit et se justifie parfois — mais l'écart entre deux barres paraît alors beaucoup plus grand qu'il n'est.",
+    q3: "Le biais de confirmation pousse à…",
+    q3a: "vérifier ses sources", q3b: "chercher ce qui contredit ses idées", q3c: "retenir ce qui confirme ses idées",
+    q3x: "On cherche, on croit et on retient plus volontiers ce qui valide ce qu'on pense déjà — et on écarte le reste sans s'en rendre compte."
   },
   en: {
     pageTitle: "Template — new game",
@@ -173,7 +193,16 @@ I18N.register({
     expl1: `The <span class="reponse">answer</span> first, then the mechanism at work and the <span class="cle">key idea</span> to remember.`,
     finTitre: "Game over",
     finMsg: "The closing word: what to take away, not just the score.",
-    bienJoue: "Good catch!"
+    bienJoue: "Good catch!", rate: "Missed.",
+    q1: "False information shared in good faith is…",
+    q1a: "misinformation", q1b: "disinformation", q1c: "an opinion",
+    q1x: "Misinformation is spread in good faith; disinformation is deliberate.",
+    q2: "A chart whose vertical axis does not start at zero…",
+    q2a: "is always misleading", q2b: "visually exaggerates the gaps", q2c: "is banned in the press",
+    q2x: "Truncating the axis is not forbidden and is sometimes justified — but the gap between two bars then looks far wider than it is.",
+    q3: "Confirmation bias makes us…",
+    q3a: "check our sources", q3b: "look for what contradicts our ideas", q3c: "keep what confirms our ideas",
+    q3x: "We look for, believe and remember what already matches what we think — and set the rest aside without noticing."
   }
 });
 
@@ -198,29 +227,106 @@ function montrer(nom) {
   }
 }
 
-let score = 0, total = 0;
+/* ── Le contenu ────────────────────────────────────────────────────────
+   Trois questions, juste assez pour que le gabarit se joue vraiment de bout
+   en bout : c'est la seule façon de vérifier que l'enchaînement tient au
+   clavier, et que le récapitulatif de fin dit quelque chose.
 
-document.getElementById('btn-jouer').addEventListener('click', () => {
-  score = 0; total = 0;
+   Un `id` stable par question : c'est lui que ColFin mémorise pour ne pas
+   reposer les mêmes questions à la partie suivante. */
+const QUESTIONS = [
+  { id: 'q1', cle: 'q1', reponses: ['q1a', 'q1b', 'q1c'], bonne: 0, expl: 'q1x' },
+  { id: 'q2', cle: 'q2', reponses: ['q2a', 'q2b', 'q2c'], bonne: 1, expl: 'q2x' },
+  { id: 'q3', cle: 'q3', reponses: ['q3a', 'q3b', 'q3c'], bonne: 2, expl: 'q3x' }
+];
+
+const JEU = 'gabarit';           // clé de la mémoire des items vus
+let paquet = [];                 // les questions de la partie en cours
+let i = 0;                       // index courant
+let joue = [];                   // [{id, titre, reussi, explication}]
+
+const elReponses = document.getElementById('reponses');
+const elRetour   = document.getElementById('retour');
+const elSuivant  = document.getElementById('btn-suivant');
+
+function lancer(questions) {
+  /* nonVusDabord sert ce qui n'a jamais été vu en premier, et repart d'un
+     paquet complet quand tout a été vu. */
+  paquet = questions || ColFin.nonVusDabord(JEU, QUESTIONS);
+  i = 0;
+  joue = [];
+  /* Une partie commence : « ← Retour » et la bascule de langue demandent
+     confirmation avant de la faire perdre. */
+  ColFin.protegerSortie(true);
   montrer('jeu');
+  poser();
+}
+
+function poser() {
+  const q = paquet[i];
+  document.querySelector('#ecran-jeu .col-enonce strong').textContent = I18N.t(q.cle);
+  elRetour.textContent = '';
+  elSuivant.hidden = true;
+  elReponses.textContent = '';
+
+  q.reponses.forEach((cle, idx) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'reponse-btn';
+    b.textContent = I18N.t(cle);
+    b.addEventListener('click', () => repondre(q, idx, b));
+    elReponses.appendChild(b);
+  });
+  elReponses.firstChild.focus();
+}
+
+function repondre(q, idx, bouton) {
+  const juste = (idx === q.bonne);
+  [...elReponses.children].forEach((b, k) => {
+    b.disabled = true;
+    if (k === q.bonne) b.classList.add('est-juste');
+    else if (k === idx) b.classList.add('est-faux');
+  });
+  elRetour.textContent = (juste ? I18N.t('bienJoue') : I18N.t('rate')) + ' ' + I18N.t(q.expl);
+
+  joue.push({
+    id: q.id,
+    titre: I18N.t(q.cle),
+    reussi: juste,
+    explication: I18N.t(q.expl)
+  });
+
+  elSuivant.hidden = false;
+  elSuivant.textContent = (i < paquet.length - 1) ? I18N.t('suivant') : I18N.t('finTitre');
+  elSuivant.focus();
+}
+
+elSuivant.addEventListener('click', () => {
+  i++;
+  if (i < paquet.length) poser();
+  else finir();
 });
 
-document.getElementById('btn-suivant').addEventListener('click', () => {
-  total++; score++;
-  /* Le retour passe par la zone aria-live : il est annoncé, pas seulement
-     affiché. */
-  document.getElementById('retour').textContent = I18N.t('bienJoue');
-  if (total >= 3) finir();
-});
+document.getElementById('btn-jouer').addEventListener('click', () => lancer());
 
-document.getElementById('btn-rejouer').addEventListener('click', () => {
-  document.getElementById('retour').textContent = '';
-  montrer('intro');
-});
-
+/* ── La fin de partie, en dix lignes ───────────────────────────────────
+   Tout ce qui suit — la liste des items ratés avec leur explication, le
+   bouton « rejouer mes erreurs », la mémoire des questions vues, le message
+   `col:fin-de-partie` pour Exploration, le focus qui suit l'écran — est
+   fourni par ColFin. C'est ce que les quatorze jeux auront à écrire. */
 function finir() {
-  document.getElementById('fin-score').textContent = score + ' / ' + total;
+  /* On affiche l'écran AVANT de le remplir : `montrer()` ne trouve alors
+     rien à focaliser dans une section vide, et c'est ColFin qui pose le
+     focus sur le titre qu'il vient d'écrire. L'ordre inverse donnerait deux
+     déplacements de focus pour rien. */
   montrer('fin');
+  ColFin.rendre({
+    jeu: JEU,
+    items: joue,
+    message: I18N.t('finMsg'),
+    onRejouer: rates => lancer(QUESTIONS.filter(q => rates.some(r => r.id === q.id))),
+    onRecommencer: () => lancer()
+  });
 }
 
 /* Le libellé du panneau suit son état ; <details> fait tout le reste. */

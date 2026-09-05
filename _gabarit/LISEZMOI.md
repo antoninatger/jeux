@@ -52,6 +52,43 @@ c'est ce qui coûtait 34 corrections à chaque changement.
 5. **`aria-live` sur le retour au joueur.** Un résultat doit être *annoncé*,
    pas seulement affiché. Seuls 4 fichiers sur 61 le faisaient.
 
+## L'écran de fin, en dix lignes — `ColFin`
+
+Le gabarit ne dessine plus son écran de fin : `#ecran-fin` est **vide** dans le
+HTML, et `ColFin.rendre()` l'écrit. C'est ce que les quatorze jeux du lot E2
+auront à faire, et ça tient en dix lignes :
+
+```js
+ColFin.rendre({
+  jeu   : 'mon-jeu',                 // identifiant stable : clé de la mémoire
+  items : joue,                      // [{id, titre, reussi, explication, lien}]
+  message: I18N.t('finMsg'),
+  onRejouer    : rates => lancer(rates),   // « rejouer mes erreurs »
+  onRecommencer: () => lancer()
+});
+```
+
+Le composant fournit, sans une ligne de plus par jeu :
+
+| Ce que vous n'écrivez plus | Pourquoi c'est là |
+|---|---|
+| La liste des items **ratés**, avec explication et lien de fiche | Un score seul n'apprend rien ; c'est le moment où le joueur est disponible |
+| « Rejouer mes erreurs » | Rappelle `onRejouer` avec les seuls items ratés |
+| La mémoire des items **déjà vus** (`localStorage`, une clé par jeu) | Deux parties de suite ne reposent pas les mêmes questions. `ColFin.nonVusDabord(jeu, items)` sert d'abord ce qui n'a jamais été vu |
+| Le message `col:fin-de-partie` | Exploration débloque l'étape suivante là-dessus, et sur rien d'autre |
+| Le focus qui suit l'écran | Sans lui, la fin de partie est muette pour un lecteur d'écran |
+| Le témoin `data-col-recap` | Mesuré par `outils/etat-refonte.py` |
+
+Deux compléments du même composant :
+
+- **`ColFin.protegerSortie(true)`** au début d'une partie : « ← Retour » et la
+  bascule de langue demandent confirmation avant de faire perdre la partie.
+  `ColFin.rendre()` lève la protection tout seul.
+- **`ColModale.confirmer({titre, texte, ok, annuler})`** — une modale bâtie sur
+  `<dialog>`. Le piège de focus, Échap et le retour du focus sont donnés par le
+  navigateur : ne pas réécrire une modale à la main, les trois sont ratés
+  partout où on l'a fait.
+
 ## Deux principes qui viennent du chantier 04
 
 - **L'énoncé avant la manipulation.** On ne demande pas de chercher sans dire

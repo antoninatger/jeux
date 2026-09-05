@@ -499,6 +499,11 @@
 }
 .col-btn:hover { filter: brightness(1.08); }
 .col-btn:active { transform: scale(.98); }
+/* `display:inline-flex` l'emporte sur le `display:none` que le navigateur
+   applique à [hidden] : sans cette ligne, `bouton.hidden = true` n'a aucun
+   effet visible. Le piège est classique et il est ici pour toute la
+   collection, une fois. */
+.col-btn[hidden] { display: none !important; }
 
 /* Action secondaire : même poids visuel de contour, sans le remplissage. */
 .col-btn--fantome {
@@ -593,6 +598,144 @@
   line-height: var(--lh-normal);
   color: var(--txt-secondaire);
   margin: 0 0 var(--sp-5);
+}
+
+/* =========================================================================
+   Récapitulatif de fin de partie — tâche E1
+   Rendu par `ColFin.rendre()` (collection.js). Le style est ici parce que
+   quatorze jeux vont l'adopter : le jour où l'espacement d'un item change,
+   il change une fois.
+
+   Ce que le composant règle, et qui manquait partout : à la fin d'une
+   partie, le joueur voyait « 7 / 10 » et rien d'autre. Ni ce qu'il avait
+   raté, ni pourquoi. Le score sans le retour n'apprend rien.
+   ========================================================================= */
+.col-recap {
+  margin: 0 0 var(--sp-5);
+  text-align: left;
+}
+
+.col-recap__titre {
+  font-family: var(--font-texte);
+  font-size: var(--fs-200);
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--txt-secondaire);
+  margin: 0 0 var(--sp-3);
+}
+
+.col-recap__liste {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.col-recap__item {
+  border: 1px solid var(--bordure);
+  border-left: 3px solid var(--alerte);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--sp-4);
+}
+/* Les réussites sont là pour le parcours (l'item est « vu »), mais la fin de
+   partie parle d'abord de ce qui a manqué : elles sont plus discrètes. */
+.col-recap__item--ok { border-left-color: var(--ok); }
+
+.col-recap__intitule {
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  font-weight: 700;
+  line-height: var(--lh-normal);
+  color: var(--txt);
+  margin: 0;
+}
+
+.col-recap__marque {
+  font-weight: 800;
+  margin-right: var(--sp-2);
+}
+.col-recap__item--ko .col-recap__marque { color: var(--alerte); }
+.col-recap__item--ok .col-recap__marque { color: var(--ok); }
+
+.col-recap__expl {
+  font-family: var(--font-texte);
+  font-size: var(--fs-200);
+  line-height: var(--lh-normal);
+  color: var(--txt-secondaire);
+  margin: var(--sp-2) 0 0;
+}
+
+.col-recap__lien {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: var(--cible);
+  font-family: var(--font-texte);
+  font-size: var(--fs-200);
+  font-weight: 700;
+  color: var(--acc);
+}
+
+/* Quand tout est juste, il n'y a rien à lister : on le dit en une ligne
+   plutôt que d'afficher une liste vide. */
+.col-recap__sansfaute {
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  line-height: var(--lh-normal);
+  color: var(--txt-secondaire);
+  margin: 0 0 var(--sp-5);
+}
+
+/* =========================================================================
+   Modale — tâche E1
+   Bâtie sur <dialog> et `showModal()` : le piège de focus, la touche Échap
+   et le retour du focus à l'élément qui a ouvert la modale sont donnés par
+   le navigateur. Une modale maison réécrit ces trois choses, et les trois
+   sont ratées dans la collection (Emprise : ✕ sans `aria-label`, pas
+   d'Échap, focus non piégé — §H3).
+   ========================================================================= */
+.col-modale {
+  /* `margin:auto` centre une <dialog> modale — c'est la règle du navigateur.
+     Elle est réécrite ici parce que presque tous les jeux commencent par
+     `*{margin:0}`, ce qui la neutralise et colle la modale en haut à gauche. */
+  margin: auto;
+  width: min(560px, calc(100vw - 2 * var(--sp-4)));
+  max-height: calc(100vh - 2 * var(--sp-5));
+  padding: 0;
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--txt);
+}
+.col-modale::backdrop {
+  background: rgba(0, 0, 0, .62);
+}
+.col-modale__corps {
+  padding: var(--sp-5);
+}
+.col-modale__titre {
+  font-family: var(--font-titre);
+  font-size: var(--fs-500);
+  line-height: var(--lh-serre);
+  color: var(--txt);
+  margin: 0 0 var(--sp-3);
+}
+.col-modale__texte {
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  line-height: var(--lh-normal);
+  color: var(--txt-secondaire);
+  margin: 0 0 var(--sp-5);
+}
+.col-modale__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: flex-end;
 }
 
 /* =========================================================================

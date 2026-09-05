@@ -365,3 +365,447 @@
     dansUnCadre: DANS_UN_CADRE
   };
 })();
+
+
+/* =========================================================================
+   ColModale — une modale accessible, une seule fois pour la collection
+   Tâche E1.
+
+   Bâtie sur <dialog> et showModal(). Le piège de focus, la touche Échap et
+   le retour du focus à l'élément qui a ouvert la modale sont donnés par le
+   navigateur : les trois choses qu'une modale maison réécrit, et que la
+   collection ratait (Emprise : ✕ sans aria-label, pas d'Échap, focus non
+   piégé). Il ne reste ici que le contenu, le style et la promesse.
+
+   ── Utilisation ────────────────────────────────────────────────────────
+     const ok = await ColModale.confirmer({
+       titre  : 'Quitter la partie ?',
+       texte  : 'Votre progression sera perdue.',
+       ok     : 'Quitter',
+       annuler: 'Continuer à jouer'
+     });
+
+   `confirmer` renvoie true / false. `ouvrir` prend des actions libres et
+   renvoie la valeur de celle qui a été choisie (null si Échap).
+   ========================================================================= */
+(function () {
+  'use strict';
+
+  var LIB = {
+    fr: { ok: 'Confirmer', annuler: 'Annuler', fermer: 'Fermer' },
+    en: { ok: 'Confirm',   annuler: 'Cancel',  fermer: 'Close' }
+  };
+  function lang() {
+    return (window.I18N && window.I18N.lang === 'en') ? 'en' : 'fr';
+  }
+  function txt(cle) { return LIB[lang()][cle]; }
+
+  /* actions : [{ id, libelle, principal?, autofocus? }] */
+  function ouvrir(opts) {
+    opts = opts || {};
+    return new Promise(function (resoudre) {
+
+      /* Repli si <dialog> n'est pas supporté : plutôt que d'afficher une
+         boîte non fermable, on rend la main à confirm(), qui est laid mais
+         accessible et fonctionne partout. */
+      if (typeof HTMLDialogElement === 'undefined' ||
+          !HTMLDialogElement.prototype.showModal) {
+        var principale = (opts.actions || []).filter(function (a) { return a.principal; })[0];
+        var texteBrut = (opts.titre || '') + (opts.texte ? '\n\n' + opts.texte : '');
+        var reponse = window.confirm(texteBrut);
+        resoudre(reponse && principale ? principale.id : null);
+        return;
+      }
+
+      var dlg = document.createElement('dialog');
+      dlg.className = 'col-modale';
+      if (opts.classe) dlg.classList.add(opts.classe);
+
+      var corps = document.createElement('div');
+      corps.className = 'col-modale__corps';
+
+      if (opts.titre) {
+        var h = document.createElement('h2');
+        h.className = 'col-modale__titre';
+        h.textContent = opts.titre;
+        corps.appendChild(h);
+        /* Le titre nomme la modale pour un lecteur d'écran : sans ça, elle
+           s'annonce « dialogue », et rien d'autre. */
+        h.id = 'col-modale-titre-' + Date.now();
+        dlg.setAttribute('aria-labelledby', h.id);
+      }
+      if (opts.texte) {
+        var p = document.createElement('p');
+        p.className = 'col-modale__texte';
+        p.textContent = opts.texte;
+        corps.appendChild(p);
+      }
+      if (opts.contenu instanceof Node) corps.appendChild(opts.contenu);
+
+      var barre = document.createElement('div');
+      barre.className = 'col-modale__actions';
+      var actions = opts.actions && opts.actions.length ? opts.actions
+                  : [{ id: 'ok', libelle: txt('fermer'), principal: true, autofocus: true }];
+
+      actions.forEach(function (a) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'col-btn' + (a.principal ? '' : ' col-btn--fantome');
+        b.textContent = a.libelle;
+        b.addEventListener('click', function () { fermer(a.id); });
+        barre.appendChild(b);
+        if (a.autofocus) b.dataset.colAutofocus = '1';
+      });
+
+      corps.appendChild(barre);
+      dlg.appendChild(corps);
+      document.body.appendChild(dlg);
+
+      var fini = false;
+      function fermer(valeur) {
+        if (fini) return;
+        fini = true;
+        /* On retire la modale APRÈS la fermeture : c'est `close()` qui rend
+           le focus à l'élément qui avait ouvert la modale, et il ne peut
+           plus le faire si l'élément a déjà quitté le document. */
+        dlg.addEventListener('close', function () { dlg.remove(); }, { once: true });
+        dlg.close();
+        resoudre(valeur);
+      }
+
+      /* Échap : le navigateur ferme la modale tout seul, mais il faut
+         encore résoudre la promesse — sinon l'appelant attend pour rien. */
+      dlg.addEventListener('cancel', function (e) {
+        e.preventDefault();
+        fermer(null);
+      });
+
+      dlg.showModal();
+
+      var vise = dlg.querySelector('[data-col-autofocus]') || dlg.querySelector('button');
+      if (vise) vise.focus();
+    });
+  }
+
+  function confirmer(opts) {
+    opts = opts || {};
+    return ouvrir({
+      titre: opts.titre,
+      texte: opts.texte,
+      actions: [
+        { id: 'non', libelle: opts.annuler || txt('annuler'), autofocus: true },
+        { id: 'oui', libelle: opts.ok || txt('ok'), principal: true }
+      ]
+    }).then(function (r) { return r === 'oui'; });
+  }
+
+  window.ColModale = { ouvrir: ouvrir, confirmer: confirmer };
+})();
+
+
+/* =========================================================================
+   ColFin — l'écran de fin de partie de la collection
+   Tâche E1.
+
+   ── Le problème ────────────────────────────────────────────────────────
+   À la fin d'une partie, les jeux affichaient « 7 / 10 » et rien d'autre :
+   ni ce qui avait été raté, ni pourquoi. Un score sans retour n'apprend
+   rien, et c'est précisément le moment où le joueur est disponible pour
+   apprendre. Quatorze jeux doivent recevoir ce composant (tâche E2) : son
+   interface compte donc plus que son code.
+
+   ── Adopter le composant, en dix lignes ────────────────────────────────
+     ColFin.rendre({
+       jeu   : 'radar-desinfo',            // identifiant stable
+       score : bonnes,
+       total : questions.length,
+       items : questions.map(function (q, i) {
+         return { id: q.id, titre: q.q, reussi: reponses[i] === q.answer,
+                  explication: q.expl, lien: q.fiche };
+       }),
+       onRejouer: function (rates) { relancer(rates); }
+     });
+
+   Rien d'autre n'est obligatoire. `cible` vaut par défaut l'élément
+   `.col-fin` ou `#ecran-fin` de la page ; le titre, le message et le lien
+   de retour ont des valeurs par défaut traduites.
+
+   ── Ce que le composant fait, et que chaque jeu n'a plus à écrire ──────
+     · la liste des items ratés, avec explication et lien de fiche ;
+     · le bouton « rejouer mes erreurs », qui rappelle onRejouer avec les
+       seuls items ratés ;
+     · la mémoire des items déjà vus, dans une clé localStorage nommée par
+       jeu — pour que deux parties de suite ne reposent pas les mêmes
+       questions tant que le paquet n'est pas épuisé ;
+     · l'émission du message `col:fin-de-partie` (contrat défini plus haut
+       dans ce fichier, tâche E5) : Exploration débloque l'étape suivante
+       sur ce message, et sur rien d'autre.
+
+   ── La forme d'un item ─────────────────────────────────────────────────
+     { id          : 'q3',        // stable d'une partie à l'autre : c'est lui
+                                  //   qu'on mémorise. À défaut, le titre.
+       titre       : '…',         // l'intitulé montré au joueur
+       reussi      : true|false,
+       explication : '…',         // affichée sous les items ratés
+       lien        : 'url',       // facultatif — vers la fiche
+       lienTexte   : '…' }        // facultatif — libellé du lien
+   ========================================================================= */
+(function () {
+  'use strict';
+
+  var PREFIXE_VUS = 'col.vus.';
+
+  var LIB = {
+    fr: {
+      titre: 'Partie terminée',
+      sansFaute: 'Aucune erreur : tout est juste.',
+      aRevoir: 'À revoir',
+      rejouerErreurs: 'Rejouer mes erreurs',
+      rejouer: 'Rejouer',
+      retour: 'Retour aux jeux',
+      voirFiche: 'Voir la fiche',
+      quitterTitre: 'Quitter la partie ?',
+      quitterTexte: 'La partie en cours sera perdue.',
+      quitterOui: 'Quitter',
+      quitterNon: 'Continuer à jouer'
+    },
+    en: {
+      titre: 'Game over',
+      sansFaute: 'No mistakes: everything is correct.',
+      aRevoir: 'To review',
+      rejouerErreurs: 'Replay my mistakes',
+      rejouer: 'Play again',
+      retour: 'Back to games',
+      voirFiche: 'See the card',
+      quitterTitre: 'Leave the game?',
+      quitterTexte: 'The game in progress will be lost.',
+      quitterOui: 'Leave',
+      quitterNon: 'Keep playing'
+    }
+  };
+  function lang() { return (window.I18N && window.I18N.lang === 'en') ? 'en' : 'fr'; }
+  function txt(cle) { return LIB[lang()][cle]; }
+
+  /* ── Mémoire des items déjà vus ────────────────────────────────────────
+     Une clé par jeu : `col.vus.radar-desinfo`. Le jeu décide quoi en faire —
+     le composant se contente de retenir, de rendre et d'oublier. C'est
+     volontairement du localStorage et non du sessionStorage : « ne me
+     repose pas la question de la semaine dernière » n'a de sens que si la
+     mémoire survit à la fermeture de l'onglet. */
+  function vus(jeu) {
+    try {
+      var brut = localStorage.getItem(PREFIXE_VUS + jeu);
+      var liste = brut ? JSON.parse(brut) : [];
+      return Array.isArray(liste) ? liste : [];
+    } catch (e) { return []; }
+  }
+
+  function marquerVus(jeu, ids) {
+    if (!jeu || !ids || !ids.length) return;
+    try {
+      var deja = vus(jeu);
+      ids.forEach(function (id) {
+        if (id != null && deja.indexOf(String(id)) < 0) deja.push(String(id));
+      });
+      localStorage.setItem(PREFIXE_VUS + jeu, JSON.stringify(deja));
+    } catch (e) { /* stockage refusé : le jeu marche, sans mémoire */ }
+  }
+
+  function oublierVus(jeu) {
+    try { localStorage.removeItem(PREFIXE_VUS + jeu); } catch (e) {}
+  }
+
+  /* Trie une liste d'items pour qu'un jeu serve d'abord ce qui n'a jamais
+     été vu. Quand tout a été vu, la mémoire est effacée et on repart d'un
+     paquet complet — sinon la deuxième partie n'aurait plus rien à servir. */
+  function nonVusDabord(jeu, items) {
+    var connus = vus(jeu);
+    var neufs = items.filter(function (it) { return connus.indexOf(String(idDe(it))) < 0; });
+    if (!neufs.length) { oublierVus(jeu); return items.slice(); }
+    var revus = items.filter(function (it) { return connus.indexOf(String(idDe(it))) >= 0; });
+    return neufs.concat(revus);
+  }
+
+  function idDe(item) {
+    return (item && item.id != null) ? item.id : (item && item.titre) || '';
+  }
+
+  /* ── Confirmation de sortie ────────────────────────────────────────────
+     Pendant une partie, « ← Retour » et la bascule de langue quittent la
+     page sans prévenir : une partie de dix questions se perd sur un doigt
+     mal posé. protegerSortie(true) intercepte les deux et demande. */
+  var sortieProtegee = false;
+  var ecouteurPose = false;
+
+  function surClicSortie(e) {
+    if (!sortieProtegee) return;
+    var cible = e.target.closest && e.target.closest('.col-entete__retour, .col-entete__langue');
+    if (!cible) return;
+    e.preventDefault();
+    e.stopPropagation();
+    ColModale.confirmer({
+      titre: txt('quitterTitre'),
+      texte: txt('quitterTexte'),
+      ok: txt('quitterOui'),
+      annuler: txt('quitterNon')
+    }).then(function (oui) {
+      if (!oui) return;
+      sortieProtegee = false;
+      if (cible.tagName === 'A') location.href = cible.href;
+      else cible.click();
+    });
+  }
+
+  function protegerSortie(actif) {
+    sortieProtegee = !!actif;
+    if (ecouteurPose) return;
+    /* En phase de CAPTURE : le bouton de langue a son propre écouteur posé
+       par l'en-tête, et il partirait avant nous en phase de bulle. */
+    document.addEventListener('click', surClicSortie, true);
+    ecouteurPose = true;
+  }
+
+  /* ── Le rendu ──────────────────────────────────────────────────────── */
+  function cibleParDefaut() {
+    return document.querySelector('[data-col-fin]')
+        || document.getElementById('ecran-fin')
+        || document.querySelector('.col-fin');
+  }
+
+  function ligneItem(item) {
+    var li = document.createElement('li');
+    li.className = 'col-recap__item ' + (item.reussi ? 'col-recap__item--ok' : 'col-recap__item--ko');
+
+    var p = document.createElement('p');
+    p.className = 'col-recap__intitule';
+    var marque = document.createElement('span');
+    marque.className = 'col-recap__marque';
+    marque.setAttribute('aria-hidden', 'true');
+    marque.textContent = item.reussi ? '✓' : '✗';
+    p.appendChild(marque);
+    p.appendChild(document.createTextNode(item.titre || ''));
+    li.appendChild(p);
+
+    if (item.explication) {
+      var e = document.createElement('p');
+      e.className = 'col-recap__expl';
+      e.textContent = item.explication;
+      li.appendChild(e);
+    }
+    if (item.lien) {
+      var a = document.createElement('a');
+      a.className = 'col-recap__lien';
+      a.href = item.lien;
+      a.textContent = (item.lienTexte || txt('voirFiche')) + ' →';
+      li.appendChild(a);
+    }
+    return li;
+  }
+
+  function rendre(opts) {
+    opts = opts || {};
+    var items = Array.isArray(opts.items) ? opts.items : [];
+    var rates = items.filter(function (it) { return !it.reussi; });
+    var total = (opts.total != null) ? opts.total : items.length;
+    var score = (opts.score != null) ? opts.score : (items.length - rates.length);
+
+    var cible = opts.cible || cibleParDefaut();
+    if (!cible) { console.warn('ColFin : aucune cible de rendu'); return null; }
+
+    /* Le témoin que `outils/etat-refonte.py` mesure (tâche A3) : il n'est
+       posé que si un récapitulatif a réellement été rendu. */
+    cible.setAttribute('data-col-recap', String(rates.length));
+    cible.textContent = '';
+
+    var h = document.createElement('h2');
+    h.className = 'col-fin__titre';
+    h.textContent = opts.titre || txt('titre');
+    h.tabIndex = -1;                      // cible de focus à l'arrivée
+    cible.appendChild(h);
+
+    var sc = document.createElement('p');
+    sc.className = 'col-fin__score';
+    sc.textContent = score + ' / ' + total;
+    cible.appendChild(sc);
+
+    if (opts.message) {
+      var m = document.createElement('p');
+      m.className = 'col-fin__msg';
+      m.textContent = opts.message;
+      cible.appendChild(m);
+    }
+
+    if (rates.length) {
+      var bloc = document.createElement('section');
+      bloc.className = 'col-recap';
+      var t = document.createElement('h3');
+      t.className = 'col-recap__titre';
+      t.textContent = txt('aRevoir') + ' — ' + rates.length;
+      bloc.appendChild(t);
+      var ul = document.createElement('ul');
+      ul.className = 'col-recap__liste';
+      rates.forEach(function (it) { ul.appendChild(ligneItem(it)); });
+      bloc.appendChild(ul);
+      cible.appendChild(bloc);
+    } else if (items.length) {
+      var ok = document.createElement('p');
+      ok.className = 'col-recap__sansfaute';
+      ok.textContent = txt('sansFaute');
+      cible.appendChild(ok);
+    }
+
+    var actions = document.createElement('div');
+    actions.className = 'col-actions';
+
+    if (rates.length && typeof opts.onRejouer === 'function') {
+      var br = document.createElement('button');
+      br.type = 'button';
+      br.className = 'col-btn';
+      br.textContent = txt('rejouerErreurs') + ' (' + rates.length + ')';
+      br.addEventListener('click', function () { opts.onRejouer(rates); });
+      actions.appendChild(br);
+    }
+    if (typeof opts.onRecommencer === 'function') {
+      var b2 = document.createElement('button');
+      b2.type = 'button';
+      b2.className = 'col-btn' + (rates.length ? ' col-btn--fantome' : '');
+      b2.textContent = opts.rejouerTexte || txt('rejouer');
+      b2.addEventListener('click', function () { opts.onRecommencer(); });
+      actions.appendChild(b2);
+    }
+    if (opts.retour !== false) {
+      var a = document.createElement('a');
+      a.className = 'col-btn col-btn--fantome';
+      a.href = opts.retour || document.body.getAttribute('data-col-retour') || '../index.html';
+      a.textContent = opts.retourTexte || txt('retour');
+      actions.appendChild(a);
+    }
+    cible.appendChild(actions);
+
+    /* La partie est finie : plus rien à protéger, et le message part. */
+    protegerSortie(false);
+    marquerVus(opts.jeu, items.map(idDe));
+    if (window.Collection && Collection.finDePartie) {
+      Collection.finDePartie({
+        jeu: opts.jeu, score: score, total: total,
+        reussi: rates.length === 0
+      });
+    }
+
+    /* Le focus suit l'écran : sans ça, la fin de partie est muette pour un
+       lecteur d'écran et le clavier repart du haut de la page. */
+    if (cible.hidden === true) cible.hidden = false;
+    h.focus({ preventScroll: false });
+
+    return cible;
+  }
+
+  window.ColFin = {
+    rendre: rendre,
+    vus: vus,
+    marquerVus: marquerVus,
+    oublierVus: oublierVus,
+    nonVusDabord: nonVusDabord,
+    protegerSortie: protegerSortie
+  };
+})();
