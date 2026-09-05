@@ -93,6 +93,11 @@ const QUESTIONS = [
 ];
 
 let deck=[],idx=0,score=0,streak=0,best=0,nbOk=0,freeRetryUsed=false;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Identifiant stable d'une question : le chemin de son image (unique, identique en FR et en EN).
+const JEU="graphiques-trompeurs";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -129,9 +134,15 @@ function detectTech(raw){
   return bestId;
 }
 
-function startGame(){
-  deck=shuffle([...QUESTIONS]);
+function startGame(sousDeck){
+  // E2 : toute la série est jouée à chaque partie ; « rejouer mes erreurs » impose un paquet réduit
+  deck=shuffle(sousDeck || [...QUESTIONS]);
   idx=0;score=0;streak=0;best=0;nbOk=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  // la partie repart sans recharger la page : le HUD repart de zéro lui aussi
+  $("score").textContent=0; $("streak").textContent="";
   $("fiches").style.display="none";
   $("intro").style.display="none";
   $("hud").style.display="flex";
@@ -181,6 +192,7 @@ function revealAide(){
 }
 
 function applyResult(it,ok,detectedLabel,viaFree){
+  joue.push({id:it.img, titre:texteBrut(it.t), reussi:ok, explication:texteBrut(it.e)});
   if(ok){
     nbOk++;
     if(viaFree){
@@ -618,8 +630,6 @@ function endGame(){
   $("nextbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  $("end-score").textContent=score+" pts";
-  $("end-sub").textContent=nbOk+"/"+deck.length+" correct answers";
   const ratio=nbOk/deck.length;
   let title,msg;
   if(ratio>=0.9){title="🏆 Statistician's eye!";msg="You already spot the classic misleading-chart tricks. This reflex — <b>checking the axis, the scale, the 3D and any missing data</b> — will serve you everywhere: news, social media, company reports.";}
@@ -627,8 +637,13 @@ function endGame(){
   else{title="👀 Your eye is training…";msg="These techniques fool almost everyone at first glance — that's the whole point! Go check out the reference cards, then play again.";}
   if(best>=3)msg+="<br><br>Your best streak: <b>"+best+" 🔥</b>";
   msg+="<br><br>💡 <i>A chart can be 100% accurate in its numbers and 100% misleading in its drawing.</i>";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, score, message, liste des graphiques ratés et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: score+" pts — "+texteBrut(msg),
+    score: nbOk, total: deck.length, items: joue,
+    onRejouer: rates => startGame(QUESTIONS.filter(q => rates.some(r => r.id===q.img))),
+    onRecommencer: () => startGame()
+  });
 }
 
 // ===== Anti-trap reference cards =====
