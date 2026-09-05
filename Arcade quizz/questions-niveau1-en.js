@@ -9,48 +9,48 @@ var QUESTIONS_NIVEAU1 = [
     q: "What is fake news?",
     options: [
       "A rumour shared on social media",
-      "information that contradicts current knowledge",
+      "Information that contradicts the current state of knowledge",
       "An opinion presented as a fact",
       "A misleading advertisement"
     ],
     answer: 1,
-    expl: "A fake news is A information contraire to The reality Some connaissances — it is not definie by the intention mais by its contenu."
+    expl: "Fake news is information that runs counter to what is actually known — it is defined by its content, not by the intention behind it."
   },
   {
     cat: "🔍 Defining information",
     q: "Fake news is about…?",
     options: [
-      "opinions and feelings",
+      "Opinions and feelings",
       "Verifiable facts",
       "Scientific theories",
       "Satirical content"
     ],
     answer: 1,
-    expl: "A fake news porte on Some facts, pas on Some opinions ou Some ressentis who are by nature subjectifs."
+    expl: "Fake news concerns facts, not the opinions or feelings that are subjective by nature."
   },
   {
     cat: "🔍 Defining information",
     q: "Can fake news be shared in good faith?",
     options: [
-      "No, it is always intentional",
+      "No, it is always deliberate",
       "No, people know it is false",
       "Yes, by sincere people",
       "Yes, but only on social media"
     ],
     answer: 2,
-    expl: "many de people partagent Some fake news en croyant sincerement What they are vraies. The intention ne definit pas The fake news."
+    expl: "Plenty of people share fake news while sincerely believing it to be true. Intention is not what defines fake news."
   },
   {
     cat: "🔍 Defining information",
-    q: "\"The schizophrenie = avoir several personnalites\" is A example de…?",
+    q: "\"Schizophrenia = having several personalities\" is an example of…?",
     options: [
-      "bias de confirmation",
-      "Fake news provenant of the fiction",
-      "Heuristique medicale",
-      "Effet de framing"
+      "Confirmation bias",
+      "Fake news that comes from fiction",
+      "A medical heuristic",
+      "The framing effect"
     ],
     answer: 1,
-    expl: "this idee repandue vient de series et films, pas of the reality medicale. It is A fake news spread by The fiction populaire."
+    expl: "This widespread idea comes from films and television series, not from medical reality. It is fake news spread by popular fiction."
   },
 
   // ── Framing & perception ──────────────────────────────────────
@@ -58,43 +58,43 @@ var QUESTIONS_NIVEAU1 = [
     cat: "🖼️ Framing & perception",
     q: "What is the framing effect?",
     options: [
-      "Making information up entirely",
-      "Removing the context from a video",
-      "Steering how true information is understood",
+      "Inventing a story out of nothing",
+      "Stripping a video of its context",
+      "Steering how a true story is understood",
       "Amplifying a rumour on social media"
     ],
     answer: 2,
-    expl: "The framing effect consiste to presenter A information true of A facon who oriente The perception — without mentir, mais en influencant The jugement."
+    expl: "The framing effect means presenting true information in a way that steers perception — without lying, but influencing judgement all the same."
   },
   {
     cat: "🖼️ Framing & perception",
-    q: "The illusion of optique of Adelson (cases A et B identiques) montre that…?",
+    q: "Adelson's optical illusion (squares A and B are identical) shows that…?",
     options: [
       "Our eyes work badly",
-      "Our brain interprete The reality according to The context",
-      "images on the Internet are often edited",
-      "photos cannot be trusted"
+      "Our brain interprets reality according to context",
+      "Pictures online are often retouched",
+      "Photographs cannot be trusted"
     ],
     answer: 1,
-    expl: "The brain juge The couleur of A case en fonction de ce who the entoure. it interprete The reality plutot What it ne The voit — ce who can induire en error."
+    expl: "The brain judges the colour of a square by what surrounds it. It interprets reality rather than simply seeing it — which can lead us astray."
   },
 
   // ── Thinking systems ────────────────────────────────────────
   {
     cat: "🧠 Thinking systems",
-    q: "Our brain fonctionne according to combien de modes de pensee?",
+    q: "How many modes of thinking does our brain run on?",
     options: [
-      "One",
+      "Only one",
       "Two",
       "Three",
       "Four"
     ],
     answer: 1,
-    expl: "The brain fonctionne en mode intuitif (fast, automatique) et en mode analytique (slow, reflechi)."
+    expl: "The brain runs in an intuitive mode (fast, automatic) and an analytical mode (slow, considered)."
   },
   {
     cat: "🧠 Thinking systems",
-    q: "Which is The mode de pensee « by defaut » of the brain?",
+    q: "Which mode of thinking is the brain's \"default\"?",
     options: [
       "Analytical",
       "Critical",
@@ -102,19 +102,19 @@ var QUESTIONS_NIVEAU1 = [
       "Rational"
     ],
     answer: 2,
-    expl: "The mode intuitif is active by defaut : it is fast et econome en energie, mais topic aux errors de reasoning."
+    expl: "The intuitive mode is on by default: it is fast and cheap in energy, but prone to reasoning errors."
   },
   {
     cat: "🧠 Thinking systems",
-    q: "Which is The probleme of the mode intuitif on The networks?",
+    q: "What is the problem with the intuitive mode on social media?",
     options: [
       "It is too slow",
-      "it consomme trop of energie",
-      "it nous fact believe Some choses fausses",
-      "it bloque The shares of information"
+      "It uses too much energy",
+      "It makes us believe things that are false",
+      "It blocks the sharing of information"
     ],
     answer: 2,
-    expl: "on The networks, on is often en mode intuitif : on reagit vite to A titre without analyser, ce who favorise The propagation Some fake news."
+    expl: "On social media we are usually in intuitive mode: we react to a headline without analysing it, and that is what helps fake news spread."
   },
   {
     cat: "🧠 Thinking systems",
@@ -122,15 +122,15 @@ var QUESTIONS_NIVEAU1 = [
     options: [
       "A method for checking sources",
       "The tendency to draw conclusions without all the evidence",
-      "A bias linked to emotions",
+      "A bias linked to the emotions",
       "A fact-checking tool"
     ],
     answer: 1,
-    expl: "The heuristique is The raccourci mental who pousse The brain to conclude same with Some information incompletes — source frequente of errors."
+    expl: "A heuristic is the mental shortcut that pushes the brain to conclude even on incomplete information — a frequent source of error."
   },
   {
     cat: "🧠 Thinking systems",
-    q: "in the enigme raquette + balle = 1,10 € (The raquette coûte 1 € de plus), combien coûte The balle?",
+    q: "In the puzzle racket + ball = 1.10 euros (the racket costs 1 euro more), how much does the ball cost?",
     options: [
       "10 cents",
       "1 euro",
@@ -138,43 +138,43 @@ var QUESTIONS_NIVEAU1 = [
       "50 cents"
     ],
     answer: 2,
-    expl: "5 cents is The good answer (0,05 + 1,05 = 1,10). The intuition dit 10 cents — it is A error classique of the systeme intuitif."
+    expl: "5 cents is the right answer (0.05 + 1.05 = 1.10). Intuition says 10 cents — the classic error of the intuitive system."
   },
   {
     cat: "🧠 Thinking systems",
-    q: "that montre the enigme of the raquette et of the balle?",
+    q: "What does the racket-and-ball puzzle show?",
     options: [
-      "that The maths are difficiles",
-      "that the intuition can nous do rater The good answer",
-      "that The mode analytique is always false",
-      "that The social media biaisent The reasoning"
+      "That maths is difficult",
+      "That intuition can make us miss the right answer",
+      "That the analytical mode is always wrong",
+      "That social media distorts our reasoning"
     ],
     answer: 1,
-    expl: "this enigme illustre that The systeme intuitif produit A answer fast mais false. Prendre The temps of analyser change tout."
+    expl: "The puzzle shows that the intuitive system produces a fast answer that is wrong. Taking the time to analyse changes everything."
   },
   {
     cat: "🧠 Thinking systems",
-    q: "The example of the drapeau americain on The lune illustre Which concept?",
+    q: "The example of the American flag on the Moon illustrates which concept?",
     options: [
-      "confirmation bias",
+      "Confirmation bias",
       "Emotional bias",
-      "Heuristic — too-fast conclusion",
+      "The heuristic — concluding too fast",
       "The framing effect"
     ],
     answer: 2,
-    expl: "Raisonner \"drapeau who flotte = vent, pas de vent on The lune = on a menti\" is A raccourci heuristique. The reality : A barre maintient The drapeau."
+    expl: "Reasoning \"a waving flag means wind, there is no wind on the Moon, so we were lied to\" is a heuristic shortcut. In reality, a rod holds the flag out."
   },
   {
     cat: "🧠 Thinking systems",
-    q: "Which is The true raison for laquelle The drapeau tient on The lune?",
+    q: "What is the real reason the flag stays up on the Moon?",
     options: [
       "There is a little wind on the Moon",
-      "The flag is held up by a metal bar",
-      "The flag is very light",
-      "NASA faked the video"
+      "The flag is held out by a metal rod",
+      "The flag is extremely light",
+      "NASA faked the footage"
     ],
     answer: 1,
-    expl: "The drapeau is tenu by A barre horizontale. it n'a pas besoin de vent for tenir — the argument complotiste repose on A premisse false."
+    expl: "A horizontal rod holds the flag out. It needs no wind to stay up — the conspiracy argument rests on a false premise."
   },
 
   // ── Cognitive biases ───────────────────────────────────────────
@@ -182,146 +182,146 @@ var QUESTIONS_NIVEAU1 = [
     cat: "🎭 Cognitive biases",
     q: "What is a cognitive bias?",
     options: [
-      "A error de memoire",
-      "Media manipulation",
+      "A memory error",
+      "A media manipulation",
       "An automatic reasoning error",
       "A lack of information"
     ],
     answer: 2,
-    expl: "A bias cognitive is A filtre inconscient who deforme our traitement de the information. it can nous do tenir quelque chose for true without raison valable."
+    expl: "A cognitive bias is an unconscious filter that distorts how we process information. It can make us hold something to be true for no valid reason."
   },
   {
     cat: "🎭 Cognitive biases",
     q: "What is popularity bias?",
     options: [
-      "Believing information because it is emotional",
-      "Believing information because it confirms our ideas",
+      "Believing a story because it is moving",
+      "Believing a story because it confirms our ideas",
       "Trusting someone popular even outside their field",
-      "Sharing information without checking it"
+      "Sharing a story without checking it"
     ],
     answer: 2,
-    expl: "Popularity bias nous pousse to suivre the avis of A personne populaire ou of A majorite, same quand they n'ont pas de legitimite on The topic."
+    expl: "Popularity bias pushes us to follow the view of a popular person, or of a majority, even where they have no standing on the subject."
   },
   {
     cat: "🎭 Cognitive biases",
     q: "What is emotional bias?",
     options: [
-      "Rejecting information that upsets us",
-      "Favouring information that triggers emotion",
-      "Believing information from people we like",
-      "Sharing sad information rather than happy information"
+      "Rejecting the information that annoys us",
+      "Favouring the information that triggers an emotion",
+      "Believing information from the people we like",
+      "Sharing sad stories rather than happy ones"
     ],
     answer: 1,
-    expl: "Emotional bias nous pousse to believe et retenir The information who suscitent A emotion forte — anger, fear, indignation — same si they are fausses."
+    expl: "Emotional bias pushes us to believe and remember information that stirs a strong emotion — anger, fear, outrage — even when it is false."
   },
   {
     cat: "🎭 Cognitive biases",
-    q: "Why The networks raffolent-they of information emouvantes?",
+    q: "Why are social networks so fond of emotive information?",
     options: [
-      "because they are plus faciles to check",
-      "because they creent de the engagement",
-      "because they are generally vraies",
-      "because they plaisent aux algorithmes de censure"
+      "Because it is easier to check",
+      "Because it generates engagement",
+      "Because it is generally true",
+      "Because censorship algorithms like it"
     ],
     answer: 1,
-    expl: "Vraies ou fausses, The information emouvantes generent plus de likes, partages et commentaires. The plateformes The favorisent donc algorithmiquement."
+    expl: "True or false, emotive information draws more likes, shares and comments. Platforms therefore favour it algorithmically."
   },
   {
     cat: "🎭 Cognitive biases",
     q: "What is confirmation bias?",
     options: [
-      "Believing information because it is popular",
-      "Favouring information that confirms what we already think",
-      "Rejecting all new information",
-      "Trusting experts in their field"
+      "Believing a story because it is popular",
+      "Favouring the stories that confirm what we already think",
+      "Rejecting every piece of new information",
+      "Trusting the experts of a given field"
     ],
     answer: 1,
-    expl: "confirmation bias pousse to look for, believe et retenir The information who valident our croyances existantes — et to ignorer celles who The contredisent."
+    expl: "Confirmation bias drives us to seek out, believe and remember whatever validates our existing beliefs — and to ignore whatever contradicts them."
   },
   {
     cat: "🎭 Cognitive biases",
     q: "What is the halo effect?",
     options: [
-      "believe A information parce What it is repetee",
+      "Believing a story because it is repeated",
       "Transferring someone's competence to another field",
       "Ignoring information that contradicts our beliefs",
-      "Trusting headlines without reading articles"
+      "Trusting headlines without reading the articles"
     ],
     answer: 1,
-    expl: "The effet de Halo : si quelthat A is percu as expert ou populaire in A field, on lui fact confiance in tous The domaines — same hors de its competence."
+    expl: "The halo effect: if someone is seen as an expert, or as popular, in one field, we trust them in every field — well beyond their competence."
   },
 
   // ── Critical attitude ─────────────────────────────────────────
   {
     cat: "💡 Critical attitude",
-    q: "\"If information is too good to be true…\"",
+    q: "\"If a story is too good to be true…\"",
     options: [
-      "it vient probably of A expert reliable",
+      "It probably comes from a reliable expert",
       "It is probably false",
-      "it merite of etre shared immediatement",
-      "it is can-etre satirique"
+      "It deserves to be shared at once",
+      "It may well be satire"
     ],
     answer: 1,
-    expl: "A adage utile : The information trop belles, trop scandaleuses ou trop parfaites for etre vraies meritent A verification immediate."
+    expl: "A useful maxim: stories too good, too scandalous or too neat to be true deserve to be checked immediately."
   },
   {
     cat: "💡 Critical attitude",
-    q: "\"Solution trop simple to A probleme complexe\"… it is generally…?",
+    q: "\"A solution too simple for a complex problem\"… that is generally…?",
     options: [
-      "A piste to explorer serieusement",
-      "false",
-      "A decouverte scientific majeure",
-      "A technique de framing mediatique"
+      "A lead worth exploring seriously",
+      "False",
+      "A major scientific discovery",
+      "A media framing technique"
     ],
     answer: 1,
-    expl: "Si A probleme complexe (as The SIDA) avait A solution simple (The jus de citron), on the aurait trouvee. The simplicite trop grande must alerter."
+    expl: "If a complex problem (AIDS, say) had a simple solution (lemon juice), it would have been found. Excessive simplicity should raise the alarm."
   },
   {
     cat: "💡 Critical attitude",
-    q: "What is it that The consensus scientific?",
+    q: "What is scientific consensus?",
     options: [
-      "A vote between politiciens et scientists",
-      "The accord de the immense majorite Some scientists of A field",
-      "A rapport publie by the ONU",
-      "The opinion of A seul expert reconnu"
+      "A vote between politicians and scientists",
+      "The agreement of the vast majority of scientists in a field",
+      "A report published by the United Nations",
+      "The opinion of a single recognised expert"
     ],
     answer: 1,
-    expl: "The consensus scientific represente the accord of the grande majorite Some experts of A field. It is the A Some sources de connaissance The plus fiables."
+    expl: "Scientific consensus is the agreement of the great majority of the experts in a field. It is one of the most reliable sources of knowledge there is."
   },
   {
     cat: "💡 Critical attitude",
-    q: "on The rechauffement climatique, Which source is The plus reliable?",
+    q: "On global warming, which source is the most reliable?",
     options: [
-      "A documentaire grand audience",
-      "A film catastrophe",
-      "A article de presse people",
-      "The parole of A expert of the field"
+      "A mainstream documentary",
+      "A disaster film",
+      "An article in a celebrity magazine",
+      "The word of an expert in the field"
     ],
     answer: 3,
-    expl: "Toutes The sources ne se valent pas. A expert of the field is plus reliable What A film ou A article non specialise on A topic scientific."
+    expl: "Not all sources are equal. On a scientific subject, an expert in the field is more reliable than a film or a non-specialist article."
   },
   {
     cat: "💡 Critical attitude",
-    q: "Why admettre its ignorance is-it utile face aux fake news?",
+    q: "Why is admitting your own ignorance useful against fake news?",
     options: [
-      "for eviter de blesser The autres",
-      "because admettre What on ne sait pas allows of ecouter et of apprendre",
-      "because The experts n'aiment pas The people arrogants",
-      "for paraitre plus credible en ligne"
+      "To avoid hurting other people",
+      "Because admitting you do not know lets you listen and learn",
+      "Because experts dislike arrogant people",
+      "To come across as more credible online"
     ],
     answer: 1,
-    expl: "Admettre its ignorance, it is The premiere etape for se remettre en quision, ecouter The experts et progresser. The orgueil is A terreau fertile for The fake news."
+    expl: "Admitting your ignorance is the first step towards questioning yourself, listening to the experts and making progress. Pride is fertile ground for fake news."
   },
   {
     cat: "💡 Critical attitude",
-    q: "What is it that The metacognition?",
+    q: "What is metacognition?",
     options: [
-      "A technique de memorisation",
-      "The capacite to apprendre rapidement",
-      "Prendre of the recul on The fonctionnement de its propre brain",
-      "A bias cognitive lie to the emotion"
+      "A memorisation technique",
+      "The ability to learn quickly",
+      "Standing back to watch how your own brain works",
+      "A cognitive bias linked to emotion"
     ],
     answer: 2,
-    expl: "The metacognition, it is penser to its propre facon de penser. Prendre conscience de its bias allows de mieux The controler face aux fake news."
+    expl: "Metacognition is thinking about your own way of thinking. Becoming aware of your biases is what allows you to keep them in check against fake news."
   }
 ];
