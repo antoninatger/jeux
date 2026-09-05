@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planète Connaissance 🚀</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<link rel="stylesheet" href="collection.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#04060f;touch-action:none}
@@ -153,6 +155,7 @@ canvas{display:block;width:100%;height:100%}
   border-radius:24px;padding:36px 28px;max-width:500px;width:100%;
   text-align:center;box-shadow:0 0 80px rgba(0,220,255,.06);
   animation:boxIn .5s cubic-bezier(.22,1,.36,1) both;position:relative;overflow:hidden;
+  max-height:calc(100vh - 40px);overflow-y:auto; /* E2 : le récapitulatif de fin peut être long */
 }
 .screen-box::before{content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse at 50% 0%,rgba(0,220,255,.06),transparent 60%);pointer-events:none}
@@ -222,7 +225,7 @@ canvas{display:block;width:100%;height:100%}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-entete="non">
 <a class="back-hub" href="index.html" data-i18n="back">← Retour aux jeux</a>
 <div style="position:fixed;bottom:8px;right:12px;z-index:9998;font-size:.68rem;font-weight:600;opacity:.5;color:#fff;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.6);">par Antonin Atger</div>
 
@@ -305,12 +308,8 @@ canvas{display:block;width:100%;height:100%}
 <div class="screen" id="win-screen" style="display:none">
   <div class="screen-box">
     <span class="s-ico">🪐</span>
-    <div class="s-title gold" data-i18n="winTitle">ATTERRISSAGE RÉUSSI !</div>
-    <p class="s-desc" style="margin-bottom:4px" data-i18n-html="winDesc1">Tu as atteint la <strong style="color:#ffd700">Planète de la Connaissance</strong> !</p>
-    <div class="final-score" id="win-score">0 pts</div>
-    <div class="final-stars" id="win-stars">⭐⭐⭐</div>
-    <p class="s-desc" data-i18n="winDesc2">Tu distingues parfaitement les faits des opinions. Mission accomplie, cosmonaute !</p>
-    <button class="s-btn" onclick="restartGame()" data-i18n="newMissionBtn">🔄 NOUVELLE MISSION</button>
+    <!-- E2 : titre, score, étoiles, questions ratées avec leur explication et boutons sont rendus par ColFin. -->
+    <div class="col-fin" id="fin-win"></div>
   </div>
 </div>
 
@@ -318,14 +317,19 @@ canvas{display:block;width:100%;height:100%}
 <div class="screen" id="over-screen" style="display:none">
   <div class="screen-box">
     <span class="s-ico" style="animation:none">💥</span>
-    <div class="s-title red" data-i18n="overTitle">VAISSEAU DÉTRUIT !</div>
-    <p class="s-desc" data-i18n-html="overDesc">Les astéroïdes ont eu raison de toi…<br>
-      Rappelle-toi : un <strong style="color:#00ff88">FAIT</strong> se prouve, une <strong style="color:#ff3cac">OPINION</strong> exprime un avis personnel !</p>
-    <button class="s-btn red-btn" onclick="restartGame()" data-i18n="restartBtn">🔄 RECOMMENCER</button>
+    <div class="col-fin" id="fin-over"></div>
   </div>
 </div>
 
 <script src="i18n.js"></script>
+<script src="collection.js"></script>
+<script>
+/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
+   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
+   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
+   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
+window.__COLLECTION_ENTETE__ = false;
+</script>
 <script>
 I18N.register({
   fr: {

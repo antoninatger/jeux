@@ -84,6 +84,21 @@ const WORLD_HEIGHT = 3000;
 let activeAsteroid = null;
 let lastAsteroidSpawn = 0;
 let qPool = [];
+// E2 : ce que la mission a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur texte en tient lieu (c'est déjà la clé de
+// la mémoire propre du jeu, planetConnaissance_usedQ, qui reste maîtresse du tirage).
+const JEU = 'planete-connaissance';
+let joue = [];
+function texteBrut(html){ const d=document.createElement('div'); d.innerHTML=String(html).replace(/<br\s*\/?>/gi,' '); return d.textContent; }
+function finDePartie(cibleId, titre, message){
+  ColFin.rendre({
+    cible: document.getElementById(cibleId), jeu: JEU, titre: titre, message: message,
+    score: joue.filter(j=>j.reussi).length, total: joue.length, items: joue,
+    retour: 'index.html', // la page est à la racine : le repli « ../index.html » du composant ne convient pas
+    onRejouer: rates => restartGame(rates.map(r=>r.id)),
+    onRecommencer: () => restartGame()
+  });
+}
 let usedQuestions = new Set();
 let destroyedCount = 0;
 let asteroidSpeed = 1; // multiplier 1–5, default 2
@@ -747,6 +762,7 @@ function answer(chosen){
   answered=true;
   const q=activeAsteroid.q;
   const ok=chosen===q.answer;
+  joue.push({id:q.text, titre:q.text, reussi:ok, explication:q.exp});
   document.getElementById('btn-fait').disabled=true;
   document.getElementById('btn-op').disabled=true;
   const chosenBtn=document.getElementById(chosen==='fait'?'btn-fait':'btn-op');
@@ -841,11 +857,10 @@ function updateLanding(dt){
   // landing done — show win screen
   if(t >= 1){
     state = 'win';
-    document.getElementById('win-score').textContent = score + ' pts';
     const stars = lives===3?'⭐⭐⭐':lives===2?'⭐⭐':'⭐';
-    document.getElementById('win-stars').textContent = stars;
     setTimeout(()=>{
       document.getElementById('win-screen').style.display='flex';
+      finDePartie('fin-win', I18N.t('winTitle'), texteBrut(I18N.t('winDesc1'))+' '+score+' pts '+stars+' — '+I18N.t('winDesc2'));
       launchConfetti();
     }, 500);
   }
@@ -916,21 +931,28 @@ function triggerGameOver(){
       color:colors[i%colors.length],s:4+Math.random()*12,life:1,rot:0,rotV:(Math.random()-.5)*.4});
   }
   flashScreen('rgba(255,100,0,.5)');
-  setTimeout(()=>{ document.getElementById('over-screen').style.display='flex'; }, 1400);
+  setTimeout(()=>{
+    document.getElementById('over-screen').style.display='flex';
+    finDePartie('fin-over', I18N.t('overTitle'), score+' pts — '+texteBrut(I18N.t('overDesc')));
+  }, 1400);
 }
 
-function restartGame(){
+function restartGame(prioritaires){
   document.getElementById('intro-screen').style.display='none';
   document.getElementById('win-screen').style.display='none';
   document.getElementById('over-screen').style.display='none';
-  startGame();
+  startGame(prioritaires);
 }
 
 /* ═══════════════════════════════════════════════════
    START
 ═══════════════════════════════════════════════════ */
-function startGame(){
+function startGame(prioritaires){
+  // appelée aussi depuis un onclick : l'événement n'est pas une liste de questions
+  prioritaires = Array.isArray(prioritaires) ? prioritaires : null;
   score=0;lives=3;qIndex=0;destroyedCount=0;answered=false;
+  joue=[];
+  ColFin.protegerSortie(true);
   scrollY=0;planet.landed=false;planet.landAnim=0;planet._drawR=90;planet._drawX=0.5;planet._drawY=H*0.12;planet.landDustParts=[];
   lastAsteroidSpawn=performance.now()+2000;
   asteroids.length=0; lasers.length=0; activeAsteroid=null;
@@ -947,7 +969,13 @@ function startGame(){
     persistentUsed = new Set();
     available = [...QUESTIONS];
   }
-  const shuffled = [...available].sort(()=>Math.random()-.5);
+  let shuffled = [...available].sort(()=>Math.random()-.5);
+  // E2 : « rejouer mes erreurs » — les questions ratées passent en tête ; la mission garde ses
+  // règles (13 questions, 10 astéroïdes à détruire), le reste du paquet complète.
+  if(prioritaires){
+    const prio = QUESTIONS.filter(q => prioritaires.includes(q.text));
+    shuffled = prio.concat([...QUESTIONS].filter(q => !prioritaires.includes(q.text)).sort(()=>Math.random()-.5));
+  }
   qPool = shuffled.slice(0, 13);
   usedQuestions = new Set(qPool.map(q=>q.text));
   // La sauvegarde se fait question par question dans openQuestion()
