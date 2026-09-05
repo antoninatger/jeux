@@ -106,6 +106,11 @@
   }
 
   canvas { display: block; max-width: 100%; height: auto; }
+  /* E2 : à la fin de la partie, l'overlay quitte le canvas et prend sa place dans le
+     flux : le récapitulatif a la hauteur qu'il lui faut au lieu de défiler dans 546 px
+     (366 px en mobile), et le message superposé au canvas ne le recouvre plus. */
+  .arena-wrap.fin canvas, .arena-wrap.fin .canvas-feedback { display: none; }
+  .arena-wrap.fin .overlay { position: relative; inset: auto; min-height: 546px; }
 
   /* Info panel */
   .side-panel {
@@ -240,7 +245,7 @@
     text-shadow: 0 0 20px var(--red);
     text-align: center;
   }
-  .overlay p {
+  .overlay > p {
     font-size: 14px;
     color: #b9b9e0;
     text-align: center;
@@ -426,6 +431,9 @@ let revealTimeout = null;
 // à la place du tirage entièrement aléatoire d'avant qui pouvait répéter une question.
 let sessionQuestions = [];
 let qIndex = 0;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de l'arcade.
+let joue = [];
 
 const ITEM_COUNT_CORRECT = 1;
 const ITEM_COUNT_WRONG = 3;
@@ -535,6 +543,8 @@ function init() {
   // question qui revient avant que les autres soient passées.
   sessionQuestions = shuffleArr(DEFAULT_QCM);
   qIndex = 0;
+  joue = [];
+  ColFin.protegerSortie(true);
   currentQuestion = sessionQuestions[qIndex];
   spawnItems();
   updateHUD();
@@ -569,14 +579,18 @@ function getSpeed() {
   return Math.max(40, base - (level - 1) * 15);
 }
 
-function startGame() {
-  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
-  if (typeof QCMStore !== 'undefined') {
-    var _p = QCMStore.getSessionQuestions();
+function startGame(pool) {
+  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub) — E2 : les jamais
+  // vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs ».
+  // (appelée aussi comme gestionnaire de clic : l'événement n'est pas un paquet)
+  if (Array.isArray(pool)) window.DEFAULT_QCM = pool;
+  else if (typeof QCMStore !== 'undefined') {
+    var _p = QCMStore.getSessionQuestions(QCMStore.cleMemoire());
     if (_p && _p.length) window.DEFAULT_QCM = _p;
   }
   init();
   overlay.classList.add('hidden');
+  overlay.parentElement.classList.remove('fin');
   running = true;
   paused = false;
   clearInterval(gameLoop);
@@ -613,6 +627,7 @@ function tick() {
         try { localStorage.setItem('snake-arcade-highscore', String(highScore)); } catch (e) {}
       }
       correctCount++;
+      joue.push({ id: currentQuestion.q, titre: currentQuestion.q, reussi: true, explication: currentQuestion.expl || '' });
       spawnParticles(head.x, head.y, '#69f0ae');
       setFeedback('good', I18N.t('goodA') + (10*level) + I18N.t('goodB'), currentQuestion.expl);
       if (correctCount % 5 === 0) {
@@ -630,6 +645,7 @@ function tick() {
     } else {
       // Wrong!
       lives--;
+      joue.push({ id: currentQuestion.q, titre: currentQuestion.q, reussi: false, explication: currentQuestion.expl || '' });
       spawnParticles(head.x, head.y, '#ff5252');
       setFeedback('bad', I18N.t('wrongFb'), currentQuestion.expl);
       snake.pop();
@@ -694,6 +710,18 @@ function spawnParticles(gx, gy, color) {
   }
 }
 
+/* E2 : l'écran de fin — titre, score, questions ratées avec leur explication, « rejouer
+   mes erreurs », rejouer, retour au hub — est rendu par ColFin dans l'overlay du canvas. */
+function finDePartie(titre, message) {
+  overlay.parentElement.classList.add('fin');
+  overlay.innerHTML = '<div class="col-fin" id="ecran-fin"></div>';
+  ColFin.rendre({
+    cible: overlay.firstElementChild, jeu: (typeof QCMStore !== 'undefined') ? QCMStore.cleMemoire() : 'arcade',
+    titre, message, score: correctCount, total: joue.length, items: joue,
+    onRejouer: rates => startGame(sessionQuestions.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startGame()
+  });
+}
 function die(reason) {
   clearInterval(gameLoop);
   running = false;
@@ -701,20 +729,8 @@ function die(reason) {
   overlay.classList.remove('hidden');
   // Chantier 04 : la question en cours reste sans réponse — on affiche son
   // explication plutôt que de laisser le joueur sur son erreur.
-  const expl = (currentQuestion && currentQuestion.expl)
-    ? `<p style="font-size:14px;color:#ffe9b0;max-width:420px;line-height:1.55">💡 ${currentQuestion.expl}</p>`
-    : '';
-  overlay.innerHTML = `
-    <div class="game-over-title">GAME OVER</div>
-    <div class="score-display">${I18N.t('hudScore')} ${score}<br>${I18N.t('best')} ${highScore}</div>
-    <p style="font-size:14px;color:#b9b9e0">${reason}</p>
-    ${expl}
-    <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
-      <button class="btn" id="startBtn">${I18N.t('replay')}</button>
-      <button class="btn-menu" onclick="location.href='index.html'">${I18N.t('menuQ')}</button>
-    </div>
-  `;
-  document.getElementById('startBtn').addEventListener('click', startGame);
+  const expl = (currentQuestion && currentQuestion.expl) ? ' 💡 ' + currentQuestion.expl : '';
+  finDePartie('GAME OVER', `${I18N.t('hudScore')} ${score} · ${I18N.t('best')} ${highScore} — ${reason}${expl}`);
 }
 
 // F4 : écran de victoire quand la session est épuisée — le jeu n'en avait
@@ -724,16 +740,8 @@ function winGame() {
   running = false;
   draw();
   overlay.classList.remove('hidden');
-  overlay.innerHTML = `
-    <div class="game-over-title" style="color:var(--green);text-shadow:0 0 20px var(--green)">${I18N.t('winTitle')}</div>
-    <div class="score-display">${I18N.t('hudScore')} ${score}<br>${I18N.t('best')} ${highScore}</div>
-    <p style="font-size:14px;color:#b9b9e0">${I18N.t('winMsg')}</p>
-    <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
-      <button class="btn" id="startBtn">${I18N.t('replay')}</button>
-      <button class="btn-menu" onclick="location.href='index.html'">${I18N.t('menuQ')}</button>
-    </div>
-  `;
-  document.getElementById('startBtn').addEventListener('click', startGame);
+  const d = document.createElement('div'); d.innerHTML = I18N.t('winTitle').replace(/<br\s*\/?>/gi, ' ');   // la clé contient des <br>
+  finDePartie(d.textContent, `${I18N.t('hudScore')} ${score} · ${I18N.t('best')} ${highScore} — ${I18N.t('winMsg')}`);
 }
 
 function updateHUD() {
