@@ -82,6 +82,8 @@ body{
    milieu de la page). */
 #wrap{position:relative;width:800px;max-width:100%;margin-top:auto;margin-bottom:auto;}
 #gameArea{position:relative}
+/* E2 : à la fin de la partie, le récapitulatif ColFin prend la place du canvas. */
+#gameArea.fin canvas, #gameArea.fin #actionBtn{display:none}
 #game{
   display:block;width:800px;aspect-ratio:800/460;height:auto;max-width:100%;
   border:3px solid #c8440a;
@@ -142,6 +144,8 @@ body{
   <div id="gameArea">
     <canvas id="game" width="800" height="460"></canvas>
     <button id="actionBtn" type="button"></button>
+    <!-- E2 : écran de fin rendu par ColFin (titre, score, questions ratées, rejouer mes erreurs) à la place du canvas -->
+    <div class="col-fin" id="ecran-fin" hidden></div>
   </div>
   <div id="explbar" class="idle" aria-live="polite">
     <span id="expllabel" data-i18n="explLabel">💡 POURQUOI :</span>
@@ -158,8 +162,9 @@ body{
 // est chargé avant ce script comme dans les cinq autres jeux de l'arcade.
 
 // ── Construction de la session (série du hub + longueur 5/10/30) ──
-function buildSession(){
-  var src = (typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions() : null;
+function buildSession(pool){
+  // E2 : les jamais vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs »
+  var src = pool ? pool.slice() : ((typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions(QCMStore.cleMemoire()) : null);
   // Sans série choisie au hub : série par défaut DANS LA LANGUE COURANTE
   // (questions.js / questions-en.js), comme les autres jeux de l'arcade.
   if(!(src && src.length && src[0].options) && typeof DEFAULT_QCM!=='undefined' && DEFAULT_QCM.length && DEFAULT_QCM[0].options){
@@ -168,6 +173,7 @@ function buildSession(){
     src = src.slice(0, (typeof QCMStore!=='undefined') ? QCMStore.loadSessionCount() : 10);
   }
   // Chantier 04 : `expl` était perdu ici — le champ n'arrivait jamais jusqu'au jeu.
+  SESSION_SRC = src;
   return src.map(function(item){
     return {q:item.q, expl:item.expl,
             opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
@@ -242,6 +248,28 @@ var gstate = 'title'; // title | playing | gameover | win
 var frame=0, bgX=0, shakeT=0, flashT=0, flashCol='#ff8800';
 var score=0, lives=3;
 var SESSION=[], qIdx=0, curQ=null, cleared=false;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est ratée dès qu'elle coûte une vie (la vraie info a été abattue).
+var SESSION_SRC=[], joue=[], erreurQ=false, qNotee=false;
+function noterQuestion(){
+  if(!curQ||qNotee) return;
+  qNotee=true;
+  joue.push({id:curQ.q, titre:curQ.q, reussi:!erreurQ, explication:curQ.expl||''});
+}
+function titreBrut(html){ var d=document.createElement('div'); d.innerHTML=String(html).replace(/<br\s*\/?>/gi,' '); return d.textContent; }
+function finDePartie(win){
+  document.getElementById('gameArea').classList.add('fin');
+  var cible=document.getElementById('ecran-fin'); cible.hidden=false;
+  ColFin.rendre({
+    cible:cible, jeu:(typeof QCMStore!=='undefined')?QCMStore.cleMemoire():'arcade',
+    titre: win ? titreBrut(I18N.t('winTitle')) : 'GAME OVER',
+    message: I18N.t('finalScore')+score+' — '+I18N.t(win?'winMsg':'loseMsg'),
+    score: joue.filter(function(j){ return j.reussi; }).length, total: joue.length, items: joue,
+    onRejouer: function(rates){ startGame(SESSION_SRC.filter(function(q){ return rates.some(function(r){ return r.id===q.q; }); })); },
+    onRecommencer: function(){ startGame(); }
+  });
+}
 
 var hero = {x:130,y:GY,vy:0,onGround:true,shootCD:0,walkF:0,shootFX:0};
 var bullets=[], bubbles=[], particles=[], floats=[];
@@ -272,7 +300,7 @@ cv.addEventListener('click',function(){
 var actionBtn=document.getElementById('actionBtn');
 actionBtn.addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
 function syncActionBtn(){
-  if(gstate==='playing'){ actionBtn.hidden=true; return; }
+  if(gstate!=='title'){ actionBtn.hidden=true; return; } // E2 : à la fin, « rejouer » est dans le récapitulatif ColFin
   actionBtn.hidden=false;
   actionBtn.textContent = (gstate==='title') ? I18N.t('playBtn') : I18N.t('replayBtn');
 }
@@ -280,11 +308,17 @@ function syncActionBtn(){
 // ══════════════════════════════════════════════
 // CORE
 // ══════════════════════════════════════════════
-function startGame(){
+function startGame(pool){
+  // appelée aussi depuis un clic ou une touche : l'événement n'est pas un paquet
+  pool = Array.isArray(pool) ? pool : null;
   score=0;lives=3;shakeT=0;flashT=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  document.getElementById('gameArea').classList.remove('fin');
+  document.getElementById('ecran-fin').hidden=true;
   hero={x:130,y:GY,vy:0,onGround:true,shootCD:0,walkF:0,shootFX:0};
   bullets=[];particles=[];floats=[];
-  SESSION=buildSession();
+  SESSION=buildSession(pool);
   qIdx=0;
   loadQ();
   gstate='playing';
@@ -294,6 +328,7 @@ function startGame(){
 function loadQ(){
   curQ=SESSION[qIdx];
   cleared=false;
+  erreurQ=false; qNotee=false;
   bullets=[];
   document.getElementById('qtext').textContent='('+(qIdx+1)+'/'+SESSION.length+') '+curQ.q;
   resetExpl();
@@ -374,9 +409,9 @@ function doShoot(){
 }
 
 function loseLife(msg,fx,fy){
-  lives--;shakeT=11;
+  lives--;shakeT=11;erreurQ=true;
   addFloat(fx||hero.x,(fy||hero.y-70),msg||I18N.t('lostLife'),'#ff3355');
-  if(lives<=0){ gstate='gameover'; syncActionBtn(); }
+  if(lives<=0){ gstate='gameover'; syncActionBtn(); noterQuestion(); finDePartie(false); }
 }
 
 function boom(x,y,col,n){
@@ -463,7 +498,7 @@ function update(){
   // Avancer vers la droite quand tout est détruit → question suivante
   if(cleared&&hero.x>=W-40){
     qIdx++;
-    if(qIdx>=SESSION.length){ gstate='win'; syncActionBtn(); }
+    if(qIdx>=SESSION.length){ gstate='win'; syncActionBtn(); finDePartie(true); }
     else { hero.x=60; loadQ(); }
   }
 
@@ -484,6 +519,7 @@ function checkCleared(){
     if(bubbles[i].bad&&bubbles[i].alive) return;
   }
   cleared=true;
+  noterQuestion();
   score+=100;
   // Pédagogie : révéler la bonne réponse en vert
   for(var j=0;j<bubbles.length;j++){
