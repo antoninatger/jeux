@@ -520,8 +520,8 @@
       else if (choix === 'rassurant') tete = '❌ C’est exactement l’effet recherché. ';
       else                            tete = '❌ Ce n’est pas ce détail qui trahit le message. ';
     } else {
-      nature = '😐 C’était un détail neutre, que personne n’a placé là pour vous tromper — ';
-      defaut = 'Ce détail ne prouve rien, ni dans un sens ni dans l’autre.';
+      nature = '😐 C’était un détail neutre — ';
+      defaut = 'Il ne prouve rien, ni dans un sens ni dans l’autre.';
       if (juste)                   tete = '🎯 Vous avez eu raison&nbsp;: ce détail ne prouve rien. ';
       else if (choix === 'louche') tete = '❌ Méfiance de trop&nbsp;: ce détail n’accuse personne. ';
       else                         tete = '❌ À ne pas prendre pour une garantie. ';

@@ -1284,6 +1284,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the pressure phrase.",
       "note": "False urgency pushes you to click."
+    },
+    {
+      "texte": "3e095272b3fe4c7996b",
+      "bon": false,
+      "type": "leurre",
+      "note": "Impressive, but it is set dressing: a string of characters meant to look “official”."
     }
   ],
   "email-motdepasse": [
@@ -1330,6 +1336,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is there an unexpected attachment?",
       "note": "Unknown attachment: do not open."
+    },
+    {
+      "texte": "-PLeaSe.ConfIrM Receipt!!-",
+      "bon": true,
+      "aide": "Does the layout of this message look normal to you?",
+      "note": "Broken formatting (capitals, dashes) used to slip past spam filters."
     }
   ],
   "email-panneaux": [
@@ -1350,6 +1362,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is the date coherent?",
       "note": "Already expired date."
+    },
+    {
+      "texte": "will not be able to handle every request",
+      "bon": true,
+      "aide": "Look for what suggests you must hurry before there is nothing left.",
+      "note": "Artificial scarcity, to create urgency."
     }
   ],
   "chat-celebrite": [
@@ -1370,6 +1388,12 @@ const REPERES = {
       "bon": true,
       "aide": "Look for secrecy.",
       "note": "Secrecy isolates the victim."
+    },
+    {
+      "texte": "You are the only one who truly understands me",
+      "bon": false,
+      "type": "leurre",
+      "note": "Touching… and calculated: flattery is there to win your trust."
     }
   ],
   "appel-banque": [
@@ -1390,6 +1414,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is a bank allowed to ask for an SMS code?",
       "note": "A bank never asks you to dictate a code."
+    },
+    {
+      "texte": "confirm your app password",
+      "bon": true,
+      "aide": "Would a real adviser ask you for your password?",
+      "note": "A real adviser never asks for your password."
     }
   ],
   "chat-faux-proche": [
@@ -1410,6 +1440,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the money request.",
       "note": "Urgent money request: verify by calling."
+    },
+    {
+      "texte": "can’t access my banking app",
+      "bon": true,
+      "aide": "Why can this person not pay the bill themselves?",
+      "note": "An excuse to justify not paying themselves."
     }
   ],
   "image-deepfake": [
@@ -1424,6 +1460,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the emotional hook.",
       "note": "Sensational wording."
+    },
+    {
+      "texte": "Shared 48,000 times",
+      "bon": false,
+      "type": "neutre",
+      "note": "The number of shares proves nothing: fakes spread very fast."
     }
   ],
   "sms-ameli": [
@@ -1448,6 +1490,7 @@ const REPERES = {
     {
       "texte": "AMELI-INFO",
       "bon": false,
+      "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “AMELI-INFO”. It proves nothing — neither that a message is fake, nor that it is genuine."
     }
   ],
@@ -1469,6 +1512,12 @@ const REPERES = {
       "bon": true,
       "aide": "Would antivirus ask you to call?",
       "note": "Real antivirus alerts do not ask you to call a number."
+    },
+    {
+      "texte": "banking data are at risk",
+      "bon": false,
+      "type": "neutre",
+      "note": "A genuine security alert says the same thing: this sentence does not tell the real from the fake. What gives it away here is the number to call."
     }
   ],
   "chat-emploi": [
@@ -1489,6 +1538,12 @@ const REPERES = {
       "bon": true,
       "aide": "Are you asked to pay to work?",
       "note": "Paying to work is an absolute red flag."
+    },
+    {
+      "texte": "no experience required",
+      "bon": false,
+      "type": "leurre",
+      "note": "It is written to put you at ease, and that is exactly its job here."
     }
   ],
   "sms-colis-photo-ia": [
@@ -1515,6 +1570,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is this the official carrier site?",
       "note": "Trapped link."
+    },
+    {
+      "texte": "sorting centre",
+      "bon": false,
+      "type": "leurre",
+      "note": "“Sorting centre” sounds very official… but it is only set dressing added under the fake photo."
     }
   ],
   "chat-faux-numero-invest": [
@@ -1541,6 +1602,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the money request.",
       "note": "They push you to invest money."
+    },
+    {
+      "texte": "between Paris and Singapore",
+      "bon": false,
+      "type": "leurre",
+      "note": "These snippets of life feel real… but they are invented to sound serious."
     }
   ],
   "email-airbnb-horsplateforme": [
@@ -1573,6 +1640,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the phrase that pressures you with time so you don't stop to think.",
       "note": "Urgency tone: “hurry”, “I cannot hold the dates” — they want you to pay before you think."
+    },
+    {
+      "texte": "Thank you for your interest",
+      "bon": false,
+      "type": "neutre",
+      "note": "A polite formula: pleasant, but this is not where the trap is."
     }
   ],
   "email-prenom-detourne": [
@@ -1591,6 +1664,7 @@ const REPERES = {
     {
       "texte": "no-reply@welcometothejungle.com",
       "bon": false,
+      "type": "neutre",
       "note": "Here the address is genuine: the email really does come from the site. The sender is not the problem — the injected text in place of your first name is."
     }
   ],
@@ -1610,11 +1684,13 @@ const REPERES = {
     {
       "texte": "CIC",
       "bon": false,
+      "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “CIC”. Recognising your own bank therefore proves nothing — what makes this message reliable is that it asks for no code and no click."
     },
     {
       "texte": "€54.90 at FNAC",
       "bon": false,
+      "type": "neutre",
       "note": "That is just the purchase detail: neither a good nor a bad sign in itself."
     }
   ],
@@ -1640,6 +1716,7 @@ const REPERES = {
     {
       "texte": "New sign-in on Windows",
       "bon": false,
+      "type": "neutre",
       "note": "This sentence is frightening, and rightly so: it describes a real risk. But an alarming sentence is neither proof of a scam nor proof of the opposite. What settles it is what you are asked to do — here, nothing urgent."
     }
   ],
@@ -1675,6 +1752,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the normal technical detail.",
       "note": "Normal one-time code detail."
+    },
+    {
+      "texte": "483 920",
+      "bon": false,
+      "type": "neutre",
+      "note": "The code itself is not a clue: what matters is never to pass it on."
     }
   ],
   "notif-virement-ok": [
@@ -1693,6 +1776,7 @@ const REPERES = {
     {
       "texte": "Paul Durand",
       "bon": false,
+      "type": "neutre",
       "note": "The sender's name is only a line of text copied along with the transfer: the bank did not verify it for you. Knowing him proves nothing, and not knowing him proves nothing either. What is reassuring here is where the notification comes from and the fact that nothing is asked of you."
     }
   ],
@@ -1708,6 +1792,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the unsubscribe option.",
       "note": "Clear unsubscribe option."
+    },
+    {
+      "texte": "Thank you for your loyalty",
+      "bon": false,
+      "type": "neutre",
+      "note": "A polite formula: pleasant, but not a clue."
     }
   ],
   "chat-famille-ok": [
@@ -1772,6 +1862,7 @@ const REPERES = {
     {
       "texte": "100% secure payment",
       "bon": false,
+      "type": "leurre",
       "note": "A fake shop can easily write “secure payment” too: the claim alone proves nothing."
     }
   ],
@@ -1797,6 +1888,7 @@ const REPERES = {
     {
       "texte": "Payment failed",
       "bon": false,
+      "type": "neutre",
       "note": "A real service can write this too one day: it is the address and the link that give the scam away, not this phrase alone."
     }
   ],
@@ -1822,6 +1914,7 @@ const REPERES = {
     {
       "texte": "€200",
       "bon": false,
+      "type": "neutre",
       "note": "The item’s price itself is not a clue: the scam plays out around it."
     }
   ],
@@ -1829,6 +1922,7 @@ const REPERES = {
     {
       "texte": "TAX-OFFICE",
       "bon": false,
+      "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “TAX-OFFICE”. It proves nothing — neither that a message is fake, nor that it is genuine."
     },
     {
@@ -1866,6 +1960,7 @@ const REPERES = {
     {
       "texte": "subject to conditions",
       "bon": false,
+      "type": "leurre",
       "note": "A vague, reassuring phrase… but one you’ll also find in real ads: it proves nothing on its own."
     }
   ],
@@ -1885,6 +1980,7 @@ const REPERES = {
     {
       "texte": "See you Saturday",
       "bon": false,
+      "type": "neutre",
       "note": "A polite closing line: nice, but not where the important information is."
     }
   ],
@@ -1904,6 +2000,7 @@ const REPERES = {
     {
       "texte": "Shared 62,000 times",
       "bon": false,
+      "type": "neutre",
       "note": "The number of shares proves nothing: fake content can spread just as fast, or faster, than real news."
     }
   ],
@@ -1929,6 +2026,7 @@ const REPERES = {
     {
       "texte": "I liked your profile right away",
       "bon": false,
+      "type": "neutre",
       "note": "A generic opening compliment: pleasant, but not a clue on its own."
     }
   ],
@@ -1954,6 +2052,7 @@ const REPERES = {
     {
       "texte": "still available",
       "bon": false,
+      "type": "neutre",
       "note": "A generic seller reply: pleasant, but not a clue on its own."
     }
   ],
@@ -1979,6 +2078,7 @@ const REPERES = {
     {
       "texte": "bank transfer",
       "bon": false,
+      "type": "leurre",
       "note": "That really is how the health insurance fund pays refunds: this line is true and gives nothing away. The trap is elsewhere."
     }
   ],
@@ -2010,6 +2110,7 @@ const REPERES = {
     {
       "texte": "b2f705a9136c2f36",
       "bon": false,
+      "type": "leurre",
       "note": "A genuine anti-robot check does display an identifier like this. It is not what gives the scam away — what you are asked to do is."
     }
   ],
@@ -2035,6 +2136,7 @@ const REPERES = {
     {
       "texte": "My documents",
       "bon": false,
+      "type": "neutre",
       "note": "The exact name of a section looks serious, but it can be copied from the real website in two minutes. A fake email quotes the right sections too: this detail is not what makes the message reliable."
     }
   ],
@@ -2060,6 +2162,7 @@ const REPERES = {
     {
       "texte": "Colissimo",
       "bon": false,
+      "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “Colissimo”. It proves nothing — neither that a message is fake, nor that it is genuine."
     }
   ],
@@ -2085,6 +2188,7 @@ const REPERES = {
     {
       "texte": "CIC — fraud team",
       "bon": false,
+      "type": "neutre",
       "note": "The name and number shown during a call can be faked (“spoofing”): they prove neither that it is your bank nor the opposite. What makes this call reliable is that nothing is asked of you."
     }
   ],
@@ -2110,6 +2214,7 @@ const REPERES = {
     {
       "texte": "A new reimbursement is available",
       "bon": false,
+      "type": "neutre",
       "note": "“A reimbursement available” is exactly the bait of the fake ameli text. The sentence is the same: what differs is that here nothing is asked of you to get it."
     }
   ],
@@ -2135,6 +2240,7 @@ const REPERES = {
     {
       "texte": "no. 4471902",
       "bon": false,
+      "type": "neutre",
       "note": "An order number looks serious, but it can be invented in three seconds. What makes this message reliable is that the order exists and nothing is asked of you."
     }
   ],
@@ -2160,6 +2266,7 @@ const REPERES = {
     {
       "texte": "PharmacieCentrale",
       "bon": false,
+      "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “PharmacieCentrale”. It proves nothing — neither that a message is fake, nor that it is genuine."
     }
   ],
@@ -2185,6 +2292,7 @@ const REPERES = {
     {
       "texte": "Hi Grandma!",
       "bon": false,
+      "type": "neutre",
       "note": "A scammer also opens with “Hi Grandma”. The affectionate greeting proves nothing: what is reassuring here is the number already saved and the absence of any request."
     }
   ],
@@ -2210,6 +2318,7 @@ const REPERES = {
     {
       "texte": "Harmonie Mutuelle",
       "bon": false,
+      "type": "neutre",
       "note": "The displayed name is free text: a fake message can display “Harmonie Mutuelle” just as easily as a real one. It is the full address, just below it, that can be checked."
     }
   ],
@@ -2235,6 +2344,7 @@ const REPERES = {
     {
       "texte": "Ma Banque",
       "bon": false,
+      "type": "neutre",
       "note": "Seeing the names of your real apps is reassuring, but this notification comes from the app store, not from them. A name quoted in a text proves nothing: what counts is where the notification comes from."
     }
   ],
@@ -2260,6 +2370,7 @@ const REPERES = {
     {
       "texte": "at €99",
       "bon": false,
+      "type": "neutre",
       "note": "The amount jumps out, and that is exactly what fake payment notices play on. A figure proves nothing: what counts is that you are asked for no card and no click."
     }
   ],
@@ -2285,6 +2396,7 @@ const REPERES = {
     {
       "texte": "02 96 41 12 08",
       "bon": false,
+      "type": "neutre",
       "note": "A local number, looking like your council's, proves nothing: caller ID can be faked (“spoofing”). What makes this call reliable is that you are asked for no money and no signature."
     }
   ],
@@ -2310,6 +2422,7 @@ const REPERES = {
     {
       "texte": "Doctolib",
       "bon": false,
+      "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “Doctolib”. It proves nothing — neither that a message is fake, nor that it is genuine."
     }
   ],
@@ -2335,6 +2448,7 @@ const REPERES = {
     {
       "texte": "Attached you will find",
       "bon": false,
+      "type": "neutre",
       "note": "An attachment is frightening, and rightly so: it is the favourite vehicle for viruses. But this one is expected, it comes from a known sender, and its content also arrives by post. It is not the attachment that decides, it is whether it was expected or not."
     }
   ],
@@ -2360,6 +2474,7 @@ const REPERES = {
     {
       "texte": "€214.60",
       "bon": false,
+      "type": "neutre",
       "note": "That is the figure that jumps out, and the one you look at first. But a high amount is neither proof of a scam nor proof of the opposite: what counts is that you are asked for no link, no card and no new bank details."
     }
   ]

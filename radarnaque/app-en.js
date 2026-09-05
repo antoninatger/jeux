@@ -519,8 +519,8 @@
       else if (choix === 'rassurant') tete = '❌ That is exactly the intended effect. ';
       else                            tete = '❌ This is not the detail that gives the message away. ';
     } else {
-      nature = '😐 It was a neutral detail, that nobody planted to mislead you — ';
-      defaut = 'This detail proves nothing, one way or the other.';
+      nature = '😐 It was a neutral detail — ';
+      defaut = 'It proves nothing, one way or the other.';
       if (juste)                   tete = '🎯 You were right: this detail proves nothing. ';
       else if (choix === 'louche') tete = '❌ Suspicion misplaced: this detail accuses nobody. ';
       else                         tete = '❌ Do not take it as a guarantee. ';
