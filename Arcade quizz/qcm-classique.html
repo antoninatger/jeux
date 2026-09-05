@@ -312,18 +312,10 @@ body::before{
 
 <!-- ── RESULTS ────────────────────────────────────────────── -->
 <div id="results">
-  <div class="res-title" id="res-title" data-i18n="resTitle">BRAVO !</div>
-  <div class="score-ring" id="score-ring">
-    <div class="score-inner">
-      <div class="score-num" id="final-score">0</div>
-      <div class="score-label" id="final-label">sur 30</div>
-    </div>
-  </div>
+  <!-- E2 : titre, score, questions ratées avec leur explication et boutons (rejouer mes
+       erreurs, rejouer, retour au hub) sont rendus par ColFin ; le bilan par thème suit. -->
+  <div class="col-fin" id="ecran-fin"></div>
   <div class="breakdown" id="breakdown"></div>
-  <div class="res-actions">
-    <button class="btn-restart" onclick="restart()" data-i18n="replay">🔄 REJOUER</button>
-    <a class="btn-home" href="index.html" data-i18n="home">← ACCUEIL</a>
-  </div>
 </div>
 
 <script>
@@ -340,6 +332,9 @@ if (activeInfo.count) {
 // ── State ────────────────────────────────────────────────────
 let shuffled = [], current = 0, score = 0, answered = false;
 let catStats = {};
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de l'arcade.
+let joue = [];
 let autoAdvTimer = null;
 
 function shuffle(arr) {
@@ -352,9 +347,10 @@ function shuffle(arr) {
 }
 
 // ── Start ────────────────────────────────────────────────────
-function startGame() {
-  // Tirage de la partie : sessionCount questions au hasard dans la série du hub
-  let raw = QCMStore.getSessionQuestions();
+function startGame(pool) {
+  // Tirage de la partie : sessionCount questions au hasard dans la série du hub —
+  // E2 : les jamais vues d'abord (mémoire ColFin), ou le paquet imposé par « rejouer mes erreurs »
+  let raw = Array.isArray(pool) ? pool : QCMStore.getSessionQuestions(QCMStore.cleMemoire());
   if (!raw || !raw.length) raw = (typeof DEFAULT_QCM !== 'undefined') ? shuffle(DEFAULT_QCM).slice(0, QCMStore.loadSessionCount()) : [];
   if (!raw.length) { alert(I18N.t('noQuestions')); return; }
 
@@ -367,13 +363,14 @@ function startGame() {
   });
 
   current = 0; score = 0; answered = false; catStats = {};
+  joue = [];
+  ColFin.protegerSortie(true);
   clearTimeout(autoAdvTimer);
   document.getElementById('overlay').style.display = 'none';
   document.getElementById('results').style.display = 'none';
   const game = document.getElementById('game');
   game.style.display = 'flex';
   document.getElementById('q-total').textContent = shuffled.length;
-  document.getElementById('final-label').textContent = I18N.t('ofLabel') + ' ' + shuffled.length;
   loadQ();
 }
 
@@ -417,6 +414,8 @@ function pick(i, correct, expl, cat) {
   btns.forEach(b => b.disabled = true);
 
   const fb = document.getElementById('feedback');
+  const q = shuffled[current];
+  joue.push({ id: q.q, titre: q.q, reussi: i === correct, explication: expl || '' });
   if (i === correct) {
     btns[i].classList.add('correct');
     score++;
@@ -463,10 +462,13 @@ function showResults() {
   else if (pct >= .5) title = I18N.t('titrePasMal');
   else                title = I18N.t('titreCourage');
 
-  document.getElementById('res-title').textContent = title;
-  document.getElementById('final-score').textContent = score;
-  const ring = document.getElementById('score-ring');
-  ring.style.setProperty('--pct', (pct * 100) + '%');
+  // E2 : titre, score, questions ratées et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: QCMStore.cleMemoire(), titre: title,
+    score: score, total: shuffled.length, items: joue,
+    onRejouer: rates => startGame(shuffled.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startGame()
+  });
 
   let html = '<div class="breakdown-title">' + I18N.t('resultsByTheme') + '</div>';
   const entries = Object.entries(catStats).sort((a, b) => b[1].t - a[1].t);
