@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Més / Dés / Mal — Le tri de l'info</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<title data-i18n="pageTitle">Més · Dés · Mal — le tri de l'info : mésinformation, désinformation, malinformation</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu de tri de l'information : pour chaque situation, décide s'il s'agit de mésinformation, de désinformation ou de malinformation, selon le vocabulaire de l'UNESCO.">
+<link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,6 +21,19 @@
     --mes: #2dd4bf;   /* mésinformation — vert/turquoise (erreur, pas d'intention) */
     --des: #f43f5e;   /* désinformation — rouge (faux + intention de nuire) */
     --mal: #f59e0b;   /* malinformation — orange (vrai mais détourné pour nuire) */
+    /* Identité du jeu sur le socle (chantier 05) : le socle impose la
+       structure, l'échelle typographique et le contraste ; ces rôles portent
+       la direction artistique — nuit bleue, les trois couleurs de catégorie,
+       Baloo 2. Les noms historiques ci-dessus restent en usage dans la
+       feuille, ils deviennent des alias. --muted est un blanc à 62 % : sa
+       valeur composée sur --bg est #979ba4, 6,9:1. */
+    --surface: var(--card);
+    --bordure: var(--line);
+    --txt-secondaire: #979ba4;
+    --acc: var(--mes);
+    --acc-txt: #0a0e1a;
+    --font-texte: 'Baloo 2', system-ui, sans-serif;
+    --font-titre: 'Baloo 2', system-ui, sans-serif;
   }
 
   body {
@@ -29,15 +42,26 @@
     min-height: 100vh;
     color: var(--txt);
     -webkit-font-smoothing: antialiased;
-    padding: 18px;
-    display: flex;
-    justify-content: center;
+    padding: 0 18px 18px;
   }
 
-  .app { width: 100%; max-width: 760px; }
+  /* <main> : cible du lien d'évitement du socle, et centrage du jeu que
+     <body> assurait avant que l'en-tête unifié ne s'y insère. */
+  .app { width: 100%; max-width: 760px; margin: 0 auto; }
 
   /* ---------- En-tête ---------- */
-  header { text-align: center; margin-bottom: 14px; }
+  /* Le <h1> tricolore passe dans l'en-tête unifié, qui n'a qu'une couleur de
+     titre : le dégradé vert → rouge → orange des trois catégories le
+     remplace, l'identité reste. */
+  .col-entete__titre {
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, var(--mes), var(--des) 50%, var(--mal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .titre-jeu { text-align: center; margin-bottom: 14px; }
   h1 {
     font-size: clamp(1.5rem, 4.5vw, 2.2rem);
     font-weight: 900;
@@ -61,13 +85,13 @@
   .hud .progress-wrap { flex: 1; }
   .hud .progress-label {
     display: flex; justify-content: space-between;
-    font-size: .72rem; font-weight: 700; color: var(--muted);
+    font-size: var(--fs-100); font-weight: 700; color: var(--muted);
     text-transform: uppercase; letter-spacing: .04em; margin-bottom: 5px;
   }
   .bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
   .bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--mes), #4361ee); border-radius: 99px; transition: width .35s ease; }
   .score { font-weight: 900; font-size: 1.35rem; min-width: 56px; text-align: right; }
-  .score small { font-size: .72rem; color: var(--muted); font-weight: 700; }
+  .score small { font-size: var(--fs-100); color: var(--muted); font-weight: 700; }
   .streak { font-size: .85rem; font-weight: 800; color: var(--mal); min-width: 44px; text-align: center; }
 
   /* ---------- Carte scénario ---------- */
@@ -80,7 +104,7 @@
   }
   .scene .tag {
     display: inline-block;
-    font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    font-size: var(--fs-100); font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
     color: var(--muted);
     background: rgba(255,255,255,.06);
     border: 1px solid var(--line);
@@ -106,7 +130,7 @@
   .choice:hover:not(:disabled) { transform: translateY(-3px); }
   .choice:disabled { cursor: default; }
   .choice .ttl { font-weight: 900; font-size: 1.02rem; display: block; }
-  .choice .def { font-size: .76rem; color: var(--muted); font-weight: 600; margin-top: 3px; line-height: 1.25; }
+  .choice .def { font-size: var(--fs-100); color: var(--muted); font-weight: 600; margin-top: 3px; line-height: 1.25; }
   .choice[data-c="mes"]:hover:not(:disabled){ border-color: var(--mes); }
   .choice[data-c="des"]:hover:not(:disabled){ border-color: var(--des); }
   .choice[data-c="mal"]:hover:not(:disabled){ border-color: var(--mal); }
@@ -176,7 +200,7 @@
   /* Scénario sous forme d'échange de textos */
   .chat { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
   .chat .bubble { max-width: 82%; padding: 9px 13px; border-radius: 16px; font-size: 1rem; font-weight: 600; line-height: 1.4; position: relative; opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
-  .chat .bubble .who { display: block; font-size: .72rem; font-weight: 800; opacity: .7; margin-bottom: 2px; }
+  .chat .bubble .who { display: block; font-size: var(--fs-100); font-weight: 800; opacity: .7; margin-bottom: 2px; }
   .chat .bubble.them { align-self: flex-start; background: #283251; border-bottom-left-radius: 5px; }
   .chat .bubble.me { align-self: flex-end; background: linear-gradient(135deg, var(--mes), #3aa6e0); color: #0a0e1a; border-bottom-right-radius: 5px; }
   .chat .bubble.me .who { opacity: .55; }
@@ -193,28 +217,28 @@
   .fr-post .hd { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
   .fr-post .av { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#3a4a7a,#26304d); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
   .fr-post .nm { font-weight:800; font-size:.95rem; }
-  .fr-post .ha { font-size:.78rem; color:var(--muted); font-weight:600; }
+  .fr-post .ha { font-size:var(--fs-100); color:var(--muted); font-weight:600; }
   .fr-post .bd { font-size:1.05rem; font-weight:600; line-height:1.45; }
-  .fr-post .badge { font-size:.66rem; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#fca5a5; border:1px solid rgba(248,113,113,.4); padding:2px 7px; border-radius:99px; margin-left:auto; text-align:right; }
+  .fr-post .badge { font-size:var(--fs-100); font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#fca5a5; border:1px solid rgba(248,113,113,.4); padding:2px 7px; border-radius:99px; margin-left:auto; text-align:right; }
   .fr-post .ft { display:flex; gap:18px; margin-top:12px; color:var(--muted); font-size:.85rem; font-weight:700; }
 
-  .fr-fwd .fwd { font-size:.75rem; color:var(--muted); font-weight:700; font-style:italic; margin-bottom:8px; }
+  .fr-fwd .fwd { font-size:var(--fs-100); color:var(--muted); font-weight:700; font-style:italic; margin-bottom:8px; }
   .fr-fwd .msg { background:#283251; border-radius:14px; border-bottom-left-radius:5px; padding:10px 13px; font-size:1rem; font-weight:600; line-height:1.45; }
 
   .fr-notif { background:#1a2238; border:1px solid var(--line); border-radius:16px; padding:12px 14px; display:flex; gap:12px; align-items:flex-start; }
   .fr-notif .ic { width:40px; height:40px; border-radius:10px; background:#3a4a7a; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
-  .fr-notif .ap { font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:800; }
+  .fr-notif .ap { font-size:var(--fs-100); text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:800; }
   .fr-notif .ti { font-weight:800; font-size:1rem; margin:1px 0 3px; }
   .fr-notif .tx { font-size:.95rem; font-weight:600; line-height:1.4; }
 
   .fr-news, .fr-mail { background:#0e1424; border:1px solid var(--line); border-radius:16px; overflow:hidden; }
-  .fr-news .kick { background:var(--des); color:#fff; font-weight:900; font-size:.78rem; letter-spacing:.06em; padding:6px 14px; text-transform:uppercase; }
+  .fr-news .kick { background:var(--des); color:#fff; font-weight:900; font-size:var(--fs-100); letter-spacing:.06em; padding:6px 14px; text-transform:uppercase; }
   .fr-news .in, .fr-mail .in { padding:14px; }
   .fr-news .hl { font-size:1.18rem; font-weight:900; line-height:1.2; }
-  .fr-news .src { font-size:.78rem; color:var(--muted); font-weight:700; margin-top:8px; }
+  .fr-news .src { font-size:var(--fs-100); color:var(--muted); font-weight:700; margin-top:8px; }
   .fr-news .err { margin-top:10px; font-size:.85rem; font-weight:700; color:var(--mes); border-top:1px solid var(--line); padding-top:8px; }
 
-  .fr-mail .leak { background:var(--mal); color:#0a0e1a; font-weight:900; font-size:.78rem; padding:6px 14px; letter-spacing:.03em; }
+  .fr-mail .leak { background:var(--mal); color:#0a0e1a; font-weight:900; font-size:var(--fs-100); padding:6px 14px; letter-spacing:.03em; }
   .fr-mail .row { font-size:.83rem; color:var(--muted); font-weight:700; }
   .fr-mail .subj { font-weight:800; font-size:1.02rem; margin:4px 0 8px; }
   .fr-mail .bd { font-size:.95rem; font-weight:600; line-height:1.45; }
@@ -222,7 +246,7 @@
   .fr-search .q { background:#1a2238; border:1px solid var(--line); border-radius:99px; padding:8px 14px; font-size:.9rem; font-weight:600; margin-bottom:12px; }
   .fr-search .q::before { content:"🔍 "; }
   .fr-search .rt { color:#8ab4f8; font-weight:700; font-size:1rem; }
-  .fr-search .ru { color:#34d399; font-size:.75rem; font-weight:600; margin:1px 0 4px; }
+  .fr-search .ru { color:#34d399; font-size:var(--fs-100); font-weight:600; margin:1px 0 4px; }
   .fr-search .rs { font-size:.9rem; color:var(--muted); font-weight:600; line-height:1.4; }
 
   /* Caption de contexte sous l'artefact */
@@ -254,22 +278,18 @@
   .grade { text-align: center; font-size: 1.2rem; font-weight: 800; margin-bottom: 16px; }
 
   .hidden { display: none !important; }
-  footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 16px; font-weight: 600; }
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:rgba(15,20,30,.72);border:1px solid rgba(255,255,255,.18);color:#cdd8e6;text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);font-family:inherit;}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #f7c948;outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+  footer { text-align: center; color: var(--muted); font-size: var(--fs-100); margin-top: 16px; font-weight: 600; }
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. */
 </style>
 </head>
-<body data-col-entete="non">
-<a class="back-hub" href="../index.html">← Retour aux jeux</a>
-<div class="app">
+<body data-col-retour="../index.html">
+<main class="app">
 
-  <header>
+  <header class="titre-jeu">
     <h1><span class="mes">Més</span> · <span class="des">Dés</span> · <span class="mal">Mal</span> — Le tri de l'info</h1>
     <p class="subtitle" data-i18n="subtitle">Sauras-tu reconnaître le type de manipulation de l'information ?</p>
-    <p class="cred-atger" style="text-align:center;font-size:.78rem;font-weight:600;opacity:.7;margin:4px 0 0;">par <a href="https://antoninatger.com" target="_blank" style="color:inherit;">Antonin Atger</a></p>
+    <p class="cred-atger" style="text-align:center;font-size:var(--fs-100);font-weight:600;opacity:.7;margin:4px 0 0;">par <a href="https://antoninatger.com" target="_blank" style="color:inherit;">Antonin Atger</a></p>
   </header>
 
   <!-- ÉCRAN INTRO -->
@@ -375,20 +395,15 @@
   </section>
 
   <footer>Éducation aux médias et à l'information — vocabulaire de l'UNESCO (mis-, dis-, mal-information)</footer>
-</div>
+</main>
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script>
-/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-window.__COLLECTION_ENTETE__ = false;
-</script>
-<script>
 I18N.register({
   fr: {
+    pageTitle: "Més · Dés · Mal — le tri de l'info : mésinformation, désinformation, malinformation",
+    metaDesc: "Jeu de tri de l'information : pour chaque situation, décide s'il s'agit de mésinformation, de désinformation ou de malinformation, selon le vocabulaire de l'UNESCO.",
     subtitle: "Sauras-tu reconnaître le type de manipulation de l'information ?",
     introH2: "🎯 Le but du jeu",
     introP: `On va te présenter des situations réelles ou crédibles. Pour chacune, tu dois deviner : est-ce de la <b style="color:var(--mes)">mésinformation</b>, de la <b style="color:var(--des)">désinformation</b> ou de la <b style="color:var(--mal)">malinformation</b> ? Deux questions à se poser à chaque fois :<br><b>① L'info est-elle vraie ou fausse ?</b> &nbsp; <b>② Y a-t-il une intention de nuire ?</b>`,
@@ -410,6 +425,8 @@ I18N.register({
     answersSuffix: " bonnes réponses)", catMes: "🟢 Mésinformation", catDes: "🔴 Désinformation", catMal: "🟠 Malinformation", wellIdentified: " bien identifiées"
   },
   en: {
+    pageTitle: "Mis · Dis · Mal — sorting information: misinformation, disinformation, malinformation",
+    metaDesc: "An information-sorting game: for each situation, decide whether it is misinformation, disinformation or malinformation, following UNESCO's vocabulary.",
     subtitle: "Can you recognise the type of information manipulation?",
     introH2: "🎯 The goal of the game",
     introP: `We'll show you real or believable situations. For each one, you must guess: is it <b style="color:var(--mes)">misinformation</b>, <b style="color:var(--des)">disinformation</b> or <b style="color:var(--mal)">malinformation</b>? Two questions to ask each time:<br><b>① Is the info true or false?</b> &nbsp; <b>② Is there an intent to harm?</b>`,
