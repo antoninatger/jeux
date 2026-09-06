@@ -29,6 +29,13 @@
 
      <body data-col-titre="Le Grand Oral" data-col-retour="../index.html">
 
+   Une page qui n'a pas de page parente (le portail) ou qui se referme sur
+   elle-même par décision (RÉSO · Alberte, décision D2 du 4 septembre 2026)
+   déclare qu'elle n'a PAS de lien de retour ; la case reste vide pour que le
+   titre garde son centrage, exactement comme dans un cadre :
+
+     <body data-col-retour="non">
+
    Pour désactiver sur une page (une démo plein écran, par exemple) :
 
      <body data-col-entete="non">
@@ -150,8 +157,11 @@
 
     /* ── Retour ──────────────────────────────────────────────────────────
        Dans un cadre, la case reste (la grille garde ses trois colonnes, donc
-       le titre reste centré) mais elle est vide. */
-    if (DANS_UN_CADRE) {
+       le titre reste centré) mais elle est vide. Même chose quand la page
+       déclare `data-col-retour="non"` : un lien mort serait pire qu'une case
+       vide. */
+    var sansRetour = document.body.getAttribute('data-col-retour') === 'non';
+    if (DANS_UN_CADRE || sansRetour) {
       var videRetour = document.createElement('span');
       videRetour.className = 'col-entete__vide';
       videRetour.setAttribute('aria-hidden', 'true');
@@ -773,10 +783,13 @@
       b2.addEventListener('click', function () { opts.onRecommencer(); });
       actions.appendChild(b2);
     }
-    if (opts.retour !== false) {
+    /* Une page qui a déclaré `data-col-retour="non"` n'a pas de lien de retour
+       dans l'en-tête ; elle n'en a pas davantage en fin de partie. */
+    var retourPage = document.body.getAttribute('data-col-retour');
+    if (opts.retour !== false && retourPage !== 'non') {
       var a = document.createElement('a');
       a.className = 'col-btn col-btn--fantome';
-      a.href = opts.retour || document.body.getAttribute('data-col-retour') || '../index.html';
+      a.href = opts.retour || retourPage || '../index.html';
       a.textContent = opts.retourTexte || txt('retour');
       actions.appendChild(a);
     }
