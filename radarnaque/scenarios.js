@@ -309,7 +309,7 @@ const SCENARIOS = [
       { risque: 'On vous pousse à placer de l’argent sur une plateforme qu’ELLE vous indique : les gains affichés sont fictifs, l’argent est perdu.' }
     ],
     reflexe: 'Un inconnu qui vous a écrit « par erreur » puis se met à parler d’argent ou de placements : on coupe court. Aucun vrai investissement ne se propose par message.',
-    explication: 'C’est l’arnaque dite du « dépeçage de cochon » (pig butchering) : l’escroc « engraisse » longuement sa victime en nouant une relation amicale ou amoureuse, avant de la pousser à investir sur une fausse plateforme de crypto ou de trading. Au début, de petits « gains » s’affichent pour la mettre en confiance et l’inciter à verser toujours plus ; puis, au moment de retirer, tout disparaît. Un premier message « d’erreur » suivi d’une belle amitié soudaine doit alerter.'
+    explication: 'C’est l’arnaque dite du « dépeçage de cochon » (pig butchering) : l’escroc « engraisse » longuement sa victime en nouant une relation amicale ou amoureuse, avant de la pousser à investir sur une fausse plateforme de crypto ou de trading. Au début, de petits « gains » s’affichent pour la mettre en confiance et l’inciter à verser toujours plus ; puis, au moment de retirer, tout disparaît. Un premier message « d’erreur » suivi d’une belle amitié soudaine doit alerter. Le procédé est documenté : la FTC américaine chiffre à 470 millions de dollars les pertes de 2024 pour les arnaques qui commencent par un simple SMS, cinq fois plus qu’en 2020.'
   },
 
   /* ---------- 11d. Location de vacances hors plateforme — ARNAQUE ----- */
@@ -372,7 +372,7 @@ const SCENARIOS = [
     verdict: 'arnaque',
     categorie: 'Fausse boutique en ligne — liquidation fictive',
     indices: [
-      'Nom de domaine inconnu et bizarre (« velo-discount-shop.top ») : aucun lien avec une vraie marque.',
+      'Le domaine finit par « .top », une extension à quelques euros que les boutiques établies n’utilisent pas, et « velo-discount-shop » ne correspond à aucune enseigne existante : ce nom se vérifie en le cherchant.',
       'Réduction énorme et invraisemblable : un vélo électrique à 149 € au lieu de 899 €.',
       'Fausse urgence et fausse rareté : « fermeture définitive », « stock très limité ».',
       { risque: 'Après paiement, l’objet n’est jamais livré, ou vos coordonnées bancaires sont volées et réutilisées.' }
@@ -1257,7 +1257,7 @@ const REPERES = {
     { texte:'aucune expérience requise', bon:false, type:'leurre', note:'Ça met en confiance, mais ce n’est pas en soi la preuve d’une arnaque.' }
   ],
   'chat-faux-numero-invest': [
-    { texte:'je me suis trompée de numéro', bon:true, aide:'Ce message vous était-il vraiment destiné ? Cherchez le prétexte utilisé pour engager la conversation.', note:'L’« erreur de numéro » est le prétexte classique pour entamer la discussion avec un inconnu.' },
+    { texte:'je me suis trompée de numéro', bon:true, aide:'Ce message vous était-il vraiment destiné ? Cherchez le prétexte utilisé pour engager la conversation.', note:'Ce message ne vous était pas destiné, et pourtant la conversation continue. C’est cela qui se vérifie ici : une vraie erreur de numéro s’arrête à l’excuse.' },
     { texte:'C’était sympa d’échanger', bon:true, aide:'Pourquoi cet inconnu, censé s’être trompé, revient-il vous parler ? Cherchez ce qui crée le lien.', note:'L’inconnu revient et se rend sympathique : il tisse un lien pour gagner votre confiance sur la durée.' },
     { texte:'j’ai gagné 32 % en trois semaines', bon:true, aide:'Un tel rendement est-il réaliste ? Cherchez la promesse de gains.', note:'Gains énormes et rapides : promesse irréaliste, marque de l’arnaque à l’investissement.' },
     { texte:'on commence avec 250 € seulement', bon:true, aide:'Que vous demande-t-on de faire de votre argent, et sur quelle plateforme ?', note:'On vous pousse à verser de l’argent sur une plateforme qu’ELLE indique : c’est le piège.' },
@@ -1273,8 +1273,8 @@ const REPERES = {
   ],
   'email-prenom-detourne': [
     { texte:'Vous serez débité de 447,00', bon:true, aide:'Un simple prénom contient-il une phrase sur de l’argent et un IBAN ? Cherchez ce qui n’a rien à faire dans un « Bonjour ».', note:'Un « prénom » qui parle d’argent, d’IBAN et de prélèvements : ce texte a été glissé dans le champ prénom à la place de votre nom.' },
-    { texte:'0259509226', bon:true, aide:'Que cherche-t-on à vous faire faire ? Repérez le numéro à appeler : c’est là qu’est le piège.', note:'Le vrai piège : appeler ce numéro tombe sur un faux « service anti-fraude » qui vous fera « sécuriser » votre argent en le virant aux escrocs.' },
-    { texte:'no-reply@welcometothejungle.com', bon:false, type:'neutre', note:'Ici l’adresse est authentique : l’e-mail vient vraiment du site. Ce n’est pas l’expéditeur le problème, mais le texte injecté à la place de votre prénom.' }
+    { texte:'0259509226', bon:true, aide:'Que cherche-t-on à vous faire faire ? Repérez le numéro à appeler : c’est là qu’est le piège.', note:'Le message fournit lui-même le numéro à rappeler. Rien de ce que vous avez sous les yeux ne dit qui décrochera : un numéro ne se vérifie pas. On rappelle toujours par un canal qu’on est allé chercher soi-même.' },
+    { texte:'no-reply@welcometothejungle.com', bon:false, type:'neutre', note:'L’adresse est bien celle du vrai site, correctement orthographiée : cet e-mail vient réellement de Welcome to the Jungle. L’expéditeur n’est donc pas ce qui cloche ici.' }
   ],
   'sms-banque-ok': [
     { texte:'Appelez le numéro figurant au dos de votre carte', bon:true, aide:'Cherchez ce qui vous renvoie vers un moyen sûr, que vous contrôlez vous-même.', note:'On vous renvoie vers un canal officiel que VOUS maîtrisez.' },
@@ -1319,7 +1319,7 @@ const REPERES = {
     { texte:'apporter votre carte Vitale', bon:true, aide:'Vous demande-t-on des numéros au téléphone, ou juste de la présenter sur place ?', note:'On la présente sur place — on ne demande pas ses numéros au téléphone.' }
   ],
   'email-fausse-boutique-liquidation': [
-    { texte:'contact@velo-discount-shop.top', bon:true, aide:'Regardez l’adresse de l’expéditeur : correspond-elle à une vraie marque connue ?', note:'Nom de domaine inconnu et bizarre, sans lien avec une vraie marque.' },
+    { texte:'contact@velo-discount-shop.top', bon:true, aide:'Regardez l’adresse de l’expéditeur : correspond-elle à une vraie marque connue ?', note:'Le domaine finit par « .top » : une extension à quelques euros, que les boutiques établies n’utilisent pas. Et « velo-discount-shop » ne correspond à aucune enseigne existante — cherchez ce nom, vous ne trouverez aucun magasin derrière.' },
     { texte:'149 € au lieu de 899 €', bon:true, aide:'Cette réduction vous semble-t-elle réaliste pour un vélo électrique ?', note:'Réduction énorme et invraisemblable : signe classique de fausse boutique.' },
     { texte:'Stock très limité', bon:true, aide:'Cherchez ce qui vous pousse à acheter tout de suite sans réfléchir.', note:'Fausse rareté pour vous faire acheter dans la précipitation.' },
     { texte:'Paiement 100 % sécurisé', bon:false, type:'leurre', note:'Une fausse boutique peut très bien écrire « paiement sécurisé » : l’affirmation seule ne prouve rien.' }
