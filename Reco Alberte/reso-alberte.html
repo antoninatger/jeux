@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RÉSO · Ligne clandestine avec Alberte B.</title>
+<meta name="description" content="Jeu sur la protection des données personnelles : à Lyon sous l'Occupation, une résistante a un téléphone du futur entre les mains. Expliquez-lui l'appareil et conseillez-lui les bons réflexes pour protéger ses données.">
+<link rel="stylesheet" href="../collection.css">
 <style>
   :root{
     --bg:#0d1117;
@@ -21,31 +23,35 @@
     --danger:#e5484d;
     --warn:#f5a623;
     --care:#2c5fae;
+    /* Identité du jeu sur le socle (chantier 05) : le socle impose la
+       structure, l'échelle typographique et le contraste ; ces rôles portent
+       la direction artistique — nuit de veille, vert de ligne chiffrée,
+       police système et Courier pour Alberte. Les noms historiques ci-dessus
+       restent en usage dans la feuille, ils deviennent des alias. */
+    --surface:var(--panel);
+    --bordure:var(--line);
+    --txt-secondaire:#788596;   /* 5,0:1 sur --bg — mesuré */
+    --acc:var(--accent);
+    --acc-txt:#04140b;
+    --font-texte:"Segoe UI",Roboto,system-ui,sans-serif;
+    --font-titre:"Segoe UI",Roboto,system-ui,sans-serif;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  .back-hub{
-    position:fixed; top:12px; left:12px; z-index:9999;
-    display:inline-flex; align-items:center; gap:5px;
-    background:rgba(15,20,30,.7);
-    border:1px solid rgba(255,255,255,.15);
-    color:#9fb3cc;
-    text-decoration:none; font-size:.8rem; font-weight:700;
-    padding:7px 14px; border-radius:50px; opacity:.9;
-    transition:opacity .2s, transform .2s;
-    backdrop-filter:blur(4px);
-  }
-  .back-hub:hover{opacity:1; transform:translateX(-2px);}
+  /* Pas de lien de retour : décision D2 du 4 septembre 2026, le jeu se
+     referme sur lui-même. L'en-tête unifié le sait (data-col-retour="non"
+     sur <body>) et laisse la case vide. */
+  .col-entete__titre{color:var(--accent);letter-spacing:1px}
   body{
     margin:0;
     font-family:"Segoe UI",Roboto,system-ui,sans-serif;
     background:radial-gradient(1200px 600px at 50% -10%,#182234 0%,#0d1117 60%);
     color:var(--txt);
-    display:flex;align-items:center;justify-content:center;
-    min-height:100vh;padding:16px;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    min-height:100vh;padding:0 16px 16px;
   }
   .phone{
-    width:100%;max-width:440px;height:min(880px,94vh);
+    width:100%;max-width:440px;height:min(880px,calc(100vh - var(--entete-h) - 32px));
     background:var(--bg);
     border:1px solid var(--line);
     border-radius:26px;
@@ -54,7 +60,7 @@
   }
 
   /* ---------- Header ---------- */
-  header{
+  .phone > header{
     background:
       repeating-linear-gradient(115deg, rgba(255,255,255,.02) 0 2px, transparent 2px 6px),
       linear-gradient(180deg,#141c28,#111823);
@@ -70,12 +76,12 @@
   }
   .avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
   .avatar-initials{width:100%;height:100%;border-radius:50%;background:#1c2530;color:var(--accent);
-    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;letter-spacing:1px}
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--fs-100);letter-spacing:1px}
   .avatar-emoji{width:100%;height:100%;border-radius:50%;background:#1c2530;
     display:flex;align-items:center;justify-content:center;font-size:22px}
   .h-name{font-weight:600;color:#fff;font-size:15px;display:flex;align-items:center;gap:6px;white-space:nowrap}
-  .h-status{font-size:11.5px;color:var(--accent);display:flex;align-items:center;gap:5px;margin-top:1px;white-space:nowrap}
-  .h-tag{margin-left:auto;font-size:10px;color:var(--muted);border:1px solid var(--line);
+  .h-status{font-size:var(--fs-100);color:var(--accent);display:flex;align-items:center;gap:5px;margin-top:1px;white-space:nowrap}
+  .h-tag{margin-left:auto;font-size:var(--fs-100);color:var(--muted);border:1px solid var(--line);
     padding:3px 8px;border-radius:20px;letter-spacing:.5px;white-space:nowrap}
   /* Les deux boutons d'outil sont passes de 26 a 44 px (cible tactile) : sur
      un ecran etroit, la date ne tient plus sur la meme ligne que le nom. Elle
@@ -92,7 +98,7 @@
   .statusbars{padding:8px 14px 7px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;
     background:#0f151d;border-bottom:1px solid var(--line)}
   .bar-row{display:flex;align-items:center;gap:8px}
-  .bar-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;width:64px;flex-shrink:0}
+  .bar-label{font-size:var(--fs-100);color:var(--muted);text-transform:uppercase;letter-spacing:.6px;width:96px;flex-shrink:0}
   .bar-track{flex:1;height:6px;border-radius:4px;background:#1b2330;overflow:hidden}
   .bar-fill{height:100%;border-radius:4px;transition:width .4s ease,background-color .4s ease;width:0%}
   .bar-fill.prog{background:var(--accent)}
@@ -122,7 +128,7 @@
   .bubble.me{background:var(--me);color:var(--me-txt);border:1px solid #1c5a41;border-bottom-right-radius:5px}
   .bubble.sys{
     background:transparent;border:1px dashed var(--accent-dim);color:var(--accent);
-    font-size:12.5px;max-width:100%;text-align:center;border-radius:12px;padding:10px 12px;
+    font-size:var(--fs-100);max-width:100%;text-align:center;border-radius:12px;padding:10px 12px;
   }
   .bubble.sys b{color:#fff}
   .bubble.note{
@@ -147,7 +153,7 @@
   .chip{
     font-family:inherit;text-align:left;
     background:#182231;border:1px solid var(--line);color:var(--txt);
-    font-size:12px;padding:6px 11px;border-radius:20px;cursor:pointer;transition:.15s;
+    font-size:var(--fs-100);padding:6px 11px;border-radius:20px;cursor:pointer;transition:.15s;
   }
   .chip:hover{border-color:var(--accent);color:var(--accent)}
   .inbar{display:flex;gap:8px;padding:10px 12px 12px;border-top:1px solid var(--line);background:#0f151d;flex-shrink:0}
@@ -177,13 +183,15 @@
   .overlay h1{font-size:22px;color:#fff;margin:0;letter-spacing:1px}
   .overlay .lock{font-size:46px}
   .overlay p{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0;max-width:320px}
+  /* Le tampon : ses deux lignes remontent au plancher de 12,8 px (8 px pour
+     « LYON · 1942 »), le cercle s'élargit d'autant. */
   .brand{
-    font-size:12px;letter-spacing:3px;color:var(--accent);font-weight:700;
+    font-size:var(--fs-100);letter-spacing:3px;color:var(--accent);font-weight:700;
     border:2px dashed var(--accent-dim);border-radius:50%;
-    width:92px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:116px;height:116px;display:flex;flex-direction:column;align-items:center;justify-content:center;
     transform:rotate(-6deg);text-align:center;line-height:1.3;
   }
-  .brand small{font-size:8px;letter-spacing:2px;opacity:.75;color:var(--accent-dim);margin-top:3px}
+  .brand small{font-size:var(--fs-100);letter-spacing:1.5px;opacity:.85;color:var(--accent-dim);margin-top:3px}
   .btn{
     background:var(--accent);color:#04140b;border:none;border-radius:24px;
     padding:13px 28px;font-size:14px;font-weight:700;cursor:pointer;transition:.15s;letter-spacing:.5px;
@@ -202,9 +210,9 @@
   .overlay.win h1{color:var(--accent)}
   .overlay.lose h1{color:var(--danger)}
   .overlay.lose .lock{color:var(--danger)}
-  .score{font-size:12.5px;color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+  .score{font-size:var(--fs-100);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
   .score b{color:#fff}
-  .quote{font-style:italic;color:#9fb0c2;font-size:12.5px;line-height:1.6;max-width:320px;margin:0}
+  .quote{font-style:italic;color:#9fb0c2;font-size:var(--fs-100);line-height:1.6;max-width:320px;margin:0}
   .fb-field{
     width:100%;max-width:320px;background:#0b0f16;border:1px solid var(--line);color:#fff;
     font-size:13px;font-family:inherit;padding:10px 14px;outline:none;
@@ -212,11 +220,14 @@
   .fb-field:focus{border-color:var(--accent-dim)}
   textarea.fb-field{border-radius:14px;min-height:90px;resize:vertical}
   input.fb-field{border-radius:22px}
-  .fb-status{font-size:11.5px;color:var(--accent);min-height:14px;margin:0}
+  .fb-status{font-size:var(--fs-100);color:var(--accent);min-height:14px;margin:0}
   .hidden{display:none!important}
+  /* Focus, mouvement réduit, cibles de 44 px : fournis par collection.css. */
 </style>
 </head>
-<body>
+<!-- Sans lien de retour (D2) ; pas de traduction, donc pas de bascule de
+     langue : la clé de titre est donnée en clair. -->
+<body data-col-retour="non" data-col-titre="RÉSO · Ligne clandestine">
 <div class="phone">
 
   <!-- ===== Intro overlay ===== -->
@@ -231,12 +242,12 @@
     <div style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:300px">
       <button class="btn ghost resume hidden" id="resumeBtn" onclick="resumeGame()"></button>
       <button class="btn" onclick="startGame('normal')">🧭 Mode Normal</button>
-      <span style="font-size:11px;color:var(--muted)">des suggestions de réponses vous aident</span>
+      <span style="font-size:var(--fs-100);color:var(--muted)">des suggestions de réponses vous aident</span>
       <button class="btn ghost mode-adv" style="margin-top:10px" onclick="startGame('avance')">🎯 Mode Avancé</button>
-      <span style="font-size:11px;color:var(--muted)">aucune aide : à vous de tout écrire</span>
+      <span style="font-size:var(--fs-100);color:var(--muted)">aucune aide : à vous de tout écrire</span>
     </div>
     <button class="btn big" onclick="openFeedback()">💬 Faire un retour au créateur</button>
-    <p style="font-size:11px;color:var(--muted);max-width:300px">Rien n'est envoyé sans que vous le demandiez à la fin.</p>
+    <p style="font-size:var(--fs-100);color:var(--muted);max-width:300px">Rien n'est envoyé sans que vous le demandiez à la fin.</p>
   </div>
 
   <!-- ===== Win overlay ===== -->
@@ -329,6 +340,7 @@
 
 </div>
 
+<script src="../collection.js"></script>
 <script src="reso-alberte-data.js"></script>
 <script src="reso-alberte-app.js"></script>
   <script src="../retours.js" defer></script>
