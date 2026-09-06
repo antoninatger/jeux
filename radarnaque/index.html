@@ -4,17 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="pageTitle">Radar’naque — S’entraîner à déjouer les pièges en ligne</title>
-  <meta name="description" content="Jeu pédagogique pour apprendre à repérer les arnaques en ligne (SMS, e-mails, appels, faux proches, deepfakes). Conçu pour les seniors et les personnes qui débutent.">
-  <!-- E2 : le socle est chargé pour l'écran de fin (ColFin), en thème clair ; la migration complète de la page reste à faire (chantier 05). -->
+  <meta name="description" data-i18n-content="metaDesc" content="Jeu pédagogique pour apprendre à repérer les arnaques en ligne (SMS, e-mails, appels, faux proches, deepfakes). Conçu pour les seniors et les personnes qui débutent.">
+  <!-- Le socle, dans l'ordre : polices du dépôt, collection.css, puis la feuille du jeu qui surcharge. -->
+  <link rel="stylesheet" href="../fonts/fonts.css">
   <link rel="stylesheet" href="../collection.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-col-entete="non">
-  <div style="position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:50;font-size:.72rem;font-weight:600;opacity:.5;color:#33415a;pointer-events:none;">par Antonin Atger</div>
+<!-- Le titre de la page n'est pas un <h1> : celui de l'écran d'accueil est une
+     question (« Saurez-vous déjouer les arnaques ? ») et disparaît en jeu. La
+     clé i18n donne le nom du jeu, traduit. -->
+<body data-col-titre-cle="colTitre" data-col-retour="../index.html">
   <div class="wrap">
 
+    <!-- Le logo est parti dans l'en-tête unifié ; la barre ne garde que les
+         commandes du jeu. -->
     <div class="topbar">
-      <div class="logo"><span class="radar">🛰️</span> Radar’naque</div>
       <div class="spacer"></div>
       <button class="topbtn" id="menu-btn" title="Revenir au menu" data-i18n="menu" data-i18n-title="menuTitle" style="display:none">🏠 Menu</button>
       <button class="topbtn" id="gloss-btn" title="Les mots à connaître" data-i18n="gloss" data-i18n-title="glossTitle">📖 Définitions</button>
@@ -37,6 +41,10 @@
 
     <main id="app"><!-- contenu injecté par app.js --></main>
 
+    <!-- Le crédit était en position:fixed en bas de fenêtre et recouvrait le
+         contenu ; il rejoint le flux, sous le jeu. -->
+    <p class="credit" data-i18n="credit">par Antonin Atger</p>
+
   </div>
 
   <!-- Fenêtre « Votre avis » (envoi direct par e-mail via Web3Forms) -->
@@ -58,16 +66,11 @@
   <script src="../i18n.js"></script>
   <script src="../collection.js"></script>
   <script>
-  /* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-     ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-     d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-     croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-  window.__COLLECTION_ENTETE__ = false;
-  </script>
-  <script>
   I18N.register({
     fr: {
       pageTitle: "Radar’naque — S’entraîner à déjouer les pièges en ligne",
+      colTitre: "🛰️ Radar’naque", credit: "par Antonin Atger",
+      metaDesc: "Jeu pédagogique pour apprendre à repérer les arnaques en ligne (SMS, e-mails, appels, faux proches, deepfakes). Conçu pour les seniors et les personnes qui débutent.",
       menu: "🏠 Menu", menuTitle: "Revenir au menu",
       gloss: "📖 Définitions", glossTitle: "Les mots à connaître",
       avis: "💬 Avis", avisTitle: "Donner votre avis",
@@ -79,6 +82,8 @@
     },
     en: {
       pageTitle: "Radar’naque — Practise spotting online traps",
+      colTitre: "🛰️ Radar’naque", credit: "by Antonin Atger",
+      metaDesc: "An educational game to learn to spot online scams (texts, e-mails, calls, fake relatives, deepfakes). Designed for seniors and beginners.",
       menu: "🏠 Menu", menuTitle: "Back to menu",
       gloss: "📖 Definitions", glossTitle: "Words to know",
       avis: "💬 Feedback", avisTitle: "Give your feedback",
