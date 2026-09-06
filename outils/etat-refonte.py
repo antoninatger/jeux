@@ -368,7 +368,7 @@ def collecter():
 def git(*args):
     try:
         return subprocess.run(["git"] + list(args), cwd=RACINE, capture_output=True,
-                              text=True, timeout=20).stdout.strip()
+                              text=True, encoding="utf-8", errors="replace", timeout=20).stdout.strip()
     except Exception:
         return ""
 
