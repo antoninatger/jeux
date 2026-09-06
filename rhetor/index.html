@@ -326,7 +326,226 @@ I18N.register({
   }
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
-document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
+</script>
+<!-- Le moteur est commun aux trois catalogues (tâche E3) : Rhetor ne déclare
+     ici que ce qui lui est propre — ses routes, ses champs, sa démonstration
+     d'accueil et son vocabulaire. -->
+<script src="../catalogue.js"></script>
+<script>
+Catalogue.demarrer({
+  jeu: 'rhetor',
+  route: 'outils',
+  cleProgression: 'rhetor-vus',
+  items: OUTILS,
+  categories: CATEGORIES,
+
+  champs: {
+    resume: 'definition_courte',
+    lies: 'outils_lies',
+    pied: (o, cap) => cap(o.difficulte),
+    recherche: o => o.nom + ' ' + o.origine + ' ' + o.definition_courte,
+    nomReponse: o => o.nom.toLowerCase()
+  },
+
+  styles: {
+    dispQuiz: 'font-size:19px;font-weight:600;margin-bottom:10px;',
+    dispIntrouvable: 'font-size:18px;font-weight:600;margin-bottom:10px;'
+  },
+
+  ficheSousTitre: o => `<p class="eng">${o.origine}</p>`,
+  ficheMeta: () => '',
+  ficheCorps: (o, m) => `
+        <p class="label">${m.labelDefinition}</p>
+        <p style="font-style:italic;color:var(--ink-dim);font-size:15px;margin:0 0 14px;max-width:640px;">${o.definition_courte}</p>
+        <p class="definition">${o.definition_longue}</p>
+  `,
+
+  /* La démonstration d'accueil : deux messages qui disent la même chose, et
+     un seul qui convainc — la forme avant le fond. */
+  hero: {
+    html: m => `
+      <div class="duel" id="selfdemo">
+        <p class="duel-q">${m.duelQuestion}</p>
+        <button class="duel-opt" data-v="a">${m.duelA}</button>
+        <button class="duel-opt" data-v="b">${m.duelB}</button>
+        <p class="duel-result" id="duel-result"></p>
+      </div>`,
+    init: m => {
+      document.querySelectorAll('.duel-opt').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.duel-opt').forEach(b => b.classList.remove('picked'));
+          btn.classList.add('picked');
+          document.getElementById('duel-result').innerHTML =
+            btn.dataset.v === 'b' ? m.duelResultatB : m.duelResultatA;
+        });
+      });
+    }
+  },
+
+  apropos: {
+    fr: `
+      <p>Rhetor est un catalogue pédagogique des outils rhétoriques : figures de style, sophismes et notions fondamentales de l'argumentation, du texte fondateur d'Aristote aux travaux modernes en logique informelle.</p>
+      <h2>Méthodologie</h2>
+      <p>Chaque fiche associe une définition, des exemples concrets issus de contextes variés, un mini-QCM et un exercice d'identification libre où il faut retrouver soi-même le nom de l'outil, sans indice visuel — un niveau d'apprentissage plus exigeant que la simple reconnaissance.</p>
+      <p>Pour chaque outil, au moins une source est citée — texte classique fondateur (Aristote, Quintilien) ou ouvrage de référence moderne — vérifiée individuellement avant publication plutôt que citée de mémoire.</p>
+      <h2>Disclaimer</h2>
+      <p>Ce site est un outil de vulgarisation, pas un traité de rhétorique. Les définitions sont simplifiées pour rester accessibles ; se référer aux sources citées pour approfondir un mécanisme.</p>
+      <h2>Progression</h2>
+      <p>Les outils consultés sont mémorisés localement dans votre navigateur (badge « vu » dans la vue Explorer) — aucune donnée n'est envoyée à un serveur.</p>
+    `,
+    en: `
+      <p>Rhetor is an educational catalogue of rhetorical tools: figures of speech, fallacies and foundational concepts of argumentation, from Aristotle's founding texts to modern work in informal logic.</p>
+      <h2>Methodology</h2>
+      <p>Each entry pairs a definition with concrete examples from varied contexts, a short quiz, and a free-recall exercise where you have to come up with the tool's name yourself, with no visual clue — a deeper level of learning than simple recognition.</p>
+      <p>For every tool, at least one source is cited — a classic founding text (Aristotle, Quintilian) or a modern reference work — verified individually before publication rather than quoted from memory.</p>
+      <h2>Disclaimer</h2>
+      <p>This site is a popularisation tool, not a treatise on rhetoric. Definitions are simplified to stay accessible; refer to the cited sources to go deeper into a mechanism.</p>
+      <h2>Progress</h2>
+      <p>Tools you've viewed are remembered locally in your browser (a "seen" badge in the Explore view) — no data is ever sent to a server.</p>
+    `
+  },
+
+  mots: {
+    fr: {
+      reglesAvant: [
+        /\bsophisme\s+(de\s+l['a]|du|de\s+la|de|d)\b/g,
+        /\bargument\s+(de\s+l['a]|du|de\s+la|de|d)\b/g,
+        /\bfigure\s+(de\s+l['a]|du|de\s+la|de|d)\b/g
+      ],
+      heroEyebrow: 'Rhetor — l\'arsenal du discours',
+      heroTitre: 'Le fond ne suffit pas.<br>La forme décide.',
+      heroLead: '{n} figures, sophismes et notions de rhétorique décryptés, expliqués et testés — en commençant par une démonstration, pas une définition.',
+      duelQuestion: 'Quel message te semble le plus convaincant pour vendre ce vélo ?',
+      duelA: 'A — « Ce vélo a un cadre léger. Il a des freins fiables. Il est vendu à un prix correct. »',
+      duelB: 'B — « Un cadre qui s\'envole. Des freins qui rassurent. Un prix qui convainc. »',
+      duelResultatB: 'Les deux messages annoncent exactement les <b>trois mêmes arguments</b> (poids, freinage, prix). Si tu as choisi B — comme la majorité des gens — tu viens de céder à l\'<b>anaphore</b> et au <b>tricolon</b> : la répétition d\'une même structure en trois temps rend un message plus fluide et plus mémorable, indépendamment de son contenu réel.',
+      duelResultatA: 'Les deux messages annoncent exactement les <b>trois mêmes arguments</b> (poids, freinage, prix). Le message B, lui, répète la même structure trois fois (<b>anaphore</b> + <b>tricolon</b>) — un procédé qui convainc la majorité des gens indépendamment du contenu. Tu y as résisté : rare, mais le même procédé t\'attend ailleurs.',
+      duJour: 'Outil du jour',
+      categories: 'Catégories',
+      uniteItems: 'outils',
+      explorerTout: 'Explorer tous les outils →',
+      tenterIdentification: 'Tenter « Repère l\'outil »',
+      explorerTitre: 'Explorer les outils',
+      rechercherPlaceholder: 'Rechercher un outil (nom, origine)…',
+      rechercheAria: 'Recherche',
+      filtreCatAria: 'Filtrer par catégorie',
+      toutesCategories: 'Toutes les catégories',
+      filtreDiffAria: 'Filtrer par difficulté',
+      toutesDifficultes: 'Toutes les difficultés',
+      difficultes: [
+        { valeur: 'facile', libelle: 'Facile' },
+        { valeur: 'intermédiaire', libelle: 'Intermédiaire' },
+        { valeur: 'avancé', libelle: 'Avancé' }
+      ],
+      aucunResultat: 'Aucun outil ne correspond à ces critères.',
+      badgeVu: 'vu',
+      toutesCategoriesTitre: 'Toutes les catégories',
+      retourExploration: '← Retour à l\'exploration',
+      niveau: 'Niveau',
+      labelDefinition: 'Définition',
+      labelExemples: 'Exemples',
+      labelTesteToi: 'Teste-toi',
+      scorePrefixe: 'Score : ',
+      labelIdentifieAutrement: 'Repère-le autrement',
+      identificationLibre: 'Identification libre · sans indice visuel',
+      placeholderReponse: 'Tape le nom de l\'outil…',
+      valider: 'Valider',
+      labelSources: 'Sources',
+      labelLies: 'Outils liés',
+      reponseCorrecte: '<b>Correct.</b> Il s\'agit bien de : {nom}.',
+      reponseIndice: 'Pas encore. Un indice : <b>{indice}</b>',
+      reponseRevelee: 'La réponse était : <b>{nom}</b>.',
+      identificationTitre: 'Repère l\'outil',
+      exerciceSansIndice: 'Exercice · sans indice visuel',
+      situationSuivante: 'Situation suivante →',
+      quizGlobal: 'Quiz global',
+      quizIntroTitre: 'Pioche aléatoire dans les {n} questions du catalogue',
+      quizIntroTexte: '10 questions tirées au hasard parmi tous les outils recensés — l\'exercice le plus proche d\'un usage réel : reconnaître un procédé sans savoir à l\'avance duquel il s\'agit.',
+      quizCommencer: 'Commencer le quiz',
+      quizResultat: 'Quiz global — résultat',
+      scoreFinal: 'Score final',
+      quizSansFaute: 'Sans faute — aucun procédé ne t\'a pris en défaut sur cette pioche.',
+      quizAvecErreurs: 'Chaque erreur pointe un outil à relire : direction sa fiche pour creuser le mécanisme.',
+      rejouer: 'Rejouer',
+      explorerFiches: 'Explorer les fiches',
+      quizProgression: 'Question {i}/{n} · Score : {s}',
+      issuDeLaFiche: 'Issu de la fiche : ',
+      questionSuivante: 'Question suivante →',
+      voirResultat: 'Voir le résultat →',
+      apropos: 'À propos',
+      pageIntrouvable: 'Page introuvable',
+      introuvableTexte: 'Cet outil n\'existe pas (encore) dans le catalogue.',
+      retourExplorationCourt: 'Retour à l\'exploration'
+    },
+    en: {
+      reglesApres: [/\s+(argument|fallacy)$/],
+      heroEyebrow: 'Rhetor — the arsenal of discourse',
+      heroTitre: "Substance isn't enough.<br>Form decides.",
+      heroLead: '{n} figures of speech, fallacies and rhetorical concepts decoded, explained and tested — starting with a demonstration, not a definition.',
+      duelQuestion: 'Which message do you find more convincing for selling this bike?',
+      duelA: 'A — "This bike has a light frame. It has reliable brakes. It\'s sold at a fair price."',
+      duelB: 'B — "A frame that flies. Brakes that reassure. A price that convinces."',
+      duelResultatB: 'Both messages state exactly the <b>same three arguments</b> (weight, braking, price). If you picked B — like most people — you just gave in to <b>anaphora</b> and the <b>rule of three</b>: repeating the same structure three times makes a message smoother and more memorable, regardless of its actual content.',
+      duelResultatA: 'Both messages state exactly the <b>same three arguments</b> (weight, braking, price). Message B repeats the same structure three times (<b>anaphora</b> + <b>rule of three</b>) — a device that convinces most people regardless of content. You resisted it: rare, but the same device is waiting elsewhere.',
+      duJour: 'Tool of the day',
+      categories: 'Categories',
+      uniteItems: 'tools',
+      explorerTout: 'Explore all tools →',
+      tenterIdentification: 'Try "Spot the tool"',
+      explorerTitre: 'Explore the tools',
+      rechercherPlaceholder: 'Search a tool (name, origin)…',
+      rechercheAria: 'Search',
+      filtreCatAria: 'Filter by category',
+      toutesCategories: 'All categories',
+      filtreDiffAria: 'Filter by difficulty',
+      toutesDifficultes: 'All difficulties',
+      difficultes: [
+        { valeur: 'easy', libelle: 'Easy' },
+        { valeur: 'intermediate', libelle: 'Intermediate' },
+        { valeur: 'advanced', libelle: 'Advanced' }
+      ],
+      aucunResultat: 'No tool matches these criteria.',
+      badgeVu: 'seen',
+      toutesCategoriesTitre: 'All categories',
+      retourExploration: '← Back to exploration',
+      niveau: 'Level',
+      labelDefinition: 'Definition',
+      labelExemples: 'Examples',
+      labelTesteToi: 'Test yourself',
+      scorePrefixe: 'Score: ',
+      labelIdentifieAutrement: 'Spot it differently',
+      identificationLibre: 'Free recall · no visual clue',
+      placeholderReponse: 'Type the name of the tool…',
+      valider: 'Submit',
+      labelSources: 'Sources',
+      labelLies: 'Related tools',
+      reponseCorrecte: '<b>Correct.</b> This is indeed: {nom}.',
+      reponseIndice: 'Not quite. A hint: <b>{indice}</b>',
+      reponseRevelee: 'The answer was: <b>{nom}</b>.',
+      identificationTitre: 'Spot the tool',
+      exerciceSansIndice: 'Exercise · no visual clue',
+      situationSuivante: 'Next situation →',
+      quizGlobal: 'Global quiz',
+      quizIntroTitre: "A random draw from the catalogue's {n} questions",
+      quizIntroTexte: '10 questions drawn at random from every tool in the catalogue — the exercise closest to real life: recognising a device without knowing beforehand which one it is.',
+      quizCommencer: 'Start the quiz',
+      quizResultat: 'Global quiz — result',
+      scoreFinal: 'Final score',
+      quizSansFaute: 'Flawless — no device caught you out on this draw.',
+      quizAvecErreurs: 'Each mistake points to a tool worth re-reading: head to its fiche to dig into the mechanism.',
+      rejouer: 'Play again',
+      explorerFiches: 'Explore the fiches',
+      quizProgression: 'Question {i}/{n} · Score: {s}',
+      issuDeLaFiche: 'From the fiche: ',
+      questionSuivante: 'Next question →',
+      voirResultat: 'See the result →',
+      apropos: 'About',
+      pageIntrouvable: 'Page not found',
+      introuvableTexte: "This tool doesn't exist (yet) in the catalogue.",
+      retourExplorationCourt: 'Back to exploration'
+    }
+  }
+});
 </script>
 <script src="../collection.js"></script>
 <script>

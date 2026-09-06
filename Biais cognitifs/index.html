@@ -334,7 +334,221 @@ I18N.register({
   }
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
-document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
+</script>
+<!-- Le moteur est commun aux trois catalogues (tâche E3) : Perceptio ne
+     déclare ici que ce qui lui est propre — ses routes, ses champs, sa
+     démonstration d'accueil et son vocabulaire. -->
+<script src="../catalogue.js"></script>
+<script>
+Catalogue.demarrer({
+  jeu: 'perceptio',
+  route: 'biais',
+  cleProgression: 'perceptio-lus',
+  items: BIAIS,
+  categories: CATEGORIES,
+
+  champs: {
+    resume: 'definition_courte',
+    lies: 'biais_lies',
+    pied: (b, cap) => cap(b.difficulte),
+    recherche: b => b.nom + ' ' + b.nom_anglais + ' ' + b.definition_courte,
+    nomReponse: b => b.nom.toLowerCase()
+  },
+
+  styles: {
+    dispQuiz: 'font-size:19px;font-weight:600;margin-bottom:10px;',
+    dispIntrouvable: 'font-size:18px;font-weight:600;margin-bottom:10px;'
+  },
+
+  ficheSousTitre: b => `<p class="eng">${b.nom_anglais}</p>`,
+  ficheMeta: () => '',
+  ficheCorps: (b, m) => `
+        <p class="label">${m.labelDefinition}</p>
+        <p style="font-style:italic;color:var(--ink-dim);font-size:15px;margin:0 0 14px;max-width:640px;">${b.definition_courte}</p>
+        <p class="definition">${b.definition_longue}</p>
+  `,
+
+  /* La démonstration d'accueil : on fait vivre la supériorité illusoire
+     avant de la nommer. */
+  hero: {
+    html: m => `
+      <div class="illusion" id="selfdemo">
+        <p class="demo-q">${m.demoQuestion}</p>
+        <div class="demo-choices" id="demo-choices">
+          ${m.demoChoix.map((t, i) => `<button class="demo-btn" data-v="${i + 1}">${t}</button>`).join('')}
+        </div>
+        <p class="illusion-caption" id="demo-result"></p>
+      </div>`,
+    init: m => {
+      document.querySelectorAll('.demo-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('picked'));
+          btn.classList.add('picked');
+          const v = parseInt(btn.dataset.v, 10);
+          document.getElementById('demo-result').innerHTML = v >= 4 ? m.demoHaut : m.demoBas;
+        });
+      });
+    }
+  },
+
+  apropos: {
+    fr: `
+      <p>Perceptio est un catalogue pédagogique des biais cognitifs : des raccourcis systématiques de pensée qui déforment, de façon prévisible, notre perception, notre mémoire ou notre jugement.</p>
+      <h2>Méthodologie</h2>
+      <p>Chaque fiche associe une définition, des exemples concrets issus de contextes variés, un mini-QCM et un exercice d'identification libre où il faut retrouver soi-même le nom du biais, sans indice visuel — un niveau d'apprentissage plus exigeant que la simple reconnaissance.</p>
+      <p>Pour chaque biais, au moins une source scientifique fondatrice est citée (auteur, année, revue), vérifiée individuellement avant publication plutôt que citée de mémoire — les références à ce sujet circulent souvent de façon approximative.</p>
+      <h2>Disclaimer</h2>
+      <p>Ce site est un outil de vulgarisation, pas une revue scientifique. Les définitions sont simplifiées pour rester accessibles ; se référer aux sources citées pour approfondir un mécanisme.</p>
+      <h2>Progression</h2>
+      <p>Les biais consultés sont mémorisés localement dans votre navigateur (badge « lu » dans la vue Explorer) — aucune donnée n'est envoyée à un serveur.</p>
+    `,
+    en: `
+      <p>Perceptio is an educational catalogue of cognitive biases: systematic shortcuts in thinking that predictably distort our perception, memory or judgment.</p>
+      <h2>Methodology</h2>
+      <p>Each entry pairs a definition with concrete examples from varied contexts, a short quiz, and a free-recall exercise where you have to come up with the bias's name yourself, with no visual clue — a deeper level of learning than simple recognition.</p>
+      <p>For every bias, at least one founding scientific source is cited (author, year, journal), verified individually before publication rather than quoted from memory — references on this topic often circulate in an approximate form.</p>
+      <h2>Disclaimer</h2>
+      <p>This site is a popularisation tool, not a scientific review. Definitions are simplified to stay accessible; refer to the cited sources to go deeper into a mechanism.</p>
+      <h2>Progress</h2>
+      <p>Biases you've viewed are remembered locally in your browser (a "read" badge in the Explore view) — no data is ever sent to a server.</p>
+    `
+  },
+
+  mots: {
+    fr: {
+      reglesAvant: [/\bbiais\s+(de|du|d)\b/g, /\beffet\s+(de|du|d)?\b/g],
+      heroEyebrow: 'Perceptio — laboratoire des perceptions',
+      heroTitre: 'Ton cerveau ment.<br>Poliment.',
+      heroLead: '{n} biais cognitifs recensés, expliqués et testés — en commençant par une preuve, pas une définition.',
+      demoQuestion: 'Comment évalues-tu tes compétences de conducteur, par rapport à la moyenne des gens ?',
+      demoChoix: ['Bien en dessous', 'En dessous', 'Dans la moyenne', 'Au-dessus', 'Bien au-dessus'],
+      demoHaut: 'Environ <b>80% des conducteurs</b> se classent au-dessus de la moyenne — statistiquement impossible. Tu viens peut-être de vivre l\'effet de supériorité illusoire (Svenson, 1981).',
+      demoBas: 'Rassure-toi : la majorité des gens se surestiment sur ce test. Te classer prudemment est déjà rare — mais l\'effet de supériorité illusoire (Svenson, 1981) guette ailleurs.',
+      duJour: 'Biais du jour',
+      categories: 'Catégories',
+      uniteItems: 'biais',
+      explorerTout: 'Explorer tous les biais →',
+      tenterIdentification: 'Tenter « Trouve le biais »',
+      explorerTitre: 'Explorer les biais',
+      rechercherPlaceholder: 'Rechercher un biais (nom, synonyme)…',
+      rechercheAria: 'Recherche',
+      filtreCatAria: 'Filtrer par catégorie',
+      toutesCategories: 'Toutes les catégories',
+      filtreDiffAria: 'Filtrer par difficulté',
+      toutesDifficultes: 'Toutes les difficultés',
+      difficultes: [
+        { valeur: 'facile', libelle: 'Facile' },
+        { valeur: 'intermédiaire', libelle: 'Intermédiaire' },
+        { valeur: 'avancé', libelle: 'Avancé' }
+      ],
+      aucunResultat: 'Aucun biais ne correspond à ces critères.',
+      badgeVu: 'lu',
+      toutesCategoriesTitre: 'Toutes les catégories',
+      retourExploration: '← Retour à l\'exploration',
+      niveau: 'Niveau',
+      labelDefinition: 'Définition',
+      labelExemples: 'Exemples',
+      labelTesteToi: 'Teste-toi',
+      scorePrefixe: 'Score : ',
+      labelIdentifieAutrement: 'Testez-vous autrement',
+      identificationLibre: 'Identification libre · sans indice visuel',
+      placeholderReponse: 'Tape le nom du biais…',
+      valider: 'Valider',
+      labelSources: 'Sources',
+      labelLies: 'Biais liés',
+      reponseCorrecte: '<b>Correct.</b> Il s\'agit bien du/de la {nom}.',
+      reponseIndice: 'Pas encore. Un indice : <b>{indice}</b>',
+      reponseRevelee: 'La réponse était : <b>{nom}</b>.',
+      identificationTitre: 'Trouve le biais',
+      exerciceSansIndice: 'Exercice · sans indice visuel',
+      situationSuivante: 'Situation suivante →',
+      quizGlobal: 'Quiz global',
+      quizIntroTitre: 'Pioche aléatoire dans les {n} questions du catalogue',
+      quizIntroTexte: '10 questions tirées au hasard parmi tous les biais recensés — l\'exercice le plus proche d\'un usage réel : reconnaître un biais sans savoir à l\'avance duquel il s\'agit.',
+      quizCommencer: 'Commencer le quiz',
+      quizResultat: 'Quiz global — résultat',
+      scoreFinal: 'Score final',
+      quizSansFaute: 'Sans faute — ton cerveau a résisté à tous les pièges de cette pioche.',
+      quizAvecErreurs: 'Chaque erreur pointe un biais à relire : direction sa fiche pour creuser le mécanisme.',
+      rejouer: 'Rejouer',
+      explorerFiches: 'Explorer les fiches',
+      quizProgression: 'Question {i}/{n} · Score : {s}',
+      issuDeLaFiche: 'Issu de la fiche : ',
+      questionSuivante: 'Question suivante →',
+      voirResultat: 'Voir le résultat →',
+      apropos: 'À propos',
+      pageIntrouvable: 'Page introuvable',
+      introuvableTexte: 'Ce biais n\'existe pas (encore) dans le catalogue.',
+      retourExplorationCourt: 'Retour à l\'exploration'
+    },
+    en: {
+      reglesApres: [/\s+(cognitive\s+)?(bias(es)?|effect|heuristic)$/],
+      heroEyebrow: 'Perceptio — a lab for perception',
+      heroTitre: 'Your brain lies.<br>Politely.',
+      heroLead: '{n} cognitive biases catalogued, explained and tested — starting with proof, not a definition.',
+      demoQuestion: 'How would you rate your driving skills, compared with the average person?',
+      demoChoix: ['Well below average', 'Below average', 'Average', 'Above average', 'Well above average'],
+      demoHaut: 'About <b>80% of drivers</b> rate themselves above average — statistically impossible. You may have just experienced illusory superiority (Svenson, 1981).',
+      demoBas: "Don't worry: most people overrate themselves on this test. Rating yourself modestly is already rare — but illusory superiority (Svenson, 1981) still lurks elsewhere.",
+      duJour: 'Bias of the day',
+      categories: 'Categories',
+      uniteItems: 'biases',
+      explorerTout: 'Explore all biases →',
+      tenterIdentification: 'Try “Spot the bias”',
+      explorerTitre: 'Explore the biases',
+      rechercherPlaceholder: 'Search a bias (name, synonym)…',
+      rechercheAria: 'Search',
+      filtreCatAria: 'Filter by category',
+      toutesCategories: 'All categories',
+      filtreDiffAria: 'Filter by difficulty',
+      toutesDifficultes: 'All difficulties',
+      difficultes: [
+        { valeur: 'easy', libelle: 'Easy' },
+        { valeur: 'intermediate', libelle: 'Intermediate' },
+        { valeur: 'advanced', libelle: 'Advanced' }
+      ],
+      aucunResultat: 'No bias matches these criteria.',
+      badgeVu: 'read',
+      toutesCategoriesTitre: 'All categories',
+      retourExploration: '← Back to exploration',
+      niveau: 'Level',
+      labelDefinition: 'Definition',
+      labelExemples: 'Examples',
+      labelTesteToi: 'Test yourself',
+      scorePrefixe: 'Score: ',
+      labelIdentifieAutrement: 'Test yourself differently',
+      identificationLibre: 'Free recall · no visual clue',
+      placeholderReponse: 'Type the name of the bias…',
+      valider: 'Submit',
+      labelSources: 'Sources',
+      labelLies: 'Related biases',
+      reponseCorrecte: '<b>Correct.</b> This is indeed the {nom}.',
+      reponseIndice: 'Not quite. A hint: <b>{indice}</b>',
+      reponseRevelee: 'The answer was: <b>{nom}</b>.',
+      identificationTitre: 'Spot the bias',
+      exerciceSansIndice: 'Exercise · no visual clue',
+      situationSuivante: 'Next situation →',
+      quizGlobal: 'Global quiz',
+      quizIntroTitre: "A random draw from the catalogue's {n} questions",
+      quizIntroTexte: '10 questions drawn at random from every bias in the catalogue — the exercise closest to real life: recognising a bias without knowing beforehand which one it is.',
+      quizCommencer: 'Start the quiz',
+      quizResultat: 'Global quiz — result',
+      scoreFinal: 'Final score',
+      quizSansFaute: 'Flawless — your brain resisted every trap in this draw.',
+      quizAvecErreurs: 'Each mistake points to a bias worth re-reading: head to its fiche to dig into the mechanism.',
+      rejouer: 'Play again',
+      explorerFiches: 'Browse the fiches',
+      quizProgression: 'Question {i}/{n} · Score: {s}',
+      issuDeLaFiche: 'From the fiche: ',
+      questionSuivante: 'Next question →',
+      voirResultat: 'See the result →',
+      apropos: 'About',
+      pageIntrouvable: 'Page not found',
+      introuvableTexte: "This bias doesn't exist (yet) in the catalogue.",
+      retourExplorationCourt: 'Back to exploration'
+    }
+  }
+});
 </script>
 <script src="../collection.js"></script>
 <script>

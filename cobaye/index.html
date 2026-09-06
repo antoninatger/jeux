@@ -337,7 +337,251 @@ I18N.register({
   }
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
-document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
+</script>
+<!-- Le moteur est commun aux trois catalogues (tâche E3) : Cobaye ne déclare
+     ici que ce qui lui est propre — ses routes, ses champs, sa démonstration
+     d'accueil et son vocabulaire. -->
+<script src="../catalogue.js"></script>
+<script>
+Catalogue.demarrer({
+  jeu: 'cobaye',
+  route: 'experiences',
+  cleProgression: 'cobaye-vus',
+  items: EXPERIENCES,
+  categories: CATEGORIES,
+
+  champs: {
+    resume: 'resume_court',
+    lies: 'experiences_liees',
+    pied: e => e.annee,
+    recherche: e => e.nom + ' ' + e.chercheurs + ' ' + e.resume_court,
+    nomReponse: e => e.nom
+  },
+
+  styles: {
+    dispQuiz: 'font-size:18px;font-weight:400;margin-bottom:10px;',
+    dispIntrouvable: 'font-size:17px;font-weight:400;margin-bottom:10px;'
+  },
+
+  /* Une étude a des chercheurs, une date et un lieu : c'est sa ligne de méta,
+     et c'est le seul catalogue des trois à en avoir une. */
+  ficheSousTitre: () => '',
+  ficheMeta: e => `<p class="meta-line">${e.chercheurs} · ${e.annee} · ${e.lieu}</p>`,
+  ficheCorps: (e, m) => `
+        <p class="label">${m.labelHistoire}</p>
+        <p style="font-style:italic;color:var(--ink-dim);font-size:15px;margin:0 0 14px;max-width:640px;">${e.resume_court}</p>
+        <p class="definition">${e.histoire}</p>
+
+        <p class="label">${m.labelControverses}</p>
+        <div class="controverse-box">
+          <p class="controverse-eyebrow">${m.controverseEyebrow}</p>
+          <p>${e.controverses}</p>
+        </div>
+  `,
+
+  /* La démonstration d'accueil : on met le visiteur dans la position d'un
+     sujet d'Asch avant de lui raconter l'expérience. */
+  hero: {
+    html: m => `
+      <div class="asch-demo" id="selfdemo">
+        <p class="asch-q">${m.aschQuestion}</p>
+        <div class="asch-ref"><span class="asch-bar" style="width:120px;"></span> ${m.aschReference}</div>
+        <p class="asch-votes">${m.aschVotes}</p>
+        <div class="asch-choices" id="asch-choices">
+          <button class="asch-choice" data-v="a"><span class="asch-bar" style="width:120px;"></span> A</button>
+          <button class="asch-choice" data-v="b"><span class="asch-bar" style="width:82px;"></span> B</button>
+          <button class="asch-choice" data-v="c"><span class="asch-bar" style="width:152px;"></span> C</button>
+        </div>
+        <p class="asch-result" id="asch-result"></p>
+      </div>`,
+    init: m => {
+      document.querySelectorAll('.asch-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.asch-choice').forEach(b => b.classList.remove('picked'));
+          btn.classList.add('picked');
+          document.getElementById('asch-result').innerHTML =
+            m.aschReponses[btn.dataset.v] + m.aschDisclaimer;
+        });
+      });
+    }
+  },
+
+  apropos: {
+    fr: `
+      <p>Cobaye raconte l'histoire de dix expériences parmi les plus célèbres de la psychologie : ce qui a réellement été fait, ce qui a été découvert, et — point souvent absent des résumés populaires — ce qu'on en sait aujourd'hui, plusieurs décennies plus tard.</p>
+      <h2>Méthodologie</h2>
+      <p>Chaque fiche associe le récit de l'expérience, un encadré « Controverses & postérité » qui documente les critiques méthodologiques, réplications ou réexamens historiques ultérieurs, un mini-QCM et un exercice d'identification libre où il faut retrouver soi-même le nom de l'étude, sans indice visuel.</p>
+      <p>Pour chaque expérience, l'étude originale est citée (auteur, année, revue) ainsi que, quand elle existe, une source de réexamen ou de réplique plus récente — vérifiées individuellement avant publication plutôt que citées de mémoire.</p>
+      <h2>Disclaimer</h2>
+      <p>Ce site est un outil de vulgarisation, pas une revue de littérature scientifique. Plusieurs des études présentées ici ont depuis fait l'objet de critiques méthodologiques sérieuses, documentées dans chaque fiche : les présenter uniquement comme des faits acquis serait trompeur.</p>
+      <h2>Progression</h2>
+      <p>Les études consultées sont mémorisées localement dans votre navigateur (badge « vu » dans la vue Explorer) — aucune donnée n'est envoyée à un serveur.</p>
+    `,
+    en: `
+      <p>Cobaye tells the story of ten of the most famous experiments in psychology: what was actually done, what was found, and — often missing from popular retellings — what we know about it today, decades later.</p>
+      <h2>Methodology</h2>
+      <p>Each entry pairs the story of the experiment with a "Controversies & legacy" box documenting methodological critiques, replications or later historical re-examinations, a short quiz, and a free-recall exercise where you have to come up with the study's name yourself, with no visual clue.</p>
+      <p>For every experiment, the original study is cited (author, year, journal) along with, where one exists, a more recent re-examination or replication — verified individually before publication rather than quoted from memory.</p>
+      <h2>Disclaimer</h2>
+      <p>This site is a popularisation tool, not a literature review. Several of the studies presented here have since faced serious methodological criticism, documented in each entry: presenting them as settled fact alone would be misleading.</p>
+      <h2>Progress</h2>
+      <p>Studies you've viewed are remembered locally in your browser (a "seen" badge in the Explore view) — no data is ever sent to a server.</p>
+    `
+  },
+
+  mots: {
+    fr: {
+      reglesAvant: [
+        /\bl['a]\s*experience\s+(de|du|d)\b/g,
+        /\bexperience\s+(de|du|d)\b/g,
+        /\betude\s+(de|du|d)\b/g
+      ],
+      heroEyebrow: 'Cobaye — dans la peau des sujets',
+      heroTitre: '{n} expériences.<br>Un cerveau qui n\'a pas changé.',
+      heroLead: '{n} expériences de psychologie parmi les plus célèbres — leur histoire, ce qu\'elles ont vraiment montré, et ce qu\'on en sait aujourd\'hui.',
+      aschQuestion: 'Quelle ligne (A, B ou C) a la même longueur que la ligne de référence ?',
+      aschReference: 'référence',
+      aschVotes: '4 participants précédents ont déjà répondu : <b>B</b>',
+      aschDisclaimer: 'Précision : les « 4 participants précédents » n\'existaient pas, c\'était une mise en scène pour te mettre dans la peau d\'un vrai sujet de l\'expérience.',
+      aschReponses: {
+        a: 'C\'est <b>A</b> la bonne réponse, et tu l\'as trouvée — tu as résisté à la fausse majorité annoncée. Dans l\'expérience originale d\'Asch (1951), environ 75% des participants se sont pourtant ralliés au moins une fois à une réponse de groupe manifestement fausse. ',
+        b: 'La bonne réponse était <b>A</b> — regarde bien, sa barre fait exactement la même longueur que la référence. Si tu as choisi B, tu viens de vivre une version simplifiée de l\'expérience d\'Asch (1951) : environ 75% des participants originaux se sont ralliés au moins une fois à une réponse de groupe pourtant fausse. ',
+        c: 'La bonne réponse était <b>A</b>, pas C — regarde bien, sa barre fait exactement la même longueur que la référence. Ici, pas de conformisme en jeu : C n\'était pas la réponse annoncée par le groupe, juste une mauvaise lecture. '
+      },
+      duJour: 'Étude du jour',
+      categories: 'Catégories',
+      uniteItems: 'études',
+      explorerTout: 'Explorer toutes les études →',
+      tenterIdentification: 'Tenter « Identifie l\'étude »',
+      explorerTitre: 'Explorer les expériences',
+      rechercherPlaceholder: 'Rechercher une expérience (nom, chercheur)…',
+      rechercheAria: 'Recherche',
+      filtreCatAria: 'Filtrer par catégorie',
+      toutesCategories: 'Toutes les catégories',
+      filtreDiffAria: 'Filtrer par difficulté',
+      toutesDifficultes: 'Toutes les difficultés',
+      difficultes: [
+        { valeur: 'facile', libelle: 'Facile' },
+        { valeur: 'intermédiaire', libelle: 'Intermédiaire' },
+        { valeur: 'avancé', libelle: 'Avancé' }
+      ],
+      aucunResultat: 'Aucune expérience ne correspond à ces critères.',
+      badgeVu: 'vu',
+      toutesCategoriesTitre: 'Toutes les catégories',
+      retourExploration: '← Retour à l\'exploration',
+      niveau: 'Niveau',
+      labelHistoire: 'L\'histoire',
+      labelControverses: 'Controverses & postérité',
+      controverseEyebrow: 'Ce qu\'on en sait aujourd\'hui',
+      labelExemples: 'Où on le retrouve aujourd\'hui',
+      labelTesteToi: 'Teste-toi',
+      scorePrefixe: 'Score : ',
+      labelIdentifieAutrement: 'Identifie-la autrement',
+      identificationLibre: 'Identification libre · sans indice visuel',
+      placeholderReponse: 'Nomme l\'expérience…',
+      valider: 'Valider',
+      labelSources: 'Sources',
+      labelLies: 'Études liées',
+      reponseCorrecte: '<b>Correct.</b> Il s\'agit bien de : {nom}.',
+      reponseIndice: 'Pas encore. Un indice : <b>{indice}</b>',
+      reponseRevelee: 'La réponse était : <b>{nom}</b>.',
+      identificationTitre: 'Identifie l\'étude',
+      exerciceSansIndice: 'Exercice · sans indice visuel',
+      situationSuivante: 'Situation suivante →',
+      quizGlobal: 'Quiz global',
+      quizIntroTitre: 'Pioche aléatoire dans les {n} questions du catalogue',
+      quizIntroTexte: '10 questions tirées au hasard parmi toutes les expériences recensées — un bon test pour vérifier ce que tu as vraiment retenu, au-delà du récit populaire de chaque étude.',
+      quizCommencer: 'Commencer le quiz',
+      quizResultat: 'Quiz global — résultat',
+      scoreFinal: 'Score final',
+      quizSansFaute: 'Sans faute — tu connais ces études mieux que leur résumé Wikipédia.',
+      quizAvecErreurs: 'Chaque erreur pointe une étude à relire : direction sa fiche pour creuser l\'histoire complète.',
+      rejouer: 'Rejouer',
+      explorerFiches: 'Explorer les fiches',
+      quizProgression: 'Question {i}/{n} · Score : {s}',
+      issuDeLaFiche: 'Issu de la fiche : ',
+      questionSuivante: 'Question suivante →',
+      voirResultat: 'Voir le résultat →',
+      apropos: 'À propos',
+      pageIntrouvable: 'Page introuvable',
+      introuvableTexte: 'Cette expérience n\'existe pas (encore) dans le catalogue.',
+      retourExplorationCourt: 'Retour à l\'exploration'
+    },
+    en: {
+      reglesApres: [/\s+(experiment|effect)$/],
+      heroEyebrow: "Cobaye — inside the subjects' shoes",
+      heroTitre: "{n} experiments.<br>One brain that hasn't changed.",
+      heroLead: '{n} of the most famous psychology experiments — their history, what they actually showed, and what we know about them today.',
+      aschQuestion: 'Which line (A, B or C) matches the reference line in length?',
+      aschReference: 'reference',
+      aschVotes: '4 previous participants already answered: <b>B</b>',
+      aschDisclaimer: 'Note: the "4 previous participants" never existed — it was staged to put you in the shoes of a real experiment subject.',
+      aschReponses: {
+        a: '<b>A</b> was indeed correct, and you found it — you resisted the fake majority you were told about. In Asch\'s original experiment (1951), about 75% of participants nonetheless went along with an obviously wrong group answer at least once. ',
+        b: 'The correct answer was <b>A</b> — look closely, its bar is exactly the same length as the reference. If you picked B, you just lived a simplified version of the Asch experiment (1951): about 75% of original participants went along with an incorrect group answer at least once. ',
+        c: 'The correct answer was <b>A</b>, not C — look closely, its bar is exactly the same length as the reference. No conformity at play here: C wasn\'t the answer the group announced, just a simple misreading. '
+      },
+      duJour: 'Study of the day',
+      categories: 'Categories',
+      uniteItems: 'studies',
+      explorerTout: 'Explore all studies →',
+      tenterIdentification: 'Try "Name the study"',
+      explorerTitre: 'Explore the experiments',
+      rechercherPlaceholder: 'Search an experiment (name, researcher)…',
+      rechercheAria: 'Search',
+      filtreCatAria: 'Filter by category',
+      toutesCategories: 'All categories',
+      filtreDiffAria: 'Filter by difficulty',
+      toutesDifficultes: 'All difficulties',
+      difficultes: [
+        { valeur: 'easy', libelle: 'Easy' },
+        { valeur: 'intermediate', libelle: 'Intermediate' },
+        { valeur: 'advanced', libelle: 'Advanced' }
+      ],
+      aucunResultat: 'No experiment matches these criteria.',
+      badgeVu: 'seen',
+      toutesCategoriesTitre: 'All categories',
+      retourExploration: '← Back to exploration',
+      niveau: 'Level',
+      labelHistoire: 'The story',
+      labelControverses: 'Controversies & legacy',
+      controverseEyebrow: 'What we know today',
+      labelExemples: 'Where it shows up today',
+      labelTesteToi: 'Test yourself',
+      scorePrefixe: 'Score: ',
+      labelIdentifieAutrement: 'Name it differently',
+      identificationLibre: 'Free recall · no visual clue',
+      placeholderReponse: 'Name the experiment…',
+      valider: 'Submit',
+      labelSources: 'Sources',
+      labelLies: 'Related studies',
+      reponseCorrecte: '<b>Correct.</b> This is indeed: {nom}.',
+      reponseIndice: 'Not quite. A hint: <b>{indice}</b>',
+      reponseRevelee: 'The answer was: <b>{nom}</b>.',
+      identificationTitre: 'Name the study',
+      exerciceSansIndice: 'Exercise · no visual clue',
+      situationSuivante: 'Next situation →',
+      quizGlobal: 'Global quiz',
+      quizIntroTitre: "A random draw from the catalogue's {n} questions",
+      quizIntroTexte: "10 questions drawn at random from every experiment in the catalogue — a good test of what you actually retained, beyond each study's popular retelling.",
+      quizCommencer: 'Start the quiz',
+      quizResultat: 'Global quiz — result',
+      scoreFinal: 'Final score',
+      quizSansFaute: 'Flawless — you know these studies better than their Wikipedia summary.',
+      quizAvecErreurs: 'Each mistake points to a study worth re-reading: head to its fiche to dig into the full story.',
+      rejouer: 'Play again',
+      explorerFiches: 'Explore the fiches',
+      quizProgression: 'Question {i}/{n} · Score: {s}',
+      issuDeLaFiche: 'From the fiche: ',
+      questionSuivante: 'Next question →',
+      voirResultat: 'See the result →',
+      apropos: 'About',
+      pageIntrouvable: 'Page not found',
+      introuvableTexte: "This experiment doesn't exist (yet) in the catalogue.",
+      retourExplorationCourt: 'Back to exploration'
+    }
+  }
+});
 </script>
 <script src="../collection.js"></script>
 <script>
