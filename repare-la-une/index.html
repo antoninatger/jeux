@@ -3,23 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Répare la Une ! 🗞️</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- E2 : le socle est chargé pour l'écran de fin (ColFin), en thème clair ; la migration complète de la page reste à faire (chantier 05). -->
+<title data-i18n="pageTitle">Répare la Une ! — réécrire les titres anxiogènes</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu d'éducation aux médias : réécris les unes trompeuses d'un journal en choisissant de meilleurs segments, sources à l'appui, pour faire baisser l'émotion et monter la précision.">
+<link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
 :root {
   --bg:#e8e1d2; --panel:#faf6ec; --card:#ffffff;
   --acc:#b3261e; --gr:#1e8e5a; --rd:#c0392b; --bl:#1f6fb2;
   --tx:#241e12; --mu:#675d4c; --bord:rgba(60,48,25,0.18);
+  /* Identité du jeu sur le socle (chantier 05), en thème clair : le socle
+     impose la structure, l'échelle typographique et le contraste ; ces rôles
+     portent la direction artistique — papier journal, encre, rouge de
+     tabloïd, Playfair Display. Les noms historiques ci-dessus restent en
+     usage dans la feuille, ils deviennent des alias. */
+  --surface:var(--panel);
+  --bordure:var(--bord);
+  --txt:var(--tx);
+  --txt-secondaire:#675d4c;   /* 5,0:1 sur --bg — mesuré */
+  --acc-txt:#ffffff;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Playfair Display',serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.55) 0%,transparent 50%),repeating-linear-gradient(0deg,transparent 0 3px,rgba(120,100,60,.025) 3px 4px);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}
-h1{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.8rem,6vw,2.6rem);color:var(--tx);}
-.sub{color:var(--mu);font-size:.9rem;font-weight:600;margin-top:4px;}
-.author{color:var(--mu);font-size:.78rem;font-weight:600;margin-bottom:16px;opacity:.9;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.55) 0%,transparent 50%),repeating-linear-gradient(0deg,transparent 0 3px,rgba(120,100,60,.025) 3px 4px);color:var(--tx);min-height:100vh;padding:0 16px 20px;}
+/* Le contenu est un <main> : c'est la cible du lien d'évitement du socle, et
+   c'est lui qui centre les écrans du jeu, comme <body> le faisait avant que
+   l'en-tête unifié ne s'y insère. */
+main{display:flex;flex-direction:column;align-items:center;}
+/* L'en-tête unifié porte le titre : graisse de manchette. */
+.col-entete__titre{font-weight:900;}
+.sub{color:var(--mu);font-size:var(--fs-200);font-weight:600;margin-top:4px;}
+.author{color:var(--mu);font-size:var(--fs-100);font-weight:600;margin-bottom:16px;opacity:.9;}
 .author a{color:var(--acc);text-decoration:none;}
-header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 26px 2px;margin-bottom:14px;}
+.titre-jeu{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 26px 2px;margin-bottom:14px;}
 
 #intro{max-width:640px;text-align:center;}
 #intro .brief{background:var(--panel);border:1px solid var(--bord);border-radius:6px;padding:24px;margin-bottom:20px;text-align:left;font-size:.95rem;line-height:1.6;font-weight:600;box-shadow:0 3px 14px rgba(80,60,20,.12);}
@@ -31,19 +48,19 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .num{font-family:'Playfair Display',serif;font-weight:900;font-size:1.2rem;color:var(--acc);}
 
 #game{display:none;width:100%;max-width:760px;}
-.sectitle{font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;}
+.sectitle{font-size:var(--fs-100);font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;}
 
 /* Journaux (la une du stagiaire + ta une) */
 .paper{background:var(--card);border:1px solid var(--bord);border-radius:4px;box-shadow:0 3px 16px rgba(80,60,20,.2);overflow:hidden;animation:slidein .35s ease;}
 @keyframes slidein{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
 .masthead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 16px 8px;border-bottom:3px double #241e12;}
 .mh-name{font-family:'Playfair Display',serif;font-weight:900;font-size:1.15rem;letter-spacing:1px;white-space:nowrap;}
-.mh-meta{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);text-align:right;}
+.mh-meta{font-size:var(--fs-100);font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);text-align:right;}
 .tabloid .masthead{background:#b3261e;border-bottom-color:#7c1812;}
 .tabloid .mh-name{color:#fff;}
 .tabloid .mh-meta{color:rgba(255,255,255,.85);}
 .paper-bd{padding:14px 18px 18px;}
-.ttag{display:inline-block;border-radius:3px;font-size:.66rem;font-weight:800;padding:3px 10px;margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;}
+.ttag{display:inline-block;border-radius:3px;font-size:var(--fs-100);font-weight:800;padding:3px 10px;margin-bottom:10px;letter-spacing:1.5px;text-transform:uppercase;}
 .tabloid .ttag{background:rgba(179,38,30,.08);color:#b3261e;border:1px solid rgba(179,38,30,.4);}
 #draft .ttag{background:rgba(30,142,90,.08);color:#17744a;border:1px solid rgba(30,142,90,.4);}
 .ttxt,#draft-txt{font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;line-height:1.35;color:#181308;}
@@ -52,7 +69,7 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .paper-fig{display:none;margin-top:12px;}
 .paper-fig img,.paper-fig video{display:block;width:100%;max-width:600px;height:auto;border-radius:3px;border:1px solid var(--bord);}
 .paper-fig [hidden]{display:none;} /* sinon le display:block ci-dessus l'emporte sur l'attribut hidden */
-.paper-fig figcaption{font-size:.72rem;font-weight:700;color:var(--mu);margin-top:5px;line-height:1.4;max-width:600px;}
+.paper-fig figcaption{font-size:var(--fs-100);font-weight:700;color:var(--mu);margin-top:5px;line-height:1.4;max-width:600px;}
 #draft{margin-bottom:10px;}
 
 /* Sources : chemises d'archives */
@@ -62,17 +79,17 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .source-hd:hover{background:rgba(120,90,30,.07);}
 .source-hd .schev{margin-left:auto;color:var(--mu);transition:transform .25s;font-size:.8rem;}
 .source.open .schev{transform:rotate(90deg);}
-.source-hd .sread{color:var(--gr);font-size:.75rem;font-weight:800;display:none;}
+.source-hd .sread{color:var(--gr);font-size:var(--fs-100);font-weight:800;display:none;}
 .source.read .sread{display:inline;}
 .source-bd{display:none;padding:10px 0 13px;font-size:.88rem;font-weight:600;line-height:1.55;color:#46402f;border-top:1px dashed #d9cba6;margin:0 14px;}
 .source.open .source-bd{display:block;}
 
 /* Jauges — révélées seulement à la publication */
 #gauges{display:none;background:var(--panel);border:1px solid var(--bord);border-radius:8px;padding:14px 18px;margin-top:12px;animation:slidein .3s ease;box-shadow:0 2px 8px rgba(80,60,20,.1);}
-#gauges .gtitle{font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+#gauges .gtitle{font-size:var(--fs-100);font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
 .gauge{margin-bottom:12px;}
 .gauge:last-child{margin-bottom:0;}
-.glabels{display:flex;justify-content:space-between;font-size:.74rem;font-weight:800;margin-bottom:5px;}
+.glabels{display:flex;justify-content:space-between;font-size:var(--fs-100);font-weight:800;margin-bottom:5px;}
 .glabels .gname{text-transform:uppercase;letter-spacing:.5px;}
 .gauge.emo .gname{color:var(--rd);}
 .gauge.prec .gname{color:var(--gr);}
@@ -82,10 +99,10 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .gauge.emo .gfill{background:linear-gradient(90deg,#e67e22,#c0392b);}
 .gauge.prec .gfill{background:linear-gradient(90deg,#1f6fb2,#1e8e5a);}
 .gmark{position:absolute;top:-3px;bottom:-3px;width:3px;background:#241e12;opacity:.45;border-radius:2px;}
-.ghint{font-size:.68rem;font-weight:700;color:var(--mu);margin-top:3px;}
+.ghint{font-size:var(--fs-100);font-weight:700;color:var(--mu);margin-top:3px;}
 
 .slotgroup{margin-bottom:10px;}
-.slotname{font-size:.72rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.slotname{font-size:var(--fs-100);font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
 .slotopts{display:grid;gap:7px;}
 .opt{background:var(--card);border:2px solid var(--bord);border-radius:8px;padding:10px 13px;min-height:44px;display:flex;align-items:center;cursor:pointer;text-align:left;font-family:'Nunito',sans-serif;color:var(--tx);font-size:.86rem;font-weight:700;line-height:1.35;transition:all .15s;}
 .opt:hover{border-color:rgba(60,48,25,.45);}
@@ -114,18 +131,15 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
 .recap-row:last-child{border-bottom:none;}
 .recap-row .rr-title{flex:1;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .recap-row .rr-stars{white-space:nowrap;font-size:.95rem;}
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:var(--panel,rgba(15,20,30,.7));border:1px solid var(--bord,rgba(255,255,255,.15));color:var(--mu,#9fb3cc);text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid var(--acc,#f7c948);outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
-@media(max-width:400px){header{margin-top:40px;}}
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. La marge
+   de 40 px que le titre prenait sous 400 px servait à passer sous la
+   pastille fixe : elle n'a plus d'objet. */
 </style>
 </head>
-<body data-col-entete="non">
-<a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
-
-<header>
+<body data-col-retour="../index.html">
+<main>
+<header class="titre-jeu">
   <h1 data-i18n="h1">🗞️ Répare la Une !</h1>
   <p class="sub" data-i18n="sub">Moins d'émotion, plus de contexte : réécris les titres anxiogènes.</p>
   <p class="author">par <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
@@ -205,20 +219,16 @@ header{text-align:center;border-bottom:3px double rgba(60,48,25,.45);padding:0 2
   <div class="col-fin" id="ecran-fin"></div>
   <div id="end-recap"></div>
 </div>
+</main>
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script>
-/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-window.__COLLECTION_ENTETE__ = false;
-</script>
-<script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux", h1: "🗞️ Répare la Une !",
+    pageTitle: "Répare la Une ! — réécrire les titres anxiogènes",
+    metaDesc: "Jeu d'éducation aux médias : réécris les unes trompeuses d'un journal en choisissant de meilleurs segments, sources à l'appui, pour faire baisser l'émotion et monter la précision.",
+    h1: "🗞️ Répare la Une !",
     sub: "Moins d'émotion, plus de contexte : réécris les titres anxiogènes.",
     brief1: `📰 Tu es <b>rédacteur en chef</b>. Ton stagiaire adore les titres qui font peur : majuscules, points d'exclamation, sous-entendus… De l'<b>effet de cadrage</b> à l'état pur !`,
     brief2: `🎯 Ta mission : <b>réécrire chaque titre</b> en choisissant de meilleurs segments, pour faire <b>baisser l'émotion 😱</b> (objectif ≤ 30) et <b>monter la précision & le contexte 🎯</b> (objectif ≥ 70). Attention : certains segments en rajoutent encore dans le dramatique…`,
@@ -234,7 +244,9 @@ I18N.register({
     next: "Une suivante ➜", replay: "🔄 Rejouer"
   },
   en: {
-    back: "← Back to games", h1: "🗞️ Fix the Headline!",
+    pageTitle: "Fix the Headline! — rewrite fear-mongering headlines",
+    metaDesc: "A media-literacy game: rewrite a newspaper's misleading headlines by choosing better segments, sources in hand, to bring emotion down and precision up.",
+    h1: "🗞️ Fix the Headline!",
     sub: "Less emotion, more context: rewrite the fear-mongering headlines.",
     brief1: `📰 You are the <b>editor-in-chief</b>. Your intern loves scary headlines: capital letters, exclamation marks, insinuations… <b>framing effect</b> in its purest form!`,
     brief2: `🎯 Your mission: <b>rewrite each headline</b> by choosing better segments, to <b>bring the emotion down 😱</b> (target ≤ 30) and <b>push precision & context up 🎯</b> (target ≥ 70). Watch out: some segments pile on even more drama…`,
