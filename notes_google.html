@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="clair">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title data-i18n="pageTitle">Mock “style Maps” – Avis (démo fictive)</title>
+  <title data-i18n="pageTitle">Avis « style Maps » — une moyenne peut cacher une tendance</title>
+  <meta name="description" data-i18n-content="metaDesc" content="Maquette d'une fiche d'avis façon Maps, avec des avis inventés : la note moyenne de 2,3 cache un restaurant transformé depuis l'arrivée d'un nouveau chef. Trier par date change tout.">
+  <link rel="stylesheet" href="collection.css">
   <style>
     :root{
       --bg:#f1f3f4;
@@ -17,11 +19,24 @@
       --shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 6px rgba(60,64,67,.10);
       --radius:16px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      /* Identité de la maquette sur le socle (chantier 05), en thème clair :
+         le socle impose la structure, l'échelle typographique et le
+         contraste ; ces rôles portent le « look & feel » façon Maps — gris
+         très clair, bleu Google, police système. Les noms historiques
+         ci-dessus restent en usage dans la feuille, ils deviennent des alias. */
+      --surface:var(--card);
+      --bordure:var(--line);
+      --txt:var(--text);
+      --txt-secondaire:#5f6368;   /* 5,4:1 sur --bg — mesuré */
+      --acc:var(--blue);
+      --acc-txt:#ffffff;
+      --font-texte:var(--font);
+      --font-titre:var(--font);
     }
     *{box-sizing:border-box}
     body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--font); }
     .app{
-      max-width:1200px; margin:0 auto; padding:18px;
+      max-width:1200px; margin:0 auto; padding:0 18px 18px;
       display:grid; gap:16px;
       grid-template-columns: 380px 1fr;
     }
@@ -43,12 +58,14 @@
         #eaf1fb;
       position:relative;
     }
+    /* Le badge n'était contraint qu'à gauche : sur une seule ligne, il
+       débordait du visuel en 390 px (G6). Borné à droite, il passe à la ligne. */
     .badge{
-      position:absolute; left:14px; top:14px;
+      position:absolute; left:14px; top:14px; right:14px;
       padding:6px 10px; border-radius:999px;
       background:rgba(255,255,255,.85);
       border:1px solid rgba(0,0,0,.06);
-      font-size:12px; color:var(--muted);
+      font-size:var(--fs-100); line-height:1.4; color:var(--muted);
       backdrop-filter: blur(6px);
     }
     .placeContent{ padding:14px 14px 16px; }
@@ -64,8 +81,11 @@
     h1{ font-size:18px; margin:0; line-height:1.25; }
     .sub{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
     .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    /* Ces pastilles sont des <span> d'information, pas des contrôles : la
+       hauteur de 44 px que le socle donne à toute .chip ne les concerne pas. */
     .chip{
-      padding:6px 10px; border-radius:999px; font-size:12px;
+      min-height:0;
+      padding:6px 10px; border-radius:999px; font-size:var(--fs-100);
       background:#f8f9fa; border:1px solid var(--line); color:var(--muted);
     }
     .chip.blue{ background:var(--chip); border-color:rgba(26,115,232,.20); color:#174ea6; }
@@ -133,7 +153,7 @@
       display:flex; flex-direction:column; gap:8px;
     }
     .zoom button{
-      width:34px; height:34px;
+      width:44px; height:44px;
       border-radius:12px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.92);
@@ -146,7 +166,7 @@
       padding:6px 10px; border-radius:999px;
       background:rgba(255,255,255,.92);
       border:1px solid rgba(0,0,0,.06);
-      font-size:12px; color:var(--muted);
+      font-size:var(--fs-100); color:var(--muted);
     }
 
     /* Photos grid */
@@ -197,12 +217,12 @@
       padding:3px 8px; border-radius:999px;
       background:rgba(255,255,255,.88);
       border:1px solid rgba(0,0,0,.06);
-      font-size:11px; color:var(--muted);
+      font-size:var(--fs-100); color:var(--muted);
       backdrop-filter: blur(6px);
     }
 
     .footerNote{
-      margin-top:12px; font-size:12px; color:var(--muted);
+      margin-top:12px; font-size:var(--fs-100); color:var(--muted);
       border-top:1px dashed var(--line);
       padding-top:10px;
     }
@@ -240,7 +260,7 @@
     .barRow{
       display:grid; grid-template-columns: 18px 1fr 36px;
       align-items:center; gap:8px; margin:6px 0;
-      font-size:12px; color:var(--muted);
+      font-size:var(--fs-100); color:var(--muted);
     }
     .bar{
       height:8px; background:#f1f3f4; border-radius:999px; overflow:hidden;
@@ -288,12 +308,12 @@
     .name{ font-weight:600; font-size:13px; margin:0; }
     .meta{
       display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-      margin-top:3px; color:var(--muted); font-size:12px;
+      margin-top:3px; color:var(--muted); font-size:var(--fs-100);
     }
     .pill{
       padding:2px 8px; border-radius:999px;
       background:#f8f9fa; border:1px solid rgba(0,0,0,.06);
-      color:var(--muted); font-size:11px;
+      color:var(--muted); font-size:var(--fs-100);
     }
     .pill.good{ background: rgba(52,168,83,.08); border-color: rgba(52,168,83,.18); color:#137333; }
     .pill.bad{ background: rgba(234,67,53,.07); border-color: rgba(234,67,53,.16); color:#a50e0e; }
@@ -304,7 +324,9 @@
     }
   </style>
 </head>
-<body>
+<!-- Le seul <h1> est le nom du restaurant de la maquette : le titre de la
+     page vient d'une clé i18n. -->
+<body data-col-titre-cle="colTitre" data-col-retour="index.html">
   <div class="app">
     <!-- Left: place + map + photos -->
     <aside class="place">
@@ -423,10 +445,13 @@
   </div>
 
   <script src="i18n.js"></script>
+  <script src="collection.js"></script>
   <script>
   I18N.register({
     fr: {
-      pageTitle: 'Mock “style Maps” – Avis (démo fictive)',
+      pageTitle: 'Avis « style Maps » — une moyenne peut cacher une tendance',
+      colTitre: 'Avis « style Maps »',
+      metaDesc: "Maquette d'une fiche d'avis façon Maps, avec des avis inventés : la note moyenne de 2,3 cache un restaurant transformé depuis l'arrivée d'un nouveau chef. Trier par date change tout.",
       sub: "Brasserie • €€ • Centre-ville<br/>Ouvert · Ferme à 23:00",
       chipDine: "Sur place", chipTake: "À emporter", chipTerrace: "Terrasse", chipVeg: "Végétarien",
       directions: "Itinéraire", save: "Enregistrer", share: "Partager",
@@ -439,7 +464,9 @@
       dateBanner: "aujourd'hui : mars 2026"
     },
     en: {
-      pageTitle: 'Mock “Maps-style” – Reviews (fictional demo)',
+      pageTitle: "'Maps-style' reviews — an average can hide a trend",
+      colTitre: "'Maps-style' reviews",
+      metaDesc: "A mock-up of a Maps-style reviews page with invented reviews: the 2.3 average hides a restaurant transformed since a new chef arrived. Sorting by date changes everything.",
       sub: "Brasserie • €€ • City centre<br/>Open · Closes at 11 PM",
       chipDine: "Dine-in", chipTake: "Takeaway", chipTerrace: "Terrace", chipVeg: "Vegetarian",
       directions: "Directions", save: "Save", share: "Share",
