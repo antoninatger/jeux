@@ -74,10 +74,13 @@
     font-family:'JetBrains Mono',monospace;font-weight:600;
     font-size:var(--fs-200);background:none;border:1.5px solid transparent;color:var(--ink-dim);
     padding:9px 15px;border-radius:20px;cursor:pointer;transition:all .15s ease;text-decoration:none;
+    /* 44 px de haut : la cible tactile que le socle impose partout
+       ailleurs. Les onglets en faisaient 38. */
+    min-height:44px;display:inline-flex;align-items:center;
   }
   .tab:hover{border-color:var(--border);}
   .tab.active{background:var(--accent);color:#fff;}
-  .rand-btn{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;background:var(--ink);color:#fff;border:none;padding:9px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;}
+  .rand-btn{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;background:var(--ink);color:#fff;border:none;padding:9px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;}
   .rand-btn:hover{background:var(--accent);}
 
   /* ---------- hero / Asch demo ---------- */
@@ -221,6 +224,7 @@
     transition:border-color .15s ease;width:100%;
   }
   .choice:hover:not(:disabled){border-color:var(--accent);}
+  .choice:disabled{cursor:default;}
   .choice.correct{border-color:var(--good);background:var(--good-soft);}
   .choice.wrong{border-color:var(--wrong);background:var(--wrong-soft);}
   .explain{font-size:13.5px;color:var(--ink-dim);margin-top:14px;line-height:1.55;display:none;}
@@ -300,7 +304,10 @@
 <body data-col-retour="../index.html" data-col-titre-cle="titreEntete">
 
 <div class="topbar">
-  <a class="brand" href="#/" data-col-entete-extra><span class="dot"></span>Cobaye</a>
+  <!-- L'en-tête du socle affiche déjà le nom du catalogue : la pastille
+     ne faisait que le répéter. Elle garde son rôle, qui est le retour
+     à l'accueil du catalogue. -->
+  <a class="brand" href="#/" data-col-entete-extra><span class="dot"></span><span data-i18n="accueil">Accueil</span></a>
   <nav class="tabs" id="mainnav" data-i18n-aria-label="nav" aria-label="Navigation principale">
     <a class="tab" href="#/experiences" data-i18n="tabExplore">Explorer</a>
     <a class="tab" href="#/categories" data-i18n="tabCategories">Catégories</a>
@@ -322,14 +329,14 @@
 <script>
 I18N.register({
   fr: {
-    titreEntete: "Expériences de psychologie", nav: "Navigation principale",
+    titreEntete: "Expériences de psychologie", nav: "Navigation principale", accueil: "Accueil",
     tabExplore: "Explorer", tabCategories: "Catégories", tabQuiz: "Quiz",
     tabIdentification: "Identifie l'étude", tabAbout: "À propos",
     randomBtn: "🎲 Étude aléatoire", by: "par",
     footerTag: "Cobaye — {n} expériences recensées à ce jour, sources vérifiées une à une."
   },
   en: {
-    titreEntete: "Psychology experiments", nav: "Main navigation",
+    titreEntete: "Psychology experiments", nav: "Main navigation", accueil: "Home",
     tabExplore: "Explore", tabCategories: "Categories", tabQuiz: "Quiz",
     tabIdentification: "Name the study", tabAbout: "About",
     randomBtn: "🎲 Random study", by: "by",

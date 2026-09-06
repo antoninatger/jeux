@@ -98,14 +98,58 @@
     return m[b.length][a.length];
   }
 
+  /* Après `normalizeAnswer`, une chaîne ne contient plus que [a-z0-9 ] :
+     elle peut entrer telle quelle dans une expression régulière, sans
+     échappement. `mot` exige une frontière de mot des deux côtés — sans quoi
+     « ion » validerait « confirmation » — et au moins quatre caractères,
+     pour qu'une saisie d'une lettre ne valide pas tout. */
+  function contientMot(grande, petite){
+    if (petite.length < 4) return false;
+    return new RegExp('(^| )' + petite + '( |$)').test(grande);
+  }
+
+  /* L'audit du 4 septembre 2026 a montré ce que l'égalité stricte refusait :
+     « le biais de confirmation » (l'article de trop), « rétrospectif » seul,
+     « Stanley Milgram », « Solomon Asch », « Loftus ». Ce sont des bonnes
+     réponses, et les refuser n'apprend rien — le nom cherché est là, entouré
+     de mots en plus ou en moins. On accepte donc par inclusion, dans les deux
+     sens : la saisie contient la réponse, ou la réponse contient la saisie. */
   function isAnswerCorrect(input, acceptedList){
     const n = normalizeAnswer(input);
     if (!n) return false;
     return acceptedList.some(ans => {
       const na = normalizeAnswer(ans);
+      if (!na) return false;
       const tol = Math.max(2, Math.round(na.length * 0.2));
-      return n === na || levenshtein(n, na) <= tol;
+      if (n === na || levenshtein(n, na) <= tol) return true;
+      return contientMot(n, na) || contientMot(na, n);
     });
+  }
+
+  /* Fisher-Yates. Sert au tirage du quiz comme à l'ordre des choix. */
+  function melanger(liste){
+    const t = liste.slice();
+    for (let i = t.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [t[i], t[j]] = [t[j], t[i]];
+    }
+    return t;
+  }
+
+  /* Les choix étaient rendus dans l'ordre des données, où la bonne réponse
+     est en première position dans la grande majorité des questions : un élève
+     qui l'avait remarqué faisait 10/10 sans rien savoir. On mélange à
+     l'affichage — la donnée, elle, n'est pas touchée. */
+  function choixMelanges(q){
+    return melanger(q.choix.map((ch, ci) => ({
+      texte: ch, correct: ci === q.bonne_reponse
+    })));
+  }
+
+  function boutonsChoix(q){
+    return choixMelanges(q)
+      .map(c => `<button class="choice" data-correct="${c.correct}">${c.texte}</button>`)
+      .join('');
   }
 
   function dayIndex(len){
@@ -276,6 +320,14 @@
   /* Vue : catalogue (Explorer)                                        */
   /* ---------------------------------------------------------------- */
 
+  /* Le filtre de difficulté était écrit en dur : Perceptio proposait
+     « Avancé » alors qu'aucune de ses fiches ne l'est, et répondait « Aucun
+     biais ne correspond à ces critères ». Un filtre qui ne peut rien filtrer
+     n'a pas à être offert : les niveaux sont désormais déduits des données. */
+  function difficultesPresentes(){
+    return M.difficultes.filter(d => C.items.some(it => it.difficulte === d.valeur));
+  }
+
   function renderCatalogue(presetCat){
     return `
       <p class="fiche-back" style="visibility:hidden;">&nbsp;</p>
@@ -288,7 +340,7 @@
         </select>
         <select id="q-diff" aria-label="${M.filtreDiffAria}">
           <option value="">${M.toutesDifficultes}</option>
-          ${M.difficultes.map(d => `<option value="${d.valeur}">${d.libelle}</option>`).join('')}
+          ${difficultesPresentes().map(d => `<option value="${d.valeur}">${d.libelle}</option>`).join('')}
         </select>
       </div>
       <div id="cat-results"></div>
@@ -361,7 +413,7 @@
         <div class="scan-ring" data-ring>✓</div>
         <p class="test-q">${q.question}</p>
         <div class="choices" data-choices>
-          ${q.choix.map((ch, ci) => `<button class="choice" data-correct="${ci === q.bonne_reponse}">${ch}</button>`).join('')}
+          ${boutonsChoix(q)}
         </div>
         <p class="explain" data-explain>${q.explication}</p>
       </div>
@@ -438,8 +490,10 @@
 
   /* Câble une boîte de QCM : le clic marque la bonne et la mauvaise réponse,
      déroule l'explication, et ne compte qu'une fois. `onReponse` reçoit le
-     résultat — la fiche s'en sert pour son score, le quiz pour le sien. */
-  function cablerBoiteQcm(box, onReponse){
+     résultat — la fiche s'en sert pour son score, le quiz pour le sien.
+     `focusApres` désigne où le clavier doit se retrouver une fois la question
+     jouée. */
+  function cablerBoiteQcm(box, onReponse, focusApres){
     const choices = box.querySelectorAll('.choice');
     const ring = box.querySelector('[data-ring]');
     const explain = box.querySelector('[data-explain]');
@@ -452,12 +506,24 @@
         choices.forEach(c => {
           if (c.dataset.correct === 'true') c.classList.add('correct');
           else if (c === btn) c.classList.add('wrong');
+          /* Un drapeau `done` empêchait de compter deux fois, mais les
+             boutons restaient cliquables : la question semblait rejouable et
+             ne l'était pas. Ils sont désormais neutralisés pour de bon. */
+          c.disabled = true;
         });
         ring.textContent = ok ? '✓' : '✕';
         ring.classList.toggle('wrong', !ok);
         requestAnimationFrame(() => ring.classList.add('show'));
         explain.classList.add('show');
         onReponse(ok);
+        /* Un bouton désactivé perd le focus, et le clavier repartirait du
+           haut de la page : on le repose là où la suite se joue. */
+        const cible = focusApres ? focusApres() : null;
+        if (cible){
+          if (!cible.hasAttribute('tabindex') &&
+              !cible.matches('a[href], button, input, select, textarea')) cible.tabIndex = -1;
+          cible.focus();
+        }
       });
     });
   }
@@ -508,7 +574,7 @@
       cablerBoiteQcm(box, ok => {
         if (ok) correct++;
         scoreEl.innerHTML = M.scorePrefixe + `<b>${correct}/${it.qcm.length}</b>`;
-      });
+      }, () => box.querySelector('[data-explain]'));
     });
 
     cablerIdentification(it, {
@@ -578,11 +644,7 @@
   function buildQuizPool(){
     const pool = [];
     C.items.forEach(it => it.qcm.forEach(q => pool.push({ q, itemId: it.id, itemNom: it.nom })));
-    for (let i = pool.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    return pool.slice(0, Math.min(10, pool.length));
+    return melanger(pool).slice(0, Math.min(10, pool.length));
   }
 
   function renderQuizStart(){
@@ -638,7 +700,7 @@
         <div class="scan-ring" data-ring>✓</div>
         <p class="test-q">${q.question}</p>
         <div class="choices" data-choices>
-          ${q.choix.map((ch, ci) => `<button class="choice" data-correct="${ci === q.bonne_reponse}">${ch}</button>`).join('')}
+          ${boutonsChoix(q)}
         </div>
         <p class="explain" data-explain>${q.explication}</p>
         <p class="quiz-origin">${M.issuDeLaFiche}<a href="#/${C.route}/${item.itemId}">${item.itemNom}</a></p>
@@ -651,7 +713,7 @@
     cablerBoiteQcm(app.querySelector('.test-box'), ok => {
       if (ok) quizState.correct++;
       document.getElementById('quiz-next-wrap').style.display = 'flex';
-    });
+    }, () => document.getElementById('quiz-next-btn'));
     document.getElementById('quiz-next-btn').addEventListener('click', () => {
       quizState.idx++;
       renderQuizQuestion();
