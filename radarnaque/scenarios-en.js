@@ -29,13 +29,13 @@ const SCENARIOS = [
     "deAdresse": "ne-pas-repondre@chronopost.fr",
     "objet": "Security alert: new password request",
     "date": "Today, 09:14",
-    "corps": "Hi, antoninatger:<br><br>We received a request to set a new password for your account from a device or location you do not usually use. Was this you?<br><br>Confirm your identity within 24 hours to avoid your account being suspended.",
+    "corps": "Hi, antoninatger:<br><br>We received a request to set a new password for your account from a device or location you do not usually Using. Was this you?<br><br>Confirm your identity within 24 hours to avoid your account being suspended.",
     "bouton": "Yes, it was me — confirm",
     "verdict": "arnaque",
     "categorie": "Email phishing — fake account security alert",
     "indices": [
       "The sender says “Microsoft” but the email address ends in @chronopost.fr: it does not match.",
-      "Awkward wording and language mistakes.",
+      "Awkward wording and language mistakes (“you do not usually Using”).",
       "Fear and urgency: “account suspended” and “within 24 hours”.",
       { "risque": "The button leads to a fake page that steals your login and password." }
     ],
@@ -317,7 +317,7 @@ const SCENARIOS = [
       { "risque": "They push you to place money on a platform they choose: the displayed gains are fake." }
     ],
     "reflexe": "A stranger who wrote “by mistake” and then talks about money or investments: cut it short.",
-    "explication": "This is “pig butchering”: the scammer builds trust, then pushes the victim into a fake crypto/trading platform. Withdrawal becomes impossible."
+    "explication": "This is “pig butchering”: the scammer builds trust, then pushes the victim into a fake crypto/trading platform. Withdrawal becomes impossible. The pattern is documented: the US FTC puts 2024 losses from scams that begin with a simple text message at $470 million, five times the 2020 figure."
   },
   {
     "id": "email-airbnb-horsplateforme",
@@ -376,7 +376,7 @@ const SCENARIOS = [
     "verdict": "arnaque",
     "categorie": "Fake online shop — fictitious clearance sale",
     "indices": [
-      "Unknown, odd domain name (“velo-discount-shop.top”): no link to a real brand.",
+      "The domain ends in “.top”, a few-euro extension that established shops do not use, and “velo-discount-shop” matches no existing retailer: that name can be checked by searching it.",
       "Huge, unbelievable discount: an electric bike at €149 instead of €899.",
       "Fake urgency and scarcity: “closing for good”, “very limited stock”.",
       { "risque": "After payment, the item never arrives, or your bank details are stolen and reused." }
@@ -1312,6 +1312,12 @@ const REPERES = {
       "note": "Fear is used to make you click."
     },
     {
+      "texte": "do not usually Using",
+      "bon": true,
+      "aide": "Does a major company write without mistakes? Look for a word form or capital letter that sounds wrong.",
+      "note": "Odd wording and wrong verb form (“usually Using”): a real service does not write like this."
+    },
+    {
       "texte": "antoninatger",
       "bon": true,
       "aide": "How are you addressed? Does a real service use your first name, or a squashed-together login?",
@@ -1583,7 +1589,7 @@ const REPERES = {
       "texte": "wrong number",
       "bon": true,
       "aide": "Was the message really meant for you?",
-      "note": "Wrong-number pretext."
+      "note": "This message was not meant for you, and yet the conversation carries on. That is what you can check here: a genuine wrong number stops at the apology."
     },
     {
       "texte": "nice chatting",
@@ -1659,13 +1665,13 @@ const REPERES = {
       "texte": "0259509226",
       "bon": true,
       "aide": "What are they trying to get you to do? Spot the number to call: that is where the trap is.",
-      "note": "The real trap: calling this number reaches a fake “anti-fraud service” that will help you “secure” your money by transferring it to the crooks."
+      "note": "The message supplies the number to call itself. Nothing you can see tells you who would answer: a phone number cannot be checked. You always call back through a channel you looked up yourself."
     },
     {
       "texte": "no-reply@welcometothejungle.com",
       "bon": false,
       "type": "neutre",
-      "note": "Here the address is genuine: the email really does come from the site. The sender is not the problem — the injected text in place of your first name is."
+      "note": "The address really is the real site’s, correctly spelled: this email does come from Welcome to the Jungle. So the sender is not what is wrong here."
     }
   ],
   "sms-banque-ok": [
@@ -1845,7 +1851,7 @@ const REPERES = {
       "texte": "contact@velo-discount-shop.top",
       "bon": true,
       "aide": "Look at the sender address: does it match a real known brand?",
-      "note": "Unknown, odd domain name, with no link to a real brand."
+      "note": "The domain ends in “.top”: a few-euro extension that established shops do not use. And “velo-discount-shop” matches no existing retailer — search that name and you will find no shop behind it."
     },
     {
       "texte": "€149 instead of €899",
