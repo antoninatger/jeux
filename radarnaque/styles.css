@@ -302,15 +302,17 @@ img.repere.hint-flash{ animation:hintPulseImg 1.1s ease 2; }
 /* Petite fenêtre d'explication, ancrée à côté de l'endroit cliqué */
 .spot-pop{ position:absolute; z-index:30; max-width:270px; min-width:150px;
   background:#fff; border:2px solid var(--bord); border-radius:14px; box-shadow:var(--ombre-forte);
-  padding:12px 30px 12px 14px; font-size:.9em; line-height:1.4; animation:pop .18s ease both; }
+  padding:12px 44px 12px 14px; font-size:.9em; line-height:1.4; animation:pop .18s ease both; }
 /* vert / rouge : le verdict porte sur le CHOIX du joueur, pas sur la nature du détail */
 .spot-pop.ok{ border-color:#a9e0c0; background:var(--vert-clair); }
 .spot-pop.ko{ border-color:#f3b7bf; background:var(--rouge-clair); }
 .spot-pop.miss{ border-color:#cfe0ff; background:#eef4ff; }
 .spot-pop .pc{ display:flex; gap:8px; align-items:flex-start; }
 .spot-pop .pc .ic{ flex:none; }
-.spot-pop .x{ position:absolute; top:5px; right:7px; cursor:pointer; border:none; background:none;
-  font-size:1.05em; font-weight:800; color:var(--texte-doux); line-height:1; padding:2px; }
+/* Croix de fermeture : une vraie cible de 44 × 44 px (le socle ne garantit
+   que la hauteur), la fenêtre lui réserve sa colonne. */
+.spot-pop .x{ position:absolute; top:0; right:0; width:44px; height:44px; cursor:pointer; border:none; background:none;
+  font-size:1.05em; font-weight:800; color:var(--texte-doux); line-height:1; padding:0; display:grid; place-items:center; }
 .spot-pop .x:hover{ color:var(--rouge); }
 .spot-pop .arrow{ position:absolute; top:-7px; width:12px; height:12px;
   background:inherit; border:inherit; border-right:none; border-bottom:none; transform:rotate(45deg); }
@@ -352,8 +354,8 @@ img.repere.hint-flash{ animation:hintPulseImg 1.1s ease 2; }
   padding:11px 13px; border:1px solid var(--bord); border-radius:10px; font:inherit; color:var(--texte); background:#fff; }
 .fb-modal input:focus, .fb-modal textarea:focus{ outline:3px solid var(--bleu); outline-offset:2px; border-color:var(--bleu); }
 .fb-modal textarea{ resize:vertical; min-height:90px; }
-.fb-x{ position:absolute; top:10px; right:12px; border:none; background:transparent;
-  font-size:1.2em; line-height:1; cursor:pointer; color:var(--texte-doux); }
+.fb-x{ position:absolute; top:4px; right:6px; width:44px; height:44px; border:none; background:transparent;
+  font-size:1.2em; line-height:1; cursor:pointer; color:var(--texte-doux); display:grid; place-items:center; }
 .fb-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:4px; }
 .fb-actions button{ border:none; border-radius:10px; padding:11px 18px; font-weight:700; cursor:pointer; font-size:1em; }
 .fb-cancel{ background:#eef2f7; color:var(--texte-doux); }
