@@ -3,24 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeux hors interventions scolaires</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title data-i18n="pageTitle">Jeux hors interventions scolaires — Antonin Atger</title>
+<meta name="description" data-i18n-content="metaDesc" content="Trois jeux qui ne font pas partie des interventions en classe : Signaux (emprise dans le couple), Le Recrutement (biais à l'embauche) et les Ouvertures aux échecs.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="collection.css">
 <style>
   :root{
     --bg:#0b1220; --bg2:#0f172a; --card:#1e293b; --card2:#243449;
     --txt:#e8eef7; --doux:#93a4bd; --acc:#38bdf8; --acc2:#a78bfa; --bord:#31415a;
+    /* Même identité que le portail, sur le socle (chantier 05) : nuit bleue,
+       dégradé cyan → violet, Fredoka One. Les noms historiques ci-dessus
+       restent en usage dans la feuille, ils deviennent des alias. */
+    --surface:var(--card);
+    --bordure:var(--bord);
+    --txt-secondaire:#93a4bd;   /* 7,4:1 sur --bg — mesuré */
+    --acc-txt:#06121c;
+    --font-texte:'Nunito',system-ui,"Segoe UI",Roboto,sans-serif;
+    --font-titre:'Fredoka One',cursive;
   }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:'Nunito',system-ui,"Segoe UI",Roboto,sans-serif; color:var(--txt);
     background:radial-gradient(1200px 600px at 50% -10%, #16233d 0%, var(--bg) 60%); min-height:100vh; }
-  header{ text-align:center; padding:56px 20px 8px; }
-  header .logo{ font-size:2.6em; }
-  header h1{ font-family:'Fredoka One',cursive; margin:.2em 0 .15em; font-size:2.2em; letter-spacing:-.5px;
+  /* Le titre est dans l'en-tête unifié : il garde son dégradé. */
+  .col-entete__titre{ letter-spacing:-.5px;
     background:linear-gradient(90deg,var(--acc),var(--acc2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  header p{ margin:0 auto; max-width:560px; color:var(--doux); line-height:1.5; }
-  header .author{ margin:12px auto 0; font-size:.9em; color:var(--doux); font-weight:600; }
-  header .author a{ color:var(--acc); text-decoration:none; }
-  header .author a:hover{ text-decoration:underline; }
+  .accueil{ text-align:center; padding:8px 20px 8px; }
+  .accueil p{ margin:0 auto; max-width:560px; color:var(--doux); line-height:1.5; }
+  .accueil .author{ margin:12px auto 0; font-size:.9em; color:var(--doux); font-weight:600; }
+  .accueil .author a{ color:var(--acc); text-decoration:none; }
+  .accueil .author a:hover{ text-decoration:underline; }
   .cat{ max-width:1040px; margin:0 auto; padding:14px 22px 6px; }
   .cat h2{ font-size:.82em; letter-spacing:.14em; text-transform:uppercase; color:var(--doux);
     margin:34px 0 4px; padding-bottom:8px; border-bottom:1px solid var(--bord); }
@@ -38,33 +49,29 @@
   a.card b{ display:block; font-size:1.12em; font-weight:800; margin:6px 0 4px; }
   a.card .desc{ color:var(--doux); font-size:.9em; line-height:1.45; min-height:2.6em; }
   a.card .url{ display:block; margin-top:12px; font-family:ui-monospace,Menlo,Consolas,monospace;
-    font-size:.72em; color:var(--c,var(--acc)); word-break:break-all; opacity:.85; }
+    font-size:var(--fs-100); color:var(--c,var(--acc)); word-break:break-all; opacity:.85; }
   footer{ text-align:center; color:var(--doux); font-size:.85em; padding:30px 20px 60px; line-height:1.7; }
   footer a{ color:var(--acc2); }
   footer .by{ display:block; margin-bottom:10px; font-weight:700; color:var(--txt); }
   footer .by a{ color:var(--acc); }
-  :where(a,button,[tabindex]):focus-visible{ outline:3px solid var(--acc); outline-offset:3px; border-radius:8px; }
-  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.001ms!important; transition-duration:.001ms!important; } }
+  /* Focus et mouvement réduit : fournis une seule fois par collection.css. */
 </style>
 <style>
   /* Cette page n'utilise pas d'emoji : le filet de couleur en haut de chaque
      carte suffit a les distinguer, et le titre porte l'information. */
   a.card b{ margin-top:0; }
-  .retour{ max-width:1040px; margin:0 auto; padding:0 22px; }
-  .retour a{ color:var(--acc); text-decoration:none; font-weight:700; font-size:.9em; }
-  .retour a:hover{ text-decoration:underline; }
 </style>
 </head>
-<body>
-  <header>
+<!-- Le lien « Retour aux jeux des interventions scolaires » est celui de
+     l'en-tête unifié, avec son libellé propre (clé i18n). -->
+<body data-col-retour="index.html" data-col-retour-cle="retour">
+  <header class="accueil">
     <h1 data-i18n="h1">Hors interventions scolaires</h1>
     <p data-i18n="intro">Ces trois jeux ne font pas partie des interventions en classe. Ils s'adressent à d'autres publics et à d'autres contextes.</p>
     <p class="author"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
   </header>
 
-  <div class="retour"><a href="index.html" data-i18n="retour">Retour aux jeux des interventions scolaires</a></div>
-
-  <div class="grid">
+  <main class="grid">
     <a class="card" href="Emprise/index.html" style="--c:#f472b6">
       <b data-i18n="t1">Signaux</b>
       <div class="desc" data-i18n="d1">Repérer les mécanismes d'emprise dans une conversation de couple. Sujet sensible, à encadrer.</div>
@@ -77,7 +84,7 @@
       <b data-i18n="t3">Ouvertures aux échecs</b>
       <div class="desc" data-i18n="d3">Apprendre les grandes ouvertures. Sans rapport avec l'esprit critique.</div>
       <span class="url">antoninatger.github.io/jeux/echecs.html</span></a>
-  </div>
+  </main>
 
   <footer>
     <span class="by"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></span>
@@ -90,9 +97,12 @@
     a.card .url.copied{ color:#34d399; }
   </style>
   <script src="i18n.js"></script>
+  <script src="collection.js"></script>
   <script>
   I18N.register({
     fr: {
+      pageTitle: "Jeux hors interventions scolaires — Antonin Atger",
+      metaDesc: "Trois jeux qui ne font pas partie des interventions en classe : Signaux (emprise dans le couple), Le Recrutement (biais à l'embauche) et les Ouvertures aux échecs.",
       h1: "Hors interventions scolaires",
       intro: "Ces trois jeux ne font pas partie des interventions en classe. Ils s'adressent à d'autres publics et à d'autres contextes.",
       by: "par",
@@ -103,6 +113,8 @@
       tip: "Astuce : cliquez sur l'URL sous une carte pour la copier."
     },
     en: {
+      pageTitle: "Games outside school sessions — Antonin Atger",
+      metaDesc: "Three games that are not part of the classroom sessions: Signaux (coercive control), The Recruitment (hiring bias) and Chess Openings.",
       h1: "Outside school sessions",
       intro: "These three games are not part of the classroom sessions. They are meant for other audiences and other settings.",
       by: "by",
