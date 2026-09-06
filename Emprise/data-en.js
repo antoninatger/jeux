@@ -181,7 +181,7 @@ const CHECKPOINTS = {
     clusters: [
       { label: "direct isolation", terms: ["isolat", "isolation", "cuts her off from friends", "distances her from clea", "pushes clea away", "separates her from clea", "cutting her off from clea"] },
       { label: "denigrating her circle", terms: ["puts clea down", "belittles clea", "criticizes clea", "talks badly about clea", "discredits clea", "not a good person"] },
-      { label: "projected jealousy accusation", terms: ["clea", "jealous", "accuses", "shifts the blame", "makes it seem"] },
+      { label: "projected jealousy accusation", terms: ["accuses clea of jealousy", "says clea is jealous", "makes clea seem jealous", "shifts the blame onto clea", "turns the jealousy accusation on her"] },
       { label: "positions himself as sole support", terms: ["only support", "the only one", "no one else", "only person she can trust", "only anchor"] }
     ],
     misreadings: [
@@ -207,7 +207,7 @@ const CHECKPOINTS = {
       { label: "direct put-down", terms: ["puts down her looks", "criticizes her body", "belittles her appearance", "criticizes what she wears"] },
       { label: "poisoned compliment / disguised criticism", terms: ["backhanded compliment", "fake compliment", "disguised criticism", "under the guise of a compliment", "criticism hidden in a compliment"] },
       { label: "controlling her appearance", terms: ["controls what she wears", "picks her clothes", "tells her what to wear", "imposes his taste", "decides her look"] },
-      { label: "undermines self-confidence", terms: ["makes her look bigger", "not demanding enough", "undermines her confidence", "confidence in herself", "self esteem"] }
+      { label: "undermines self-confidence", terms: ["not demanding enough", "undermines her confidence", "confidence in herself", "self esteem"] }
     ],
     misreadings: [
       { terms: ["he's just giving his opinion", "honest opinion on clothes", "it's normal to give an opinion on clothes", "he thinks she's beautiful", "everyone has their own taste", "he's just trying to help her feel good"],
@@ -231,8 +231,8 @@ const CHECKPOINTS = {
     clusters: [
       { label: "tension-reconciliation cycle", terms: ["cycle", "tension then reconciliation", "explosion then apology", "swings between anger and love", "goes from anger to love", "crisis then"] },
       { label: "control / possessiveness", terms: ["controls who she sees", "wants to know who", "demands she answer", "controls her outings", "demands to know where she is", "who she was with"] },
-      { label: "excuse rooted in love", terms: ["excuses his anger", "because he loves her", "because he cares", "justifies the outburst", "cares about her so much"] },
-      { label: "disproportionate outburst", terms: ["outburst", "disproportionate", "explodes", "loses it", "panics", "freaks out"] }
+      { label: "excuse rooted in love", terms: ["excuses his anger", "because he loves her", "justifies the outburst"] },
+      { label: "disproportionate outburst", terms: ["disproportionate", "explodes", "loses it", "freaks out"] }
     ],
     misreadings: [
       { terms: ["normal to worry", "normal for him to worry", "she should have answered", "it's understandable he's worried", "it's her fault for not answering", "she was wrong not to reply"],
@@ -257,7 +257,7 @@ const CHECKPOINTS = {
       { label: "direct geographic isolation", terms: ["geographic isolation", "cuts her off", "far from her family", "far from her friends", "uprooted", "cut off from everyone", "far from everything"] },
       { label: "unilateral decision / done deal", terms: ["decides without her", "done deal", "unilateral decision", "already decided everything", "without asking her opinion", "imposes the move", "without consulting her"] },
       { label: "romanticizing the isolation", terms: ["romanticiz", "dresses up the isolation", "just the two of", "presents it as a dream"] },
-      { label: "imposed move", terms: ["moving", "relocating", "the move"] }
+      { label: "imposed move", terms: ["already decided the move alone", "she has to give up everything to follow him", "imposes the move without asking her"] }
     ],
     misreadings: [
       { terms: ["romantic project", "it's romantic", "it's a beautiful project", "it's just an opportunity", "normal to want to move forward together", "couples move together", "couples move like that"],

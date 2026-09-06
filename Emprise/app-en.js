@@ -34,17 +34,20 @@ function normalize(str) {
 function evaluateAnswer(rawText, checkpoint) {
   const text = normalize(rawText);
   if (!text) return { recognized: false, targetedFeedback: null };
-  const hitClusters = checkpoint.clusters.filter(c =>
-    c.terms.some(term => text.includes(normalize(term)))
-  );
-  if (hitClusters.length > 0) {
-    return { recognized: true, matchedClusters: hitClusters.map(c => c.label) };
-  }
+  // Misreadings are tested first: an answer that repeats Lucas's own framing
+  // ("Cléa is jealous") must never be validated as a spotted signal, even if
+  // it otherwise contains a cluster keyword.
   const misread = (checkpoint.misreadings || []).find(m =>
     m.terms.some(term => text.includes(normalize(term)))
   );
   if (misread) {
     return { recognized: false, targetedFeedback: misread.feedback };
+  }
+  const hitClusters = checkpoint.clusters.filter(c =>
+    c.terms.some(term => text.includes(normalize(term)))
+  );
+  if (hitClusters.length > 0) {
+    return { recognized: true, matchedClusters: hitClusters.map(c => c.label) };
   }
   return { recognized: false, targetedFeedback: null };
 }
@@ -134,6 +137,21 @@ function advance() {
 }
 
 nextBtn.addEventListener('click', advance);
+
+// Space or a click anywhere in the conversation also advance the messages:
+// without this, reading 135 messages means 135 precise clicks on a small button.
+function canAdvance() { return nextBtn.style.display !== 'none'; }
+messagesEl.addEventListener('click', () => { if (canAdvance()) advance(); });
+document.addEventListener('keydown', (e) => {
+  if (e.code !== 'Space' || !canAdvance()) return;
+  const target = document.activeElement;
+  const tag = target && target.tagName;
+  // On an already-focused button/link/field, Space already has its own native
+  // effect: don't stack a second action on top of it.
+  if (tag === 'BUTTON' || tag === 'A' || tag === 'TEXTAREA' || tag === 'INPUT') return;
+  e.preventDefault();
+  advance();
+});
 
 // =========================
 // Free-read mode: informative card without a question
@@ -357,12 +375,15 @@ function showRecap() {
   recapScreen.scrollIntoView({ behavior: 'smooth' });
 }
 
-function buildResourcesBlock() {
+function buildResourcesBlock(opts) {
+  opts = opts || {};
   const block = document.createElement('div');
   block.className = 'resources-block';
-  const h = document.createElement('h3');
-  h.textContent = 'Need to talk about it?';
-  block.appendChild(h);
+  if (opts.withHeading !== false) {
+    const h = document.createElement('h3');
+    h.textContent = 'Need to talk about it?';
+    block.appendChild(h);
+  }
   const list = document.createElement('div');
   list.className = 'resources-list';
   RESOURCES.forEach(r => {
@@ -380,20 +401,20 @@ function buildResourcesBlock() {
 // Initial warning + permanent resources link
 // =========================
 
+// ColModale (collection.js) provides the focus trap, Escape and returning focus
+// to the "Need help?" link: the homemade modal (✕ with no aria-label, no
+// Escape, no focus trap) is no longer needed.
 function openResourcesModal() {
-  const modal = document.getElementById('resourcesModal');
-  const content = document.getElementById('resourcesModalContent');
-  content.innerHTML = '';
-  content.appendChild(buildResourcesBlock());
-  modal.style.display = 'flex';
+  ColModale.ouvrir({
+    titre: 'Need to talk about it?',
+    contenu: buildResourcesBlock({ withHeading: false }),
+    classe: 'ressources'
+  });
 }
 
 document.getElementById('resourcesLink').addEventListener('click', (e) => {
   e.preventDefault();
   openResourcesModal();
-});
-document.getElementById('resourcesModalClose').addEventListener('click', () => {
-  document.getElementById('resourcesModal').style.display = 'none';
 });
 
 document.getElementById('startNormalBtn').addEventListener('click', () => {
@@ -427,6 +448,13 @@ document.getElementById('skipQuestionsLink').addEventListener('click', (e) => {
 // =========================
 
 document.getElementById('exportBtn').addEventListener('click', async () => {
+  // html2canvas is served from vendor/ (the game is played offline, in class):
+  // if it's still missing (incomplete checkout, extension blocking it), say so
+  // instead of leaving the console alone with "html2canvas is not defined".
+  if (typeof html2canvas === 'undefined') {
+    alert('Export not possible: the export library (html2canvas.min.js) could not be found. Try Print → Save as PDF instead.');
+    return;
+  }
   const frame = document.getElementById('chatFrame');
   try {
     const canvas = await html2canvas(frame, { scale: 2, useCORS: true, backgroundColor: null });
