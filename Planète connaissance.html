@@ -3,18 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planète Connaissance 🚀</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@500;600;700&display=swap" rel="stylesheet">
-<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<title data-i18n="pageTitle">Planète Connaissance — distinguer les faits des opinions</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu d'arcade : ton vaisseau monte vers la Planète de la Connaissance ; à chaque astéroïde touché, une phrase à classer : fait vérifiable ou opinion ?">
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="collection.css">
 <style>
+/* Identité du jeu sur le socle (chantier 05) : le socle impose la structure,
+   l'échelle typographique et le contraste ; ces rôles portent la direction
+   artistique — espace noir, cyan laser, Orbitron pour l'affichage et Exo 2
+   pour le texte. */
+:root{
+  --bg:#04060f;
+  --surface:#0b1230;
+  --bordure:rgba(0,220,255,.22);
+  --txt:#ddeeff;
+  --txt-secondaire:#9fb0d0;   /* 9,2:1 sur --bg — mesuré */
+  --acc:#00dcff;
+  --acc-txt:#000000;
+  --font-texte:'Exo 2',sans-serif;
+  --font-titre:'Orbitron',monospace;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#04060f;touch-action:none}
-canvas{display:block;width:100%;height:100%}
+/* Le canvas couvre la fenêtre, sous l'en-tête unifié : l'en-tête reste en
+   flux normal et lisible (son voile dégradé est fait pour ça), le jeu garde
+   toute la fenêtre. Même mécanique que « La Terre ronde ou plate ? ». */
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
+/* Le titre garde la lueur cyan des écrans du jeu. */
+.col-entete__titre{color:#00dcff;text-shadow:0 0 20px #00dcff;letter-spacing:1px}
 
 /* ── HUD ── */
+/* Adossé sous l'en-tête unifié, dont collection.js publie la hauteur réelle. */
 #hud{
-  position:fixed;top:0;left:0;right:0;z-index:20;
+  position:fixed;top:var(--entete-h);left:0;right:0;z-index:20;
   display:flex;justify-content:space-between;align-items:center;
   padding:10px 18px;
   background:linear-gradient(180deg,rgba(4,6,15,.97) 70%,transparent);
@@ -24,24 +45,22 @@ canvas{display:block;width:100%;height:100%}
 /* Les libellés du HUD étaient à 45 % d'opacité, soit 3,05:1 une fois
    composés sur le fond : « SCORE », « VIES » et « MISSION » se devinaient
    plus qu'ils ne se lisaient, et le jeu se joue souvent au vidéoprojecteur.
-   Couleur pleine à 10,7:1, et la taille remonte au plancher de l'échelle
-   du socle, 12,8 px : .55rem valait 8,8 px. La valeur est écrite en dur —
-   cette page ne charge pas encore collection.css, --fs-100 n'y existe pas.
-   Elle deviendra var(--fs-100) à la migration. */
-.hud-lbl{font-size:.8rem;letter-spacing:3px;color:#6FC9DE;text-transform:uppercase}
+   Couleur pleine à 10,7:1, et la taille au plancher de l'échelle du socle,
+   12,8 px : .55rem valait 8,8 px. */
+.hud-lbl{font-size:var(--fs-100);letter-spacing:3px;color:#6FC9DE;text-transform:uppercase}
 .hud-val{font-size:1.25rem;font-weight:700;color:#00dcff;text-shadow:0 0 12px #00dcff;margin-top:1px}
 #lives-row{display:flex;gap:5px;justify-content:center;margin-top:2px}
 .hf{font-size:1rem}
 
 /* progress */
 #prog-wrap{
-  position:fixed;top:58px;left:50%;transform:translateX(-50%);
+  position:fixed;top:calc(var(--entete-h) + 58px);left:50%;transform:translateX(-50%);
   width:min(380px,88vw);z-index:20;pointer-events:none;
 }
 #prog-bg{height:5px;background:rgba(255,255,255,.06);border-radius:9px;overflow:hidden}
 #prog-bar{height:100%;background:linear-gradient(90deg,#00dcff,#ff3cac);border-radius:9px;
   box-shadow:0 0 8px #00dcff;transition:width .6s cubic-bezier(.22,1,.36,1);width:0%}
-#prog-txt{text-align:center;font-family:'Orbitron',monospace;font-size:.5rem;
+#prog-txt{text-align:center;font-family:'Orbitron',monospace;font-size:var(--fs-100);
   letter-spacing:3px;color:rgba(255,255,255,.25);margin-top:3px}
 
 /* ── QUESTION MODAL ── */
@@ -74,7 +93,7 @@ canvas{display:block;width:100%;height:100%}
   display:flex;align-items:center;gap:8px;
   background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.3);
   border-radius:50px;padding:4px 14px;width:fit-content;margin-bottom:12px;
-  font-family:'Exo 2',sans-serif;font-size:.72rem;color:#ff8899;font-weight:600;letter-spacing:.5px;
+  font-family:'Exo 2',sans-serif;font-size:var(--fs-100);color:#ff8899;font-weight:600;letter-spacing:.5px;
 }
 .q-danger-dot{width:7px;height:7px;border-radius:50%;background:#ff4466;animation:blink .7s ease infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -99,7 +118,7 @@ canvas{display:block;width:100%;height:100%}
 .ans-btn:hover:not(:disabled){transform:translateY(-3px)}
 .ans-btn:disabled{cursor:default}
 .ans-btn .aico{font-size:1.6rem}
-.ans-btn .asub{font-size:.62rem;color:rgba(255,255,255,.3);letter-spacing:.4px}
+.ans-btn .asub{font-size:var(--fs-100);color:rgba(255,255,255,.3);letter-spacing:.4px}
 
 .abf{background:linear-gradient(145deg,#061a10,#0b3020);border-color:#00ff88;color:#00ff88;
   box-shadow:0 0 12px rgba(0,255,136,.15)}
@@ -149,6 +168,8 @@ canvas{display:block;width:100%;height:100%}
 .screen{
   position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
   padding:20px;background:rgba(4,6,15,.88);backdrop-filter:blur(8px);
+  /* l'en-tête unifié reste au-dessus (z-index 50) : la boîte ne passe pas dessous */
+  padding-top:calc(var(--entete-h) + 12px);
 }
 .screen-box{
   background:rgba(8,14,40,.97);border:1px solid rgba(0,220,255,.2);
@@ -195,7 +216,7 @@ canvas{display:block;width:100%;height:100%}
   border-radius:14px;padding:10px 14px;
 }
 #speed-wrap label{
-  font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:2px;
+  font-family:'Orbitron',monospace;font-size:var(--fs-100);letter-spacing:2px;
   color:rgba(0,220,255,.55);text-transform:uppercase;white-space:nowrap;
 }
 #speed-val{
@@ -218,16 +239,14 @@ canvas{display:block;width:100%;height:100%}
   background:#00dcff;box-shadow:0 0 12px #00dcff;cursor:pointer;
 }
 #speed-slider::-moz-range-track{background:rgba(255,255,255,.1);height:5px;border-radius:99px}
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:rgba(15,20,30,.72);border:1px solid rgba(255,255,255,.18);color:#cdd8e6;text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);font-family:inherit;}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #f7c948;outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. Le
+   focus clavier des réponses (.kb-focus) est propre au jeu et reste. */
 </style>
 </head>
-<body data-col-entete="non">
-<a class="back-hub" href="index.html" data-i18n="back">← Retour aux jeux</a>
-<div style="position:fixed;bottom:8px;right:12px;z-index:9998;font-size:.68rem;font-weight:600;opacity:.5;color:#fff;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.6);">par Antonin Atger</div>
+<!-- Pas de <h1> hors des écrans superposés : la clé i18n donne le titre, traduit. -->
+<body data-col-titre-cle="introTitle" data-col-retour="index.html">
+<div style="position:fixed;bottom:8px;right:12px;z-index:9998;font-size:var(--fs-100);font-weight:600;opacity:.5;color:#fff;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.6);">par Antonin Atger</div>
 
 <!-- HUD -->
 <div id="hud">
@@ -245,7 +264,7 @@ canvas{display:block;width:100%;height:100%}
   </div>
 </div>
 <div id="fire-hint" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
-  font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:3px;
+  font-family:'Orbitron',monospace;font-size:var(--fs-100);letter-spacing:3px;
   color:rgba(0,255,200,.45);z-index:20;pointer-events:none;text-align:center;">
   <span data-i18n-html="fireHint">◀ ▶ DÉPLACER &nbsp;·&nbsp; ESPACE · CLIC = 🔫 TIRER</span>
 </div>
@@ -324,16 +343,11 @@ canvas{display:block;width:100%;height:100%}
 <script src="i18n.js"></script>
 <script src="collection.js"></script>
 <script>
-/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-window.__COLLECTION_ENTETE__ = false;
-</script>
-<script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux", score: "Score", mission: "Mission", lives: "Vies",
+    pageTitle: "Planète Connaissance — distinguer les faits des opinions",
+    metaDesc: "Jeu d'arcade : ton vaisseau monte vers la Planète de la Connaissance ; à chaque astéroïde touché, une phrase à classer : fait vérifiable ou opinion ?",
+    score: "Score", mission: "Mission", lives: "Vies",
     fireHint: "◀ ▶ DÉPLACER &nbsp;·&nbsp; ESPACE · CLIC = 🔫 TIRER",
     speedLabel: "☄️ Vitesse", speedSlow: "🐢 Lent", progStart: "DÉCOLLAGE",
     asteroid: "ASTÉROÏDE EN APPROCHE !", fact: "FAIT", factSub: "vérifiable",
@@ -349,7 +363,9 @@ I18N.register({
     restartBtn: "🔄 RECOMMENCER"
   },
   en: {
-    back: "← Back to games", score: "Score", mission: "Mission", lives: "Lives",
+    pageTitle: "Knowledge Planet — telling facts from opinions",
+    metaDesc: "An arcade game: your ship climbs toward the Knowledge Planet; each asteroid you hit brings a sentence to sort: verifiable fact or opinion?",
+    score: "Score", mission: "Mission", lives: "Lives",
     fireHint: "◀ ▶ MOVE &nbsp;·&nbsp; SPACE · CLICK = 🔫 FIRE",
     speedLabel: "☄️ Speed", speedSlow: "🐢 Slow", progStart: "LIFTOFF",
     asteroid: "ASTEROID INCOMING!", fact: "FACT", factSub: "verifiable",
