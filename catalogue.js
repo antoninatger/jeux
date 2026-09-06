@@ -211,6 +211,11 @@
     updateActiveTab(parts);
     const app = document.getElementById('app');
 
+    /* Quitter le quiz par un onglet met fin à la partie : la protection de
+       sortie posée au démarrage n'a plus rien à protéger, et demanderait
+       « Quitter la partie ? » à un joueur qui n'en a plus. */
+    if (parts[0] !== 'quiz' && window.ColFin) ColFin.protegerSortie(false);
+
     if (parts.length === 0){
       app.innerHTML = renderHome();
       initHome();
@@ -641,10 +646,37 @@
 
   let quizState = null;
 
-  function buildQuizPool(){
+  /* Chaque question porte un identifiant stable : l'id de sa fiche, suivi de
+     son rang dans `qcm` — celui de la donnée, qui ne bouge pas d'une partie à
+     l'autre. C'est lui que ColFin mémorise ; une position dans le paquet
+     mélangé changerait à chaque tirage et la mémoire ne voudrait plus rien
+     dire. L'id de la fiche seul ne suffirait pas : une fiche porte trois
+     questions, dix questions couvriraient tout le catalogue en une partie, et
+     la mémoire se remettrait à zéro à chaque fois. */
+  function toutesLesQuestions(){
     const pool = [];
-    C.items.forEach(it => it.qcm.forEach(q => pool.push({ q, itemId: it.id, itemNom: it.nom })));
-    return melanger(pool).slice(0, Math.min(10, pool.length));
+    C.items.forEach(it => it.qcm.forEach((q, i) => pool.push({
+      q: q, id: it.id + '#' + i, itemId: it.id, itemNom: it.nom
+    })));
+    return pool;
+  }
+
+  function buildQuizPool(){
+    const pool = toutesLesQuestions();
+    /* Les questions jamais vues d'abord : deux parties de suite ne reposent
+       pas les mêmes. Le paquet épuisé, ColFin oublie et on repart à neuf. */
+    return ColFin.nonVusDabord(C.jeu, melanger(pool)).slice(0, Math.min(10, pool.length));
+  }
+
+  /* Sans argument : une partie neuve. Avec un sous-paquet : « rejouer mes
+     erreurs », qui ne repropose que les questions ratées. */
+  function lancerQuiz(sousPaquet){
+    quizState = {
+      pool: sousPaquet ? melanger(sousPaquet) : buildQuizPool(),
+      idx: 0, correct: 0, joue: []
+    };
+    ColFin.protegerSortie(true);
+    renderQuizQuestion();
   }
 
   function renderQuizStart(){
@@ -660,31 +692,45 @@
   }
 
   function initQuizStart(){
-    document.getElementById('quiz-start-btn').addEventListener('click', () => {
-      quizState = { pool: buildQuizPool(), idx: 0, correct: 0 };
-      renderQuizQuestion();
+    document.getElementById('quiz-start-btn').addEventListener('click', () => lancerQuiz());
+  }
+
+  /* L'écran de fin est celui de la collection (ColFin, tâche E1) : le score
+     seul n'apprenait rien, et c'est le moment où le joueur est disponible
+     pour apprendre. Les trois catalogues passent un `jeu` distinct — une clé
+     commune leur ferait partager leur mémoire de questions vues. */
+  function renderQuizFin(){
+    const app = document.getElementById('app');
+    app.innerHTML = '<section class="col-fin" data-col-fin></section>';
+    const sansFaute = quizState.correct === quizState.pool.length;
+    const ecran = ColFin.rendre({
+      jeu: C.jeu,
+      cible: app.querySelector('[data-col-fin]'),
+      titre: M.quizResultat,
+      message: sansFaute ? M.quizSansFaute : M.quizAvecErreurs,
+      score: quizState.correct,
+      total: quizState.pool.length,
+      items: quizState.joue,
+      onRejouer: rates => lancerQuiz(rates),
+      onRecommencer: () => lancerQuiz(),
+      rejouerTexte: M.rejouer
     });
+    /* ColFin n'a pas de fente pour un troisième bouton : le lien vers le
+       catalogue, que l'ancien écran de fin proposait, rejoint sa rangée. */
+    const actions = ecran && ecran.querySelector('.col-actions');
+    if (actions){
+      const a = document.createElement('a');
+      a.className = 'col-btn col-btn--fantome';
+      a.href = '#/' + C.route;
+      a.textContent = M.explorerFiches;
+      actions.appendChild(a);
+    }
   }
 
   function renderQuizQuestion(){
     const app = document.getElementById('app');
     if (quizState.idx >= quizState.pool.length){
-      app.innerHTML = `
-        <p class="section-lab">${M.quizResultat}</p>
-        <div class="quiz-end">
-          <p class="mono" style="font-size:var(--fs-100);color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;">${M.scoreFinal}</p>
-          <p class="score">${quizState.correct}/${quizState.pool.length}</p>
-          <p>${quizState.correct === quizState.pool.length ? M.quizSansFaute : M.quizAvecErreurs}</p>
-          <div class="cta-row" style="justify-content:center;">
-            <button class="btn-primary" id="quiz-replay-btn" type="button">${M.rejouer}</button>
-            <a class="btn-ghost" href="#/${C.route}">${M.explorerFiches}</a>
-          </div>
-        </div>
-      `;
-      document.getElementById('quiz-replay-btn').addEventListener('click', () => {
-        quizState = { pool: buildQuizPool(), idx: 0, correct: 0 };
-        renderQuizQuestion();
-      });
+      renderQuizFin();
       return;
     }
 
@@ -712,6 +758,16 @@
 
     cablerBoiteQcm(app.querySelector('.test-box'), ok => {
       if (ok) quizState.correct++;
+      /* Ce que la partie a joué, sous la forme attendue par ColFin. On garde
+         `q`, `id` et `itemId` : « rejouer mes erreurs » relance la partie sur
+         ces objets-là, sans avoir à les retrouver dans les données. */
+      quizState.joue.push(Object.assign({}, item, {
+        titre: q.question,
+        reussi: ok,
+        explication: q.explication,
+        lien: '#/' + C.route + '/' + item.itemId,
+        lienTexte: item.itemNom
+      }));
       document.getElementById('quiz-next-wrap').style.display = 'flex';
     }, () => document.getElementById('quiz-next-btn'));
     document.getElementById('quiz-next-btn').addEventListener('click', () => {
