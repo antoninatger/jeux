@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Radar de la Désinfo 🛰️</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<title data-i18n="pageTitle">Radar de la Désinfo — reconnaître les techniques de désinformation</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu de fact-checking : pour chaque dépêche, identifie la technique de désinformation utilisée, ou décide qu'il s'agit d'une information fiable. Huit techniques expliquées avant de jouer.">
+<link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
 :root {
@@ -15,14 +15,30 @@
      où il sert le plus (méta des dépêches). Éclairci jusqu'à 4,7:1 sur la
      carte, donc 6,3:1 sur le fond : conforme partout où il apparaît. */
   --tx:#e3f6fd; --mu:#709EAD; --bord:rgba(255,255,255,0.09);
+  /* Identité du jeu sur le socle (chantier 05) : le socle impose la structure,
+     l'échelle typographique et le contraste ; ces rôles portent la direction
+     artistique — bleu nuit, cyan radar, Orbitron. Les noms historiques
+     ci-dessus restent en usage dans la feuille, ils deviennent des alias. */
+  --surface:var(--panel);
+  --bordure:var(--bord);
+  --txt:var(--tx);
+  --txt-secondaire:#709EAD;   /* 6,4:1 sur --bg — mesuré */
+  --acc-txt:#02222b;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Orbitron',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(circle at 50% 115%,rgba(34,211,238,.10) 0%,transparent 55%),repeating-radial-gradient(circle at 50% 115%,transparent 0 79px,rgba(34,211,238,.05) 79px 81px);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}
-h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,6vw,2.6rem);color:var(--acc);text-shadow:0 0 30px rgba(34,211,238,.4);}
-.sub{color:var(--mu);font-size:.9rem;font-weight:600;margin-top:4px;}
-.author{color:var(--mu);font-size:.78rem;font-weight:600;margin-bottom:16px;opacity:.8;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(circle at 50% 115%,rgba(34,211,238,.10) 0%,transparent 55%),repeating-radial-gradient(circle at 50% 115%,transparent 0 79px,rgba(34,211,238,.05) 79px 81px);color:var(--tx);min-height:100vh;padding:0 16px 20px;}
+/* Le contenu est un <main> : c'est la cible du lien d'évitement du socle, et
+   c'est lui qui centre les écrans du jeu, comme <body> le faisait avant que
+   l'en-tête unifié ne s'y insère. */
+main{display:flex;flex-direction:column;align-items:center;}
+/* L'en-tête unifié porte le titre : il garde la couleur et la lueur du radar. */
+.col-entete__titre{color:var(--acc);text-shadow:0 0 30px rgba(34,211,238,.4);}
+.sub{color:var(--mu);font-size:var(--fs-200);font-weight:600;margin-top:4px;}
+.author{color:var(--mu);font-size:var(--fs-100);font-weight:600;margin-bottom:16px;opacity:.8;}
 .author a{color:var(--acc);text-decoration:none;}
-header{text-align:center;}
+.titre-jeu{text-align:center;}
 
 /* Intro */
 #intro{max-width:620px;text-align:center;padding:10px 0;}
@@ -41,9 +57,9 @@ header{text-align:center;}
 #game{display:none;width:100%;max-width:720px;}
 .depeche{background:#f7f2e4;border:1px solid #d8cfb6;border-radius:8px;padding:0;margin-bottom:14px;position:relative;overflow:hidden;animation:slidein .35s ease;box-shadow:0 6px 24px rgba(0,0,0,.45);}
 @keyframes slidein{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-.wire-hd{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#1c1812;color:#f7f2e4;font-family:'Courier New',Courier,monospace;font-size:.7rem;font-weight:700;letter-spacing:1.5px;padding:8px 16px;text-transform:uppercase;}
+.wire-hd{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#1c1812;color:#f7f2e4;font-family:'Courier New',Courier,monospace;font-size:var(--fs-100);font-weight:700;letter-spacing:1.5px;padding:8px 16px;text-transform:uppercase;}
 .wire-bd{padding:14px 18px 18px;}
-.dtag{display:inline-block;background:rgba(179,38,30,.08);color:#b3261e;border:1.5px solid #b3261e;border-radius:3px;font-family:'Courier New',Courier,monospace;font-size:.68rem;font-weight:800;padding:2px 9px;margin-bottom:10px;letter-spacing:2px;text-transform:uppercase;transform:rotate(-1.2deg);}
+.dtag{display:inline-block;background:rgba(179,38,30,.08);color:#b3261e;border:1.5px solid #b3261e;border-radius:3px;font-family:'Courier New',Courier,monospace;font-size:var(--fs-100);font-weight:800;padding:2px 9px;margin-bottom:10px;letter-spacing:2px;text-transform:uppercase;transform:rotate(-1.2deg);}
 .dtxt{font-family:'Courier New',Courier,monospace;font-size:.97rem;font-weight:700;line-height:1.6;color:#1c1812;}
 .dq{text-align:center;font-size:.82rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:6px 0 10px;}
 
@@ -56,7 +72,7 @@ header{text-align:center;}
 .cat.dim{opacity:.35;}
 .cemoji{font-size:1.25rem;flex-shrink:0;}
 .cname{font-weight:800;display:block;}
-.cdesc{font-weight:600;color:var(--mu);font-size:.7rem;}
+.cdesc{font-weight:600;color:var(--mu);font-size:var(--fs-100);}
 
 /* Feedback */
 #feedback{display:none;border-radius:18px;padding:18px 20px;margin-bottom:14px;animation:slidein .3s ease;}
@@ -99,17 +115,13 @@ header{text-align:center;}
 #end{display:none;max-width:560px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:30px;}
 #end h2{font-family:'Orbitron',sans-serif;font-size:1.7rem;color:var(--acc);margin-bottom:10px;}
 @media(max-width:520px){#cats{grid-template-columns:1fr 1fr;}}
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:var(--panel,rgba(15,20,30,.7));border:1px solid var(--bord,rgba(255,255,255,.15));color:var(--mu,#9fb3cc);text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid var(--acc,#f7c948);outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. */
 </style>
 </head>
-<body data-col-entete="non">
-<a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
-
-<header>
+<body data-col-retour="../index.html">
+<main>
+<header class="titre-jeu">
   <h1 data-i18n="h1">🛰️ Radar de la Désinfo</h1>
   <p class="sub" data-i18n="sub">Au-delà de la fake news : démasque la technique de manipulation !</p>
   <p class="author">par <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
@@ -159,20 +171,16 @@ header{text-align:center;}
   <div class="col-fin" id="ecran-fin"></div>
   <div id="recap"></div>
 </div>
+</main>
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script>
-/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-window.__COLLECTION_ENTETE__ = false;
-</script>
-<script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux", h1: "🛰️ Radar de la Désinfo",
+    pageTitle: "Radar de la Désinfo — reconnaître les techniques de désinformation",
+    metaDesc: "Jeu de fact-checking : pour chaque dépêche, identifie la technique de désinformation utilisée, ou décide qu'il s'agit d'une information fiable. Huit techniques expliquées avant de jouer.",
+    h1: "🛰️ Radar de la Désinfo",
     sub: "Au-delà de la fake news : démasque la technique de manipulation !",
     brief1: `📰 Tu es <b>fact-checker</b> dans une grande rédaction. Des dépêches arrivent sur ton bureau : pour chacune, identifie la <b>technique de désinformation</b> utilisée… ou décide qu'il s'agit d'une <b>info fiable</b> !`,
     brief2: `⚠️ Rappelle-toi : la fake news n'est que <b>l'arbre qui cache la forêt</b>. On peut désinformer sans dire un seul mensonge…`,
@@ -184,7 +192,9 @@ I18N.register({
     train: "📚 Continuer sans score, pour voir la suite"
   },
   en: {
-    back: "← Back to games", h1: "🛰️ Disinfo Radar",
+    pageTitle: "Disinfo Radar — spot the disinformation techniques",
+    metaDesc: "A fact-checking game: for each wire dispatch, identify the disinformation technique used, or decide it is reliable information. Eight techniques explained before you play.",
+    h1: "🛰️ Disinfo Radar",
     sub: "Beyond fake news: unmask the manipulation technique!",
     brief1: `📰 You are a <b>fact-checker</b> in a major newsroom. Wire dispatches land on your desk: for each one, identify the <b>disinformation technique</b> used… or decide it's <b>reliable info</b>!`,
     brief2: `⚠️ Remember: fake news is just <b>the tree that hides the forest</b>. You can spread disinformation without telling a single lie…`,
