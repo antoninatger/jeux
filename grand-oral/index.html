@@ -3,23 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Grand Oral 🎤</title>
-<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<title data-i18n="pageTitle">Le Grand Oral — ethos, pathos, logos adaptés à l'auditoire</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu de rhétorique : pour chaque mission, étudie l'auditoire puis compose un discours avec un argument d'ethos, de pathos et de logos. Certains arguments sont fallacieux.">
+<link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
 :root {
   --bg:#150e26; --panel:#1e1538; --card:#2a1d4e;
   --acc:#c9a0ff; --gr:#3ecf8e; --rd:#f75f5f; --bl:#62b0ff; --vi:#a855f7;
   --tx:#f0e9ff; --mu:#9d8cc4; --bord:rgba(255,255,255,0.09);
+  /* Identité du jeu sur le socle (chantier 05) : le socle impose la structure,
+     l'échelle typographique et le contraste ; ces rôles portent la direction
+     artistique — violet de tribune, mauve, Abril Fatface. Les noms
+     historiques ci-dessus restent en usage dans la feuille, ils deviennent
+     des alias. */
+  --surface:var(--panel);
+  --bordure:var(--bord);
+  --txt:var(--tx);
+  --txt-secondaire:#9d8cc4;   /* 6,2:1 sur --bg — mesuré */
+  --acc-txt:#1a0f2e;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Abril Fatface',serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 50% -10%,rgba(255,214,140,.10) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(168,85,247,.08) 0%,transparent 55%);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}
-h1{font-family:'Abril Fatface',serif;font-size:clamp(1.8rem,6vw,2.6rem);color:var(--acc);text-shadow:0 0 30px rgba(201,160,255,.4);}
-.sub{color:var(--mu);font-size:.9rem;font-weight:600;margin-top:4px;}
-.author{color:var(--mu);font-size:.78rem;font-weight:600;margin-bottom:16px;opacity:.8;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 50% -10%,rgba(255,214,140,.10) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(168,85,247,.08) 0%,transparent 55%);color:var(--tx);min-height:100vh;padding:0 16px 20px;}
+/* Le contenu est un <main> : c'est la cible du lien d'évitement du socle, et
+   c'est lui qui centre les écrans du jeu, comme <body> le faisait avant que
+   l'en-tête unifié ne s'y insère. */
+main{display:flex;flex-direction:column;align-items:center;}
+/* L'en-tête unifié porte le titre : il garde la couleur et la lueur du jeu. */
+.col-entete__titre{color:var(--acc);text-shadow:0 0 30px rgba(201,160,255,.4);}
+.sub{color:var(--mu);font-size:var(--fs-200);font-weight:600;margin-top:4px;}
+.author{color:var(--mu);font-size:var(--fs-100);font-weight:600;margin-bottom:16px;opacity:.8;}
 .author a{color:var(--acc);text-decoration:none;}
-header{text-align:center;}
+.titre-jeu{text-align:center;}
 
 #intro{max-width:640px;text-align:center;}
 #intro .brief{background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:24px;margin-bottom:20px;text-align:left;font-size:.95rem;line-height:1.6;font-weight:600;}
@@ -36,15 +53,15 @@ header{text-align:center;}
 .mission{background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:20px 22px;margin-bottom:14px;position:relative;overflow:hidden;animation:slidein .35s ease;}
 @keyframes slidein{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
 .mission::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),var(--vi));}
-.mtag{display:inline-block;background:rgba(201,160,255,.13);color:var(--acc);border:1px solid rgba(201,160,255,.35);border-radius:6px;font-size:.7rem;font-weight:800;padding:3px 10px;margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;}
+.mtag{display:inline-block;background:rgba(201,160,255,.13);color:var(--acc);border:1px solid rgba(201,160,255,.35);border-radius:6px;font-size:var(--fs-100);font-weight:800;padding:3px 10px;margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;}
 .mtxt{font-size:1.05rem;font-weight:800;line-height:1.5;color:#fff;margin-bottom:12px;}
 .audience{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;background:var(--card);border:1px dashed rgba(255,255,255,.18);border-radius:14px;padding:13px 15px;}
-.audience::before{content:'📋 Fiche auditoire — confidentiel';flex-basis:100%;font-size:.66rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);}
+.audience::before{content:'📋 Fiche auditoire — confidentiel';flex-basis:100%;font-size:var(--fs-100);font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);}
 .audience .aemoji{font-size:2rem;flex-shrink:0;}
 .audience .aname{font-weight:800;color:var(--bl);font-size:.92rem;}
 .audience .adesc{font-weight:600;color:#d9cdf2;font-size:.86rem;line-height:1.5;}
 
-.sectitle{font-size:.78rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;}
+.sectitle{font-size:var(--fs-100);font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;}
 
 /* Registres */
 .reg{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:14px 16px;margin-bottom:10px;}
@@ -52,7 +69,7 @@ header{text-align:center;}
 .reg.ethos .reg-hd{color:var(--bl);}
 .reg.pathos .reg-hd{color:var(--rd);}
 .reg.logos .reg-hd{color:var(--gr);}
-.reg-sub{font-size:.76rem;font-weight:700;color:var(--mu);margin-bottom:10px;}
+.reg-sub{font-size:var(--fs-100);font-weight:700;color:var(--mu);margin-bottom:10px;}
 .reg-opts{display:grid;gap:7px;}
 .opt{background:var(--card);border:2px solid var(--bord);border-radius:12px;padding:11px 13px;cursor:pointer;text-align:left;font-family:Georgia,'Times New Roman',serif;font-style:italic;color:var(--tx);font-size:.88rem;font-weight:400;line-height:1.45;transition:all .15s;}
 .opt:hover{border-color:rgba(255,255,255,.25);}
@@ -68,7 +85,7 @@ header{text-align:center;}
 /* Tribune (delivery) */
 #delivery{display:none;}
 #convbar{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:14px 18px;margin-bottom:12px;}
-#convbar .glabels{display:flex;justify-content:space-between;font-size:.74rem;font-weight:800;margin-bottom:6px;}
+#convbar .glabels{display:flex;justify-content:space-between;font-size:var(--fs-100);font-weight:800;margin-bottom:6px;}
 #convbar .gname{text-transform:uppercase;letter-spacing:.5px;color:var(--acc);}
 #convbar .gval{font-family:'Abril Fatface',serif;font-size:.95rem;}
 .gbg{height:18px;background:rgba(0,0,0,.35);border-radius:50px;overflow:hidden;}
@@ -90,7 +107,7 @@ header{text-align:center;}
 #verdict h3{font-family:'Abril Fatface',serif;font-size:1.2rem;color:var(--acc);margin-bottom:6px;}
 #verdict .vstars{font-size:1.5rem;margin-bottom:8px;}
 /* Chantier 04 : le barème des étoiles n'était expliqué nulle part. */
-#verdict .vscale{font-size:.78rem;font-weight:700;color:var(--mu);margin-bottom:10px;line-height:1.5;}
+#verdict .vscale{font-size:var(--fs-100);font-weight:700;color:var(--mu);margin-bottom:10px;line-height:1.5;}
 /* Chantier 04 : la restitution durait 4,2 s sans pouvoir être écourtée. */
 #skipbtn{display:none;width:100%;background:transparent;color:var(--acc);border:2px solid var(--acc);border-radius:50px;padding:11px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;margin-bottom:12px;min-height:44px;transition:background .2s;}
 #skipbtn:hover{background:rgba(201,160,255,.12);}
@@ -100,17 +117,13 @@ header{text-align:center;}
 
 #end{display:none;max-width:580px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:30px;}
 #end h2{font-family:'Abril Fatface',serif;font-size:1.7rem;color:var(--acc);margin-bottom:10px;}
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:var(--panel,rgba(15,20,30,.7));border:1px solid var(--bord,rgba(255,255,255,.15));color:var(--mu,#9fb3cc);text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid var(--acc,#f7c948);outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. */
 </style>
 </head>
-<body data-col-entete="non">
-<a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
-
-<header>
+<body data-col-retour="../index.html">
+<main>
+<header class="titre-jeu">
   <h1 data-i18n="h1">🎤 Le Grand Oral</h1>
   <p class="sub" data-i18n="sub">Assemble ton discours : ethos, pathos, logos… adaptés à ton auditoire !</p>
   <p class="author">par <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
@@ -188,20 +201,16 @@ header{text-align:center;}
        missions manquées avec leur leçon, « rejouer mes erreurs ». -->
   <div class="col-fin" id="ecran-fin"></div>
 </div>
+</main>
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script>
-/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-window.__COLLECTION_ENTETE__ = false;
-</script>
-<script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux", h1: "🎤 Le Grand Oral",
+    pageTitle: "Le Grand Oral — ethos, pathos, logos adaptés à l'auditoire",
+    metaDesc: "Jeu de rhétorique : pour chaque mission, étudie l'auditoire puis compose un discours avec un argument d'ethos, de pathos et de logos. Certains arguments sont fallacieux.",
+    h1: "🎤 Le Grand Oral",
     sub: "Assemble ton discours : ethos, pathos, logos… adaptés à ton auditoire !",
     brief1: `🏟️ Comme dans l'exercice en classe : une rangée défend avec l'<b>ethos</b> (l'éthique, la légitimité), une avec le <b>pathos</b> (l'émotion), une avec le <b>logos</b> (la logique). Ici, tu joues les trois rangées à la fois !`,
     brief2: `🎯 Pour chaque mission, <b>étudie d'abord ton auditoire</b> : ses valeurs, ses craintes, ses fiertés. Puis choisis UN argument de chaque registre pour composer ton discours.`,
@@ -218,7 +227,9 @@ I18N.register({
     scaleGot: "Ton total :"
   },
   en: {
-    back: "← Back to games", h1: "🎤 The Grand Oral",
+    pageTitle: "The Grand Oral — ethos, pathos, logos tailored to the audience",
+    metaDesc: "A rhetoric game: for each mission, study the audience then build a speech with one ethos, one pathos and one logos argument. Some arguments are fallacious.",
+    h1: "🎤 The Grand Oral",
     sub: "Assemble your speech: ethos, pathos, logos… tailored to your audience!",
     brief1: `🏟️ Just like the classroom exercise: one row defends with <b>ethos</b> (ethics, legitimacy), one with <b>pathos</b> (emotion), one with <b>logos</b> (logic). Here, you play all three rows at once!`,
     brief2: `🎯 For each mission, <b>study your audience first</b>: its values, its fears, its pride. Then pick ONE argument from each register to compose your speech.`,
