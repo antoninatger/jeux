@@ -477,17 +477,23 @@
   /* --- Analyse the free-text "why": compare it to the clue's keywords --- */
   var STOP = (' the a an and or but so nor for of to in on at by with without into from as is are be been being this that these those it its it s he she they them we you your our their my his her not no yes can could will would may might do does did done make made just very more most less here there when then also same already nothing everything something real really never always why what who whom whose which how so if').split(' ');
   function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' '); }
+  // { norm, texte }: the normalized form is used for comparison, "texte" keeps the original accents for display
   function motsClesIndice(r){
-    var src = norm((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
+    var brut = ((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
     var out = [];
-    src.forEach(function(w){ if (w.length >= 4 && STOP.indexOf(w) < 0 && out.indexOf(w) < 0) out.push(w); });
+    brut.forEach(function(w){
+      var propre = w.replace(/^[^a-zA-ZÀ-ÖØ-öø-ÿ]+|[^a-zA-ZÀ-ÖØ-öø-ÿ]+$/g, '');
+      var wn = norm(propre);
+      if (wn.length >= 4 && STOP.indexOf(wn) < 0 && !out.some(function(o){ return o.norm === wn; }))
+        out.push({ norm: wn, texte: propre });
+    });
     return out;
   }
   function analyserPourquoi(why, r){
     var w = norm(why);
     if (!w.replace(/\s/g,'')) return { ecrit:false, trouves:[] };
     var trouves = [];
-    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k) >= 0) trouves.push(k); });
+    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k.norm) >= 0) trouves.push(k.texte); });
     return { ecrit:true, trouves:trouves };
   }
 
@@ -503,41 +509,47 @@
   }
 
   /* --- The player judges: confidence slider + optional "why" --- */
+  /* ColModale (collection.js) handles the focus trap, Escape and returning focus
+     to the original element: the probe no longer has to rewrite these three things. */
   function ouvrirSonde(i, span){
     span.classList.remove('hint-flash');
-    var pop = ensurePop();
-    pop.className = 'spot-pop sonde';
-    pop.innerHTML =
-      '<button class="x" type="button" aria-label="Close">✕</button>' +
-      '<div class="sonde-q">How does this detail feel to you?</div>' +
+
+    var contenu = document.createElement('div');
+    contenu.className = 'sonde-corps';
+    contenu.innerHTML =
       '<div class="curseur" role="radiogroup" aria-label="Your feeling">' +
         '<button type="button" class="cr" data-v="louche" role="radio" aria-checked="false"><span class="e">🚩</span><small>Suspicious</small></button>' +
         '<button type="button" class="cr" data-v="neutre" role="radio" aria-checked="false"><span class="e">😐</span><small>Nothing special</small></button>' +
         '<button type="button" class="cr" data-v="rassurant" role="radio" aria-checked="false"><span class="e">✅</span><small>Reassuring</small></button>' +
       '</div>' +
-      '<textarea class="sonde-why" rows="2" placeholder="Why? (optional)"></textarea>' +
-      '<button type="button" class="sonde-ok" disabled>Confirm my analysis</button>' +
-      '<span class="arrow"></span>';
+      '<textarea class="sonde-why" rows="2" placeholder="Why? (optional)"></textarea>';
+
     var choix = null;
-    var okBtn = pop.querySelector('.sonde-ok');
-    var crs = pop.querySelectorAll('.cr');
-    crs.forEach(function(b){
-      b.onclick = function(ev){
-        ev.stopPropagation();
+    var valider = null; // set right after ColModale.ouvrir returns — the button already exists (Promise executor runs synchronously)
+    contenu.querySelectorAll('.cr').forEach(function(b){
+      b.onclick = function(){
         choix = b.getAttribute('data-v');
-        crs.forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
+        contenu.querySelectorAll('.cr').forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
         b.classList.add('sel'); b.setAttribute('aria-checked','true');
-        okBtn.disabled = false;
+        if (valider) valider.disabled = false;
       };
     });
-    pop.querySelector('.sonde-why').onclick = function(ev){ ev.stopPropagation(); };
-    pop.querySelector('.x').onclick = function(ev){ ev.stopPropagation(); hidePop(); };
-    okBtn.onclick = function(ev){
-      ev.stopPropagation();
-      if (!choix) return;
-      validerSonde(i, span, choix, (pop.querySelector('.sonde-why').value || ''));
-    };
-    positionPop(pop, span, null);
+
+    var promesse = ColModale.ouvrir({
+      titre: 'How does this detail feel to you?',
+      contenu: contenu,
+      classe: 'sonde',
+      actions: [
+        { id: 'annuler', libelle: 'Cancel' },
+        { id: 'valider', libelle: 'Confirm my analysis', principal: true }
+      ]
+    });
+    valider = document.querySelector('dialog.col-modale.sonde .col-btn:not(.col-btn--fantome)');
+    if (valider) valider.disabled = true;
+
+    promesse.then(function(id){
+      if (id === 'valider' && choix) validerSonde(i, span, choix, (contenu.querySelector('.sonde-why').value || ''));
+    });
   }
 
   function validerSonde(i, span, choix, why){

@@ -477,17 +477,23 @@
   /* --- Analyse du « pourquoi » libre : on compare aux mots-clés de l'indice --- */
   var STOP = (' le la les un une des de du au aux et ou mais donc car ni que qui quoi dont en dans sur sous pour par avec sans vers chez ne pas plus moins tres est sont etre ete cet cette ces ceci cela ce se sa son ses leur leurs mon mes ton tes votre vos notre nos il elle ils elles on nous vous suis lui comme tout tous toute toutes bien mal ici oui non peut fait faire vraie vrai vraiment jamais toujours quand alors aussi meme deja rien nest cest sil quil pourquoi vraie votre votre').split(' ');
   function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' '); }
+  // { norm, texte } : la forme normalisée sert à comparer, « texte » garde l'accentuation d'origine pour l'affichage
   function motsClesIndice(r){
-    var src = norm((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
+    var brut = ((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
     var out = [];
-    src.forEach(function(w){ if (w.length >= 4 && STOP.indexOf(w) < 0 && out.indexOf(w) < 0) out.push(w); });
+    brut.forEach(function(w){
+      var propre = w.replace(/^[^a-zA-ZÀ-ÖØ-öø-ÿ]+|[^a-zA-ZÀ-ÖØ-öø-ÿ]+$/g, '');
+      var wn = norm(propre);
+      if (wn.length >= 4 && STOP.indexOf(wn) < 0 && !out.some(function(o){ return o.norm === wn; }))
+        out.push({ norm: wn, texte: propre });
+    });
     return out;
   }
   function analyserPourquoi(why, r){
     var w = norm(why);
     if (!w.replace(/\s/g,'')) return { ecrit:false, trouves:[] };
     var trouves = [];
-    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k) >= 0) trouves.push(k); });
+    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k.norm) >= 0) trouves.push(k.texte); });
     return { ecrit:true, trouves:trouves };
   }
 
@@ -502,42 +508,48 @@
     ouvrirSonde(i, span);
   }
 
-  /* --- Le joueur juge lui-même : curseur de confiance + « pourquoi » facultatif --- */
+  /* --- Le joueur juge lui-même : curseur de confiance + « pourquoi » facultatif ---
+     ColModale (collection.js) porte le piège de focus, Échap et le retour du focus
+     à l'élément d'origine : la sonde n'a plus à réécrire ces trois choses. */
   function ouvrirSonde(i, span){
     span.classList.remove('hint-flash');
-    var pop = ensurePop();
-    pop.className = 'spot-pop sonde';
-    pop.innerHTML =
-      '<button class="x" type="button" aria-label="Fermer">✕</button>' +
-      '<div class="sonde-q">Ce détail, vous le sentez comment&nbsp;?</div>' +
+
+    var contenu = document.createElement('div');
+    contenu.className = 'sonde-corps';
+    contenu.innerHTML =
       '<div class="curseur" role="radiogroup" aria-label="Votre ressenti">' +
         '<button type="button" class="cr" data-v="louche" role="radio" aria-checked="false"><span class="e">🚩</span><small>Louche</small></button>' +
         '<button type="button" class="cr" data-v="neutre" role="radio" aria-checked="false"><span class="e">😐</span><small>Rien de spécial</small></button>' +
         '<button type="button" class="cr" data-v="rassurant" role="radio" aria-checked="false"><span class="e">✅</span><small>Rassurant</small></button>' +
       '</div>' +
-      '<textarea class="sonde-why" rows="2" placeholder="Pourquoi ? (facultatif)"></textarea>' +
-      '<button type="button" class="sonde-ok" disabled>Valider mon analyse</button>' +
-      '<span class="arrow"></span>';
+      '<textarea class="sonde-why" rows="2" placeholder="Pourquoi ? (facultatif)"></textarea>';
+
     var choix = null;
-    var okBtn = pop.querySelector('.sonde-ok');
-    var crs = pop.querySelectorAll('.cr');
-    crs.forEach(function(b){
-      b.onclick = function(ev){
-        ev.stopPropagation();
+    var valider = null; // renseigné juste après l'appel à ColModale.ouvrir, le bouton existe déjà (Promise exécutée en synchrone)
+    contenu.querySelectorAll('.cr').forEach(function(b){
+      b.onclick = function(){
         choix = b.getAttribute('data-v');
-        crs.forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
+        contenu.querySelectorAll('.cr').forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
         b.classList.add('sel'); b.setAttribute('aria-checked','true');
-        okBtn.disabled = false;
+        if (valider) valider.disabled = false;
       };
     });
-    pop.querySelector('.sonde-why').onclick = function(ev){ ev.stopPropagation(); };
-    pop.querySelector('.x').onclick = function(ev){ ev.stopPropagation(); hidePop(); };
-    okBtn.onclick = function(ev){
-      ev.stopPropagation();
-      if (!choix) return;
-      validerSonde(i, span, choix, (pop.querySelector('.sonde-why').value || ''));
-    };
-    positionPop(pop, span, null);
+
+    var promesse = ColModale.ouvrir({
+      titre: 'Ce détail, vous le sentez comment ?',
+      contenu: contenu,
+      classe: 'sonde',
+      actions: [
+        { id: 'annuler', libelle: 'Annuler' },
+        { id: 'valider', libelle: 'Valider mon analyse', principal: true }
+      ]
+    });
+    valider = document.querySelector('dialog.col-modale.sonde .col-btn:not(.col-btn--fantome)');
+    if (valider) valider.disabled = true;
+
+    promesse.then(function(id){
+      if (id === 'valider' && choix) validerSonde(i, span, choix, (contenu.querySelector('.sonde-why').value || ''));
+    });
   }
 
   function validerSonde(i, span, choix, why){
