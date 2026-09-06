@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="clair">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-i18n="pageTitle">Le biais de confirmation — CM1</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu pour le primaire : dans cinq situations, choisis qui a raison et découvre comment le biais de confirmation pousse à retenir l'avis qui confirme ce qu'on pense déjà.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="collection.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -22,35 +23,58 @@
     --text:   #2a2035;
     --muted:  #756B8A;   /* 4,7:1 sur --bg ; #7a7090 n'était qu'à 4,37:1 */
     --radius: 20px;
+    /* Identité du jeu sur le socle (chantier 05), en thème clair : le socle
+       impose la structure, l'échelle typographique et le contraste ; ces
+       rôles portent la direction artistique — crème, violet, Baloo 2 pour les
+       titres et Nunito pour le texte. Les noms historiques ci-dessus restent
+       en usage dans la feuille, ils deviennent des alias. L'anneau de focus
+       reste celui du thème clair du socle : le violet ne tient que 3,4:1 sur
+       le fond crème. */
+    --surface: var(--card);
+    --txt: var(--text);
+    --txt-secondaire: #756B8A;
+    --acc: var(--purple);
+    --acc-txt: #ffffff;
+    --font-texte: 'Nunito', 'Baloo 2', cursive, sans-serif;
+    --font-titre: 'Baloo 2', cursive;
   }
 
   body {
     font-family: 'Nunito', 'Baloo 2', cursive, sans-serif;
     background: var(--bg);
     min-height: 100vh;
+    padding: 0 16px 40px;
+    color: var(--text);
+  }
+  /* <main> : cible du lien d'évitement du socle, et centrage du jeu que
+     <body> assurait avant que l'en-tête unifié ne s'y insère. */
+  main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px 40px;
-    color: var(--text);
   }
 
   /* ── HEADER ── */
-  header {
+  /* Le titre est dans l'en-tête unifié : violet, en Baloo 2 grasse. */
+  .col-entete__titre {
+    font-weight: 800;
+    color: var(--purple);
+  }
+  .titre-jeu {
     text-align: center;
     margin-bottom: 28px;
   }
-  header h1 {
+  .titre-jeu h1 {
     font-family: 'Baloo 2', cursive;
     font-size: clamp(22px, 5vw, 34px);
     font-weight: 800;
     color: var(--text);
     line-height: 1.1;
   }
-  header h1 span {
+  .titre-jeu h1 span {
     color: var(--purple);
   }
-  header p {
+  .titre-jeu p {
     margin-top: 6px;
     font-size: 15px;
     color: var(--muted);
@@ -379,17 +403,13 @@
     background: var(--purple); font-size: 15px; padding: 12px 32px;
   }
   .btn-start:hover { background: #8257e6; }
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:#1b2a4a;border:1px solid rgba(255,255,255,.25);color:#fff;text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.92;transition:opacity .2s,transform .2s;font-family:inherit;}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #1b2a4a;outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. */
 </style>
 </head>
-<body>
-<a class="back-hub" href="index.html" data-i18n="back">← Retour aux jeux</a>
-
-<header>
+<body data-col-retour="index.html">
+<main>
+<header class="titre-jeu">
   <h1 data-i18n-html="h1">Le <span>biais de confirmation</span> 🧠</h1>
   <!-- Sans opacite : --muted est deja le gris discret de la page (4,7:1) ; le
        reduire encore a 65 % le ramenait a 2,49:1 sur le fond creme. -->
@@ -450,12 +470,15 @@
   </div>
 
 </div>
+</main>
 
 <script src="i18n.js"></script>
+<script src="collection.js"></script>
 <script>
 I18N.register({
   fr: {
-    pageTitle: "Le biais de confirmation — CM1", back: "← Retour aux jeux",
+    pageTitle: "Le biais de confirmation — CM1",
+    metaDesc: "Jeu pour le primaire : dans cinq situations, choisis qui a raison et découvre comment le biais de confirmation pousse à retenir l'avis qui confirme ce qu'on pense déjà.",
     h1: "Le <span>biais de confirmation</span> 🧠",
     subtitle: "À qui vas-tu faire confiance&nbsp;? Choisis et découvre pourquoi&nbsp;!",
     introTitle: "Le biais de confirmation",
@@ -470,7 +493,8 @@ I18N.register({
     situationLabel: "Situation", isRight: "a raison&nbsp;!", seeResults: "Voir le bilan 🎉", nextSituation: "Situation suivante →"
   },
   en: {
-    pageTitle: "Confirmation bias — for kids", back: "← Back to games",
+    pageTitle: "Confirmation bias — for kids",
+    metaDesc: "A game for primary school: in five situations, choose who is right and discover how confirmation bias makes us keep the opinion that confirms what we already think.",
     h1: "The <span>confirmation bias</span> 🧠",
     subtitle: "Who will you trust? Choose and find out why!",
     introTitle: "The confirmation bias",
