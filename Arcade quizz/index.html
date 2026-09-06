@@ -370,7 +370,7 @@ I18N.register({
     descQcm: "Réponds aux questions à ton rythme, lis les explications et suis ta progression par thème !",
     play: "▶ Jouer", btnEdit: "✏ Intégrer tes questions",
     hubStep2: "— 2. Choisir un jeu —",
-    nivCollege: "Collège · 11-13 ans", nivLycee: "Lycée · 15-18 ans",
+    nivCollege: "Collège · 11-13 ans", nivLycee: "Lycée · 15-18 ans", nivTous: "Tous niveaux",
     xlsxAbsent: "❌ Le lecteur de fichiers Excel n'est pas disponible. Rechargez la page, ou importez un fichier .json."
   },
   en: {
@@ -391,7 +391,7 @@ I18N.register({
     descQcm: "Answer at your own pace, read the explanations and track your progress by topic!",
     play: "▶ Play", btnEdit: "✏ Add your questions",
     hubStep2: "— 2. Choose a game —",
-    nivCollege: "Middle school · ages 11-13", nivLycee: "High school · ages 15-18",
+    nivCollege: "Middle school · ages 11-13", nivLycee: "High school · ages 15-18", nivTous: "All levels",
     xlsxAbsent: "❌ The Excel file reader is unavailable. Reload the page, or import a .json file."
   }
 });
@@ -824,16 +824,18 @@ function apercuRAF(cv, fn){
     }
   }
 
-  /* Niveau de chaque série. Seules celles dont le public est écrit quelque
-     part dans le dépôt en ont un : PRODUCT.md pour 6e-5e (collège) et les
-     en-têtes de questions-niveau2/3.js pour le lycée. « Par défaut » et
-     « Influenceurs » n'ont de public écrit nulle part : leur puce ne
-     l'affiche pas plutôt que d'en inventer un. */
+  /* Niveau de chaque série. Celles dont le public est écrit quelque part dans
+     le dépôt le tiennent de là : PRODUCT.md pour 6e-5e (collège) et les
+     en-têtes de questions-niveau2/3.js pour le lycée. « Influenceurs » et
+     « Par défaut » n'avaient de public écrit nulle part : Antonin les a
+     tranchés le 5 septembre 2026 (décision D24). */
   var NIVEAUX = {
-    '6e5e'   : 'nivCollege',
-    'niveau1': 'nivLycee',
-    'niveau2': 'nivLycee',
-    'niveau3': 'nivLycee'
+    '6e5e'       : 'nivCollege',
+    'niveau1'    : 'nivLycee',
+    'niveau2'    : 'nivLycee',
+    'niveau3'    : 'nivLycee',
+    'influenceurs': 'nivLycee',
+    'default'    : 'nivTous'
   };
 
   /* Les thèmes viennent des champs `cat` des questions, pas d'une liste
