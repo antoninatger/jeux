@@ -3,23 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>L'Arène Rhétorique ⚔️</title>
-<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- E2 : le socle est chargé pour l'écran de fin (ColFin) ; la migration complète de la page reste à faire (chantier 05). -->
+<title data-i18n="pageTitle">L'Arène Rhétorique — reconnaître les ressorts du discours et les sophismes</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu de débat : cinq adversaires tentent de te convaincre par tous les moyens. À chaque réplique, identifie le ressort rhétorique ou le sophisme utilisé.">
+<link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
 :root {
   --bg:#1b0d11; --panel:#27131a; --card:#351a23;
   --acc:#ff5d73; --gr:#3ecf8e; --rd:#f75f5f; --bl:#4fa3f7; --vi:#ff5d73;
   --tx:#fdeef0; --mu:#b08891; --bord:rgba(255,255,255,0.09);
+  /* Identité du jeu sur le socle (chantier 05) : le socle impose la structure,
+     l'échelle typographique et le contraste ; ces rôles portent la direction
+     artistique — pourpre d'arène, rose vif, Alfa Slab One. Les noms
+     historiques ci-dessus restent en usage dans la feuille, ils deviennent
+     des alias. */
+  --surface:var(--panel);
+  --bordure:var(--bord);
+  --txt:var(--tx);
+  --txt-secondaire:#b08891;   /* 6,1:1 sur --bg — mesuré */
+  --acc-txt:#ffffff;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Alfa Slab One',serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 50% -10%,rgba(255,93,115,.09) 0%,transparent 55%),radial-gradient(ellipse at 50% 110%,rgba(228,180,120,.07) 0%,transparent 55%);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}
-h1{font-family:'Alfa Slab One',serif;font-size:clamp(1.8rem,6vw,2.6rem);color:var(--acc);text-shadow:0 0 30px rgba(255,93,115,.4);}
-.sub{color:var(--mu);font-size:.9rem;font-weight:600;margin-top:4px;}
-.author{color:var(--mu);font-size:.78rem;font-weight:600;margin-bottom:16px;opacity:.8;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);background-image:radial-gradient(ellipse at 50% -10%,rgba(255,93,115,.09) 0%,transparent 55%),radial-gradient(ellipse at 50% 110%,rgba(228,180,120,.07) 0%,transparent 55%);color:var(--tx);min-height:100vh;padding:0 16px 20px;}
+/* Le contenu est un <main> : c'est la cible du lien d'évitement du socle, et
+   c'est lui qui centre les écrans du jeu, comme <body> le faisait avant que
+   l'en-tête unifié ne s'y insère. */
+main{display:flex;flex-direction:column;align-items:center;}
+/* L'en-tête unifié porte le titre : il garde la couleur et la lueur du jeu. */
+.col-entete__titre{color:var(--acc);text-shadow:0 0 30px rgba(255,93,115,.4);}
+.sub{color:var(--mu);font-size:var(--fs-200);font-weight:600;margin-top:4px;}
+.author{color:var(--mu);font-size:var(--fs-100);font-weight:600;margin-bottom:16px;opacity:.8;}
 .author a{color:var(--acc);text-decoration:none;}
-header{text-align:center;}
+.titre-jeu{text-align:center;}
 
 #intro{max-width:620px;text-align:center;}
 #intro .brief{background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:24px;margin-bottom:20px;text-align:left;font-size:.95rem;line-height:1.6;font-weight:600;}
@@ -40,7 +57,7 @@ header{text-align:center;}
 .hpfill{height:100%;border-radius:50px;transition:width .5s ease;}
 #hp-you .hpfill{background:linear-gradient(90deg,#3ecf8e,#2da872);}
 #hp-foe .hpfill{background:linear-gradient(90deg,#f75f5f,#d34141);}
-.hptxt{font-size:.7rem;font-weight:800;color:var(--mu);margin-top:4px;}
+.hptxt{font-size:var(--fs-100);font-weight:800;color:var(--mu);margin-top:4px;}
 #foe-title{color:var(--rd);}
 #you-title{color:var(--gr);}
 
@@ -48,7 +65,7 @@ header{text-align:center;}
 .bubble.pop-replay{animation:pop .3s ease;}
 .bubble::after{content:'';position:absolute;top:-9px;right:48px;width:16px;height:16px;background:var(--panel);border-left:1px solid var(--bord);border-top:1px solid var(--bord);transform:rotate(45deg);}
 @keyframes pop{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:none;}}
-.bubble .btag{display:inline-block;background:rgba(255,93,115,.13);color:var(--acc);border:1px solid rgba(255,93,115,.35);border-radius:6px;font-size:.68rem;font-weight:800;padding:2px 9px;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
+.bubble .btag{display:inline-block;background:rgba(255,93,115,.13);color:var(--acc);border:1px solid rgba(255,93,115,.35);border-radius:6px;font-size:var(--fs-100);font-weight:800;padding:2px 9px;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
 .bubble .btxt{font-family:Georgia,'Times New Roman',serif;font-size:1.04rem;line-height:1.6;font-style:italic;color:#fff;padding-left:26px;position:relative;}
 .bubble .btxt::before{content:'\201C';font-family:'Alfa Slab One',serif;font-style:normal;font-size:1.9rem;color:var(--acc);position:absolute;left:0;top:-2px;line-height:1;opacity:.85;}
 .qprompt{text-align:center;font-size:.82rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin:12px 0 10px;}
@@ -60,7 +77,7 @@ header{text-align:center;}
 .abtn.good{border-color:var(--gr);background:rgba(62,207,142,.12);}
 .abtn.bad{border-color:var(--rd);background:rgba(247,95,95,.12);}
 .abtn.dim{opacity:.35;}
-.abtn .asub{display:block;font-size:.72rem;font-weight:600;color:var(--mu);margin-top:2px;}
+.abtn .asub{display:block;font-size:var(--fs-100);font-weight:600;color:var(--mu);margin-top:2px;}
 
 #riposte{display:none;border-radius:18px;padding:16px 18px;margin-bottom:12px;animation:pop .3s ease;}
 #riposte.ok{background:rgba(62,207,142,.1);border:2px solid var(--gr);}
@@ -76,7 +93,7 @@ header{text-align:center;}
 #foe-breadcrumb .bc-item{font-size:1.3rem;opacity:.3;filter:grayscale(1);transition:all .2s;padding:4px;border-radius:50%;}
 #foe-breadcrumb .bc-item.current{opacity:1;filter:none;background:rgba(255,93,115,.18);box-shadow:0 0 0 2px var(--acc);transform:scale(1.15);}
 #foe-breadcrumb .bc-item.done{opacity:.75;filter:none;}
-#turn-progress{text-align:center;font-size:.75rem;font-weight:800;color:var(--mu);letter-spacing:.5px;margin-bottom:8px;}
+#turn-progress{text-align:center;font-size:var(--fs-100);font-weight:800;color:var(--mu);letter-spacing:.5px;margin-bottom:8px;}
 #retry-btn{display:none;margin-bottom:10px;}
 
 /* interstitial + end */
@@ -86,17 +103,13 @@ header{text-align:center;}
 .screen > p{color:var(--mu);font-weight:700;margin-bottom:18px;line-height:1.55;}
 .screen > p b{color:var(--tx);}
 @media(max-width:520px){#answers{grid-template-columns:1fr;}}
-/* ── Collection : retour hub + accessibilité ── */
-.back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:var(--panel,rgba(15,20,30,.7));border:1px solid var(--bord,rgba(255,255,255,.15));color:var(--mu,#9fb3cc);text-decoration:none;font-size:.8rem;font-weight:700;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
-.back-hub:hover{opacity:1;transform:translateX(-2px);}
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid var(--acc,#f7c948);outline-offset:2px;border-radius:6px;}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
+/* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
+   une seule fois par collection.css / collection.js, plus rien ici. */
 </style>
 </head>
-<body data-col-entete="non">
-<a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
-
-<header>
+<body data-col-retour="../index.html">
+<main>
+<header class="titre-jeu">
   <h1 data-i18n="h1">⚔️ L'Arène Rhétorique</h1>
   <p class="sub" data-i18n="sub">Démasque les ruses du discours et remporte le débat !</p>
   <p class="author">par <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
@@ -158,46 +171,40 @@ header{text-align:center;}
   <div class="col-fin" id="ecran-fin"></div>
   <button class="bigbtn" id="retry-btn" style="margin-top:14px"></button>
 </div>
+</main>
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script>
-/* E2 : collection.js n'est chargé ici que pour ColFin (écran de fin) et
-   ColModale ; l'en-tête unifié attend la migration de la page (chantier 05,
-   d'où data-col-entete="non" sur <body>). Sans la ligne ci-dessous, i18n.js
-   croirait l'en-tête présent et n'afficherait plus la bascule FR/EN. */
-window.__COLLECTION_ENTETE__ = false;
-</script>
-<script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux",
+    pageTitle: "L'Arène Rhétorique — reconnaître les ressorts du discours et les sophismes",
+    metaDesc: "Jeu de débat : cinq adversaires tentent de te convaincre par tous les moyens. À chaque réplique, identifie le ressort rhétorique ou le sophisme utilisé.",
     h1: "⚔️ L'Arène Rhétorique",
     sub: "Démasque les ruses du discours et remporte le débat !",
     brief1: `🏟️ Bienvenue dans l'arène ! Cinq adversaires vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b> !`,
     brief2: `🎯 À chaque réplique, identifie le <b>ressort rhétorique</b> ou le <b>sophisme</b> utilisé. Bonne réponse : ton adversaire perd des points de conviction. Mauvaise réponse : c'est toi qui en perds !`,
     brief3: `👑 Bats les 5 adversaires pour devenir <b>Maître de l'Arène</b>.`,
     enter: "⚔️ Entrer dans l'arène", you: "Toi", replay: "🔄 Rejouer",
-    hpYouLabel: "Ta conviction restante", hpFoeLabel: "Conviction restante de l'adversaire",
-    confirmLeave: "Quitter l'arène ? Ta progression dans ce combat sera perdue."
+    hpYouLabel: "Ta conviction restante", hpFoeLabel: "Conviction restante de l'adversaire"
   },
   en: {
-    back: "← Back to games",
+    pageTitle: "The Rhetoric Arena — recognise rhetorical devices and fallacies",
+    metaDesc: "A debate game: five opponents try to convince you by any means. For each line, identify the rhetorical device or the fallacy used.",
     h1: "⚔️ The Rhetoric Arena",
     sub: "Unmask the tricks of speech and win the debate!",
     brief1: `🏟️ Welcome to the arena! Five opponents will try to <b>convince you by any means</b>: appeals to ethics (<b>ethos</b>), emotion (<b>pathos</b>) and logic (<b>logos</b>)… and plenty of <b>fallacious arguments</b>!`,
     brief2: `🎯 For each line, identify the <b>rhetorical device</b> or the <b>fallacy</b> used. Right answer: your opponent loses conviction points. Wrong answer: you lose them!`,
     brief3: `👑 Beat all 5 opponents to become <b>Master of the Arena</b>.`,
     enter: "⚔️ Enter the arena", you: "You", replay: "🔄 Play again",
-    hpYouLabel: "Your remaining conviction", hpFoeLabel: "Opponent's remaining conviction",
-    confirmLeave: "Leave the arena? Your progress in this battle will be lost."
+    hpYouLabel: "Your remaining conviction", hpFoeLabel: "Opponent's remaining conviction"
   }
 });
-document.querySelector(".back-hub").addEventListener("click", function(e){
-  if(getComputedStyle(document.getElementById("battle")).display!=="none"){
-    if(!confirm(I18N.t("confirmLeave"))) e.preventDefault();
-  }
-});
+/* La confirmation avant de quitter un combat en cours est désormais celle du
+   socle : app.js appelle ColFin.protegerSortie(true) au début de la partie,
+   et l'en-tête unifié demande confirmation sur « ← Retour » comme sur la
+   bascule de langue. Le confirm() natif posé sur l'ancienne pastille n'a
+   plus d'objet. */
 // Aiguillage FR/EN : charge la version française (app.js) ou anglaise (app-en.js) selon la langue choisie.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
 </script>
