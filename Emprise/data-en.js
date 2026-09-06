@@ -17,6 +17,30 @@ const RESOURCES = [
     value: "08082000247"
   },
   {
+    name: "988 Suicide & Crisis Lifeline (US) — call or text 988",
+    desc: "Trained crisis counsellors, free, 24/7, for anyone in distress — and for anyone worried about someone else.",
+    type: "tel",
+    value: "988"
+  },
+  {
+    name: "Samaritans (UK) — 116 123",
+    desc: "Trained volunteers who listen, free to call from any phone, 24 hours a day, every day of the year.",
+    type: "tel",
+    value: "116123"
+  },
+  {
+    name: "Childhelp (US) — 1-800-422-4453 · Childline (UK) — 0800 1111",
+    desc: "Free lines about children and abuse, 24/7: Childline for children and young people in the UK, Childhelp for anyone in the US worried about a child.",
+    type: "tel",
+    value: "18004224453"
+  },
+  {
+    name: "Text instead of calling — Crisis Text Line (US) · Shout (UK)",
+    desc: "Text HOME to 741741 in the US, or SHOUT to 85258 in the UK, when you can't speak out loud; free, 24/7.",
+    type: "url",
+    value: "https://www.crisistextline.org/text-us/"
+  },
+  {
     name: "loveisrespect — 1-866-331-9474",
     desc: "Support for teens and young adults on dating abuse and unhealthy relationships (call, text LOVEIS to 22522, or chat online).",
     type: "tel",
@@ -27,6 +51,12 @@ const RESOURCES = [
     desc: "If you're in immediate danger, call your local emergency number: 911 in the US, 999 in the UK, 112 anywhere in the EU.",
     type: "tel",
     value: "911"
+  },
+  {
+    name: "The Relationship Spectrum (loveisrespect)",
+    desc: "A scale that places specific behaviours along a line from healthy to unhealthy to abusive, with examples for each.",
+    type: "url",
+    value: "https://www.loveisrespect.org/everyone-deserves-a-healthy-relationship/relationship-spectrum/"
   }
 ];
 

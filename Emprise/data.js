@@ -11,6 +11,24 @@ const RESOURCES = [
     value: "3919"
   },
   {
+    name: "3114 — Prévention du suicide",
+    desc: "Numéro national de prévention du suicide, gratuit, 7j/7, 24h/24 ; des infirmiers et des psychologues formés y répondent, aux personnes en détresse comme à l'entourage de quelqu'un qui inquiète.",
+    type: "tel",
+    value: "3114"
+  },
+  {
+    name: "119 — Enfance en danger",
+    desc: "Le service national de l'enfance en danger, gratuit, 7j/7, 24h/24, par téléphone ou par tchat : il répond aux mineurs comme aux adultes inquiets pour l'un d'eux.",
+    type: "tel",
+    value: "119"
+  },
+  {
+    name: "114 — Urgences par SMS",
+    desc: "Le numéro d'urgence joignable par SMS, tchat ou visio, quand on ne peut pas parler à voix haute ; il transmet au 15, au 17 et au 18.",
+    type: "tel",
+    value: "114"
+  },
+  {
     name: "Arrêtons les violences (site officiel)",
     desc: "Informations, tchat en ligne et annuaire des structures d'aide partout en France.",
     type: "url",
@@ -27,6 +45,12 @@ const RESOURCES = [
     desc: "En cas de danger immédiat, contacter la police / gendarmerie ou le numéro d'urgence européen.",
     type: "tel",
     value: "17"
+  },
+  {
+    name: "Le Violentomètre",
+    desc: "Une réglette graduée qui situe des comportements précis dans une relation, du vert « Profite » au rouge « Protège-toi, demande de l'aide ».",
+    type: "url",
+    value: "https://www.centre-hubertine-auclert.fr/egalitheque/publication/le-violentometre"
   }
 ];
 
