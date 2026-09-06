@@ -29,6 +29,19 @@ Tout est dans `_prive/audit-2026-09/` :
 Ne pas relancer l'audit, ne pas rouvrir les décisions du §1 du plan. Le plan s'intercale
 dans `REFONTE-UX.md` sans le réordonner.
 
+## 👉 Décision du 5 septembre 2026 (site) : accès réservé à la plupart des jeux
+
+Antonin a tranché, dans le cadre de la refonte du site (`Web apps/Refonte site 2026/PLAN.md`, question A) :
+
+- **Trois jeux restent en accès libre** : Fakemètre, Radar'naque, Arène de rhétorique (Planète connaissance en plus pour le
+  primaire, à confirmer).
+- **Tous les autres sont réservés** aux établissements et structures qui l'ont fait venir, avec **un code par établissement**
+  valable l'année scolaire, saisi sur `jeux.antoninatger.com`.
+- Conséquences pour ce dépôt : les jeux réservés doivent **sortir du dépôt public** (dépôt privé + hébergement depuis ce dépôt,
+  URL non devinables) ; le portail public `index.html` et le `README.md` ne listent plus que les jeux libres. Une spécification
+  sera écrite dans `Refonte site 2026/jeux-reserves/` avant tout code. **Ne pas retirer de jeux du portail avant que cette
+  spécification existe** : la refonte UX en cours continue sur tous les jeux, ils serviront en classe quoi qu'il arrive.
+
 ## Règles non négociables
 
 - **HTML/CSS/JS vanilla. Pas de framework, pas d'étape de build, pas de npm.**
