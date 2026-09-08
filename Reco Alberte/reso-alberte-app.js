@@ -193,11 +193,18 @@ function exportTranscript(){
 
 /* --- Envoi via Web3Forms (commentaires + conversations terminées) --- */
 async function sendWeb3Form(subject, name, email, message){
+  /* Web3Forms pose « email » en Reply-To du message qu'il expédie. Y mettre
+     « non renseigné » quand le joueur n'a pas laissé d'adresse fabrique un
+     en-tête invalide, et les filtres anti-spam — Outlook et Hotmail en tête —
+     classent le message : l'API répond « success », le retour n'arrive jamais.
+     Le champ n'est pas obligatoire, on ne l'envoie que s'il est rempli. */
+  const envoi = { access_key: WEB3FORMS_ACCESS_KEY, subject, name, message };
+  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "")) envoi.email = email;
   try{
     const res = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ access_key: WEB3FORMS_ACCESS_KEY, subject, name, email, message })
+      body: JSON.stringify(envoi)
     });
     const data = await res.json();
     return !!data.success;
@@ -220,7 +227,7 @@ async function sendFeedback(){
   const email = $("fb-email").value.trim();
   if(!msg){ $("fb-status").textContent = "Écris un message avant d'envoyer."; return; }
   $("fb-status").textContent = "Envoi…";
-  const ok = await sendWeb3Form("RÉSO — Commentaire joueur", "Joueur RÉSO", email || "non renseigné", msg);
+  const ok = await sendWeb3Form("RÉSO — Commentaire joueur", "Joueur RÉSO", email, msg);
   $("fb-status").textContent = ok ? "Merci, c'est envoyé !" : "Erreur d'envoi, réessaie plus tard.";
   if(ok){
     $("fb-message").value=""; $("fb-email").value="";
@@ -232,7 +239,7 @@ async function sendFeedback(){
 async function sendCompletedConversation(btn){
   if(btn){ btn.disabled = true; btn.textContent = "Envoi…"; }
   const header = "Mode : " + mode + " | Niveau de risque final : " + riskScore + "%\n\n";
-  const ok = await sendWeb3Form("RÉSO — Conversation terminée", "Jeu RÉSO", "non renseigné", header + transcriptText());
+  const ok = await sendWeb3Form("RÉSO — Conversation terminée", "Jeu RÉSO", "", header + transcriptText());
   if(btn){ btn.textContent = ok ? "✓ Envoyé, merci !" : "Erreur d'envoi, réessaie"; if(!ok) btn.disabled = false; }
 }
 

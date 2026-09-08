@@ -985,16 +985,22 @@
     var name=(n&&n.value||'').trim(), email=(e&&e.value||'').trim(), msg=(m&&m.value||'').trim();
     if(!msg){ showModalMsg('Écrivez un petit message avant d’envoyer 🙂'); return; }
     var btn=el('fb-send'); if(btn){ btn.disabled=true; btn.textContent='⏳ Envoi…'; }
+    /* Web3Forms pose « email » en Reply-To du message qu'il expédie. Y mettre
+       « non renseigné » quand le champ est vide fabrique un en-tête invalide,
+       et les filtres anti-spam — Outlook et Hotmail en tête — classent le
+       message : l'API répond « success », l'avis n'arrive jamais. Le champ
+       n'est pas obligatoire, on ne l'envoie que s'il est vraiment rempli. */
+    var envoi = {
+      access_key:'ef1fe549-c616-4a27-a6c2-97f06caa913d',
+      subject:'Avis Radar’naque' + (name ? ' — ' + name : ''),
+      name: name || 'Anonyme',
+      message: msg
+    };
+    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) envoi.email = email;
     fetch('https://api.web3forms.com/submit', {
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body: JSON.stringify({
-        access_key:'ef1fe549-c616-4a27-a6c2-97f06caa913d',
-        subject:'Avis Radar’naque' + (name ? ' — ' + name : ''),
-        name: name || 'Anonyme',
-        email: email || 'non renseigné',
-        message: msg
-      })
+      body: JSON.stringify(envoi)
     }).then(function(r){ return r.json(); }).then(function(d){
       if(d && d.success){ if(n)n.value=''; if(e)e.value=''; if(m)m.value=''; closeFeedback(); showModalMsg('Merci beaucoup pour votre retour ! 🙏'); }
       else { showModalMsg('Oups, l’envoi a échoué. Réessayez, ou écrivez à contact@antoninatger.com'); }

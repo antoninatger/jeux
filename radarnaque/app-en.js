@@ -983,16 +983,22 @@
     var name=(n&&n.value||'').trim(), email=(e&&e.value||'').trim(), msg=(m&&m.value||'').trim();
     if(!msg){ showModalMsg('Write a short message before sending 🙂'); return; }
     var btn=el('fb-send'); if(btn){ btn.disabled=true; btn.textContent='⏳ Sending…'; }
+    /* Web3Forms pose « email » en Reply-To du message qu'il expédie. Y mettre
+       « not provided » quand le champ est vide fabrique un en-tête invalide,
+       et les filtres anti-spam — Outlook et Hotmail en tête — classent le
+       message : l'API répond « success », l'avis n'arrive jamais. Le champ
+       n'est pas obligatoire, on ne l'envoie que s'il est vraiment rempli. */
+    var envoi = {
+      access_key:'ef1fe549-c616-4a27-a6c2-97f06caa913d',
+      subject:'Radar’naque feedback' + (name ? ' — ' + name : ''),
+      name: name || 'Anonymous',
+      message: msg
+    };
+    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) envoi.email = email;
     fetch('https://api.web3forms.com/submit', {
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body: JSON.stringify({
-        access_key:'ef1fe549-c616-4a27-a6c2-97f06caa913d',
-        subject:'Radar’naque feedback' + (name ? ' — ' + name : ''),
-        name: name || 'Anonymous',
-        email: email || 'not provided',
-        message: msg
-      })
+      body: JSON.stringify(envoi)
     }).then(function(r){ return r.json(); }).then(function(d){
       if(d && d.success){ if(n)n.value=''; if(e)e.value=''; if(m)m.value=''; closeFeedback(); showModalMsg('Thank you very much for your feedback! 🙏'); }
       else { showModalMsg('Oops, sending failed. Try again, or write to contact@antoninatger.com'); }
