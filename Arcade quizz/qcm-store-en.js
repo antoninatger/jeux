@@ -14,6 +14,7 @@
   try {
     if (global.document && global.document.readyState === 'loading') {
       global.document.write('<scr' + 'ipt src="questions-influenceurs-en.js"><' + '/scr' + 'ipt>');
+      global.document.write('<scr' + 'ipt src="questions-ecologie-en.js"><' + '/scr' + 'ipt>');
     }
   } catch (e) {}
 
@@ -28,7 +29,8 @@
     { id: 'niveau1',  label: 'N1 · Fake News (high school)',        variable: 'QUESTIONS_NIVEAU1'   },
     { id: 'niveau2',  label: 'N2 · Disinformation',           variable: 'QUESTIONS_NIVEAU2'   },
     { id: 'influenceurs', label: 'Influencers',                variable: 'QUESTIONS_INFLUENCEURS' },
-    { id: 'niveau3',  label: 'N3 · Rhetoric',                 variable: 'QUESTIONS_NIVEAU3'   }
+    { id: 'niveau3',  label: 'N3 · Rhetoric',                 variable: 'QUESTIONS_NIVEAU3'   },
+    { id: 'ecologie', label: 'Fake News and ecology',         variable: 'QUESTIONS_ECOLOGIE'  }
   ];
 
   /**
