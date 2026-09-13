@@ -14,6 +14,7 @@
   try {
     if (global.document && global.document.readyState === 'loading') {
       global.document.write('<scr' + 'ipt src="questions-influenceurs.js"><' + '/scr' + 'ipt>');
+      global.document.write('<scr' + 'ipt src="questions-ecologie.js"><' + '/scr' + 'ipt>');
     }
   } catch (e) {}
 
@@ -28,7 +29,8 @@
     { id: 'niveau1',  label: 'N1 · Fake News (lycée)',        variable: 'QUESTIONS_NIVEAU1'   },
     { id: 'niveau2',  label: 'N2 · Désinformation',           variable: 'QUESTIONS_NIVEAU2'   },
     { id: 'influenceurs', label: 'Influenceurs',               variable: 'QUESTIONS_INFLUENCEURS' },
-    { id: 'niveau3',  label: 'N3 · Rhétorique',               variable: 'QUESTIONS_NIVEAU3'   }
+    { id: 'niveau3',  label: 'N3 · Rhétorique',               variable: 'QUESTIONS_NIVEAU3'   },
+    { id: 'ecologie', label: 'Fake News et écologie',         variable: 'QUESTIONS_ECOLOGIE'  }
   ];
 
   /**
@@ -75,13 +77,25 @@
   function saveActiveSet(setId) {
     var sets = getAvailableSets();
     var found = sets.find(function (s) { return s.id === setId; });
-    if (found) saveActiveQuestions(found.questions, setId);
+    if (!found) return;
+    // Pas d'instantané des questions : un set predefini se resout a la
+    // lecture depuis getAvailableSets(), dans la langue en cours. Sinon
+    // basculer de langue rejoue l'instantane fige dans l'autre langue.
+    try {
+      localStorage.setItem(ID_KEY, setId);
+      localStorage.removeItem(Q_KEY);
+    } catch (e) {}
   }
 
   // ── Lecture ───────────────────────────────────────────────
 
   function loadActiveQuestions() {
     try {
+      var id = loadActiveSetId();
+      if (id) {
+        var set = getAvailableSets().find(function (s) { return s.id === id; });
+        if (set) return set.questions;
+      }
       var raw = localStorage.getItem(Q_KEY);
       if (!raw) return null;
       var parsed = JSON.parse(raw);
@@ -138,7 +152,7 @@
    * Questions de la partie : tirage aléatoire de sessionCount questions
    * dans la série active (toute la série si elle est plus courte).
    */
-  function getSessionQuestions() {
+  function getSessionQuestions(cleMemoire) {
     var demandee = getSerieDemandee();
     var qs = demandee ? demandee.questions : loadActiveQuestions();
     if (!qs || !qs.length) return null;
@@ -147,7 +161,23 @@
       var j = Math.floor(Math.random() * (i + 1));
       var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
     }
+    /* E2 : avec une clé de mémoire, les questions jamais vues passent en tête du
+       tirage (ColFin.nonVusDabord) — deux parties de suite ne reposent pas les
+       mêmes questions tant que la série n'est pas épuisée. Les questions n'ont
+       pas d'id : leur énoncé (q) en tient lieu, et nonVusDabord lit item.id,
+       d'où l'enveloppe. Sans clé, le tirage est celui d'avant. */
+    if (cleMemoire && global.ColFin && global.ColFin.nonVusDabord) {
+      pool = global.ColFin.nonVusDabord(cleMemoire, pool.map(function (q) { return { id: q.q, src: q }; }))
+                   .map(function (o) { return o.src; });
+    }
     return pool.slice(0, Math.min(loadSessionCount(), pool.length));
+  }
+
+  /* E2 : la clé sous laquelle ColFin retient les questions vues — une par série,
+     commune aux six jeux : une question vue au Snake ne revient pas au QCM. */
+  function cleMemoire() {
+    var info = getActiveInfo();
+    return 'arcade.' + (info.setId || 'import');
   }
 
   // ── Export ────────────────────────────────────────────────
@@ -162,7 +192,8 @@
     saveSessionCount    : saveSessionCount,
     loadSessionCount    : loadSessionCount,
     getSessionQuestions : getSessionQuestions,
-    getSerieDemandee    : getSerieDemandee
+    getSerieDemandee    : getSerieDemandee,
+    cleMemoire          : cleMemoire
   };
 
 })(window);
