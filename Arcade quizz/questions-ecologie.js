@@ -217,15 +217,15 @@ var QUESTIONS_ECOLOGIE = [
   },
   {
     cat: "🧠 Pourquoi on doute",
-    q: "Après les gigantesques incendies australiens de 2019-2020, qu'est-il arrivé au climatoscepticisme ?",
+    q: "Pendant les gigantesques incendies australiens de 2019-2020, qu'est-il arrivé aux opinions sur le climat ?",
     options: [
-      "Il a disparu pour de bon",
-      "Il a fortement augmenté dès le début des incendies",
-      "Rien n'a changé, à aucun moment",
-      "Il a reculé juste après le pic des incendies, puis est remonté deux semaines plus tard"
+      "Les climatosceptiques ont presque disparu",
+      "Le nombre de convaincus a fortement augmenté",
+      "Les sceptiques sont devenus majoritaires",
+      "Aucun progrès : les convaincus ont un peu reculé, et beaucoup ont cru que des pyromanes avaient allumé les feux"
     ],
     answer: 3,
-    expl: "L'effet d'une catastrophe est réel, mais passager. Ni les preuves, ni les événements ne suffisent à convaincre durablement."
+    expl: "Une catastrophe ne convainc que si on l'attribue au climat. Or une fausse information a circulé : les feux auraient été allumés par des centaines de pyromanes. Elle a été acceptée par 89 % des sceptiques, 57 % des hésitants et même 39 % des convaincus."
   },
   {
     cat: "🧠 Pourquoi on doute",

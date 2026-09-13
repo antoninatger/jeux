@@ -217,15 +217,15 @@ var QUESTIONS_ECOLOGIE = [
   },
   {
     cat: "🧠 Why we doubt",
-    q: "After the huge Australian bushfires of 2019-2020, what happened to climate scepticism?",
+    q: "During the huge Australian bushfires of 2019-2020, what happened to opinions about climate change?",
     options: [
-      "It disappeared for good",
-      "It rose sharply as soon as the fires began",
-      "Nothing changed at any point",
-      "It fell right after the peak of the fires, then rose again two weeks later"
+      "Climate sceptics almost disappeared",
+      "The number of people accepting climate change rose sharply",
+      "Sceptics became the majority",
+      "No progress: acceptors slightly declined, and many believed arsonists had started the fires"
     ],
     answer: 3,
-    expl: "The effect of a disaster is real but short-lived. Neither evidence nor events are enough to convince people for good."
+    expl: "A disaster only convinces people if they attribute it to climate change. But a false claim spread: the fires were supposedly lit by hundreds of arsonists. It was endorsed by 89% of sceptics, 57% of fence-sitters and even 39% of acceptors."
   },
   {
     cat: "🧠 Why we doubt",
