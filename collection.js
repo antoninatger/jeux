@@ -564,6 +564,15 @@
   'use strict';
 
   var PREFIXE_VUS = 'col.vus.';
+  /* « Ta collection » (portail, 24 septembre 2026) : une partie allée à son
+     terme laisse une trace par jeu, `col.fini.<jeu>` = date. Le portail les
+     lit pour afficher les jeux déjà joués sur cet appareil. Rien d'autre
+     n'est gardé : ni score, ni nom. */
+  var PREFIXE_FINI = 'col.fini.';
+  function marquerFini(jeu) {
+    if (!jeu) return;
+    try { localStorage.setItem(PREFIXE_FINI + jeu, String(Date.now())); } catch (e) {}
+  }
 
   var LIB = {
     fr: {
@@ -798,6 +807,7 @@
     /* La partie est finie : plus rien à protéger, et le message part. */
     protegerSortie(false);
     marquerVus(opts.jeu, items.map(idDe));
+    marquerFini(opts.jeu);
     if (window.Collection && Collection.finDePartie) {
       Collection.finDePartie({
         jeu: opts.jeu, score: score, total: total,
