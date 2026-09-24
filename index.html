@@ -3,285 +3,753 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeux pédagogiques · Antonin Atger</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title data-i18n="pageTitle">Jeux pédagogiques — Antonin Atger</title>
+<meta name="description" data-i18n-content="metaDesc" content="Des jeux web sur l'esprit critique, la désinformation, les biais cognitifs et la rhétorique, à jouer directement dans le navigateur, en classe ou à la maison. Par Antonin Atger.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="collection.css">
 <style>
+  /* ── Portail (chantier 07, refonte du 24 septembre 2026) ─────────────────
+     Maquette validée par Antonin : un jeu à la une (Fakemètre), la
+     collection des jeux joués, un filtre thème × âge, et les quatre
+     familles du §11.1 de REFONTE-UX. Direction artistique inchangée : nuit
+     bleue, cyan → violet, Fredoka One pour les titres, Nunito pour le texte.
+     Chaque carte garde la couleur de son jeu (--c). */
   :root{
-    --bg:#0b1220; --bg2:#0f172a; --card:#1e293b; --card2:#243449;
-    --txt:#e8eef7; --doux:#93a4bd; --acc:#38bdf8; --acc2:#a78bfa; --bord:#31415a;
+    --bg:#0b1220; --bg2:#0f172a; --card:#121c30; --card2:#182640;
+    --txt:#eef3fb; --doux:#a3b3ca; --acc:#38bdf8; --acc2:#a78bfa; --bord:#2a3a58;
+    --libre:#34d399;
+    --surface:var(--card);
+    --bordure:var(--bord);
+    --txt-secondaire:#a3b3ca;   /* 8,6:1 sur --bg */
+    --acc-txt:#06121c;
+    --font-texte:'Nunito',system-ui,"Segoe UI",Roboto,sans-serif;
+    --font-titre:'Fredoka One','Nunito',system-ui,sans-serif;
   }
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family:'Nunito',system-ui,"Segoe UI",Roboto,sans-serif; color:var(--txt);
-    background:radial-gradient(1200px 600px at 50% -10%, #16233d 0%, var(--bg) 60%); min-height:100vh; }
-  header{ text-align:center; padding:56px 20px 8px; }
-  header .logo{ font-size:2.6em; }
-  header h1{ font-family:'Fredoka One',cursive; margin:.2em 0 .15em; font-size:2.2em; letter-spacing:-.5px;
+  body{ margin:0; font-family:var(--font-texte); color:var(--txt); background:var(--bg); min-height:100vh; }
+  img{ max-width:100%; display:block; }
+  .col-entete__titre{ letter-spacing:-.5px;
     background:linear-gradient(90deg,var(--acc),var(--acc2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  header p{ margin:0 auto; max-width:560px; color:var(--doux); line-height:1.5; }
-  header .author{ margin:12px auto 0; font-size:.9em; color:var(--doux); font-weight:600; }
-  header .author a{ color:var(--acc); text-decoration:none; }
-  header .author a:hover{ text-decoration:underline; }
-  .cat{ max-width:1040px; margin:0 auto; padding:14px 22px 6px; }
-  .cat h2{ font-size:.82em; letter-spacing:.14em; text-transform:uppercase; color:var(--doux);
-    margin:34px 0 4px; padding-bottom:8px; border-bottom:1px solid var(--bord); }
-  .grid{ max-width:1040px; margin:0 auto; padding:12px 22px; display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
-  .sous{ max-width:1040px; margin:0 auto; padding:16px 22px 0; }
-  .sous h3{ margin:0; font-size:1.02em; font-weight:800; color:var(--txt); }
-  a.card{ position:relative; overflow:hidden; display:block; background:linear-gradient(180deg,var(--card),var(--card2));
-    border:1px solid var(--bord); border-radius:16px; padding:0 0 16px; text-decoration:none;
-    color:var(--txt); transition:transform .15s, border-color .15s, box-shadow .15s; }
-  a.card::before{ content:''; position:absolute; top:0; left:0; right:0; height:4px;
-    background:var(--c,var(--acc)); opacity:.9; transition:height .15s; }
-  a.card:hover{ transform:translateY(-4px); border-color:var(--c,var(--acc));
-    box-shadow:0 12px 28px rgba(0,0,0,.45); }
-  a.card:hover::before{ height:6px; }
-  /* Vignette : capture de la page du jeu. Au survol, elle defile jusqu'en bas de la page
-     avec un leger zoom ; sur ecran tactile, le defilement tourne seul, lentement. */
-  a.card .vignette{ display:block; width:100%; aspect-ratio:16/9; object-fit:cover; object-position:50% 0%;
-    background:var(--bg2); border-bottom:1px solid var(--bord);
-    transition:object-position 5s ease-in-out, transform .6s ease; }
-  a.card:hover .vignette, a.card:focus-visible .vignette{ object-position:50% 100%; transform:scale(1.04); }
-  @keyframes defile{ 0%,15%{ object-position:50% 0%; } 50%,65%{ object-position:50% 100%; } 100%{ object-position:50% 0%; } }
-  @media (hover:none){ a.card .vignette{ animation:defile 14s ease-in-out infinite; } }
-  a.card .em{ display:inline-block; margin:12px 18px 0; font-size:1.5em; filter:drop-shadow(0 2px 6px color-mix(in srgb, var(--c,var(--acc)) 45%, transparent)); }
-  a.card b{ display:block; font-size:1.12em; font-weight:800; margin:4px 18px 4px; }
-  a.card .desc{ color:var(--doux); font-size:.9em; line-height:1.45; min-height:2.6em; margin:0 18px; }
-  a.card .url{ display:block; margin:12px 18px 0; font-family:ui-monospace,Menlo,Consolas,monospace;
-    font-size:.72em; color:var(--c,var(--acc)); word-break:break-all; opacity:.85; }
-  footer{ text-align:center; color:var(--doux); font-size:.85em; padding:30px 20px 60px; line-height:1.7; }
+  .page{ max-width:1280px; margin:0 auto; padding:0 24px; }
+  .sr-seul{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+  /* ── Accueil : présentation + sommaire ─────────────────────────────── */
+  .intro{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 24px; padding:18px 0 4px; }
+  .intro p{ margin:0; color:var(--doux); font-size:var(--fs-300); max-width:640px; line-height:1.5; }
+  .intro a{ color:var(--acc); font-weight:700; text-decoration:none; }
+  .intro a:hover{ text-decoration:underline; }
+  .sommaire{ display:flex; flex-wrap:wrap; gap:8px; }
+  .sommaire a{ display:inline-flex; align-items:center; min-height:44px; padding:0 16px; border-radius:999px;
+    border:1px solid var(--bord); color:var(--txt); font-weight:700; font-size:var(--fs-200); text-decoration:none; }
+  .sommaire a:hover{ border-color:var(--acc); }
+
+  /* ── À la une ──────────────────────────────────────────────────────── */
+  .une{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:56px; align-items:center; padding:48px 0 40px; }
+  .une__etiquettes{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px; }
+  .pastille{ display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px;
+    font-size:var(--fs-200); font-weight:800; background:rgba(6,18,28,.82); }
+  .pastille--phare{ background:rgba(247,201,72,.16); color:#fde68a; }
+  .pastille--libre{ color:var(--libre); }
+  .pastille--libre::before{ content:''; width:7px; height:7px; border-radius:50%; background:var(--libre); }
+  .pastille--code{ color:#dbe5f3; }
+  .pastille--fait{ background:var(--libre); color:#06121c; }
+  .une__jeu{ font-size:var(--fs-200); font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#f7c948; margin:0 0 8px; }
+  .une__titre{ font-family:var(--font-titre); font-weight:400; font-size:clamp(2.4rem, 1.6rem + 3vw, 4rem); line-height:1.04; margin:0 0 18px; }
+  .une__texte{ margin:0 0 26px; font-size:var(--fs-400); line-height:1.55; color:#c9d5e6; max-width:560px; }
+  .une__actions{ display:flex; flex-wrap:wrap; gap:12px; }
+  .bouton{ display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:52px; padding:0 24px;
+    border-radius:14px; font-weight:800; font-size:var(--fs-400); text-decoration:none; border:1px solid transparent; cursor:pointer; font-family:inherit; }
+  .bouton--plein{ background:var(--acc); color:var(--acc-txt); }
+  .bouton--plein:hover{ background:#7dd3fc; }
+  .bouton--creux{ border-color:var(--bord); color:var(--txt); background:transparent; }
+  .bouton--creux:hover{ border-color:var(--acc); }
+  .bouton[hidden], .collection [hidden]{ display:none; }
+  .une__visuel{ position:relative; aspect-ratio: 660 / 470; }
+  .une__visuel img{ position:absolute; object-fit:cover; border-radius:14px; border:1px solid var(--bord); box-shadow:0 20px 40px rgba(0,0,0,.45); }
+  .une__visuel .v1{ left:50%; top:0; width:50%; transform:rotate(4deg); }
+  .une__visuel .v2{ left:0; top:53%; width:50%; transform:rotate(-5deg); }
+  .une__visuel .v3{ left:12%; top:15%; width:79%; border:4px solid #f7c948; border-radius:18px; box-shadow:0 30px 60px rgba(0,0,0,.55); }
+
+  /* ── Ta collection ─────────────────────────────────────────────────── */
+  .collection{ display:flex; flex-wrap:wrap; align-items:center; gap:18px 32px; padding:24px 28px; margin:8px 0 56px;
+    border-radius:20px; background:var(--card); border:1px solid var(--bord); }
+  .collection__compte{ min-width:220px; }
+  .collection__sur{ font-size:var(--fs-100); font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--doux); }
+  .collection__nb{ font-family:var(--font-titre); font-size:var(--fs-600); margin:4px 0 2px; }
+  .collection__nb b{ color:var(--libre); font-weight:400; }
+  .collection__reste{ font-size:var(--fs-200); color:var(--doux); }
+  .collection__ronds{ display:flex; flex-wrap:wrap; gap:8px; flex:1 1 360px; margin:0; padding:0; list-style:none; }
+  .collection__ronds li{ width:44px; height:44px; border-radius:50%; overflow:hidden; border:2px dashed var(--bord); display:flex; align-items:center; justify-content:center; }
+  .collection__ronds li span{ width:10px; height:10px; border-radius:50%; background:var(--c); opacity:.7; }
+  .collection__ronds li.fait{ border:3px solid var(--libre); }
+  .collection__ronds li.fait img{ width:100%; height:100%; object-fit:cover; }
+
+  /* ── Sections ──────────────────────────────────────────────────────── */
+  .famille{ padding:8px 0 64px; scroll-margin-top:calc(var(--entete-h) + 12px); }
+  .famille--bande{ background:var(--bg2); border-top:1px solid var(--bord); border-bottom:1px solid var(--bord); padding-top:56px; }
+  .famille__tete{ margin-bottom:24px; }
+  .famille__sur{ font-size:var(--fs-100); font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--doux); margin:0 0 6px; }
+  .famille__titre{ font-family:var(--font-titre); font-weight:400; font-size:var(--fs-700); line-height:1.1; margin:0 0 6px; }
+  .famille__texte{ margin:0; color:var(--doux); font-size:var(--fs-400); max-width:720px; }
+  .sous-titre{ font-family:var(--font-titre); font-weight:400; font-size:var(--fs-500); margin:48px 0 18px; }
+
+  /* ── Filtre thème × âge ────────────────────────────────────────────── */
+  .filtre{ display:flex; flex-direction:column; gap:12px; padding:20px 24px; margin-bottom:22px; border-radius:20px; background:var(--card); border:1px solid var(--bord); }
+  .filtre__rangee{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+  .filtre__nom{ width:84px; flex-shrink:0; font-size:var(--fs-100); font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--doux); }
+  .puce{ display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 16px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--bord); background:var(--bg); color:var(--txt); font:700 var(--fs-200) var(--font-texte); }
+  .puce:hover{ border-color:var(--acc); }
+  .puce[aria-pressed="true"]{ background:var(--acc); border-color:var(--acc); color:var(--acc-txt); font-weight:800; }
+  .puce small{ font-size:var(--fs-100); opacity:.75; font-weight:700; }
+  .puce[disabled]{ opacity:.45; cursor:default; }
+  .resultat{ display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin-bottom:18px; }
+  .resultat p{ margin:0; font-weight:700; font-size:var(--fs-400); }
+  .aucun{ padding:48px 24px; text-align:center; border:1px dashed var(--bord); border-radius:20px; color:var(--doux); font-size:var(--fs-400); }
+
+  /* ── Cartes ────────────────────────────────────────────────────────── */
+  .grille{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:28px; }
+  .grille--4{ grid-template-columns:repeat(4, minmax(0,1fr)); gap:22px; }
+  .grille--3i{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:22px; }
+  .carte{ position:relative; display:flex; flex-direction:column; border-radius:18px; overflow:hidden; background:var(--card);
+    border:1px solid var(--bord); box-shadow:0 10px 30px rgba(0,0,0,.28); transition:transform .15s, border-color .15s, box-shadow .15s; }
+  .carte:hover, .carte:focus-within{ transform:translateY(-6px); border-color:var(--c,var(--acc)); box-shadow:0 20px 44px rgba(0,0,0,.45); }
+  .carte[hidden]{ display:none; }
+  .carte__image{ position:relative; aspect-ratio:16 / 9; border-bottom:4px solid var(--c,var(--acc)); background:var(--card2); }
+  .carte__image img{ width:100%; height:100%; object-fit:cover; }
+  .carte__badges{ position:absolute; left:12px; top:12px; display:flex; gap:6px; }
+  .carte__fait{ position:absolute; right:12px; top:12px; }
+  .carte__corps{ display:flex; flex-direction:column; gap:8px; padding:16px 18px 18px; flex:1; }
+  .carte__nom{ font-size:var(--fs-100); font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--c,var(--acc)); }
+  .carte__lien{ font-family:var(--font-titre); font-weight:400; font-size:var(--fs-500); line-height:1.22; color:var(--txt); text-decoration:none; }
+  /* Toute la carte est cliquable, mais un seul lien : le bouton « copier » reste à part. */
+  .carte__lien::after{ content:''; position:absolute; inset:0; z-index:1; border-radius:inherit; }
+  .carte__lien:focus-visible{ outline:none; }
+  .carte:has(.carte__lien:focus-visible){ outline:3px solid var(--focus); outline-offset:3px; }
+  .carte__pied{ margin-top:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; padding-top:6px; }
+  .carte__meta{ font-size:var(--fs-200); color:var(--doux); font-weight:600; flex:1 1 100%; }
+  .niveau{ display:inline-flex; align-items:center; min-height:26px; padding:0 9px; border-radius:7px; background:var(--card2);
+    border:1px solid var(--bord); color:#d4deec; font-size:var(--fs-100); font-weight:700; }
+  .copier{ position:relative; z-index:2; margin-left:auto; display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 12px;
+    border-radius:10px; border:1px solid transparent; background:transparent; color:var(--doux); font:700 var(--fs-100) var(--font-texte); cursor:copy; }
+  .copier:hover{ border-color:var(--bord); color:var(--txt); }
+  .copier.copie{ color:var(--libre); }
+  /* Accès réservé : prêt, mais éteint tant que le système de codes n'existe
+     pas (décision du 5 septembre — spécification à écrire avant tout code). */
+  .carte .pastille--libre, .carte .pastille--code{ display:none; }
+  body.acces-reserve .carte .pastille--libre, body.acces-reserve .carte .pastille--code{ display:inline-flex; }
+
+  /* Carte horizontale : catalogues */
+  .carte--large{ flex-direction:row; }
+  .carte--large .carte__image{ aspect-ratio:auto; width:38%; flex-shrink:0; border-bottom:none; border-right:4px solid var(--c,var(--acc)); }
+  .carte--large .carte__image img{ object-position:left center; }
+  .carte--large .carte__corps{ padding:22px 26px; }
+  .carte--petite .carte__lien{ font-size:var(--fs-400); }
+  .pastille--anime{ color:#fde68a; }
+
+  .autre{ margin:0; padding:26px 0 0; }
+  .autre a{ color:var(--doux); font-weight:700; text-decoration:none; border-bottom:1px solid var(--bord); padding-bottom:3px; }
+  footer{ text-align:center; color:var(--doux); font-size:var(--fs-200); padding:40px 20px 60px; line-height:1.8; border-top:1px solid var(--bord); }
   footer a{ color:var(--acc2); }
-  footer .by{ display:block; margin-bottom:10px; font-weight:700; color:var(--txt); }
+  footer .by{ display:block; margin-bottom:8px; font-weight:700; color:var(--txt); }
   footer .by a{ color:var(--acc); }
-  :where(a,button,[tabindex]):focus-visible{ outline:3px solid var(--acc); outline-offset:3px; border-radius:8px; }
-  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.001ms!important; transition-duration:.001ms!important; } }
+
+  svg.ic{ width:1em; height:1em; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  svg.ic--plein{ fill:currentColor; stroke:none; }
+
+  @media (max-width:1080px){
+    .grille{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .grille--4, .grille--3i{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .une{ grid-template-columns:1fr; gap:28px; padding-top:28px; }
+    .une__visuel{ max-width:620px; }
+  }
+  @media (max-width:700px){
+    .page{ padding:0 16px; }
+    .grille, .grille--4, .grille--3i{ grid-template-columns:1fr; gap:18px; }
+    .une__visuel{ aspect-ratio:16 / 9; }
+    .une__visuel .v1, .une__visuel .v2{ display:none; }
+    .une__visuel .v3{ left:0; top:0; width:100%; height:100%; }
+    .carte--large{ flex-direction:column; }
+    .carte--large .carte__image{ width:100%; aspect-ratio:16 / 9; border-right:none; border-bottom:4px solid var(--c,var(--acc)); }
+    .filtre{ padding:16px; }
+    .filtre__nom{ width:100%; }
+    .collection{ padding:18px; }
+    .une__actions .bouton{ flex:1 1 100%; }
+  }
+  @media (prefers-reduced-motion:reduce){ .carte, .carte:hover{ transition:none; transform:none; } }
 </style>
 </head>
-<body>
-  <header>
-    <div class="logo">🎮</div>
-    <h1 data-i18n="h1">Jeux pédagogiques</h1>
-    <p data-i18n="intro">Esprit critique, fake news, biais cognitifs, culture générale… Cliquez sur un jeu pour y jouer directement dans le navigateur.</p>
-    <p class="author"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
-  </header>
+<!-- Le portail n'a pas de page au-dessus de lui : pas de lien de retour.
+     Le titre de l'en-tête (le seul <h1>, posé par collection.js) vient de la
+     clé « h1 » ; le jeu à la une porte un <h2>. -->
+<body data-col-retour="non" data-col-titre-cle="h1">
+<main id="contenu">
+<div class="page">
 
-  <div class="cat"><h2 data-i18n="cat2">🧠 Esprit critique &amp; désinformation</h2></div>
-
-  <div class="sous"><h3 data-i18n="sub1">Vérifier une information</h3></div>
-  <div class="grid">
-    <a class="card" href="https://antoninatger.github.io/fakemetre/" style="--c:#f7c948">
-      <img class="vignette" src="vignettes/fakemetre.jpg" alt="" loading="lazy">
-      <span class="em">🕵️</span><b data-i18n="t2">Fakemètre ↗</b>
-      <div class="desc" data-i18n="d2">Le jeu phare : mesurer la fiabilité d'une info. (Dépôt séparé)</div>
-      <span class="url">antoninatger.github.io/fakemetre/</span></a>
-    <a class="card" href="radar-desinfo/index.html" style="--c:#38bdf8">
-      <img class="vignette" src="vignettes/radar-desinfo.jpg" alt="" loading="lazy">
-      <span class="em">📡</span><b data-i18n="t4">Radar désinfo</b>
-      <div class="desc" data-i18n="d4">Distinguer une information fiable d'une désinformation.</div>
-      <span class="url">antoninatger.github.io/jeux/radar-desinfo/</span></a>
-    <a class="card" href="repare-la-une/index.html" style="--c:#f75f5f">
-      <img class="vignette" src="vignettes/repare-la-une.jpg" alt="" loading="lazy">
-      <span class="em">📰</span><b data-i18n="t7">Répare la une</b>
-      <div class="desc" data-i18n="d7">Corriger la une trompeuse d'un journal.</div>
-      <span class="url">antoninatger.github.io/jeux/repare-la-une/</span></a>
-    <a class="card" href="graphiques-trompeurs/index.html" style="--c:#f0b429">
-      <img class="vignette" src="vignettes/graphiques-trompeurs.jpg" alt="" loading="lazy">
-      <span class="em">📊</span><b data-i18n="t18">Graphiques trompeurs</b>
-      <div class="desc" data-i18n="d18">Démasquer les graphiques qui déforment la réalité sans changer un seul chiffre.</div>
-      <span class="url">antoninatger.github.io/jeux/graphiques-trompeurs/</span></a>
+  <div class="intro">
+    <p><span data-i18n="intro">Esprit critique, désinformation, biais cognitifs : des jeux à jouer directement dans le navigateur, en classe ou à la maison.</span>
+       <span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank" rel="noopener">Antonin Atger</a></p>
+    <nav class="sommaire" data-i18n-aria-label="sommaire" aria-label="Familles de jeux">
+      <a href="#jeux" data-i18n="navJeux">Jeux</a>
+      <a href="#illusions" data-i18n="navIllusions">Illusions</a>
+      <a href="#interventions" data-i18n="navInterv">Interventions</a>
+    </nav>
   </div>
 
-  <div class="sous"><h3 data-i18n="sub2">Arnaques et faux avis</h3></div>
-  <div class="grid">
-    <a class="card" href="radarnaque/index.html" style="--c:#f97316">
-      <img class="vignette" src="vignettes/radarnaque.jpg" alt="" loading="lazy">
-      <span class="em">🛡️</span><b data-i18n="t3">Radar’naque</b>
-      <div class="desc" data-i18n="d3">Repérer les arnaques : SMS, e-mails, faux conseiller, deepfakes…</div>
-      <span class="url">antoninatger.github.io/jeux/radarnaque/</span></a>
-    <a class="card" href="notes_google.html" style="--c:#fbbf24">
-      <img class="vignette" src="vignettes/avis-maps.jpg" alt="" loading="lazy">
-      <span class="em">⭐</span><b data-i18n="t12">Avis « style Maps »</b>
-      <div class="desc" data-i18n="d12">Démo de faux avis en ligne (fiction pédagogique).</div>
-      <span class="url">antoninatger.github.io/jeux/notes_google.html</span></a>
+  <!-- ── À la une : Fakemètre, le jeu phare ── -->
+  <section class="une" aria-labelledby="une-titre">
+    <div>
+      <div class="une__etiquettes">
+        <span class="pastille pastille--phare"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span data-i18n="phare">Le jeu phare</span></span>
+        <span class="pastille pastille--libre" data-i18n="libre">Accès libre</span>
+      </div>
+      <p class="une__jeu">Fakemètre</p>
+      <h2 class="une__titre" id="une-titre" data-i18n="uneTitre">Vraie info ou fake news ?</h2>
+      <p class="une__texte" data-i18n="uneTexte">Trouve les bonnes sources et mesure la fiabilité de chaque affirmation. Trois niveaux, des affirmations du quotidien aux vraies controverses, et un mode Créateur pour inventer tes propres questions.</p>
+      <div class="une__actions">
+        <a class="bouton bouton--plein" href="https://antoninatger.github.io/fakemetre/" data-suivi-clic="fakemetre"><svg class="ic ic--plein" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg><span data-i18n="jouerFakemetre">Jouer à Fakemètre</span></a>
+        <a class="bouton bouton--creux" href="#jeux"><span data-i18n="voirJeux">Voir les 12 jeux</span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="une__visuel" aria-hidden="true">
+      <img class="v1" src="portail/vignettes/arene-rhetorique.jpg" alt="" width="560" height="315">
+      <img class="v2" src="portail/vignettes/radarnaque.jpg" alt="" width="560" height="315">
+      <img class="v3" src="portail/vignettes/fakemetre.jpg" alt="" width="560" height="315">
+    </div>
+  </section>
+
+  <!-- ── Ta collection : les jeux déjà joués sur cet appareil ──
+       Rempli par le script plus bas, d'après les clés « col.fini.* » que
+       ColFin pose à chaque fin de partie (collection.js). -->
+  <section class="collection" aria-labelledby="collection-titre">
+    <div class="collection__compte">
+      <h2 class="collection__sur" id="collection-titre" data-i18n="collection">Ta collection</h2>
+      <p class="collection__nb" id="collection-nb"><b>0</b> jeu joué sur 12</p>
+      <p class="collection__reste" id="collection-reste"></p>
+    </div>
+    <ul class="collection__ronds" id="collection-ronds"></ul>
+    <a class="bouton bouton--creux" id="collection-suite" href="#jeux"></a>
+  </section>
+
+  <!-- ── Famille « Jeux » ── -->
+  <section class="famille" id="jeux" aria-labelledby="jeux-titre">
+    <div class="famille__tete">
+      <p class="famille__sur" data-i18n="jeuxSur">Famille · 12 jeux</p>
+      <h2 class="famille__titre" id="jeux-titre" data-i18n="jeuxTitre">Jeux</h2>
+      <p class="famille__texte" data-i18n="jeuxTexte">Choisis un thème, un âge, ou les deux : la liste se met à jour.</p>
+    </div>
+
+    <div class="filtre">
+      <div class="filtre__rangee" role="group" aria-labelledby="f-theme">
+        <span class="filtre__nom" id="f-theme" data-i18n="fTheme">Thème</span>
+        <button type="button" class="puce" data-theme="" aria-pressed="true"><span data-i18n="tous">Tous</span> <small></small></button>
+        <button type="button" class="puce" data-theme="desinfo" aria-pressed="false"><span data-i18n="thDesinfo">Désinformation</span> <small></small></button>
+        <button type="button" class="puce" data-theme="arnaques" aria-pressed="false"><span data-i18n="thArnaques">Arnaques</span> <small></small></button>
+        <button type="button" class="puce" data-theme="biais" aria-pressed="false"><span data-i18n="thBiais">Biais cognitifs</span> <small></small></button>
+        <button type="button" class="puce" data-theme="rhetorique" aria-pressed="false"><span data-i18n="thRhetorique">Rhétorique</span> <small></small></button>
+        <button type="button" class="puce" data-theme="faits" aria-pressed="false"><span data-i18n="thFaits">Faits et opinions</span> <small></small></button>
+      </div>
+      <div class="filtre__rangee" role="group" aria-labelledby="f-age">
+        <span class="filtre__nom" id="f-age" data-i18n="fAge">Âge</span>
+        <button type="button" class="puce" data-age="" aria-pressed="true"><span data-i18n="tousAges">Tous âges</span></button>
+        <button type="button" class="puce" data-age="primaire" aria-pressed="false"><span data-i18n="agPrimaire">Primaire</span> <small data-i18n="agPrimaireAns">8-11 ans</small></button>
+        <button type="button" class="puce" data-age="college" aria-pressed="false"><span data-i18n="agCollege">Collège</span> <small data-i18n="agCollegeAns">11-15 ans</small></button>
+        <button type="button" class="puce" data-age="lycee" aria-pressed="false"><span data-i18n="agLycee">Lycée</span> <small data-i18n="agLyceeAns">15-18 ans</small></button>
+        <button type="button" class="puce" data-age="adultes" aria-pressed="false"><span data-i18n="agAdultes">Adultes</span> <small data-i18n="agAdultesAns">seniors, grand public</small></button>
+      </div>
+    </div>
+
+    <div class="resultat">
+      <p id="resultat" aria-live="polite">Les 12 jeux</p>
+      <button type="button" class="bouton bouton--creux" id="effacer" hidden data-i18n="effacer">Effacer les filtres</button>
+    </div>
+
+    <!-- data-themes / data-ages : lus par le filtre. data-suivi : l'identifiant
+         que le jeu donne à ColFin (« arcade » couvre toutes les séries).
+         data-acces : 'libre' ou 'code', pour le jour où les codes existeront. -->
+    <div class="grille" id="grille-jeux">
+      <article class="carte" style="--c:#f7c948" data-themes="desinfo" data-ages="primaire college lycee" data-suivi="fakemetre" data-acces="libre">
+        <div class="carte__image"><img src="portail/vignettes/fakemetre.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--libre" data-i18n="libre">Accès libre</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom">Fakemètre</span>
+          <a class="carte__lien" href="https://antoninatger.github.io/fakemetre/" data-suivi-clic="fakemetre" data-i18n="a_fakemetre">Vraie info ou fake news ? Trouve les bonnes sources</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_fakemetre">3 niveaux · 5 ou 10 énigmes</span>
+            <span class="niveau" data-i18n="agPrimaire">Primaire</span><span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#f97316" data-themes="arnaques" data-ages="adultes" data-suivi="radarnaque" data-acces="libre">
+        <div class="carte__image"><img src="portail/vignettes/radarnaque.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--libre" data-i18n="libre">Accès libre</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom">Radar’naque</span>
+          <a class="carte__lien" href="radarnaque/index.html" data-i18n="a_radarnaque">Sauras-tu déjouer les arnaques ?</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_radarnaque">14 messages piégés… ou pas</span>
+            <span class="niveau" data-i18n="agAdultes">Adultes</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#a78bfa" data-themes="rhetorique" data-ages="college lycee" data-suivi="arene-rhetorique" data-acces="libre">
+        <div class="carte__image"><img src="portail/vignettes/arene-rhetorique.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--libre" data-i18n="libre">Accès libre</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_arene">Arène de rhétorique</span>
+          <a class="carte__lien" href="arene-rhetorique/index.html" data-i18n="a_arene">Tonton Gérard a toujours raison. Prouve le contraire</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_arene">5 adversaires à battre</span>
+            <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#38bdf8" data-themes="desinfo" data-ages="college lycee" data-suivi="radar-desinfo" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/radar-desinfo.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_desinfo">Radar de la désinfo</span>
+          <a class="carte__lien" href="radar-desinfo/index.html" data-i18n="a_desinfo">Fact-checker d’un jour : trie les dépêches avant publication</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_desinfo">3 vies · 8 techniques</span>
+            <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#f75f5f" data-themes="desinfo" data-ages="college lycee" data-suivi="repare-la-une" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/repare-la-une.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_une">Répare la Une</span>
+          <a class="carte__lien" href="repare-la-une/index.html" data-i18n="a_une">Le stagiaire a écrit un titre choc. Répare-le</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_une">9 unes à corriger</span>
+            <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#3ecf8e" data-themes="biais" data-ages="college lycee" data-suivi="chasse-aux-biais" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/chasse-aux-biais.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_chasse">Chasse aux biais</span>
+          <a class="carte__lien" href="chasse-aux-biais/index.html" data-i18n="a_chasse">Ton cerveau te joue des tours. Prends-le sur le fait</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_chasse">12 dossiers</span>
+            <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#c084fc" data-themes="rhetorique" data-ages="lycee" data-suivi="grand-oral" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/grand-oral.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_grandoral">Le Grand Oral</span>
+          <a class="carte__lien" href="grand-oral/index.html" data-i18n="a_grandoral">Convaincs le conseil municipal, sans un mot de trop</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_grandoral">5 missions</span>
+            <span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#fb923c" data-themes="desinfo" data-ages="college lycee" data-suivi="mes-des-mal" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/mes-des-mal.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_mesdesmal">Més · Dés · Mal</span>
+          <a class="carte__lien" href="mes%20des%20mal%20information/mes-des-mal-information.html" data-i18n="a_mesdesmal">Erreur, mensonge ou vérité qui blesse ? Trie l’info</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_mesdesmal">3 familles à distinguer</span>
+            <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#e879f9" data-themes="desinfo" data-ages="college lycee" data-suivi="arcade" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/arcade.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_arcade">Arcade quizz</span>
+          <a class="carte__lien" href="Arcade%20quizz/index.html" data-i18n="a_arcade">Blaster, Snake, Whac-a-quiz : l’esprit critique en mode arcade</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_arcade">6 jeux · séries de questions</span>
+            <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#818cf8" data-themes="faits" data-ages="primaire" data-suivi="planete-connaissance" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/planete-connaissance.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_planete">Planète Connaissance</span>
+          <a class="carte__lien" href="Plan%C3%A8te%20connaissance.html" data-i18n="a_planete">Pilote ta fusée et fais exploser les opinions déguisées en faits</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_planete">10 missions</span>
+            <span class="niveau" data-i18n="agPrimaire">Primaire</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#f59e0b" data-themes="faits" data-ages="primaire" data-suivi="mine" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/mine.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_mine">Mine la planète</span>
+          <a class="carte__lien" href="mine.html" data-i18n="a_mine">Un seul mot change, et le fait devient opinion</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_mine">Faits ou opinions, mot à mot</span>
+            <span class="niveau" data-i18n="agPrimaire">Primaire</span></div>
+        </div>
+      </article>
+      <article class="carte" style="--c:#60a5fa" data-themes="biais" data-ages="primaire" data-suivi="biais-confirmation" data-acces="code">
+        <div class="carte__image"><img src="portail/vignettes/biais-confirmation.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_cm1">Le biais de confirmation</span>
+          <a class="carte__lien" href="biais_confirmation_cm1.html" data-suivi-clic="biais-confirmation" data-i18n="a_cm1">Chloé ou Nathan : qui a raison ?</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_cm1">5 situations · CM1</span>
+            <span class="niveau" data-i18n="agPrimaire">Primaire</span></div>
+        </div>
+      </article>
+    </div>
+    <p class="aucun" id="aucun" hidden><span data-i18n="aucun">Aucun jeu pour cette combinaison.</span></p>
+
+    <h3 class="sous-titre" data-i18n="catalogues">Pour aller plus loin : les catalogues</h3>
+    <div class="grille">
+      <article class="carte carte--large carte--petite" style="--c:#6d8bff">
+        <div class="carte__image"><img src="portail/vignettes/perceptio.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_perceptio">Perceptio · catalogue</span>
+          <a class="carte__lien" href="Biais%20cognitifs/index.html" data-i18n="a_perceptio">Ton cerveau ment. Poliment.</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_perceptio">Les biais cognitifs : définitions, exemples, QCM, sources</span></div>
+        </div>
+      </article>
+      <article class="carte carte--large carte--petite" style="--c:#d4a373">
+        <div class="carte__image"><img src="portail/vignettes/rhetor.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_rhetor">Rhetor · catalogue</span>
+          <a class="carte__lien" href="rhetor/index.html" data-i18n="a_rhetor">Le fond ne suffit pas. La forme décide.</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_rhetor">Figures de style, sophismes, lexique de l’argumentation</span></div>
+        </div>
+      </article>
+      <article class="carte carte--large carte--petite" style="--c:#e07a5f">
+        <div class="carte__image"><img src="portail/vignettes/cobaye.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps">
+          <span class="carte__nom" data-i18n="n_cobaye">Cobaye · catalogue</span>
+          <a class="carte__lien" href="cobaye/index.html" data-i18n="a_cobaye">10 expériences qui ont marqué la psychologie</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_cobaye">Histoire, controverses, sources vérifiées</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>
+
+<!-- ── Famille « Illusions & démonstrations » ── -->
+<section class="famille famille--bande" id="illusions" aria-labelledby="illusions-titre">
+  <div class="page">
+    <div class="famille__tete">
+      <p class="famille__sur" data-i18n="illSur">Famille · 4</p>
+      <h2 class="famille__titre" id="illusions-titre" data-i18n="illTitre">Illusions &amp; démonstrations</h2>
+      <p class="famille__texte" data-i18n="illTexte">Ce qu’on montre, sans gagner ni perdre. Idéal pour lancer une discussion en classe.</p>
+    </div>
+    <div class="grille grille--4">
+      <article class="carte carte--petite" style="--c:#22d3ee">
+        <div class="carte__image"><img src="portail/vignettes/illusions.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps"><span class="carte__nom" data-i18n="n_illusions">Illusions d’optique</span>
+          <a class="carte__lien" href="Ilusions%20d'optique/index.html" data-i18n="a_illusions">Tes yeux sont formels. Ils ont tort.</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_illusions">10 illusions classiques</span></div></div>
+      </article>
+      <article class="carte carte--petite" style="--c:#f0b429">
+        <div class="carte__image"><img src="portail/vignettes/graphiques-trompeurs.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps"><span class="carte__nom" data-i18n="n_graphiques">Graphiques trompeurs</span>
+          <a class="carte__lien" href="graphiques-trompeurs/index.html" data-i18n="a_graphiques">Mêmes chiffres, autre histoire</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_graphiques">17 graphiques à démasquer</span></div></div>
+      </article>
+      <article class="carte carte--petite" style="--c:#34d399">
+        <div class="carte__image"><img src="portail/vignettes/terre-ronde-plate.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps"><span class="carte__nom" data-i18n="n_terre">La Terre ronde ou plate ?</span>
+          <a class="carte__lien" href="terre_ronde_plate.html" data-i18n="a_terre">Preuve par preuve, le mythe tombe</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_terre">Démonstration</span></div></div>
+      </article>
+      <article class="carte carte--petite" style="--c:#fbbf24">
+        <div class="carte__image"><img src="portail/vignettes/notes-google.jpg" alt="" loading="lazy" width="560" height="315"></div>
+        <div class="carte__corps"><span class="carte__nom" data-i18n="n_notes">Avis « style Maps »</span>
+          <a class="carte__lien" href="notes_google.html" data-i18n="a_notes">2,3 étoiles… vraiment ?</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_notes">Une moyenne peut cacher une tendance</span></div></div>
+      </article>
+    </div>
   </div>
+</section>
 
-  <div class="sous"><h3 data-i18n="sub3">Biais cognitifs et psychologie</h3></div>
-  <div class="grid">
-    <a class="card" href="chasse-aux-biais/index.html" style="--c:#3ecf8e">
-      <img class="vignette" src="vignettes/chasse-aux-biais.jpg" alt="" loading="lazy">
-      <span class="em">🎯</span><b data-i18n="t5">Chasse aux biais</b>
-      <div class="desc" data-i18n="d5">Débusquer les biais cognitifs du quotidien.</div>
-      <span class="url">antoninatger.github.io/jeux/chasse-aux-biais/</span></a>
-    <a class="card" href="Biais%20cognitifs/index.html" style="--c:#2B4CFF">
-      <img class="vignette" src="vignettes/perceptio.jpg" alt="" loading="lazy">
-      <span class="em">🧪</span><b data-i18n="t19">Perceptio</b>
-      <div class="desc" data-i18n="d19">Catalogue des biais cognitifs : définitions, exemples, QCM et sources vérifiées.</div>
-      <span class="url">antoninatger.github.io/jeux/Biais cognitifs/</span></a>
-    <a class="card" href="biais_confirmation_cm1.html" style="--c:#60a5fa">
-      <img class="vignette" src="vignettes/biais-confirmation.jpg" alt="" loading="lazy">
-      <span class="em">🔎</span><b data-i18n="t10">Le biais de confirmation</b>
-      <div class="desc" data-i18n="d10">Comprendre le biais de confirmation (niveau CM1).</div>
-      <span class="url">antoninatger.github.io/jeux/biais_confirmation_cm1.html</span></a>
-    <a class="card" href="cobaye/index.html" style="--c:#B0402A">
-      <img class="vignette" src="vignettes/cobaye.jpg" alt="" loading="lazy">
-      <span class="em">🧫</span><b data-i18n="t21">Cobaye</b>
-      <div class="desc" data-i18n="d21">Dix expériences de psychologie parmi les plus célèbres : histoire, controverses et sources vérifiées.</div>
-      <span class="url">antoninatger.github.io/jeux/cobaye/</span></a>
+<!-- ── Famille « Interventions » ── -->
+<section class="famille famille--bande" id="interventions" aria-labelledby="interv-titre">
+  <div class="page">
+    <div class="famille__tete">
+      <p class="famille__sur" data-i18n="intSur">Famille · 3</p>
+      <h2 class="famille__titre" id="interv-titre" data-i18n="intTitre">Interventions</h2>
+      <p class="famille__texte" data-i18n="intTexte">Ce qui sert à animer devant un public : à projeter, ou à jouer tous ensemble.</p>
+    </div>
+    <div class="grille grille--3i">
+      <article class="carte carte--petite" style="--c:#38bdf8">
+        <div class="carte__image"><img src="portail/vignettes/lignes-numerotees.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
+        <div class="carte__corps"><span class="carte__nom" data-i18n="n_lignes">Lignes numérotées</span>
+          <a class="carte__lien" href="jeu-lignes-numerotees/index.html" data-i18n="a_lignes">Mémorise les lignes une par une, puis range-les</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_lignes">À projeter</span></div></div>
+      </article>
+      <article class="carte carte--petite" style="--c:#22d3ee">
+        <div class="carte__image"><img src="portail/vignettes/exploration.jpg" alt="" loading="lazy" width="560" height="315">
+          <div class="carte__badges"><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
+        <div class="carte__corps"><span class="carte__nom">Exploration</span>
+          <a class="carte__lien" href="exploration/index.html" data-i18n="a_exploration">Crée ton explorateur et parcours la carte des jeux</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_exploration">Parcours guidé</span></div></div>
+      </article>
+      <article class="carte carte--petite" style="--c:#a78bfa">
+        <div class="carte__image" style="display:flex; align-items:center; justify-content:center">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width:56px; height:56px; color:#a78bfa; stroke-width:1.6"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>
+          <div class="carte__badges"><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
+        <div class="carte__corps"><span class="carte__nom" data-i18n="n_editeur">Éditeur de questions</span>
+          <a class="carte__lien" href="Arcade%20quizz/editeur-questions.html" data-i18n="a_editeur">Écris tes propres questions pour l’Arcade</a>
+          <div class="carte__pied"><span class="carte__meta" data-i18n="m_editeur">Pour l’enseignant</span></div></div>
+      </article>
+    </div>
+    <p class="autre"><a href="hors-interventions.html" data-i18n="horsScolaire">Hors interventions scolaires : Signaux, Le Recrutement, Ouvertures aux échecs</a></p>
   </div>
+</section>
+</main>
 
-  <div class="sous"><h3 data-i18n="sub4">Rhétorique et argumentation</h3></div>
-  <div class="grid">
-    <a class="card" href="arene-rhetorique/index.html" style="--c:#a78bfa">
-      <img class="vignette" src="vignettes/arene-rhetorique.jpg" alt="" loading="lazy">
-      <span class="em">⚔️</span><b data-i18n="t6">Arène de rhétorique</b>
-      <div class="desc" data-i18n="d6">Reconnaître les procédés rhétoriques et sophismes.</div>
-      <span class="url">antoninatger.github.io/jeux/arene-rhetorique/</span></a>
-    <a class="card" href="rhetor/index.html" style="--c:#8C2F39">
-      <img class="vignette" src="vignettes/rhetor.jpg" alt="" loading="lazy">
-      <span class="em">🏛️</span><b data-i18n="t20">Rhetor</b>
-      <div class="desc" data-i18n="d20">Catalogue des outils rhétoriques : figures de style, sophismes et lexique de l'argumentation.</div>
-      <span class="url">antoninatger.github.io/jeux/rhetor/</span></a>
-  </div>
+<footer>
+  <span class="by"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank" rel="noopener">Antonin Atger</a></span>
+  <span data-i18n="tip">Astuce : le bouton « Copier le lien » d’une carte met son adresse dans le presse-papiers, prête à partager.</span><br>
+  <span data-i18n="sourceLabel">Code source :</span> <a href="https://github.com/antoninatger/jeux">github.com/antoninatger/jeux</a>
+  · <span data-i18n="fmLabel">Fakemètre :</span> <a href="https://github.com/antoninatger/fakemetre">github.com/antoninatger/fakemetre</a>
+</footer>
 
-  <div class="sous"><h3 data-i18n="sub5">Quiz et jeux d'arcade</h3></div>
-  <div class="grid">
-    <a class="card" href="Arcade%20quizz/index.html" style="--c:#a855f7">
-      <img class="vignette" src="vignettes/arcade-quizz.jpg" alt="" loading="lazy">
-      <span class="em">🕹️</span><b data-i18n="t9">Arcade quizz</b>
-      <div class="desc" data-i18n="d9">Quiz arcade « fake news & esprit critique ».</div>
-      <span class="url">antoninatger.github.io/jeux/Arcade quizz/</span></a>
-    <a class="card" href="snake-fakenews.html" style="--c:#4ade80">
-      <img class="vignette" src="vignettes/snake.jpg" alt="" loading="lazy">
-      <span class="em">🐍</span><b data-i18n="t13">Snake Fake News</b>
-      <div class="desc" data-i18n="d13">Le Snake revisité « fake news & esprit critique ».</div>
-      <span class="url">antoninatger.github.io/jeux/snake-fakenews.html</span></a>
-    <a class="card" href="mes%20des%20mal%20information/mes-des-mal-information.html" style="--c:#fb923c">
-      <img class="vignette" src="vignettes/des-mal-information.jpg" alt="" loading="lazy">
-      <span class="em">🎲</span><b data-i18n="t8">Dés de la mal-information</b>
-      <div class="desc" data-i18n="d8">Jeu de dés autour de la mal-information.</div>
-      <span class="url">antoninatger.github.io/jeux/mes des mal information/…</span></a>
-  </div>
+<script src="i18n.js"></script>
+<script src="collection.js"></script>
+<script>
+I18N.register({
+  fr: {
+    pageTitle: "Jeux pédagogiques — Antonin Atger",
+    metaDesc: "Des jeux web sur l'esprit critique, la désinformation, les biais cognitifs et la rhétorique, à jouer directement dans le navigateur, en classe ou à la maison. Par Antonin Atger.",
+    h1: "Jeux pédagogiques", by: "par", sommaire: "Familles de jeux",
+    intro: "Esprit critique, désinformation, biais cognitifs : des jeux à jouer directement dans le navigateur, en classe ou à la maison.",
+    navJeux: "Jeux", navIllusions: "Illusions", navInterv: "Interventions",
+    phare: "Le jeu phare", libre: "Accès libre", code: "Code établissement", anime: "Pour animer",
+    uneTitre: "Vraie info ou fake news ?",
+    uneTexte: "Trouve les bonnes sources et mesure la fiabilité de chaque affirmation. Trois niveaux, des affirmations du quotidien aux vraies controverses, et un mode Créateur pour inventer tes propres questions.",
+    jouerFakemetre: "Jouer à Fakemètre", voirJeux: "Voir les 12 jeux",
+    collection: "Ta collection", collNb1: "jeu joué sur 12", collNbN: "jeux joués sur 12",
+    collReste: "Plus que {n} pour la compléter.", collReste1: "Plus qu’un pour la compléter !", collFini: "Collection complète. Bravo !",
+    collVide: "Chaque partie terminée s’ajoute ici.", collSuite: "Suite : {jeu}", collRevoir: "Revoir les jeux",
+    jeuxSur: "Famille · 12 jeux", jeuxTitre: "Jeux", jeuxTexte: "Choisis un thème, un âge, ou les deux : la liste se met à jour.",
+    fTheme: "Thème", fAge: "Âge", tous: "Tous", tousAges: "Tous âges",
+    thDesinfo: "Désinformation", thArnaques: "Arnaques", thBiais: "Biais cognitifs", thRhetorique: "Rhétorique", thFaits: "Faits et opinions",
+    agPrimaire: "Primaire", agPrimaireAns: "8-11 ans", agCollege: "Collège", agCollegeAns: "11-15 ans",
+    agLycee: "Lycée", agLyceeAns: "15-18 ans", agAdultes: "Adultes", agAdultesAns: "seniors, grand public",
+    res12: "Les 12 jeux", res1: "1 jeu", resN: "{n} jeux", res0: "Aucun jeu",
+    effacer: "Effacer les filtres", aucun: "Aucun jeu pour cette combinaison.",
+    copier: "Copier le lien", copie: "Lien copié !",
+    a_fakemetre: "Vraie info ou fake news ? Trouve les bonnes sources", m_fakemetre: "3 niveaux · 5 ou 10 énigmes",
+    a_radarnaque: "Sauras-tu déjouer les arnaques ?", m_radarnaque: "14 messages piégés… ou pas",
+    n_arene: "Arène de rhétorique", a_arene: "Tonton Gérard a toujours raison. Prouve le contraire", m_arene: "5 adversaires à battre",
+    n_desinfo: "Radar de la désinfo", a_desinfo: "Fact-checker d’un jour : trie les dépêches avant publication", m_desinfo: "3 vies · 8 techniques",
+    n_une: "Répare la Une", a_une: "Le stagiaire a écrit un titre choc. Répare-le", m_une: "9 unes à corriger",
+    n_chasse: "Chasse aux biais", a_chasse: "Ton cerveau te joue des tours. Prends-le sur le fait", m_chasse: "12 dossiers",
+    n_grandoral: "Le Grand Oral", a_grandoral: "Convaincs le conseil municipal, sans un mot de trop", m_grandoral: "5 missions",
+    n_mesdesmal: "Més · Dés · Mal", a_mesdesmal: "Erreur, mensonge ou vérité qui blesse ? Trie l’info", m_mesdesmal: "3 familles à distinguer",
+    n_arcade: "Arcade quizz", a_arcade: "Blaster, Snake, Whac-a-quiz : l’esprit critique en mode arcade", m_arcade: "6 jeux · séries de questions",
+    n_planete: "Planète Connaissance", a_planete: "Pilote ta fusée et fais exploser les opinions déguisées en faits", m_planete: "10 missions",
+    n_mine: "Mine la planète", a_mine: "Un seul mot change, et le fait devient opinion", m_mine: "Faits ou opinions, mot à mot",
+    n_cm1: "Le biais de confirmation", a_cm1: "Chloé ou Nathan : qui a raison ?", m_cm1: "5 situations · CM1",
+    catalogues: "Pour aller plus loin : les catalogues",
+    n_perceptio: "Perceptio · catalogue", a_perceptio: "Ton cerveau ment. Poliment.", m_perceptio: "Les biais cognitifs : définitions, exemples, QCM, sources",
+    n_rhetor: "Rhetor · catalogue", a_rhetor: "Le fond ne suffit pas. La forme décide.", m_rhetor: "Figures de style, sophismes, lexique de l’argumentation",
+    n_cobaye: "Cobaye · catalogue", a_cobaye: "10 expériences qui ont marqué la psychologie", m_cobaye: "Histoire, controverses, sources vérifiées",
+    illSur: "Famille · 4", illTitre: "Illusions & démonstrations", illTexte: "Ce qu’on montre, sans gagner ni perdre. Idéal pour lancer une discussion en classe.",
+    n_illusions: "Illusions d’optique", a_illusions: "Tes yeux sont formels. Ils ont tort.", m_illusions: "10 illusions classiques",
+    n_graphiques: "Graphiques trompeurs", a_graphiques: "Mêmes chiffres, autre histoire", m_graphiques: "17 graphiques à démasquer",
+    n_terre: "La Terre ronde ou plate ?", a_terre: "Preuve par preuve, le mythe tombe", m_terre: "Démonstration",
+    n_notes: "Avis « style Maps »", a_notes: "2,3 étoiles… vraiment ?", m_notes: "Une moyenne peut cacher une tendance",
+   
+   
+    intSur: "Famille · 3", intTitre: "Interventions", intTexte: "Ce qui sert à animer devant un public : à projeter, ou à jouer tous ensemble.",
+   
+    n_lignes: "Lignes numérotées", a_lignes: "Mémorise les lignes une par une, puis range-les", m_lignes: "À projeter",
+    a_exploration: "Crée ton explorateur et parcours la carte des jeux", m_exploration: "Parcours guidé",
+    n_editeur: "Éditeur de questions", a_editeur: "Écris tes propres questions pour l’Arcade", m_editeur: "Pour l’enseignant",
+    horsScolaire: "Hors interventions scolaires : Signaux, Le Recrutement, Ouvertures aux échecs",
+    tip: "Astuce : le bouton « Copier le lien » d’une carte met son adresse dans le presse-papiers, prête à partager.",
+    sourceLabel: "Code source :", fmLabel: "Fakemètre :"
+  },
+  en: {
+    pageTitle: "Educational Games — Antonin Atger",
+    metaDesc: "Web games about critical thinking, disinformation, cognitive biases and rhetoric, playable right in the browser, in class or at home. By Antonin Atger.",
+    h1: "Educational Games", by: "by", sommaire: "Game families",
+    intro: "Critical thinking, disinformation, cognitive biases: games to play right in your browser, in class or at home.",
+    navJeux: "Games", navIllusions: "Illusions", navInterv: "Sessions",
+    phare: "Flagship game", libre: "Free access", code: "School code", anime: "For live sessions",
+    uneTitre: "Real news or fake news?",
+    uneTexte: "Find the right sources and measure how reliable each claim is. Three levels, from everyday claims to real controversies, and a Creator mode to write your own questions.",
+    jouerFakemetre: "Play Fakemeter", voirJeux: "See the 12 games",
+    collection: "Your collection", collNb1: "game played out of 12", collNbN: "games played out of 12",
+    collReste: "{n} more to complete it.", collReste1: "Just one more to complete it!", collFini: "Collection complete. Well done!",
+    collVide: "Every finished game shows up here.", collSuite: "Next: {jeu}", collRevoir: "See the games again",
+    jeuxSur: "Family · 12 games", jeuxTitre: "Games", jeuxTexte: "Pick a topic, an age, or both: the list updates.",
+    fTheme: "Topic", fAge: "Age", tous: "All", tousAges: "All ages",
+    thDesinfo: "Disinformation", thArnaques: "Scams", thBiais: "Cognitive biases", thRhetorique: "Rhetoric", thFaits: "Facts and opinions",
+    agPrimaire: "Primary", agPrimaireAns: "ages 8-11", agCollege: "Middle school", agCollegeAns: "ages 11-15",
+    agLycee: "High school", agLyceeAns: "ages 15-18", agAdultes: "Adults", agAdultesAns: "seniors, general public",
+    res12: "All 12 games", res1: "1 game", resN: "{n} games", res0: "No games",
+    effacer: "Clear filters", aucun: "No game matches this combination.",
+    copier: "Copy link", copie: "Link copied!",
+    a_fakemetre: "Real news or fake news? Find the right sources", m_fakemetre: "3 levels · 5 or 10 riddles",
+    a_radarnaque: "Can you outsmart the scams?", m_radarnaque: "14 messages — traps… or not",
+    n_arene: "Rhetoric Arena", a_arene: "Uncle Gérard is always right. Prove him wrong", m_arene: "5 opponents to beat",
+    n_desinfo: "Disinfo Radar", a_desinfo: "Fact-checker for a day: sort the news before it goes out", m_desinfo: "3 lives · 8 techniques",
+    n_une: "Fix the Headline", a_une: "The intern wrote a clickbait headline. Fix it", m_une: "9 front pages to fix",
+    n_chasse: "Bias Hunt", a_chasse: "Your brain plays tricks on you. Catch it in the act", m_chasse: "12 case files",
+    n_grandoral: "The Big Talk", a_grandoral: "Win over the town council, without a word too many", m_grandoral: "5 missions",
+    n_mesdesmal: "Mis · Dis · Mal", a_mesdesmal: "Mistake, lie or hurtful truth? Sort the info", m_mesdesmal: "3 families to tell apart",
+    n_arcade: "Arcade quiz", a_arcade: "Blaster, Snake, Whac-a-quiz: critical thinking, arcade style", m_arcade: "6 games · question sets",
+    n_planete: "Knowledge Planet", a_planete: "Fly your rocket and blast opinions dressed up as facts", m_planete: "10 missions",
+    n_mine: "Mine the Planet", a_mine: "Swap one word, and a fact becomes an opinion", m_mine: "Facts or opinions, word by word",
+    n_cm1: "Confirmation bias", a_cm1: "Chloé or Nathan: who is right?", m_cm1: "5 situations · ages 9-10",
+    catalogues: "Going further: the catalogues",
+    n_perceptio: "Perceptio · catalogue", a_perceptio: "Your brain lies. Politely.", m_perceptio: "Cognitive biases: definitions, examples, quizzes, sources",
+    n_rhetor: "Rhetor · catalogue", a_rhetor: "Substance isn't enough. Form decides.", m_rhetor: "Figures of speech, fallacies, the vocabulary of argument",
+    n_cobaye: "Cobaye · catalogue", a_cobaye: "10 experiments that shaped psychology", m_cobaye: "History, controversies, verified sources",
+    illSur: "Family · 4", illTitre: "Illusions & demonstrations", illTexte: "Things to show, with no winning or losing. Great for starting a class discussion.",
+    n_illusions: "Optical illusions", a_illusions: "Your eyes are certain. They're wrong.", m_illusions: "10 classic illusions",
+    n_graphiques: "Misleading graphs", a_graphiques: "Same numbers, different story", m_graphiques: "17 graphs to unmask",
+    n_terre: "Round Earth or flat?", a_terre: "Proof by proof, the myth falls apart", m_terre: "Demonstration",
+    n_notes: "'Maps-style' reviews", a_notes: "2.3 stars… really?", m_notes: "An average can hide a trend",
+   
+   
+    intSur: "Family · 3", intTitre: "Live sessions", intTexte: "Tools for running a session in front of an audience: to project, or to play all together.",
+   
+    n_lignes: "Numbered lines", a_lignes: "Memorise the lines one by one, then rank them", m_lignes: "To project",
+    a_exploration: "Create your explorer and travel the games map", m_exploration: "Guided journey",
+    n_editeur: "Question editor", a_editeur: "Write your own questions for the Arcade", m_editeur: "For teachers",
+    horsScolaire: "Outside school sessions: Signals, The Recruitment, Chess openings",
+    tip: "Tip: a card's “Copy link” button puts its address on your clipboard, ready to share.",
+    sourceLabel: "Source code:", fmLabel: "Fakemeter:"
+  }
+});
+</script>
+<script>
+(function () {
+  'use strict';
+  var t = function (k) { return (window.I18N && I18N.t(k)) || k; };
+  var BASE = 'https://antoninatger.github.io/jeux/';
 
-  <div class="cat"><h2 data-i18n="cat3">🎓 Culture &amp; autres jeux</h2></div>
-  <div class="grid">
-    <a class="card" href="Plan%C3%A8te%20connaissance.html" style="--c:#818cf8">
-      <img class="vignette" src="vignettes/planete-connaissance.jpg" alt="" loading="lazy">
-      <span class="em">🚀</span><b data-i18n="t14">Planète Connaissance</b>
-      <div class="desc" data-i18n="d14">Distinguer les faits des opinions.</div>
-      <span class="url">antoninatger.github.io/jeux/Planète connaissance.html</span></a>
-    <a class="card" href="Ilusions%20d'optique/index.html" style="--c:#22d3ee">
-      <img class="vignette" src="vignettes/illusions-optique.jpg" alt="" loading="lazy">
-      <span class="em">👁️</span><b data-i18n="t15">Illusions d'optique</b>
-      <div class="desc" data-i18n="d15">Onze illusions classiques à explorer.</div>
-      <span class="url">antoninatger.github.io/jeux/Ilusions d'optique/</span></a>
-    <a class="card" href="mine.html" style="--c:#f59e0b">
-      <img class="vignette" src="vignettes/mine.jpg" alt="" loading="lazy">
-      <span class="em">⛏️</span><b data-i18n="t17">Mine la Planète</b>
-      <div class="desc" data-i18n="d17">Extraire les ressources… jusqu'où ?</div>
-      <span class="url">antoninatger.github.io/jeux/mine.html</span></a>
-  </div>
+  /* Accès réservé : tout est prêt dans les cartes (data-acces, pastilles),
+     mais rien ne s'affiche tant que le système de codes n'existe pas. Passer
+     à true le jour où jeux.antoninatger.com accepte les codes. */
+  var ACCES_RESERVE = false;
+  if (ACCES_RESERVE) document.body.classList.add('acces-reserve');
 
-  <div style="max-width:1040px;margin:0 auto;padding:26px 22px 0">
-    <a href="hors-interventions.html" data-i18n="horsScolaire"
-       style="color:var(--doux);text-decoration:none;font-weight:700;font-size:.88em;border-bottom:1px solid var(--bord);padding-bottom:3px">Jeux hors interventions scolaires</a>
-  </div>
+  var cartes = [].slice.call(document.querySelectorAll('#grille-jeux .carte'));
 
-  <footer>
-    <span class="by"><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></span>
-    <span data-i18n="tip">💡 Astuce : cliquez sur l'URL sous une carte pour la copier.</span><br>
-    <span data-i18n="sourceLabel">Code source :</span> <a href="https://github.com/antoninatger/jeux">github.com/antoninatger/jeux</a>
-    · <span data-i18n="fmLabel">Fakemètre :</span> <a href="https://github.com/antoninatger/fakemetre">github.com/antoninatger/fakemetre</a>
-  </footer>
-
-  <style>
-    a.card .url{ cursor:copy; }
-    a.card .url:hover{ text-decoration:underline; }
-    a.card .url.copied{ color:#34d399; }
-  </style>
-  <script src="i18n.js"></script>
-  <script>
-  I18N.register({
-    fr: {
-      h1: "Jeux pédagogiques",
-      intro: "Esprit critique, fake news, biais cognitifs, culture générale… Cliquez sur un jeu pour y jouer directement dans le navigateur.",
-      by: "par", cat2: "🧠 Esprit critique & désinformation", cat3: "🎓 Culture & autres jeux",
-      sub1: "Vérifier une information", sub2: "Arnaques et faux avis", sub3: "Biais cognitifs et psychologie",
-      sub4: "Rhétorique et argumentation", sub5: "Quiz et jeux d'arcade",
-      t2: "Fakemètre ↗", d2: "Le jeu phare : mesurer la fiabilité d'une info. (Dépôt séparé)",
-      t3: "Radar’naque", d3: "Repérer les arnaques : SMS, e-mails, faux conseiller, deepfakes…",
-      t4: "Radar désinfo", d4: "Distinguer une information fiable d'une désinformation.",
-      t5: "Chasse aux biais", d5: "Débusquer les biais cognitifs du quotidien.",
-      t19: "Perceptio", d19: "Catalogue des biais cognitifs : définitions, exemples, QCM et sources vérifiées.",
-      t20: "Rhetor", d20: "Catalogue des outils rhétoriques : figures de style, sophismes et lexique de l'argumentation.",
-      t21: "Cobaye", d21: "Dix expériences de psychologie parmi les plus célèbres : histoire, controverses et sources vérifiées.",
-      t6: "Arène de rhétorique", d6: "Reconnaître les procédés rhétoriques et sophismes.",
-      t7: "Répare la une", d7: "Corriger la une trompeuse d'un journal.",
-      t18: "Graphiques trompeurs", d18: "Démasquer les graphiques qui déforment la réalité sans changer un seul chiffre.",
-      t8: "Dés de la mal-information", d8: "Jeu de dés autour de la mal-information.",
-      t9: "Arcade quizz", d9: "Quiz arcade « fake news & esprit critique ».",
-      t10: "Le biais de confirmation", d10: "Comprendre le biais de confirmation (niveau CM1).",
-      t12: "Avis « style Maps »", d12: "Démo de faux avis en ligne (fiction pédagogique).",
-      t13: "Snake Fake News", d13: "Le Snake revisité « fake news & esprit critique ».",
-      t14: "Planète Connaissance", d14: "Distinguer les faits des opinions.",
-      t15: "Illusions d'optique", d15: "Onze illusions classiques à explorer.",
-      t16: "Ouvertures aux échecs", d16: "Apprendre les grandes ouvertures.",
-      t17: "Mine la Planète", d17: "Extraire les ressources… jusqu'où ?",
-      horsScolaire: "Jeux hors interventions scolaires",
-      tip: "💡 Astuce : cliquez sur l'URL sous une carte pour la copier.",
-      sourceLabel: "Code source :", fmLabel: "Fakemètre :"
-    },
-    en: {
-      h1: "Educational Games",
-      intro: "Critical thinking, fake news, cognitive biases, general knowledge… Click a game to play it right in your browser.",
-      by: "by", cat2: "🧠 Critical thinking & disinformation", cat3: "🎓 Culture & other games",
-      sub1: "Checking information", sub2: "Scams and fake reviews", sub3: "Cognitive biases and psychology",
-      sub4: "Rhetoric and argument", sub5: "Quizzes and arcade games",
-      t2: "Fakemeter ↗", d2: "The flagship game: measure how reliable a piece of info is. (Separate repo)",
-      t3: "Radar’naque", d3: "Spot scams: texts, emails, fake advisor, deepfakes…",
-      t4: "Disinfo Radar", d4: "Tell reliable information from disinformation.",
-      t5: "Bias Hunt", d5: "Track down everyday cognitive biases.",
-      t19: "Perceptio", d19: "A catalogue of cognitive biases: definitions, examples, quizzes and verified sources.",
-      t20: "Rhetor", d20: "A catalogue of rhetorical tools: figures of speech, fallacies and the vocabulary of argumentation.",
-      t21: "Cobaye", d21: "Ten of the most famous psychology experiments: history, controversies and verified sources.",
-      t6: "Rhetoric Arena", d6: "Recognise rhetorical devices and fallacies.",
-      t7: "Fix the Headline", d7: "Fix a newspaper's misleading front page.",
-      t18: "Misleading Graphs", d18: "Unmask charts that distort reality without changing a single number.",
-      t8: "Misinfo Dice", d8: "A dice game about misinformation.",
-      t9: "Arcade quiz", d9: "Arcade quiz: 'fake news & critical thinking'.",
-      t10: "Confirmation bias", d10: "Understand confirmation bias (ages 9 to 10).",
-      t12: "'Maps-style' reviews", d12: "A fake online-reviews demo (educational fiction).",
-      t13: "Snake Fake News", d13: "The classic Snake, 'fake news & critical thinking' edition.",
-      t14: "Knowledge Planet", d14: "Tell facts from opinions.",
-      t15: "Optical Illusions", d15: "Eleven classic illusions to explore.",
-      t16: "Chess Openings", d16: "Learn the great openings.",
-      t17: "Mine the Planet", d17: "Extract the resources… how far will you go?",
-      horsScolaire: "Games outside school sessions",
-      tip: "💡 Tip: click the URL under a card to copy it.",
-      sourceLabel: "Source code:", fmLabel: "Fakemeter:"
-    }
-  });
-  </script>
-  <script>
-  (function(){
-    var BASE='https://antoninatger.github.io/jeux/';
-    function flash(el){ var o=el.textContent; el.classList.add('copied'); el.textContent='✓ Lien copié !';
-      setTimeout(function(){ el.classList.remove('copied'); el.textContent=o; }, 1200); }
-    function fallback(url,el){ var t=document.createElement('textarea'); t.value=url;
-      t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select();
-      try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(t); flash(el); }
-    document.querySelectorAll('a.card').forEach(function(card){
-      var u=card.querySelector('.url'); if(!u) return;
-      u.title='Cliquer pour copier le lien';
-      u.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation();
-        var raw=card.getAttribute('href');
-        var url=/^https?:/i.test(raw) ? raw : BASE+raw;
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          navigator.clipboard.writeText(url).then(function(){ flash(u); }).catch(function(){ fallback(url,u); });
-        } else { fallback(url,u); }
-      });
+  /* ── Filtre thème × âge ─────────────────────────────────────────────── */
+  var etat = { theme: '', age: '' };
+  var puTheme = [].slice.call(document.querySelectorAll('.puce[data-theme]'));
+  var puAge = [].slice.call(document.querySelectorAll('.puce[data-age]'));
+  function garde(c, th, ag) {
+    return (!th || (' ' + c.dataset.themes + ' ').indexOf(' ' + th + ' ') !== -1) &&
+           (!ag || (' ' + c.dataset.ages + ' ').indexOf(' ' + ag + ' ') !== -1);
+  }
+  function appliquer() {
+    var n = 0;
+    cartes.forEach(function (c) { var ok = garde(c, etat.theme, etat.age); c.hidden = !ok; if (ok) n++; });
+    puTheme.forEach(function (b) {
+      var th = b.dataset.theme;
+      b.setAttribute('aria-pressed', String(th === etat.theme));
+      var k = cartes.filter(function (c) { return garde(c, th, etat.age); }).length;
+      b.querySelector('small').textContent = k;
     });
-  })();
-  </script>
+    puAge.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.age === etat.age)); });
+    document.getElementById('resultat').textContent =
+      n === cartes.length ? t('res12') : n === 0 ? t('res0') : n === 1 ? t('res1') : t('resN').replace('{n}', n);
+    document.getElementById('aucun').hidden = n !== 0;
+    document.getElementById('effacer').hidden = !(etat.theme || etat.age);
+  }
+  puTheme.forEach(function (b) { b.addEventListener('click', function () { etat.theme = b.dataset.theme; appliquer(); }); });
+  puAge.forEach(function (b) { b.addEventListener('click', function () { etat.age = b.dataset.age; appliquer(); }); });
+  document.getElementById('effacer').addEventListener('click', function () { etat.theme = ''; etat.age = ''; appliquer(); });
+
+  /* ── Ta collection ──────────────────────────────────────────────────────
+     Un jeu compte comme joué quand ColFin a rendu sa fin de partie
+     (collection.js pose « col.fini.<jeu> »). Fakemètre et le Biais de
+     confirmation n'ont pas encore ColFin : pour eux, l'ouverture depuis le
+     portail tient lieu de partie jouée (data-suivi-clic). */
+  var CLE = 'col.fini.';
+  function cles() {
+    var l = [];
+    try { for (var i = 0; i < localStorage.length; i++) l.push(localStorage.key(i)); } catch (e) {}
+    return l;
+  }
+  function estJoue(id, toutes) {
+    return toutes.some(function (k) { return k === CLE + id || k.indexOf(CLE + id + '.') === 0; });
+  }
+  function collection() {
+    var toutes = cles(), joues = 0, suite = null;
+    var ul = document.getElementById('collection-ronds');
+    ul.textContent = '';
+    cartes.forEach(function (c) {
+      var id = c.dataset.suivi, fait = estJoue(id, toutes);
+      var nom = c.querySelector('.carte__nom').textContent;
+      var li = document.createElement('li');
+      li.style.setProperty('--c', c.style.getPropertyValue('--c'));
+      li.title = nom;
+      if (fait) {
+        joues++; li.className = 'fait';
+        var img = document.createElement('img'); img.src = c.querySelector('.carte__image img').getAttribute('src'); img.alt = '';
+        li.appendChild(img);
+      } else {
+        li.appendChild(document.createElement('span'));
+        if (!suite) suite = c;
+      }
+      var sr = document.createElement('span'); sr.className = 'sr-seul'; sr.textContent = nom + (fait ? ' ✓' : '');
+      li.appendChild(sr);
+      /* Badge « Terminé » sur la carte elle-même */
+      var ancien = c.querySelector('.carte__fait'); if (ancien) ancien.remove();
+      if (fait) {
+        var b = document.createElement('div'); b.className = 'carte__fait';
+        b.innerHTML = '<span class="pastille pastille--fait">✓ ' + (I18N.lang === 'en' ? 'Played' : 'Joué') + '</span>';
+        c.querySelector('.carte__image').appendChild(b);
+      }
+      ul.appendChild(li);
+    });
+    var total = cartes.length;
+    document.getElementById('collection-nb').innerHTML = '<b>' + joues + '</b> ' + (joues > 1 ? t('collNbN') : t('collNb1'));
+    document.getElementById('collection-reste').textContent =
+      joues === 0 ? t('collVide') : joues === total ? t('collFini') :
+      total - joues === 1 ? t('collReste1') : t('collReste').replace('{n}', total - joues);
+    var lien = document.getElementById('collection-suite');
+    if (suite) {
+      lien.href = suite.querySelector('.carte__lien').getAttribute('href');
+      lien.textContent = t('collSuite').replace('{jeu}', suite.querySelector('.carte__nom').textContent);
+    } else { lien.href = '#jeux'; lien.textContent = t('collRevoir'); }
+  }
+  document.querySelectorAll('[data-suivi-clic]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      try { localStorage.setItem(CLE + a.dataset.suiviClic, String(Date.now())); } catch (e) {}
+    });
+  });
+
+  /* ── Copier le lien d'une carte ─────────────────────────────────────── */
+  function copier(url, bouton) {
+    var fini = function () {
+      var lib = bouton.querySelector('.copier__lib');
+      bouton.classList.add('copie'); lib.textContent = t('copie');
+      setTimeout(function () { bouton.classList.remove('copie'); lib.textContent = t('copier'); }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(fini, function () { secours(url); fini(); });
+    } else { secours(url); fini(); }
+  }
+  function secours(url) {
+    var z = document.createElement('textarea'); z.value = url; z.style.position = 'fixed'; z.style.opacity = '0';
+    document.body.appendChild(z); z.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(z);
+  }
+  document.querySelectorAll('.carte').forEach(function (c) {
+    var a = c.querySelector('.carte__lien'), pied = c.querySelector('.carte__pied');
+    if (!a || !pied) return;
+    var raw = a.getAttribute('href'), url = /^https?:/i.test(raw) ? raw : BASE + raw;
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'copier';
+    b.innerHTML = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="copier__lib"></span>';
+    b.querySelector('.copier__lib').textContent = t('copier');
+    b.setAttribute('aria-label', t('copier') + ' — ' + c.querySelector('.carte__nom').textContent);
+    b.addEventListener('click', function () { copier(url, b); });
+    pied.appendChild(b);
+  });
+
+  appliquer();
+  collection();
+  /* Revenir sur le portail après une partie (bouton « Précédent ») : la page
+     peut sortir du cache sans se recharger. */
+  window.addEventListener('pageshow', collection);
+})();
+</script>
+<script src="retours.js" defer></script>
 </body>
 </html>
