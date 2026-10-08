@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnet de bord du Réseau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Special+Elite&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Carnet de bord : reliure de laiton (onglets, barre) autour d'une page de papier, une page par classe.
+   Même univers que le Chronophone R-43 : laiton, rivets, papier émaillé, bande de téléscripteur. */
+:root{
+  --iron:#17130f; --plate:#251d17; --plate-hi:#33281f;
+  --brass:#c9a24a; --brass-hi:#f1d488; --brass-lo:#6e5119;
+  --paper:#ece2c8; --paper-lo:#d9cba6; --ink:#1c1510; --ink-soft:#5c4a35;
+  --amber:#ffb23e; --red:#e0472c; --verdigris:#5fae9c; --blue:#3b5b8a;
+  --f-display:"Stardos Stencil","Courier New",serif;
+  --f-type:"Special Elite","Courier New",monospace;
+  --f-hand:"Caveat","Comic Sans MS",cursive;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at top,#2a2018,var(--iron) 70%) fixed,var(--iron);color:var(--paper);font-family:var(--f-type);font-size:15px;min-height:100vh;padding-inline:16px;padding-block:0 48px}
+button,select,input,textarea{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto}
+
+/* ---------- barre du haut ---------- */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding-block:16px 10px}
+.brand{display:grid;gap:2px}
+.brand small{font-family:var(--f-display);letter-spacing:.3em;font-size:11px;color:var(--brass)}
+.brand h1{margin:0;font-family:var(--f-display);font-size:clamp(24px,4.5vw,38px);color:var(--brass-hi);text-shadow:0 2px 0 var(--brass-lo);line-height:1.05}
+.me{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chip-me{font-size:13px;padding:6px 10px;border:1px solid var(--brass-lo);border-radius:14px;background:var(--plate);color:var(--paper)}
+.chip-me b{color:var(--amber);font-weight:normal}
+.btn{font-family:var(--f-display);letter-spacing:.15em;font-size:14px;padding:10px 16px;border:2px solid var(--brass-hi);border-radius:4px;background:linear-gradient(180deg,var(--brass-hi),var(--brass));color:var(--ink);box-shadow:0 3px 0 var(--brass-lo)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--brass-lo)}
+.btn.ghost{background:var(--plate);color:var(--brass-hi);border-color:var(--brass-lo);box-shadow:none}
+.btn[disabled]{opacity:.5;cursor:wait}
+.banner{font-size:13px;color:var(--amber);border:1px dashed var(--brass-lo);padding:6px 10px;margin-bottom:10px;text-align:center}
+
+/* ---------- onglets ---------- */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 0;scrollbar-width:thin}
+.tab{flex:0 0 auto;font-family:var(--f-display);font-size:13px;letter-spacing:.06em;padding:9px 14px 7px;border:2px solid var(--brass-lo);border-bottom:0;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--plate-hi),var(--plate));color:var(--brass-hi);position:relative;text-align:left;line-height:1.15}
+.tab small{display:block;font-family:var(--f-type);font-size:11px;letter-spacing:0;color:#bfb08c}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--brass)}
+.tab[aria-selected="true"] small{color:var(--ink-soft)}
+.tab .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red)}
+
+/* ---------- le livre ---------- */
+.book{position:relative;background:linear-gradient(90deg,var(--brass-lo),var(--brass) 1.2%,var(--brass-lo) 2.4%,transparent 2.4%),var(--plate);border:3px solid var(--brass-lo);border-radius:4px 10px 10px 4px;padding:14px 14px 14px 26px;box-shadow:0 10px 30px rgba(0,0,0,.55);perspective:1600px}
+.book::before,.book::after{content:"";position:absolute;left:8px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--brass-hi),var(--brass-lo))}
+.book::before{top:12px}.book::after{bottom:12px}
+.page{background:linear-gradient(180deg,var(--paper),var(--paper-lo));color:var(--ink);border-radius:2px 6px 6px 2px;min-height:60vh;padding:22px clamp(14px,3vw,34px) 28px;box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.45);transform-origin:left center}
+.page.out{animation:turnOut .28s ease-in forwards}
+.page.in{animation:turnIn .32s ease-out}
+@keyframes turnOut{to{transform:rotateY(-70deg);opacity:.2}}
+@keyframes turnIn{from{transform:rotateY(70deg);opacity:.2}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.page.out,.page.in{animation:none}}
+.turn{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:#bfb08c}
+.turn .btn{padding:8px 12px;font-size:13px}
+.folio{font-variant-numeric:tabular-nums}
+
+/* ---------- contenu de page ---------- */
+.ph{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:18px}
+.ph h2{margin:0;font-family:var(--f-display);font-size:clamp(24px,4vw,36px);line-height:1.05;text-wrap:balance}
+.ph p{margin:4px 0 0;color:var(--ink-soft);font-size:14px}
+.stamp{font-family:var(--f-display);font-size:12px;letter-spacing:.12em;color:var(--red);border:2px solid var(--red);padding:4px 8px;transform:rotate(-3deg);opacity:.85}
+.stats{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--ink-soft)}
+.stats b{font-family:var(--f-display);font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:4px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px}
+@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+.sec{display:grid;gap:10px;align-content:start}
+.sec + .sec{margin-top:22px}
+.sec h3{margin:0;font-family:var(--f-display);font-size:15px;letter-spacing:.14em;display:flex;align-items:center;gap:8px}
+.sec h3::after{content:"";flex:1;border-bottom:1px dashed var(--ink-soft)}
+.empty{font-size:13px;color:var(--ink-soft);font-style:italic;margin:0}
+.add{justify-self:start;font-size:12px;padding:5px 10px;border:1px dashed var(--ink-soft);background:transparent;color:var(--ink);border-radius:3px}
+.add:hover{background:rgba(0,0,0,.05)}
+
+/* fuites : bande de téléscripteur */
+.leak{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:start;background:#f6eedb;border-left:4px solid var(--brass);padding:8px 10px;box-shadow:0 1px 0 var(--paper-lo);font-size:13px}
+.leak .day{font-family:var(--f-display);font-size:11px;letter-spacing:.08em;background:var(--ink);color:var(--amber);padding:3px 5px;border-radius:2px}
+.leak strong{font-family:var(--f-display);font-weight:400;letter-spacing:.03em}
+.leak .txt{grid-column:2/4;font-family:var(--f-hand);font-size:19px;line-height:1.15;color:var(--blue)}
+.leak .who{grid-column:2/4;font-size:11px;color:var(--ink-soft)}
+.risk{display:flex;gap:3px;padding-top:3px}
+.risk i{width:9px;height:9px;border-radius:50%;background:var(--paper-lo);display:block}
+.risk i.on{background:var(--red)}
+.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:8px;margin-left:4px;vertical-align:1px}
+.tag.non{background:var(--red);color:var(--paper)}.tag.oui{background:var(--verdigris);color:var(--ink)}.tag.nsp{background:var(--paper-lo);color:var(--ink)}
+
+/* notes manuscrites */
+.note{font-family:var(--f-hand);font-size:21px;line-height:1.2;color:var(--blue);padding:4px 0 4px 12px;border-left:2px solid var(--paper-lo);overflow-wrap:anywhere}
+.note .who{display:block;font-family:var(--f-type);font-size:11px;color:var(--ink-soft)}
+
+/* télégrammes */
+.tg{background:#f7e9b9;border:1px solid var(--brass-lo);padding:10px 12px 8px;font-size:13px;box-shadow:2px 3px 0 rgba(0,0,0,.15);overflow-wrap:anywhere}
+.tg .hd{font-family:var(--f-display);font-size:11px;letter-spacing:.14em;color:var(--ink-soft);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.tg .bd{text-transform:uppercase;letter-spacing:.04em;line-height:1.45}
+.tg .bd::after{content:" STOP";color:var(--red)}
+.tg a{color:inherit}
+.linkish{background:none;border:0;padding:0;color:inherit;text-decoration:underline;font:inherit;letter-spacing:inherit}
+
+/* sommaire */
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px}
+.gauge{background:var(--ink);color:var(--paper);border:2px solid var(--brass-lo);border-radius:4px;padding:10px;text-align:center;display:grid;gap:2px}
+.gauge b{font-family:var(--f-display);font-size:28px;color:var(--amber);font-variant-numeric:tabular-nums}
+.gauge span{font-size:12px;color:#bfb08c}
+.toc{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.toc button{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;background:none;border:0;border-bottom:1px dotted var(--ink-soft);padding:6px 0;text-align:left;color:var(--ink)}
+.toc button:hover strong{text-decoration:underline}
+.toc strong{font-family:var(--f-display);font-weight:400;font-size:16px}
+.toc span{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.feed{display:grid;gap:8px}
+.feed .it{font-size:13px;display:grid;gap:2px;border-bottom:1px dotted var(--paper-lo);padding-bottom:6px}
+.feed .it em{font-style:normal;color:var(--ink-soft);font-size:11px}
+.rule{background:var(--ink);color:var(--paper);padding:12px 14px;border-radius:3px;font-size:13px;line-height:1.5}
+.rule b{color:var(--amber);font-family:var(--f-display);letter-spacing:.1em;font-weight:400}
+
+/* ---------- fenêtre d'écriture ---------- */
+dialog{border:3px solid var(--brass);border-radius:8px;background:var(--plate);color:var(--paper);padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:0 20px 50px rgba(0,0,0,.7)}
+dialog::backdrop{background:rgba(10,8,6,.7)}
+.dlg{display:grid;gap:14px;padding:18px;overflow:auto}
+.dlg h2{margin:0;font-family:var(--f-display);color:var(--brass-hi);letter-spacing:.12em;font-size:18px}
+.lbl{font-family:var(--f-display);font-size:12px;letter-spacing:.14em;color:var(--brass-hi);display:block;margin-bottom:5px}
+.dlg select,.dlg input[type=text],.dlg textarea{width:100%;background:var(--paper);color:var(--ink);border:2px solid var(--brass-lo);border-radius:3px;padding:8px}
+.dlg textarea{min-height:96px;resize:vertical;font-family:var(--f-hand);font-size:21px;line-height:1.2;color:var(--blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:440px){.row2{grid-template-columns:1fr}}
+.kinds,.chips{display:flex;flex-wrap:wrap;gap:6px}
+.kinds input,.chips input,.lamps input{position:absolute;opacity:0;pointer-events:none}
+.kinds label,.chips label{padding:6px 10px;border:1px solid var(--brass-lo);border-radius:14px;font-size:13px;background:var(--iron);color:var(--paper);cursor:pointer}
+.kinds label{font-family:var(--f-display);letter-spacing:.06em}
+.kinds input:checked+label,.chips input:checked+label{background:var(--brass);color:var(--ink);border-color:var(--brass-hi)}
+.kinds input:focus-visible+label,.chips input:focus-visible+label,.lamps input:focus-visible+label i{outline:2px solid var(--amber);outline-offset:2px}
+.lamps{display:flex;gap:14px}
+.lamps label{display:grid;justify-items:center;gap:3px;font-size:11px;color:#bfb08c;cursor:pointer}
+.lamps i{width:26px;height:26px;border-radius:50%;background:#3a2d22;border:2px solid var(--brass-lo);display:block}
+.lamps input:checked+label i{background:radial-gradient(circle at 35% 35%,#ffd28a,var(--red));box-shadow:0 0 12px var(--red)}
+.help{font-size:12px;color:#bfb08c;margin:4px 0 0;line-height:1.4}
+.warn{font-size:13px;color:var(--paper);background:#5a1f14;border:1px solid var(--red);padding:8px 10px;border-radius:3px}
+.count{font-size:11px;color:#bfb08c;text-align:right;font-variant-numeric:tabular-nums}
+.acts{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--amber);border:2px solid var(--brass);padding:10px 16px;border-radius:4px;font-family:var(--f-display);letter-spacing:.08em;z-index:10}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <small>RÉSEAU ALBERTE · MISSION 3</small>
+      <h1>Carnet de bord du Réseau</h1>
+    </div>
+    <div class="me">
+      <span class="chip-me" id="meChip">Classe non choisie</span>
+      <button class="btn ghost" id="btnClasse" type="button">Ma classe</button>
+      <button class="btn" id="btnEcrire" type="button">ÉCRIRE</button>
+    </div>
+  </div>
+  <div class="banner" id="banner" hidden></div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Pages du carnet"></nav>
+  <div class="book">
+    <article class="page" id="page" tabindex="-1" aria-live="polite"></article>
+  </div>
+  <div class="turn">
+    <button class="btn ghost" id="prev" type="button">◀ PAGE PRÉC.</button>
+    <span class="folio" id="folio"></span>
+    <button class="btn ghost" id="next" type="button">PAGE SUIV. ▶</button>
+  </div>
+</div>
+
+<!-- choisir sa classe -->
+<dialog id="dlgClasse">
+  <form class="dlg" id="fClasse" method="dialog">
+    <h2>QUI ÉCRIT DANS LE CARNET ?</h2>
+    <div><label class="lbl" for="selClasse">MA CLASSE</label><select id="selClasse"></select></div>
+    <div><label class="lbl" for="code">CODE SECRET DE LA CLASSE</label><input type="text" id="code" autocomplete="off" autocapitalize="characters" maxlength="12" placeholder="donné par ton enseignant">
+      <p class="help">Tout le monde peut lire le carnet. Pour écrire, il faut le code de ta classe.</p></div>
+    <div><span class="lbl">MON NOM DE CODE</span>
+      <div class="me"><span class="chip-me" id="agentChip"></span><button class="btn ghost" type="button" id="reroll">Un autre</button></div>
+      <p class="help">Jamais ton vrai prénom ici : un agent du Réseau signe toujours avec son nom de code.</p></div>
+    <div class="acts"><button class="btn ghost" value="cancel" formnovalidate>Annuler</button><button class="btn" id="okClasse" value="ok">VALIDER</button></div>
+  </form>
+</dialog>
+
+<!-- écrire -->
+<dialog id="dlgEcrire">
+  <form class="dlg" id="fEcrire" novalidate>
+    <h2 id="dlgTitre">ÉCRIRE DANS LE CARNET</h2>
+    <div><span class="lbl">CE QUE J'ÉCRIS</span><div class="kinds" id="kinds"></div></div>
+    <div id="blocDest" hidden><label class="lbl" for="dest">À QUELLE CLASSE ?</label><select id="dest"></select></div>
+    <div id="blocFuite" hidden>
+      <div class="row2">
+        <div><label class="lbl" for="jour">QUEL JOUR ?</label><select id="jour"></select></div>
+        <div><label class="lbl" for="lieu">OÙ ?</label><select id="lieu"></select></div>
+      </div>
+      <div style="margin-top:12px"><span class="lbl">QUELLE DONNÉE ?</span><div class="chips" id="donnees"></div></div>
+      <div class="row2" style="margin-top:12px">
+        <div><span class="lbl">ÉTAIT-CE NÉCESSAIRE ?</span><div class="chips" id="besoin"></div></div>
+        <div><span class="lbl">DANGER</span><div class="lamps" id="lamps"></div></div>
+      </div>
+    </div>
+    <div>
+      <label class="lbl" for="texte" id="lblTexte">RACONTE</label>
+      <textarea id="texte" maxlength="400"></textarea>
+      <div class="count" id="count">0 / 400</div>
+      <p class="help" id="helpTexte"></p>
+    </div>
+    <div class="warn" id="warn" hidden></div>
+    <div class="acts"><button class="btn ghost" type="button" id="annuler">Annuler</button><button class="btn" type="submit" id="envoyer">TRANSMETTRE</button></div>
+  </form>
+</dialog>
+
+<script>
+/* =========================================================================
+   Carnet de bord du Réseau — mission 3 Self Data
+   Une page par classe. Chaque classe y consigne ses fuites de données de la
+   semaine, ce qu'elle pense, ce qu'elle a fait, ce qu'elle veut mettre dans
+   son kit de survie, et envoie des télégrammes aux autres classes.
+
+   ── Base partagée ────────────────────────────────────────────────────────
+   Les entrées sont stockées dans Supabase (table « entrees », voir
+   carnet-de-bord.sql). Renseigner SUPABASE_URL et SUPABASE_CLE ci-dessous
+   (clé « anon public », faite pour être publiée). Tant qu'elles sont vides,
+   la page tourne en MODE ESSAI : exemples inventés + écritures gardées dans
+   ce navigateur seulement.
+
+   ── Modération ───────────────────────────────────────────────────────────
+   Supabase › Table Editor › entrees : cocher « masque » cache une entrée
+   pour tout le monde (ou supprimer la ligne).
+   ========================================================================= */
+const SUPABASE_URL = "";
+const SUPABASE_CLE = "";
+
+/* Les classes du réseau. Le même identifiant doit figurer dans la table
+   « classes_codes » de la base, avec le code secret de la classe. */
+const CLASSES = [
+  {id:"jouhaux-a",   classe:"CM2 A",     ecole:"École Léon Jouhaux",          ville:"Villeurbanne",        eleves:20},
+  {id:"jouhaux-b",   classe:"CM2 B",     ecole:"École Léon Jouhaux",          ville:"Villeurbanne",        eleves:20},
+  {id:"jouhaux-c",   classe:"CM2 C",     ecole:"École Léon Jouhaux",          ville:"Villeurbanne",        eleves:20},
+  {id:"berthelot",   classe:"CM1-CM2",   ecole:"École Berthelot",             ville:"Villeurbanne",        eleves:21},
+  {id:"grattetciel", classe:"3e",        ecole:"Collège des Gratte-Ciel",     ville:"Villeurbanne",        eleves:30},
+  {id:"rousseau",    classe:"3e",        ecole:"Collège Jean-Jacques Rousseau", ville:"Tassin-la-Demi-Lune", eleves:27},
+];
+const TYPES = [
+  {id:"fuite",  label:"Une fuite",     titre:"Registre des fuites",           aide:"Raconte ce qui s'est passé, sans écrire la donnée elle-même. Oui : « J'ai donné ma date de naissance pour m'inscrire à un jeu. » Non : « 12/03/2014 »."},
+  {id:"pensee", label:"Ce qu'on pense", titre:"Ce qu'on pense",               aide:"Ce qui vous a surpris, inquiété, fait rire cette semaine."},
+  {id:"action", label:"Ce qu'on a fait", titre:"Ce qu'on a fait",             aide:"Une chose que la classe a faite ou changée pour protéger ses données."},
+  {id:"projet", label:"Notre kit de survie", titre:"Notre kit de survie numérique", aide:"Une idée, un réflexe ou un outil à mettre dans votre kit de survie."},
+  {id:"mot",    label:"Un télégramme", titre:"Télégrammes reçus",             aide:"Un message court pour une autre classe : une question, un conseil, un encouragement."},
+];
+const DONNEES = [["identite","Nom / prénom"],["photo","Photo de moi"],["position","Où je suis"],["age","Âge / anniversaire"],["voix","Ma voix"],["contacts","Mes contacts"],["gouts","Mes goûts"],["ecole","Mon école"],["motdepasse","Mot de passe"],["autre","Autre"]];
+const LIEUX = [["reseau","Réseau social"],["jeu","Jeu en ligne"],["messagerie","Messagerie"],["video","Vidéo / streaming"],["site","Site web"],["appli","Appli du téléphone"],["objet","Objet connecté"],["autre","Ailleurs"]];
+const BESOIN = [["non","Non"],["oui","Oui"],["nsp","Je ne sais pas"]];
+const JOURS = ["LUN","MAR","MER","JEU","VEN","SAM","DIM"];
+const ANIMAUX = ["Hibou","Lynx","Merle","Castor","Renard","Loutre","Héron","Blaireau","Chouette","Martre","Lièvre","Faucon","Hérisson","Écureuil","Corbeau","Belette","Chamois","Mésange","Salamandre","Grive"];
+
+const ENLIGNE = !!(SUPABASE_URL && SUPABASE_CLE);
+const byId = Object.fromEntries(CLASSES.map(c => [c.id, c]));
+const lbl = (list, id) => (list.find(x => x[0] === id) || [id, id])[1];
+const $ = s => document.querySelector(s);
+
+/* ---------- petites mémoires locales (confort, jamais la donnée partagée) ---------- */
+function lire(k, d){ try { const v = localStorage.getItem("carnet."+k); return v === null ? d : JSON.parse(v); } catch(e){ return d; } }
+function garder(k, v){ try { localStorage.setItem("carnet."+k, JSON.stringify(v)); } catch(e){} }
+
+let moi = lire("moi", {classe:"", code:"", agent:""});
+if (!moi.agent) { moi.agent = nouvelAgent(); garder("moi", moi); }
+function nouvelAgent(){ return ANIMAUX[Math.floor(Math.random()*ANIMAUX.length)] + "-" + String(10 + Math.floor(Math.random()*90)); }
+
+/* ---------- garde-fou : pas de vraie donnée personnelle dans le texte ---------- */
+const INTERDITS = [
+  [/[^\s@]+@[^\s@]+\.[a-z]{2,}/i, "une adresse e-mail"],
+  [/@[A-Za-z0-9_.]{2,}/, "un pseudo de réseau social (@…)"],
+  [/\d([ .\/-]?\d){5,}/, "un numéro ou une date complète"],
+  [/(https?:\/\/|www\.)/i, "une adresse de site"],
+  [/\d{1,4} *(bis|ter)? *,? *(rue|avenue|av\.|bd|boulevard|chemin|allée|allee|impasse|place|cours|quai)\b/i, "une adresse postale"],
+];
+function verifier(t){ const r = INTERDITS.filter(([re]) => re.test(t)).map(([,m]) => m); return r; }
+
+/* ---------- données ---------- */
+let entrees = [];
+const EXEMPLES = [
+  {classe:"jouhaux-a",type:"fuite",jour:"LUN",donnees:["photo","position"],lieu:"reseau",necessaire:"non",danger:3,texte:"Ma grande sœur a posté une photo de moi devant l'école, on voit le nom sur le panneau.",agent:"Hibou-27"},
+  {classe:"jouhaux-a",type:"pensee",texte:"On ne pensait pas qu'un jeu pouvait savoir où on habite juste avec la localisation.",agent:"Lynx-41"},
+  {classe:"jouhaux-a",type:"projet",texte:"Dans notre kit : un autocollant « Avant de poster, je demande » à coller sur la tablette.",agent:"Merle-15"},
+  {classe:"jouhaux-b",type:"fuite",jour:"MAR",donnees:["age"],lieu:"jeu",necessaire:"nsp",danger:2,texte:"Le jeu demandait mon année de naissance pour jouer. J'ai menti, c'est grave ?",agent:"Castor-63"},
+  {classe:"berthelot",type:"fuite",jour:"MAR",donnees:["voix"],lieu:"objet",necessaire:"nsp",danger:2,texte:"On parle à l'enceinte de la cuisine. Est-ce qu'elle enregistre tout ?",agent:"Loutre-22"},
+  {classe:"berthelot",type:"action",texte:"On a fait la liste de toutes les applis de la classe et ce qu'elles demandent.",agent:"Héron-90"},
+  {classe:"grattetciel",type:"fuite",jour:"MER",donnees:["position"],lieu:"appli",necessaire:"non",danger:3,texte:"Une appli de lampe torche voulait ma position. Pourquoi une lampe a besoin de savoir où je suis ?",agent:"Faucon-38"},
+  {classe:"grattetciel",type:"pensee",texte:"La moitié de nos fuites étaient évitables. On clique « accepter » sans lire.",agent:"Renard-11"},
+  {classe:"rousseau",type:"fuite",jour:"JEU",donnees:["identite","ecole"],lieu:"messagerie",necessaire:"non",danger:2,texte:"Dans un groupe de classe, quelqu'un a ajouté des inconnus.",agent:"Martre-74"},
+  {classe:"rousseau",type:"projet",texte:"On veut écrire un guide « Paramétrer son compte en 5 minutes » pour les CM2.",agent:"Corbeau-56"},
+  {classe:"grattetciel",type:"mot",destinataire:"jouhaux-a",texte:"Bravo pour l'autocollant. On peut vous l'emprunter pour notre kit ?",agent:"Faucon-38"},
+  {classe:"jouhaux-b",type:"mot",destinataire:"rousseau",texte:"Votre guide nous intéresse. Vous pouvez nous l'envoyer quand il sera fini ?",agent:"Castor-63"},
+  {classe:"rousseau",type:"mot",destinataire:"berthelot",texte:"Pour l'enceinte : on a trouvé comment effacer l'historique des demandes. On vous explique ?",agent:"Martre-74"},
+].map((e, i) => ({id:"ex"+i, exemple:true, created_at:new Date(Date.now() - (13 - i) * 3.6e6).toISOString(), ...e}));
+
+async function charger(){
+  if (!ENLIGNE) { entrees = EXEMPLES.concat(lire("essai", [])); return; }
+  const cols = "id,created_at,classe,type,destinataire,agent,jour,donnees,lieu,necessaire,danger,texte";
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/entrees?select=${cols}&order=created_at.asc&limit=5000`, {headers:{apikey:SUPABASE_CLE, Authorization:"Bearer "+SUPABASE_CLE}});
+  if (!r.ok) throw new Error("lecture " + r.status);
+  entrees = await r.json();
+}
+async function envoyer(e){
+  if (!ENLIGNE) { const l = lire("essai", []); l.push({...e, id:"local"+Date.now(), created_at:new Date().toISOString()}); garder("essai", l); return; }
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/entrees`, {method:"POST", headers:{apikey:SUPABASE_CLE, Authorization:"Bearer "+SUPABASE_CLE, "Content-Type":"application/json", Prefer:"return=minimal"}, body:JSON.stringify({...e, code:moi.code})});
+  if (!r.ok) { const t = await r.text(); const err = new Error(t); err.status = r.status; throw err; }
+}
+
+/* ---------- rendu ---------- */
+const PAGES = ["sommaire"].concat(CLASSES.map(c => c.id));
+let courant = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "sommaire";
+const vus = lire("vus", {});
+
+function el(tag, cls, txt){ const n = document.createElement(tag); if (cls) n.className = cls; if (txt !== undefined) n.textContent = txt; return n; }
+function quand(iso){ try { return new Date(iso).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"}); } catch(e){ return ""; } }
+function nomClasse(id){ const c = byId[id]; return c ? `${c.classe} · ${c.ecole.replace(/^(École|Collège) /,"")}` : id; }
+function dernier(id){ return entrees.filter(e => e.classe === id || e.destinataire === id).reduce((m, e) => e.created_at > m ? e.created_at : m, ""); }
+
+function rendreOnglets(){
+  const t = $("#tabs"); t.innerHTML = "";
+  PAGES.forEach(p => {
+    const b = el("button", "tab"); b.type = "button"; b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", p === courant ? "true" : "false");
+    if (p === "sommaire") { b.append("Sommaire"); b.append(el("small", "", "le réseau")); }
+    else { const c = byId[p]; b.append(c.classe); b.append(el("small", "", c.ecole.replace(/^(École|Collège) /,""))); const d = dernier(p); if (d && p !== courant && (!vus[p] || d > vus[p])) b.append(el("i", "dot")); }
+    b.onclick = () => aller(p);
+    t.append(b);
+  });
+  const sel = t.querySelector('[aria-selected="true"]'); if (sel) sel.scrollIntoView({block:"nearest", inline:"nearest"});
+}
+
+function aller(p){
+  if (p === courant) return;
+  const page = $("#page");
+  const fin = () => { courant = p; try { history.replaceState(null, "", "#" + p); } catch(e){} rendre(); page.classList.remove("out"); page.classList.add("in"); page.focus({preventScroll:true}); setTimeout(() => page.classList.remove("in"), 400); };
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return fin();
+  page.classList.add("out"); setTimeout(fin, 260);
+}
+
+function rendre(){
+  if (courant !== "sommaire") { vus[courant] = new Date().toISOString(); garder("vus", vus); }
+  rendreOnglets();
+  const page = $("#page"); page.innerHTML = "";
+  if (courant === "sommaire") pageSommaire(page); else pageClasse(page, courant);
+  const i = PAGES.indexOf(courant);
+  $("#folio").textContent = `page ${i + 1} / ${PAGES.length}`;
+  $("#prev").disabled = i === 0; $("#next").disabled = i === PAGES.length - 1;
+  const c = byId[moi.classe];
+  $("#meChip").innerHTML = ""; if (c) { $("#meChip").append("Tu écris pour "); $("#meChip").append(el("b", "", c.classe + " · " + c.ecole.replace(/^(École|Collège) /,""))); $("#meChip").append(" · " + moi.agent); } else $("#meChip").textContent = "Classe non choisie";
+}
+
+function pageSommaire(page){
+  const fuites = entrees.filter(e => e.type === "fuite");
+  const ph = el("header", "ph"); const h = el("div"); h.append(el("h2", "", "Le Réseau, semaine après semaine")); h.append(el("p", "", `${CLASSES.length} classes · ${CLASSES.reduce((s, c) => s + c.eleves, 0)} agents · Métropole de Lyon`)); ph.append(h); ph.append(el("span", "stamp", "CONFIDENTIEL"));
+  page.append(ph);
+  const g = el("div", "gauges");
+  const evit = fuites.length ? Math.round(100 * fuites.filter(e => e.necessaire === "non").length / fuites.length) + " %" : "—";
+  const comptes = {}; fuites.forEach(e => (e.donnees || []).forEach(d => comptes[d] = (comptes[d] || 0) + 1));
+  const top = Object.entries(comptes).sort((a, b) => b[1] - a[1])[0];
+  [[fuites.length, "fuites consignées"], [entrees.filter(e => e.type === "mot").length, "télégrammes échangés"], [evit, "fuites évitables"], [top ? lbl(DONNEES, top[0]) : "—", "donnée la plus semée"]].forEach(([v, l]) => { const d = el("div", "gauge"); d.append(el("b", "", v)); d.append(el("span", "", l)); g.append(d); });
+  page.append(g);
+  const cols = el("div", "cols");
+  const a = el("div"); const s1 = el("section", "sec"); s1.append(el("h3", "", "LES PAGES DU CARNET"));
+  const toc = el("ul", "toc");
+  CLASSES.forEach(c => { const li = el("li"); const b = el("button"); b.type = "button"; b.append(el("strong", "", `${c.classe} · ${c.ecole}`)); const n = entrees.filter(e => e.classe === c.id).length; b.append(el("span", "", `${c.ville} · ${n} écrit${n > 1 ? "s" : ""}`)); b.onclick = () => aller(c.id); li.append(b); toc.append(li); });
+  s1.append(toc); a.append(s1);
+  const s3 = el("section", "sec"); s3.append(el("h3", "", "RÈGLE D'OR")); const r = el("div", "rule"); r.append(el("b", "", "ON RACONTE, ON NE DONNE PAS. ")); r.append("Ici on écrit ce qui s'est passé, jamais la donnée elle-même : pas de vrai nom, d'adresse, de numéro, de pseudo ni de photo. On signe avec son nom de code."); s3.append(r); a.append(s3);
+  const b2 = el("div"); const s2 = el("section", "sec"); s2.append(el("h3", "", "DERNIÈRES NOUVELLES"));
+  const feed = el("div", "feed");
+  const recents = entrees.slice().sort((x, y) => y.created_at.localeCompare(x.created_at)).slice(0, 8);
+  if (!recents.length) s2.append(el("p", "empty", "Le carnet est encore vierge. Choisis ta classe puis appuie sur « Écrire » pour la première entrée."));
+  recents.forEach(e => { const it = el("div", "it"); const t = TYPES.find(t => t.id === e.type);
+    const head = el("button", "linkish"); head.type = "button"; head.textContent = e.type === "mot" ? `${nomClasse(e.classe)} → ${nomClasse(e.destinataire)}` : nomClasse(e.classe); head.onclick = () => aller(e.type === "mot" ? e.destinataire : e.classe);
+    it.append(head); it.append(el("span", "", (e.texte || "").slice(0, 110) + ((e.texte || "").length > 110 ? "…" : ""))); it.append(el("em", "", `${t ? t.label : e.type} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`)); feed.append(it); });
+  s2.append(feed); b2.append(s2);
+  cols.append(a, b2); page.append(cols);
+}
+
+function pageClasse(page, id){
+  const c = byId[id];
+  const siennes = entrees.filter(e => e.classe === id);
+  const fuites = siennes.filter(e => e.type === "fuite");
+  const ph = el("header", "ph"); const h = el("div");
+  h.append(el("h2", "", `${c.classe} · ${c.ecole}`)); h.append(el("p", "", `${c.ville} · ${c.eleves} agents`));
+  const st = el("div", "stats"); st.style.marginTop = "8px";
+  const evit = fuites.length ? Math.round(100 * fuites.filter(e => e.necessaire === "non").length / fuites.length) : null;
+  [[fuites.length, fuites.length > 1 ? "fuites" : "fuite"], [evit === null ? "—" : evit + " %", "évitables"], [entrees.filter(e => e.destinataire === id).length, "télégramme(s) reçu(s)"]].forEach(([v, l]) => { const s = el("span"); s.append(el("b", "", v)); s.append(l); st.append(s); });
+  h.append(st); ph.append(h);
+  if (moi.classe === id) ph.append(el("span", "stamp", "NOTRE PAGE"));
+  page.append(ph);
+  const cols = el("div", "cols");
+  const g = el("div"), d = el("div");
+  g.append(section(id, "fuite", fuites.slice().reverse().map(carteFuite)));
+  ["pensee", "action", "projet"].forEach(t => d.append(section(id, t, siennes.filter(e => e.type === t).slice().reverse().map(carteNote))));
+  d.append(section(id, "mot", entrees.filter(e => e.type === "mot" && e.destinataire === id).slice().reverse().map(carteTelegramme)));
+  cols.append(g, d); page.append(cols);
+}
+
+function section(id, type, cartes){
+  const t = TYPES.find(x => x.id === type);
+  const s = el("section", "sec"); s.append(el("h3", "", t.titre.toUpperCase()));
+  if (!cartes.length) s.append(el("p", "empty", type === "mot" ? "Aucun télégramme pour l'instant." : "Rien d'écrit pour l'instant."));
+  cartes.forEach(n => s.append(n));
+  const mienne = moi.classe === id;
+  if (type === "mot" ? moi.classe !== id : mienne) {
+    const b = el("button", "add", type === "mot" ? "+ Envoyer un télégramme à cette classe" : "+ Ajouter"); b.type = "button";
+    b.onclick = () => ouvrirEcriture(type, type === "mot" ? id : "");
+    s.append(b);
+  }
+  return s;
+}
+function signature(e){ return `${e.agent || "Agent inconnu"} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`; }
+function carteFuite(e){
+  const n = el("div", "leak");
+  n.append(el("span", "day", e.jour || "—"));
+  const w = el("span"); w.append(el("strong", "", (e.donnees || []).map(x => lbl(DONNEES, x)).join(" + ") || "Donnée")); w.append(" · " + lbl(LIEUX, e.lieu));
+  if (e.necessaire) w.append(el("span", "tag " + e.necessaire, {non:"pas nécessaire", oui:"nécessaire", nsp:"je ne sais pas"}[e.necessaire]));
+  n.append(w);
+  const r = el("span", "risk"); r.setAttribute("aria-label", `danger ${e.danger || 0} sur 3`); [1, 2, 3].forEach(k => r.append(el("i", k <= (e.danger || 0) ? "on" : ""))); n.append(r);
+  if (e.texte) n.append(el("span", "txt", e.texte));
+  n.append(el("span", "who", signature(e)));
+  return n;
+}
+function carteNote(e){ const n = el("div", "note", e.texte); n.append(el("span", "who", signature(e))); return n; }
+function carteTelegramme(e){
+  const n = el("div", "tg"); const hd = el("div", "hd");
+  const de = el("button", "linkish", "DE : " + nomClasse(e.classe).toUpperCase()); de.type = "button"; de.onclick = () => aller(e.classe);
+  hd.append(de); hd.append(el("span", "", signature(e).toUpperCase())); n.append(hd); n.append(el("div", "bd", e.texte)); return n;
+}
+
+/* ---------- choisir sa classe ---------- */
+const selClasse = $("#selClasse");
+selClasse.append(new Option("Choisis ta classe…", ""));
+CLASSES.forEach(c => selClasse.append(new Option(`${c.classe} · ${c.ecole} (${c.ville})`, c.id)));
+let suite = null;
+function ouvrirClasse(apres){
+  suite = apres || null;
+  selClasse.value = moi.classe; $("#code").value = moi.code; $("#agentChip").textContent = moi.agent;
+  $("#dlgClasse").showModal();
+}
+$("#reroll").onclick = () => { moi.agent = nouvelAgent(); $("#agentChip").textContent = moi.agent; };
+$("#dlgClasse").addEventListener("close", () => {
+  if ($("#dlgClasse").returnValue !== "ok") { suite = null; return; }
+  moi.classe = selClasse.value; moi.code = $("#code").value.trim().toUpperCase(); garder("moi", moi); rendre();
+  if (suite && moi.classe) { const f = suite; suite = null; f(); }
+});
+$("#okClasse").onclick = ev => { if (!selClasse.value) { ev.preventDefault(); selClasse.focus(); } else if (ENLIGNE && !$("#code").value.trim()) { ev.preventDefault(); $("#code").focus(); } };
+$("#btnClasse").onclick = () => ouvrirClasse();
+
+/* ---------- écrire ---------- */
+function radios(conteneur, nom, liste, type, coche){
+  const box = $(conteneur); box.innerHTML = "";
+  liste.forEach(([v, l], i) => { const iid = nom + "-" + v; const inp = el("input"); inp.type = type; inp.name = nom; inp.id = iid; inp.value = v; if (coche === v) inp.checked = true; const lab = el("label", "", l); lab.htmlFor = iid; box.append(inp, lab); });
+}
+radios("#kinds", "kind", TYPES.map(t => [t.id, t.label]), "radio", "fuite");
+radios("#donnees", "donnee", DONNEES, "checkbox");
+radios("#besoin", "besoin", BESOIN, "radio", "non");
+JOURS.forEach(j => $("#jour").append(new Option(j, j)));
+LIEUX.forEach(([v, l]) => $("#lieu").append(new Option(l, v)));
+(() => { const box = $("#lamps"); [[1, "faible"], [2, "moyen"], [3, "fort"]].forEach(([v, l]) => { const inp = el("input"); inp.type = "radio"; inp.name = "danger"; inp.id = "danger-" + v; inp.value = v; if (v === 2) inp.checked = true; const lab = el("label"); lab.htmlFor = inp.id; lab.append(el("i"), l); box.append(inp, lab); }); })();
+$("#jour").value = JOURS[(new Date().getDay() + 6) % 7];
+
+function majFormulaire(){
+  const k = document.querySelector('input[name="kind"]:checked').value;
+  const t = TYPES.find(x => x.id === k);
+  $("#blocFuite").hidden = k !== "fuite"; $("#blocDest").hidden = k !== "mot";
+  $("#lblTexte").textContent = k === "fuite" ? "RACONTE (FACULTATIF)" : k === "mot" ? "TON TÉLÉGRAMME" : "ÉCRIS ICI";
+  $("#helpTexte").textContent = t.aide;
+  const d = $("#dest"); const garde = d.value; d.innerHTML = "";
+  CLASSES.filter(c => c.id !== moi.classe).forEach(c => d.append(new Option(`${c.classe} · ${c.ecole}`, c.id)));
+  if (garde) d.value = garde;
+  $("#warn").hidden = true;
+}
+document.querySelectorAll('input[name="kind"]').forEach(i => i.addEventListener("change", majFormulaire));
+$("#texte").addEventListener("input", () => { const t = $("#texte").value; $("#count").textContent = `${t.length} / 400`; const p = verifier(t); $("#warn").hidden = !p.length; if (p.length) $("#warn").textContent = `Attention, ton texte semble contenir ${p.join(" et ")}. Le carnet le refusera : raconte sans donner la vraie information.`; });
+
+function ouvrirEcriture(type, dest){
+  if (!moi.classe) return ouvrirClasse(() => ouvrirEcriture(type, dest));
+  if (type) document.getElementById("kind-" + type).checked = true;
+  majFormulaire(); if (dest) $("#dest").value = dest;
+  $("#dlgTitre").textContent = "ÉCRIRE POUR " + nomClasse(moi.classe).toUpperCase();
+  $("#dlgEcrire").showModal(); $("#texte").focus();
+}
+$("#btnEcrire").onclick = () => ouvrirEcriture(courant !== "sommaire" && courant !== moi.classe && moi.classe ? "mot" : "", courant !== "sommaire" && courant !== moi.classe ? courant : "");
+$("#annuler").onclick = () => $("#dlgEcrire").close();
+
+$("#fEcrire").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const k = document.querySelector('input[name="kind"]:checked').value;
+  const texte = $("#texte").value.trim().replace(/\s+/g, " ");
+  const w = $("#warn"); const dire = m => { w.textContent = m; w.hidden = false; };
+  const pb = verifier(texte); if (pb.length) return dire(`Ton texte semble contenir ${pb.join(" et ")}. Raconte sans donner la vraie information.`);
+  const e = {classe:moi.classe, type:k, agent:moi.agent, texte:texte || null};
+  if (k === "fuite") {
+    e.donnees = [...document.querySelectorAll('input[name="donnee"]:checked')].map(i => i.value);
+    if (!e.donnees.length) return dire("Coche au moins une donnée.");
+    e.jour = $("#jour").value; e.lieu = $("#lieu").value;
+    e.necessaire = document.querySelector('input[name="besoin"]:checked').value;
+    e.danger = +document.querySelector('input[name="danger"]:checked').value;
+  } else {
+    if (texte.length < 3) return dire("Écris au moins quelques mots.");
+    if (k === "mot") e.destinataire = $("#dest").value;
+  }
+  const b = $("#envoyer"); b.disabled = true;
+  try {
+    await envoyer(e);
+    $("#dlgEcrire").close(); $("#texte").value = ""; $("#count").textContent = "0 / 400";
+    document.querySelectorAll('input[name="donnee"]').forEach(i => i.checked = false);
+    await rafraichir();
+    if (courant !== (k === "mot" ? e.destinataire : e.classe)) aller(k === "mot" ? e.destinataire : e.classe);
+    toast(k === "mot" ? "Télégramme transmis" : "Consigné dans le carnet");
+  } catch (err) {
+    if (err.status === 401 || err.status === 403 || /row-level security/i.test(err.message)) dire("Le carnet a refusé : le code secret de ta classe n'est pas le bon. Vérifie-le avec « Ma classe ».");
+    else if (/check constraint|violates/i.test(err.message)) dire("Le carnet a refusé ce texte : il ressemble à une vraie donnée (numéro, adresse, e-mail, lien). Reformule-le.");
+    else dire("Transmission impossible pour l'instant (réseau coupé ?). Ton texte est toujours là, réessaie dans un moment.");
+  } finally { b.disabled = false; }
+});
+
+function toast(m){ const t = el("div", "toast", m); document.body.append(t); setTimeout(() => t.remove(), 2600); }
+
+/* ---------- navigation ---------- */
+$("#prev").onclick = () => { const i = PAGES.indexOf(courant); if (i > 0) aller(PAGES[i - 1]); };
+$("#next").onclick = () => { const i = PAGES.indexOf(courant); if (i < PAGES.length - 1) aller(PAGES[i + 1]); };
+document.addEventListener("keydown", e => { if (document.querySelector("dialog[open]") || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; if (e.key === "ArrowLeft") $("#prev").click(); if (e.key === "ArrowRight") $("#next").click(); });
+let x0 = null;
+$("#page").addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, {passive:true});
+$("#page").addEventListener("touchend", e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 70) (dx < 0 ? $("#next") : $("#prev")).click(); });
+
+/* ---------- démarrage ---------- */
+async function rafraichir(){
+  try { await charger(); $("#banner").hidden = ENLIGNE; if (!ENLIGNE) $("#banner").textContent = "MODE ESSAI · les entrées marquées « exemple » sont inventées, et ce que tu écris reste sur cet appareil."; }
+  catch (e) { $("#banner").hidden = false; $("#banner").textContent = "Le carnet ne répond pas pour l'instant. Les pages se mettront à jour toutes seules."; }
+  if (!document.querySelector("dialog[open]")) rendre();
+}
+rafraichir();
+if (ENLIGNE) setInterval(() => { if (document.visibilityState === "visible") rafraichir(); }, 30000);
+</script>
+</html>
