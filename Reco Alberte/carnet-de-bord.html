@@ -65,6 +65,8 @@ button{cursor:pointer}
 #map .pin .hit{fill:transparent}
 #map .pin .body{fill:var(--ink);stroke:var(--brass);stroke-width:3}
 #map .pin.qg .body{fill:var(--red);stroke:var(--brass-hi)}
+#map .pin.m4 .body{stroke:var(--amber)}
+#map .pin.m5 .body{stroke:var(--green);fill:#1f3a24}
 #map .pin .ini{font-family:var(--f-display);font-size:16px;fill:var(--amber);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 #map .pin .nm{font-family:var(--f-display);font-size:19px;fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:4px}
 #map .pin .cl{font-family:var(--f-type);font-size:14px;fill:var(--ink-soft);text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:4px}
@@ -105,6 +107,47 @@ button{cursor:pointer}
 .empty{font-size:13px;color:var(--ink-soft);font-style:italic;margin:0}
 .add{justify-self:start;font-size:12px;padding:5px 10px;border:1px dashed var(--ink-soft);background:transparent;color:var(--ink);border-radius:3px}
 .add:hover{background:rgba(0,0,0,.05)}
+
+/* missions 3 · 4 · 5 */
+.missions{display:flex;margin:0 0 14px;border:2px solid var(--ink);border-radius:4px;overflow:hidden}
+.missions button{flex:1;min-width:0;background:transparent;border:0;border-right:2px solid var(--ink);padding:8px 10px;text-align:left;color:var(--ink);display:grid;gap:2px}
+.missions button:last-child{border-right:0}
+.missions button b{font-family:var(--f-display);font-weight:400;font-size:14px;letter-spacing:.06em}
+.missions button small{font-size:11px;color:var(--ink-soft)}
+.missions button.fait{background:rgba(95,174,156,.28)}
+.missions button.encours{background:var(--ink);color:var(--paper)}
+.missions button.encours small{color:var(--amber)}
+.missions button[aria-pressed="true"]{box-shadow:inset 0 -6px 0 var(--brass)}
+.consigne{font-size:13px;line-height:1.5;background:rgba(0,0,0,.05);border-left:4px solid var(--brass);padding:8px 12px;margin:0 0 18px}
+.etape{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;margin-top:8px;color:var(--ink-soft)}
+.etape b{color:var(--ink);font-family:var(--f-display);font-weight:400}
+.etape select{padding:4px 6px;border:1px solid var(--ink-soft);background:#f6eedb;color:var(--ink);border-radius:3px}
+.full{margin-top:22px}
+/* le kit de survie */
+.kit{background:#fbf5e4;border:2px solid var(--ink);padding:14px;display:grid;gap:8px;box-shadow:3px 3px 0 var(--brass-lo)}
+.kit .k-hd{font-family:var(--f-display);font-size:11px;letter-spacing:.14em;color:var(--ink-soft);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.kit .k-t{font-family:var(--f-display);font-size:20px;line-height:1.15}
+.kit .k-meta{display:flex;flex-wrap:wrap;gap:6px}
+.kit .pill{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--ink);color:var(--paper)}
+.kit .pill.alt{background:var(--brass);color:var(--ink)}
+.kit .k-txt{font-family:var(--f-hand);font-size:20px;line-height:1.25;color:var(--blue);white-space:pre-line;overflow-wrap:anywhere}
+.kit a{color:var(--blue);overflow-wrap:anywhere;font-size:13px}
+.kit.final{border-color:var(--verdigris);box-shadow:3px 3px 0 var(--verdigris)}
+details.versions summary{cursor:pointer;font-size:12px;color:var(--ink-soft)}
+details.versions[open] summary{margin-bottom:8px}
+details.versions .kit{opacity:.75;box-shadow:none;margin-bottom:8px}
+.aide{background:#f3dcd2;border:1px dashed var(--red);padding:8px 10px;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.aide b{display:block;font-family:var(--f-display);font-weight:400;color:var(--red);letter-spacing:.08em;font-size:11px;margin-bottom:2px}
+.aide .who{display:block;font-size:11px;color:var(--ink-soft);margin-top:4px}
+.avis{border-left:3px solid var(--verdigris);padding:4px 0 4px 12px;font-family:var(--f-hand);font-size:20px;line-height:1.2;color:var(--blue);overflow-wrap:anywhere}
+.avis .who{display:block;font-family:var(--f-type);font-size:11px;color:var(--ink-soft)}
+.tablewrap{overflow-x:auto;margin-bottom:22px}
+.progress{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+.progress th,.progress td{text-align:left;padding:7px 6px;border-bottom:1px dotted var(--ink-soft);vertical-align:top}
+.progress th{font-family:var(--f-display);font-weight:400;font-size:11px;letter-spacing:.12em;color:var(--ink-soft)}
+.progress td:first-child button{font-family:var(--f-display);font-size:14px;text-align:left}
+.progress .m{display:inline-block;font-family:var(--f-display);font-size:12px;padding:2px 7px;border-radius:3px;background:var(--brass);color:var(--ink);white-space:nowrap}
+.progress .m.m4{background:var(--amber)}.progress .m.m5{background:var(--verdigris)}
 
 /* fuites : bande de téléscripteur */
 .leak{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;align-items:start;background:#f6eedb;border-left:4px solid var(--brass);padding:8px 10px;box-shadow:0 1px 0 var(--paper-lo);font-size:13px}
@@ -178,7 +221,7 @@ dialog::backdrop{background:rgba(10,8,6,.7)}
 <div class="wrap">
   <div class="top">
     <div class="brand">
-      <small>RÉSEAU ALBERTE · MISSION 3</small>
+      <small>RÉSEAU ALBERTE · MISSIONS 3 À 5</small>
       <h1>Carnet de bord du Réseau</h1>
     </div>
     <div class="me">
@@ -244,9 +287,19 @@ dialog::backdrop{background:rgba(10,8,6,.7)}
         <div><span class="lbl">DANGER</span><div class="lamps" id="lamps"></div></div>
       </div>
     </div>
+    <div id="blocKit" hidden>
+      <div><span class="lbl">DE QUOI PARLE NOTRE KIT ?</span><div class="chips" id="themes"></div></div>
+      <div class="row2" style="margin-top:12px">
+        <div><label class="lbl" for="format">SOUS QUELLE FORME ?</label><select id="format"></select></div>
+        <div><label class="lbl" for="public">POUR QUI ?</label><select id="public"></select></div>
+      </div>
+    </div>
+    <div id="blocTitre" hidden><label class="lbl" for="titre" id="lblTitre">TITRE</label><input type="text" id="titre" maxlength="80"></div>
+    <div id="blocLien" hidden><label class="lbl" for="lien">LIEN VERS LE PROJET (FACULTATIF)</label><input type="text" id="lien" maxlength="300" placeholder="https://…" inputmode="url" autocomplete="off">
+      <p class="help">Par exemple la vidéo ou l'affiche déposée sur l'ENT. Un lien qui commence par https://</p></div>
     <div>
       <label class="lbl" for="texte" id="lblTexte">RACONTE</label>
-      <textarea id="texte" maxlength="400"></textarea>
+      <textarea id="texte" maxlength="1200"></textarea>
       <div class="count" id="count">0 / 400</div>
       <p class="help" id="helpTexte"></p>
     </div>
@@ -290,13 +343,27 @@ const CLASSES = [
   {id:"grattetciel", planque:"Le Toit",             classe:"3e",      ecole:"Collège des Gratte-Ciel",       ville:"Villeurbanne",        eleves:30, x:850, y:420},
   {id:"rousseau",    planque:"La Ferme",            classe:"3e",      ecole:"Collège Jean-Jacques Rousseau", ville:"Tassin-la-Demi-Lune", eleves:27, x:170, y:352},
 ];
+/* Les trois missions que le carnet accompagne. Noms et consignes modifiables. */
+const MISSIONS = {
+  3:{nom:"Enquête et idées", consigne:"Pendant une semaine, consignez chaque fuite de vos données. Partagez ce que vous en pensez, lancez vos idées, puis rédigez le brouillon de votre kit de survie numérique : de quoi il parle, sous quelle forme, pour qui."},
+  4:{nom:"Atelier",          consigne:"Faites avancer votre kit. Notez ce que vous avez fait à chaque séance, améliorez le brouillon (chaque version est gardée) et lancez un appel au réseau quand vous bloquez."},
+  5:{nom:"Présentation",     consigne:"Déposez la présentation de votre kit pour tout le réseau, puis allez lire les projets des autres équipes et laissez-leur un avis."},
+};
+/* Ce qu'on peut écrire. m : missions où ce choix est proposé d'office. */
 const TYPES = [
-  {id:"fuite",  label:"Une fuite",     titre:"Registre des fuites",           aide:"Raconte ce qui s'est passé, sans écrire la donnée elle-même. Oui : « J'ai donné ma date de naissance pour m'inscrire à un jeu. » Non : « 12/03/2014 »."},
-  {id:"pensee", label:"Ce qu'on pense", titre:"Ce qu'on pense",               aide:"Ce qui vous a surpris, inquiété, fait rire cette semaine."},
-  {id:"action", label:"Ce qu'on a fait", titre:"Ce qu'on a fait",             aide:"Une chose que la classe a faite ou changée pour protéger ses données."},
-  {id:"projet", label:"Notre kit de survie", titre:"Notre kit de survie numérique", aide:"Une idée, un réflexe ou un outil à mettre dans votre kit de survie."},
-  {id:"mot",    label:"Un télégramme", titre:"Télégrammes reçus",             aide:"Un message court pour une autre classe : une question, un conseil, un encouragement."},
+  {id:"fuite",  m:[3],     label:"Une fuite",          titre:"Registre des fuites",          aide:"Raconte ce qui s'est passé, sans écrire la donnée elle-même. Oui : « J'ai donné ma date de naissance pour m'inscrire à un jeu. » Non : « 12/03/2014 »."},
+  {id:"pensee", m:[3],     label:"Ce qu'on pense",     titre:"Ce qu'on pense",               aide:"Ce qui vous a surpris, inquiété, fait rire cette semaine."},
+  {id:"projet", m:[3],     label:"Une idée de kit",    titre:"Nos idées pour le kit",        aide:"Une idée, un réflexe ou un outil à mettre dans votre kit de survie."},
+  {id:"kit",    m:[3,4],   label:"Le brouillon du kit", titre:"Notre kit de survie numérique", aide:"Ce que contiendra votre kit et comment vous allez le faire. Chaque nouvelle version garde la précédente."},
+  {id:"action", m:[4],     label:"Ce qu'on a fait",    titre:"Journal d'atelier",            aide:"Ce que l'équipe a fait pendant la séance, et la prochaine étape."},
+  {id:"aide",   m:[4],     label:"Un appel au réseau", titre:"Nos appels au réseau",         aide:"Une question ou un coup de main à demander aux autres classes. Elles répondront par télégramme."},
+  {id:"final",  m:[5],     label:"Notre présentation", titre:"Présentation finale",          aide:"Présentez votre kit à tout le réseau : ce que c'est, ce qu'on y apprend, comment l'utiliser."},
+  {id:"avis",   m:[5],     label:"Un avis",            titre:"Avis du réseau",               aide:"Ce que vous avez aimé dans leur projet, une question, une idée que vous allez retenir."},
+  {id:"mot",    m:[3,4,5], label:"Un télégramme",      titre:"Télégrammes reçus",            aide:"Un message court pour une autre classe : une question, un conseil, un encouragement."},
 ];
+const THEMES = [["motdepasse","Mots de passe solides"],["geoloc","Géolocalisation"],["reseaux","Réseaux sociaux"],["photos","Photos et droit à l'image"],["applis","Applis et autorisations"],["pub","Cookies et pub ciblée"],["arnaques","Arnaques et hameçonnage"],["traces","Traces et réputation"],["autre","Autre"]];
+const FORMATS = [["affiche","Affiche"],["video","Vidéo / tuto"],["podcast","Podcast"],["jeu","Jeu"],["bd","BD"],["guide","Guide / fiche"],["expose","Exposé"],["site","Site / appli"],["autre","Autre"]];
+const PUBLICS = [["classe","Notre classe"],["ecole","Toute l'école"],["jeunes","Les plus jeunes"],["parents","Les parents"],["tous","Tout le monde"]];
 const DONNEES = [["identite","Nom / prénom"],["photo","Photo de moi"],["position","Où je suis"],["age","Âge / anniversaire"],["voix","Ma voix"],["contacts","Mes contacts"],["gouts","Mes goûts"],["ecole","Mon école"],["motdepasse","Mot de passe"],["autre","Autre"]];
 const LIEUX = [["reseau","Réseau social"],["jeu","Jeu en ligne"],["messagerie","Messagerie"],["video","Vidéo / streaming"],["site","Site web"],["appli","Appli du téléphone"],["objet","Objet connecté"],["autre","Ailleurs"]];
 const BESOIN = [["non","Non"],["oui","Oui"],["nsp","Je ne sais pas"]];
@@ -342,11 +409,22 @@ const EXEMPLES = [
   {classe:"grattetciel",type:"mot",destinataire:"jouhaux-a",texte:"Bravo pour l'autocollant. On peut vous l'emprunter pour notre kit ?",agent:"Faucon-38"},
   {classe:"jouhaux-b",type:"mot",destinataire:"rousseau",texte:"Votre guide nous intéresse. Vous pouvez nous l'envoyer quand il sera fini ?",agent:"Castor-63"},
   {classe:"rousseau",type:"mot",destinataire:"berthelot",texte:"Pour l'enceinte : on a trouvé comment effacer l'historique des demandes. On vous explique ?",agent:"Martre-74"},
-].map((e, i) => ({id:"ex"+i, exemple:true, created_at:new Date(Date.now() - (13 - i) * 3.6e6).toISOString(), ...e}));
+  {classe:"jouhaux-a",type:"kit",titre:"Avant de poster, je demande",themes:["photos"],format:"affiche",public:"ecole",texte:"Un autocollant et une affiche pour la salle info.\nRègle 1 : je demande avant de prendre quelqu'un en photo.\nRègle 2 : je demande avant de la publier.",agent:"Merle-15"},
+  {classe:"grattetciel",type:"etape",mission:4,agent:"Renard-11"},
+  {classe:"grattetciel",type:"kit",titre:"Le cadenas",themes:["motdepasse"],format:"affiche",public:"jeunes",texte:"Une affiche pour les CM2 : comment fabriquer un mot de passe solide avec une phrase.",agent:"Faucon-38"},
+  {classe:"grattetciel",type:"kit",titre:"Le cadenas",themes:["motdepasse","arnaques"],format:"video",public:"jeunes",texte:"Finalement un tuto vidéo de 2 minutes :\n1. une phrase secrète\n2. des chiffres et des signes\n3. jamais le même mot de passe partout\n4. ne jamais le donner, même à un « copain » en ligne.",agent:"Renard-11"},
+  {classe:"grattetciel",type:"action",texte:"On a écrit le script du tuto et réparti les rôles : 2 acteurs, 1 caméra, 1 monteur.",agent:"Faucon-38"},
+  {classe:"grattetciel",type:"aide",texte:"Quelqu'un sait filmer un écran de téléphone sans montrer de vraies infos ?",agent:"Renard-11"},
+  {classe:"rousseau",type:"etape",mission:4,agent:"Martre-74"},
+  {classe:"rousseau",type:"kit",titre:"Ton compte en 5 minutes",themes:["reseaux","geoloc"],format:"guide",public:"jeunes",texte:"Un guide en 4 étapes : compte privé, localisation coupée, qui peut m'écrire, que faire si on m'embête.",agent:"Corbeau-56"},
+  {classe:"rousseau",type:"etape",mission:5,agent:"Corbeau-56"},
+  {classe:"rousseau",type:"final",titre:"Ton compte en 5 minutes",texte:"Notre guide tient sur une page recto verso. On l'a testé avec des 6e : ils ont tous réussi à passer leur compte en privé et à couper la localisation en moins de 5 minutes.",agent:"Corbeau-56"},
+  {classe:"jouhaux-b",type:"avis",destinataire:"rousseau",texte:"Super clair ! On l'a essayé en classe, la partie sur la localisation nous a appris plein de choses.",agent:"Castor-63"},
+].map((e, i) => ({id:"ex"+i, exemple:true, created_at:new Date(Date.now() - (30 - i) * 3.6e6).toISOString(), ...e}));
 
 async function charger(){
   if (!ENLIGNE) { entrees = EXEMPLES.concat(lire("essai", [])); return; }
-  const cols = "id,created_at,classe,type,destinataire,agent,jour,donnees,lieu,necessaire,danger,texte";
+  const cols = "id,created_at,classe,type,destinataire,agent,jour,donnees,lieu,necessaire,danger,texte,titre,lien,themes,format,public,mission";
   const r = await fetch(`${SUPABASE_URL}/rest/v1/entrees?select=${cols}&order=created_at.asc&limit=5000`, {headers:{apikey:SUPABASE_CLE, Authorization:"Bearer "+SUPABASE_CLE}});
   if (!r.ok) throw new Error("lecture " + r.status);
   entrees = await r.json();
@@ -365,6 +443,14 @@ const vus = lire("vus", {});
 function el(tag, cls, txt){ const n = document.createElement(tag); if (cls) n.className = cls; if (txt !== undefined) n.textContent = txt; return n; }
 function quand(iso){ try { return new Date(iso).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"}); } catch(e){ return ""; } }
 function nomClasse(id){ const c = byId[id]; return c ? `${c.planque} · ${c.classe} ${c.ecole.replace(/^(École|Collège) /,"")}` : id; }
+function mission(id){ let m = 3; entrees.forEach(e => { if (e.classe === id && e.type === "etape" && e.mission) m = e.mission; }); return m; }
+function dernierKit(id, type = "kit"){ const l = entrees.filter(e => e.classe === id && e.type === type); return l[l.length - 1]; }
+function vise(e){ return (e.type === "mot" || e.type === "avis") ? e.destinataire : e.classe; }
+function resume(e){
+  if (e.type === "etape") return `Passe à la mission ${e.mission} · ${MISSIONS[e.mission] ? MISSIONS[e.mission].nom : ""}`;
+  const t = (e.titre ? e.titre + (e.texte ? " · " : "") : "") + (e.texte || "");
+  return t.length > 110 ? t.slice(0, 110) + "…" : t;
+}
 function dernier(id){ return entrees.filter(e => e.classe === id || e.destinataire === id).reduce((m, e) => e.created_at > m ? e.created_at : m, ""); }
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -415,11 +501,11 @@ function rendreCarte(){
   const p = $("#mapPins"); p.innerHTML = "";
   PAGES.forEach(id => {
     const c = pos(id), qg = id === "sommaire";
-    const g = sv("g", {class:"pin" + (qg ? " qg" : "") + (id === courant ? " on" : ""), transform:`translate(${c.x} ${c.y})`, tabindex:"0", role:"button", "aria-label":qg ? "QG du Réseau : vue d'ensemble" : `${c.planque}, planque de la classe ${c.classe} de l'${c.ecole}`});
+    const m = qg ? 0 : mission(id);
+    const g = sv("g", {class:"pin" + (qg ? " qg" : " m" + m) + (id === courant ? " on" : ""), transform:`translate(${c.x} ${c.y})`, tabindex:"0", role:"button", "aria-label":qg ? "QG du Réseau : vue d'ensemble" : `${c.planque}, planque de la classe ${c.classe} de l'${c.ecole}, mission ${m}`});
     g.append(sv("circle", {class:"hit", r:36}));
     g.append(sv("circle", {class:"body", r:qg ? 20 : 17}));
-    const n = qg ? entrees.length : entrees.filter(e => e.classe === id).length;
-    g.append(sv("text", {class:"ini"}, qg ? "QG" : String(n)));
+    g.append(sv("text", {class:"ini"}, qg ? "QG" : "M" + m));
     g.append(sv("text", {class:"nm", y:qg ? 40 : 37}, c.planque));
     g.append(sv("text", {class:"cl", y:qg ? 56 : 53}, qg ? c.sous : `${c.classe} · ${c.ecole.replace(/^(École|Collège) /, "")}`));
     if (!qg) { const d = dernier(id); if (d && id !== courant && (!vus[id] || d > vus[id])) g.append(sv("circle", {class:"new", cx:14, cy:-14, r:6})); }
@@ -459,52 +545,133 @@ function pageSommaire(page){
   const top = Object.entries(comptes).sort((a, b) => b[1] - a[1])[0];
   [[fuites.length, "fuites consignées"], [entrees.filter(e => e.type === "mot").length, "télégrammes échangés"], [evit, "fuites évitables"], [top ? lbl(DONNEES, top[0]) : "—", "donnée la plus semée"]].forEach(([v, l]) => { const d = el("div", "gauge"); d.append(el("b", typeof v === "string" && !/%|—/.test(v) ? "mot" : "", v)); d.append(el("span", "", l)); g.append(d); });
   page.append(g);
+  /* où en sont les équipes : la vue d'ensemble des enseignants */
+  const sp = el("section", "sec"); sp.append(el("h3", "", "OÙ EN SONT LES ÉQUIPES"));
+  const tw = el("div", "tablewrap"); const tb = el("table", "progress");
+  const thr = el("tr"); ["Planque", "Mission", "Kit de survie", "Forme · pour qui", "Dernière nouvelle"].forEach(t => thr.append(el("th", "", t))); const thead = el("thead"); thead.append(thr); tb.append(thead);
+  const tbody = el("tbody");
+  CLASSES.forEach(c => {
+    const tr = el("tr"); const m = mission(c.id), k = dernierKit(c.id), f = dernierKit(c.id, "final"), d = dernier(c.id);
+    const td0 = el("td"); const b = el("button", "linkish", c.planque); b.type = "button"; b.onclick = () => aller(c.id); td0.append(b); td0.append(el("div", "", `${c.classe} · ${c.ecole.replace(/^(École|Collège) /, "")}`)); tr.append(td0);
+    const td1 = el("td"); td1.append(el("span", "m m" + m, `${m} · ${MISSIONS[m].nom}`)); if (f) td1.append(el("div", "", "présentation déposée")); tr.append(td1);
+    tr.append(el("td", "", k ? `${k.titre || "Sans titre"} (${(k.themes || []).map(x => lbl(THEMES, x)).join(", ")})` : "pas encore de brouillon"));
+    tr.append(el("td", "", k ? `${lbl(FORMATS, k.format)} · ${lbl(PUBLICS, k.public)}` : "—"));
+    tr.append(el("td", "", d ? quand(d) : "—"));
+    tbody.append(tr);
+  });
+  tb.append(tbody); tw.append(tb); sp.append(tw); page.append(sp);
   const cols = el("div", "cols");
-  const a = el("div"); const s1 = el("section", "sec"); s1.append(el("h3", "", "LES PLANQUES"));
-  const toc = el("ul", "toc");
-  CLASSES.forEach(c => { const li = el("li"); const b = el("button"); b.type = "button"; b.append(el("strong", "", `${c.planque} · ${c.classe} ${c.ecole.replace(/^(École|Collège) /, "")}`)); const n = entrees.filter(e => e.classe === c.id).length; b.append(el("span", "", `${c.ville} · ${n} écrit${n > 1 ? "s" : ""}`)); b.onclick = () => aller(c.id); li.append(b); toc.append(li); });
-  s1.append(toc); a.append(s1);
+  const a = el("div");
+  const s1 = el("section", "sec"); s1.append(el("h3", "", "APPELS AU RÉSEAU"));
+  const appels = entrees.filter(e => e.type === "aide").slice(-5).reverse();
+  if (!appels.length) s1.append(el("p", "empty", "Aucune équipe n'a demandé d'aide pour l'instant."));
+  appels.forEach(e => { const n = carteAide(e, true); s1.append(n); });
+  a.append(s1);
   const s3 = el("section", "sec"); s3.append(el("h3", "", "RÈGLE D'OR")); const r = el("div", "rule"); r.append(el("b", "", "ON RACONTE, ON NE DONNE PAS. ")); r.append("Ici on écrit ce qui s'est passé, jamais la donnée elle-même : pas de vrai nom, d'adresse, de numéro, de pseudo ni de photo. On signe avec son nom de code."); s3.append(r); a.append(s3);
   const b2 = el("div"); const s2 = el("section", "sec"); s2.append(el("h3", "", "DERNIÈRES NOUVELLES"));
   const feed = el("div", "feed");
   const recents = entrees.slice().sort((x, y) => y.created_at.localeCompare(x.created_at)).slice(0, 8);
   if (!recents.length) s2.append(el("p", "empty", "Le carnet est encore vierge. Choisis ta classe puis appuie sur « Écrire » pour la première entrée."));
   recents.forEach(e => { const it = el("div", "it"); const t = TYPES.find(t => t.id === e.type);
-    const head = el("button", "linkish"); head.type = "button"; head.textContent = e.type === "mot" ? `${nomClasse(e.classe)} → ${nomClasse(e.destinataire)}` : nomClasse(e.classe); head.onclick = () => aller(e.type === "mot" ? e.destinataire : e.classe);
-    it.append(head); it.append(el("span", "", (e.texte || "").slice(0, 110) + ((e.texte || "").length > 110 ? "…" : ""))); it.append(el("em", "", `${t ? t.label : e.type} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`)); feed.append(it); });
+    const head = el("button", "linkish"); head.type = "button"; head.textContent = e.destinataire ? `${nomClasse(e.classe)} → ${nomClasse(e.destinataire)}` : nomClasse(e.classe); head.onclick = () => aller(vise(e));
+    it.append(head); it.append(el("span", "", resume(e))); it.append(el("em", "", `${t ? t.label : "Étape"} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`)); feed.append(it); });
   s2.append(feed); b2.append(s2);
   cols.append(a, b2); page.append(cols);
 }
 
+const vueMission = {};
 function pageClasse(page, id){
-  const c = byId[id];
+  const c = byId[id], m = mission(id), mienne = moi.classe === id;
+  const vue = vueMission[id] || m;
   const siennes = entrees.filter(e => e.classe === id);
   const fuites = siennes.filter(e => e.type === "fuite");
   const ph = el("header", "ph"); const h = el("div");
   h.append(el("h2", "", c.planque)); h.append(el("p", "", `Planque de la classe ${c.classe} · ${c.ecole} · ${c.ville} · ${c.eleves} agents`));
   const st = el("div", "stats"); st.style.marginTop = "8px";
   const evit = fuites.length ? Math.round(100 * fuites.filter(e => e.necessaire === "non").length / fuites.length) : null;
-  [[fuites.length, fuites.length > 1 ? "fuites" : "fuite"], [evit === null ? "—" : evit + " %", "évitables"], [entrees.filter(e => e.destinataire === id).length, "télégramme(s) reçu(s)"]].forEach(([v, l]) => { const s = el("span"); s.append(el("b", "", v)); s.append(l); st.append(s); });
-  h.append(st); ph.append(h);
-  if (moi.classe === id) ph.append(el("span", "stamp", "NOTRE PLANQUE"));
+  [[fuites.length, fuites.length > 1 ? "fuites" : "fuite"], [evit === null ? "—" : evit + " %", "évitables"], [entrees.filter(e => e.destinataire === id).length, "message(s) reçu(s)"]].forEach(([v, l]) => { const s = el("span"); s.append(el("b", "", v)); s.append(l); st.append(s); });
+  h.append(st);
+  const et = el("div", "etape");
+  if (mienne) {
+    const lab = el("label", "", "Notre équipe en est à la"); lab.htmlFor = "selMission"; et.append(lab);
+    const sel = el("select"); sel.id = "selMission"; [3, 4, 5].forEach(n => sel.append(new Option(`mission ${n} · ${MISSIONS[n].nom}`, n))); sel.value = m;
+    sel.onchange = () => changerMission(+sel.value, sel); et.append(sel);
+  } else { et.append("En ce moment : "); et.append(el("b", "", `mission ${m} · ${MISSIONS[m].nom}`)); }
+  h.append(et); ph.append(h);
+  if (mienne) ph.append(el("span", "stamp", "NOTRE PLANQUE"));
   page.append(ph);
-  const cols = el("div", "cols");
-  const g = el("div"), d = el("div");
-  g.append(section(id, "fuite", fuites.slice().reverse().map(carteFuite)));
-  ["pensee", "action", "projet"].forEach(t => d.append(section(id, t, siennes.filter(e => e.type === t).slice().reverse().map(carteNote))));
-  d.append(section(id, "mot", entrees.filter(e => e.type === "mot" && e.destinataire === id).slice().reverse().map(carteTelegramme)));
+  const strip = el("div", "missions"); strip.setAttribute("role", "group"); strip.setAttribute("aria-label", "Missions");
+  [3, 4, 5].forEach(n => { const b = el("button", n < m ? "fait" : n === m ? "encours" : ""); b.type = "button"; b.setAttribute("aria-pressed", n === vue ? "true" : "false");
+    b.append(el("b", "", `MISSION ${n}`)); b.append(el("small", "", MISSIONS[n].nom + (n < m ? " · faite" : n === m ? " · en cours" : "")));
+    b.onclick = () => { vueMission[id] = n; rendre(); }; strip.append(b); });
+  page.append(strip);
+  page.append(el("p", "consigne", MISSIONS[vue].consigne));
+  const cols = el("div", "cols"); const g = el("div"), d = el("div");
+  const notes = t => siennes.filter(e => e.type === t).slice().reverse();
+  if (vue === 3) {
+    g.append(section(id, "fuite", fuites.slice().reverse().map(carteFuite)));
+    d.append(section(id, "pensee", notes("pensee").map(carteNote)));
+    d.append(section(id, "projet", notes("projet").map(carteNote)));
+    d.append(sectionKit(id, "kit"));
+  } else if (vue === 4) {
+    g.append(sectionKit(id, "kit"));
+    g.append(section(id, "aide", notes("aide").map(e => carteAide(e))));
+    d.append(section(id, "action", notes("action").map(carteNote)));
+  } else {
+    g.append(sectionKit(id, "final"));
+    d.append(section(id, "avis", entrees.filter(e => e.type === "avis" && e.destinataire === id).slice().reverse().map(carteAvis)));
+  }
   cols.append(g, d); page.append(cols);
+  const tg = section(id, "mot", entrees.filter(e => e.type === "mot" && e.destinataire === id).slice().reverse().map(carteTelegramme)); tg.classList.add("full"); page.append(tg);
 }
+
+async function changerMission(n, sel){
+  sel.disabled = true;
+  try { await envoyer({classe:moi.classe, type:"etape", agent:moi.agent, mission:n}); delete vueMission[moi.classe]; await rafraichir(); toast(`Mission ${n} · ${MISSIONS[n].nom}`); }
+  catch (err) { sel.value = mission(moi.classe); toast(err.status === 401 || err.status === 403 || /row-level/i.test(err.message) ? "Code de classe refusé" : "Réseau coupé, réessaie"); }
+  finally { sel.disabled = false; }
+}
+
+function sectionKit(id, type){
+  const t = TYPES.find(x => x.id === type);
+  const l = entrees.filter(e => e.classe === id && e.type === type);
+  const s = el("section", "sec"); s.append(el("h3", "", t.titre.toUpperCase()));
+  if (!l.length) s.append(el("p", "empty", type === "kit" ? "Pas encore de brouillon." : "La présentation n'est pas encore déposée."));
+  else {
+    s.append(carteKit(l[l.length - 1], l.length));
+    if (l.length > 1) { const det = el("details", "versions"); det.append(el("summary", "", `Voir les ${l.length - 1} version(s) précédente(s)`)); l.slice(0, -1).reverse().forEach((e, i) => det.append(carteKit(e, l.length - 1 - i))); s.append(det); }
+  }
+  if (moi.classe === id) { const b = el("button", "add", l.length ? (type === "kit" ? "+ Écrire une nouvelle version" : "+ Modifier la présentation") : (type === "kit" ? "+ Rédiger le brouillon" : "+ Déposer notre présentation")); b.type = "button"; b.onclick = () => ouvrirEcriture(type, "", l[l.length - 1]); s.append(b); }
+  return s;
+}
+function carteKit(e, version){
+  const n = el("div", "kit" + (e.type === "final" ? " final" : ""));
+  const hd = el("div", "k-hd"); hd.append(el("span", "", e.type === "final" ? "PRÉSENTATION FINALE" : `BROUILLON · VERSION ${version}`)); hd.append(el("span", "", signature(e).toUpperCase())); n.append(hd);
+  if (e.titre) n.append(el("div", "k-t", e.titre));
+  if (e.type === "kit") { const meta = el("div", "k-meta"); (e.themes || []).forEach(x => meta.append(el("span", "pill", lbl(THEMES, x)))); if (e.format) meta.append(el("span", "pill alt", lbl(FORMATS, e.format))); if (e.public) meta.append(el("span", "pill alt", "pour " + lbl(PUBLICS, e.public).toLowerCase())); n.append(meta); }
+  if (e.texte) n.append(el("div", "k-txt", e.texte));
+  if (e.lien && /^https:\/\/\S+$/.test(e.lien)) { const a = el("a", "", "Voir le projet ↗"); a.href = e.lien; a.target = "_blank"; a.rel = "noopener noreferrer"; n.append(a); }
+  return n;
+}
+function carteAide(e, avecClasse){
+  const n = el("div", "aide"); n.append(el("b", "", avecClasse ? "APPEL DE " + nomClasse(e.classe).toUpperCase() : "APPEL AU RÉSEAU")); n.append(e.texte || "");
+  const w = el("span", "who", signature(e)); n.append(w);
+  if (avecClasse && moi.classe && moi.classe !== e.classe) { const b = el("button", "add", "Répondre par télégramme"); b.type = "button"; b.style.marginTop = "6px"; b.onclick = () => ouvrirEcriture("mot", e.classe); n.append(b); }
+  else if (avecClasse) { const b = el("button", "linkish", "Voir leur planque"); b.type = "button"; b.style.fontSize = "12px"; b.onclick = () => aller(e.classe); n.append(b); }
+  return n;
+}
+function carteAvis(e){ const n = el("div", "avis", e.texte); n.append(el("span", "who", `${nomClasse(e.classe)} · ${signature(e)}`)); return n; }
 
 function section(id, type, cartes){
   const t = TYPES.find(x => x.id === type);
   const s = el("section", "sec"); s.append(el("h3", "", t.titre.toUpperCase()));
-  if (!cartes.length) s.append(el("p", "empty", type === "mot" ? "Aucun télégramme pour l'instant." : "Rien d'écrit pour l'instant."));
+  const versAutre = type === "mot" || type === "avis";
+  if (!cartes.length) s.append(el("p", "empty", type === "mot" ? "Aucun télégramme pour l'instant." : type === "avis" ? "Aucun avis pour l'instant." : "Rien d'écrit pour l'instant."));
   cartes.forEach(n => s.append(n));
   const mienne = moi.classe === id;
-  if (type === "mot" ? moi.classe !== id : mienne) {
-    const b = el("button", "add", type === "mot" ? "+ Envoyer un télégramme à cette classe" : "+ Ajouter"); b.type = "button";
-    b.onclick = () => ouvrirEcriture(type, type === "mot" ? id : "");
+  if (versAutre ? moi.classe !== id : mienne) {
+    const b = el("button", "add", type === "mot" ? "+ Envoyer un télégramme à cette classe" : type === "avis" ? "+ Donner notre avis" : "+ Ajouter"); b.type = "button";
+    b.onclick = () => ouvrirEcriture(type, versAutre ? id : "");
     s.append(b);
   }
   return s;
@@ -555,33 +722,53 @@ function radios(conteneur, nom, liste, type, coche){
 radios("#kinds", "kind", TYPES.map(t => [t.id, t.label]), "radio", "fuite");
 radios("#donnees", "donnee", DONNEES, "checkbox");
 radios("#besoin", "besoin", BESOIN, "radio", "non");
+radios("#themes", "theme", THEMES, "checkbox");
+FORMATS.forEach(([v, l]) => $("#format").append(new Option(l, v)));
+PUBLICS.forEach(([v, l]) => $("#public").append(new Option(l, v)));
 JOURS.forEach(j => $("#jour").append(new Option(j, j)));
 LIEUX.forEach(([v, l]) => $("#lieu").append(new Option(l, v)));
 (() => { const box = $("#lamps"); [[1, "faible"], [2, "moyen"], [3, "fort"]].forEach(([v, l]) => { const inp = el("input"); inp.type = "radio"; inp.name = "danger"; inp.id = "danger-" + v; inp.value = v; if (v === 2) inp.checked = true; const lab = el("label"); lab.htmlFor = inp.id; lab.append(el("i"), l); box.append(inp, lab); }); })();
 $("#jour").value = JOURS[(new Date().getDay() + 6) % 7];
 
+let impose = "";
+function longueurMax(k){ return (k === "kit" || k === "final") ? 1200 : 400; }
 function majFormulaire(){
-  const k = document.querySelector('input[name="kind"]:checked').value;
-  const t = TYPES.find(x => x.id === k);
-  $("#blocFuite").hidden = k !== "fuite"; $("#blocDest").hidden = k !== "mot";
-  $("#lblTexte").textContent = k === "fuite" ? "RACONTE (FACULTATIF)" : k === "mot" ? "TON TÉLÉGRAMME" : "ÉCRIS ICI";
+  const m = mission(moi.classe);
+  TYPES.forEach(t => { const inp = document.getElementById("kind-" + t.id); const vis = t.m.includes(m) || t.id === impose; inp.hidden = !vis; inp.nextElementSibling.hidden = !vis; });
+  let cur = document.querySelector('input[name="kind"]:checked');
+  if (!cur || cur.hidden) { cur = document.querySelector('input[name="kind"]:not([hidden])'); cur.checked = true; }
+  const k = cur.value, t = TYPES.find(x => x.id === k);
+  $("#blocFuite").hidden = k !== "fuite"; $("#blocDest").hidden = k !== "mot" && k !== "avis";
+  $("#blocKit").hidden = k !== "kit"; $("#blocTitre").hidden = k !== "kit" && k !== "final"; $("#blocLien").hidden = k !== "final";
+  $("#lblTitre").textContent = k === "kit" ? "NOM DE NOTRE KIT (FACULTATIF)" : "TITRE DE NOTRE PROJET";
+  $("#lblTexte").textContent = {fuite:"RACONTE (FACULTATIF)", mot:"TON TÉLÉGRAMME", avis:"VOTRE AVIS", kit:"CE QU'IL CONTIENDRA, COMMENT ON VA LE FAIRE", final:"PRÉSENTEZ VOTRE KIT", aide:"VOTRE QUESTION AU RÉSEAU"}[k] || "ÉCRIS ICI";
   $("#helpTexte").textContent = t.aide;
+  const max = longueurMax(k); $("#texte").maxLength = max; $("#count").textContent = `${$("#texte").value.length} / ${max}`;
   const d = $("#dest"); const garde = d.value; d.innerHTML = "";
-  CLASSES.filter(c => c.id !== moi.classe).forEach(c => d.append(new Option(`${c.planque} · ${c.classe} ${c.ecole}`, c.id)));
+  CLASSES.filter(c => c.id !== moi.classe && (k !== "avis" || dernierKit(c.id, "final"))).forEach(c => d.append(new Option(`${c.planque} · ${c.classe} ${c.ecole}`, c.id)));
   if (garde) d.value = garde;
+  if (k === "avis" && !d.options.length) d.append(new Option("Aucune équipe n'a encore déposé sa présentation", ""));
   $("#warn").hidden = true;
 }
 document.querySelectorAll('input[name="kind"]').forEach(i => i.addEventListener("change", majFormulaire));
-$("#texte").addEventListener("input", () => { const t = $("#texte").value; $("#count").textContent = `${t.length} / 400`; const p = verifier(t); $("#warn").hidden = !p.length; if (p.length) $("#warn").textContent = `Attention, ton texte semble contenir ${p.join(" et ")}. Le carnet le refusera : raconte sans donner la vraie information.`; });
+$("#texte").addEventListener("input", () => { const t = $("#texte").value; $("#count").textContent = `${t.length} / ${$("#texte").maxLength}`; const p = verifier(t); $("#warn").hidden = !p.length; if (p.length) $("#warn").textContent = `Attention, ton texte semble contenir ${p.join(" et ")}. Le carnet le refusera : raconte sans donner la vraie information.`; });
 
-function ouvrirEcriture(type, dest){
-  if (!moi.classe) return ouvrirClasse(() => ouvrirEcriture(type, dest));
+function ouvrirEcriture(type, dest, base){
+  if (!moi.classe) return ouvrirClasse(() => ouvrirEcriture(type, dest, base));
+  impose = type || "";
   if (type) document.getElementById("kind-" + type).checked = true;
+  /* une nouvelle version du kit ou de la présentation repart de la précédente */
+  if (base) {
+    $("#titre").value = base.titre || ""; $("#texte").value = base.texte || ""; $("#lien").value = base.lien || "";
+    document.querySelectorAll('input[name="theme"]').forEach(i => i.checked = (base.themes || []).includes(i.value));
+    if (base.format) $("#format").value = base.format; if (base.public) $("#public").value = base.public;
+  }
+  else { $("#titre").value = ""; $("#lien").value = ""; document.querySelectorAll('input[name="theme"]').forEach(i => i.checked = false); }
   majFormulaire(); if (dest) $("#dest").value = dest;
   $("#dlgTitre").textContent = "ÉCRIRE POUR " + nomClasse(moi.classe).toUpperCase();
   $("#dlgEcrire").showModal(); $("#texte").focus();
 }
-$("#btnEcrire").onclick = () => ouvrirEcriture(courant !== "sommaire" && courant !== moi.classe && moi.classe ? "mot" : "", courant !== "sommaire" && courant !== moi.classe ? courant : "");
+$("#btnEcrire").onclick = () => { const autre = courant !== "sommaire" && courant !== moi.classe && moi.classe; ouvrirEcriture(autre ? (mission(moi.classe) === 5 && dernierKit(courant, "final") ? "avis" : "mot") : "", autre ? courant : ""); };
 $("#annuler").onclick = () => $("#dlgEcrire").close();
 
 $("#fEcrire").addEventListener("submit", async ev => {
@@ -589,7 +776,8 @@ $("#fEcrire").addEventListener("submit", async ev => {
   const k = document.querySelector('input[name="kind"]:checked').value;
   const texte = $("#texte").value.trim().replace(/\s+/g, " ");
   const w = $("#warn"); const dire = m => { w.textContent = m; w.hidden = false; };
-  const pb = verifier(texte); if (pb.length) return dire(`Ton texte semble contenir ${pb.join(" et ")}. Raconte sans donner la vraie information.`);
+  const titre = $("#titre").value.trim().replace(/\s+/g, " ");
+  const pb = verifier(texte + " " + ((k === "kit" || k === "final") ? titre : "")); if (pb.length) return dire(`Ton texte semble contenir ${pb.join(" et ")}. Raconte sans donner la vraie information.`);
   const e = {classe:moi.classe, type:k, agent:moi.agent, texte:texte || null};
   if (k === "fuite") {
     e.donnees = [...document.querySelectorAll('input[name="donnee"]:checked')].map(i => i.value);
@@ -599,19 +787,30 @@ $("#fEcrire").addEventListener("submit", async ev => {
     e.danger = +document.querySelector('input[name="danger"]:checked').value;
   } else {
     if (texte.length < 3) return dire("Écris au moins quelques mots.");
-    if (k === "mot") e.destinataire = $("#dest").value;
+    if (k === "mot" || k === "avis") { e.destinataire = $("#dest").value; if (!e.destinataire) return dire("Choisis la classe à qui tu écris."); }
+    if (k === "kit") {
+      e.themes = [...document.querySelectorAll('input[name="theme"]:checked')].map(i => i.value);
+      if (!e.themes.length) return dire("Coche au moins un sujet pour votre kit.");
+      e.format = $("#format").value; e.public = $("#public").value; if (titre) e.titre = titre;
+    }
+    if (k === "final") {
+      if (!titre) return dire("Donnez un titre à votre projet.");
+      e.titre = titre;
+      const lien = $("#lien").value.trim();
+      if (lien) { if (!/^https:\/\/\S+$/.test(lien)) return dire("Le lien doit commencer par https:// (copie-le depuis la barre d'adresse)."); e.lien = lien; }
+    }
   }
   const b = $("#envoyer"); b.disabled = true;
   try {
     await envoyer(e);
-    $("#dlgEcrire").close(); $("#texte").value = ""; $("#count").textContent = "0 / 400";
-    document.querySelectorAll('input[name="donnee"]').forEach(i => i.checked = false);
+    $("#dlgEcrire").close(); ["#texte", "#titre", "#lien"].forEach(x => $(x).value = ""); $("#count").textContent = "0 / " + $("#texte").maxLength;
+    document.querySelectorAll('input[name="donnee"], input[name="theme"]').forEach(i => i.checked = false);
     await rafraichir();
-    if (courant !== (k === "mot" ? e.destinataire : e.classe)) aller(k === "mot" ? e.destinataire : e.classe);
-    toast(k === "mot" ? "Télégramme transmis" : "Consigné dans le carnet");
+    if (courant !== vise(e)) aller(vise(e));
+    toast({mot:"Télégramme transmis", avis:"Avis transmis", kit:"Brouillon enregistré", final:"Présentation déposée", aide:"Appel lancé au réseau"}[k] || "Consigné dans le carnet");
   } catch (err) {
     if (err.status === 401 || err.status === 403 || /row-level security/i.test(err.message)) dire("Le carnet a refusé : le code secret de ta classe n'est pas le bon. Vérifie-le avec « Ma classe ».");
-    else if (/check constraint|violates/i.test(err.message)) dire("Le carnet a refusé ce texte : il ressemble à une vraie donnée (numéro, adresse, e-mail, lien). Reformule-le.");
+    else if (/check constraint|violates/i.test(err.message)) dire("Le carnet a refusé ce texte : il ressemble à une vraie donnée (numéro, adresse, e-mail, lien dans le texte). Reformule-le.");
     else dire("Transmission impossible pour l'instant (réseau coupé ?). Ton texte est toujours là, réessaie dans un moment.");
   } finally { b.disabled = false; }
 });

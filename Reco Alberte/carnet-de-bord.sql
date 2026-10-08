@@ -1,5 +1,5 @@
 -- =========================================================================
--- Carnet de bord du Réseau : base partagée (Supabase)
+-- Carnet de bord du Réseau : base partagée (Supabase), missions 3 à 5
 -- À coller une seule fois dans Supabase › SQL Editor › New query › Run.
 --
 -- Ce que ça crée :
@@ -33,7 +33,7 @@ create table public.entrees (
   id           bigint generated always as identity primary key,
   created_at   timestamptz not null default now(),
   classe       text not null,
-  type         text not null check (type in ('fuite','pensee','action','projet','mot')),
+  type         text not null check (type in ('fuite','pensee','projet','kit','action','aide','final','avis','mot','etape')),
   destinataire text,
   agent        text check (agent ~ '^[[:alpha:]]{2,20}-[0-9]{2}$'),
   jour         text check (jour in ('LUN','MAR','MER','JEU','VEN','SAM','DIM')),
@@ -41,18 +41,34 @@ create table public.entrees (
   lieu         text check (lieu in ('reseau','jeu','messagerie','video','site','appli','objet','autre')),
   necessaire   text check (necessaire in ('oui','non','nsp')),
   danger       smallint check (danger between 1 and 3),
-  texte        text check (char_length(texte) <= 400),
+  texte        text check (char_length(texte) <= 1200),
+  titre        text check (char_length(titre) <= 80),
+  lien         text check (char_length(lien) <= 300 and lien ~ '^https://[^[:space:]]{3,}$'),
+  themes       text[] check (themes <@ array['motdepasse','geoloc','reseaux','photos','applis','pub','arnaques','traces','autre']),
+  format       text check (format in ('affiche','video','podcast','jeu','bd','guide','expose','site','autre')),
+  public       text check (public in ('classe','ecole','jeunes','parents','tous')),
+  mission      smallint check (mission between 3 and 5),
   code         text,
   masque       boolean not null default false,
-  check (type <> 'mot' or (destinataire is not null and destinataire <> classe)),
+  check (type not in ('mot','avis') or (destinataire is not null and destinataire <> classe)),
+  check (type <> 'etape' or mission is not null),
+  check (type <> 'final' or titre is not null),
+  check (type <> 'kit' or (themes is not null and cardinality(themes) > 0)),
+  check (type in ('kit','final') or char_length(coalesce(texte, '')) <= 400),
   check (type <> 'fuite' or (donnees is not null and cardinality(donnees) > 0)),
-  check (type = 'fuite' or char_length(coalesce(texte, '')) >= 3),
+  check (type in ('fuite','etape') or char_length(coalesce(texte, '')) >= 3),
   check (texte is null or (
         texte !~* '[^[:space:]@]+@[^[:space:]@]+\.[a-z]{2,}'
     and texte !~  '@[A-Za-z0-9_.]{2,}'
     and texte !~  '[0-9]([ ./-]?[0-9]){5,}'
     and texte !~* '(https?://|www\.)'
     and texte !~* '[0-9]{1,4} *(bis|ter)? *,? *(rue|avenue|av\.|bd|boulevard|chemin|allée|allee|impasse|place|cours|quai)'
+  )),
+  check (titre is null or (
+        titre !~* '[^[:space:]@]+@[^[:space:]@]+\.[a-z]{2,}'
+    and titre !~  '@[A-Za-z0-9_.]{2,}'
+    and titre !~  '[0-9]([ ./-]?[0-9]){5,}'
+    and titre !~* '(https?://|www\.)'
   ))
 );
 create index on public.entrees (created_at);
@@ -81,9 +97,9 @@ create policy "écrire avec le code de sa classe" on public.entrees for insert t
 
 -- Le site ne voit jamais la colonne « code » et ne peut rien modifier.
 revoke all on public.entrees from anon, authenticated;
-grant select (id, created_at, classe, type, destinataire, agent, jour, donnees, lieu, necessaire, danger, texte)
+grant select (id, created_at, classe, type, destinataire, agent, jour, donnees, lieu, necessaire, danger, texte, titre, lien, themes, format, public, mission)
   on public.entrees to anon;
-grant insert (classe, type, destinataire, agent, jour, donnees, lieu, necessaire, danger, texte, code)
+grant insert (classe, type, destinataire, agent, jour, donnees, lieu, necessaire, danger, texte, titre, lien, themes, format, public, mission, code)
   on public.entrees to anon;
 
 -- Pour lire les codes à distribuer aux classes :
