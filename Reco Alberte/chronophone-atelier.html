@@ -70,6 +70,12 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .item .replbl{font-size:12px;letter-spacing:.1em;color:var(--brass);text-transform:uppercase}
 .item.bad{border-color:#d0573c;box-shadow:0 0 0 2px rgba(208,87,60,.4)}
 .addrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.nombre{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px;padding:12px 14px;border:2px solid var(--brass-lo);border-radius:8px;background:rgba(0,0,0,.2)}
+.nombre .nl{font-family:var(--f-display);font-size:20px;color:var(--brass-hi);letter-spacing:.04em;margin-right:4px}
+.nombre .btn{min-width:44px;font-size:22px;line-height:1;padding:6px 10px}
+.nombre input{width:76px;text-align:center;font:inherit;font-size:22px;font-weight:700;padding:6px;border-radius:6px;border:2px solid var(--brass-lo);background:#f3ead2;color:#1e1a12}
+.nombre .pas{display:inline-flex;gap:8px;align-items:center}
+.nombre .nh{margin:0;align-self:center}
 details{margin-top:12px}
 details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(14,11,8,.96);border-top:2px solid var(--brass-lo);padding:10px 16px}
@@ -95,7 +101,7 @@ details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
 
   <section class="box">
     <h2>1. Les leviers</h2>
-    <p class="hint">Ce qui s'affiche en haut et en bas de chaque levier. Les élèves placent chaque levier en haut ou en bas, puis abaissent la manette rouge.</p>
+    <p class="hint">Ce qui s'affiche en haut et en bas de chaque levier. Les élèves placent chaque levier en haut ou en bas, puis abaissent la manette rouge. <b>Le nombre de leviers se choisit dans la partie 2.</b></p>
     <div class="presets" id="presets"></div>
     <div class="labels">
       <label class="f">En haut <input type="text" id="haut" maxlength="24"></label>
@@ -104,7 +110,14 @@ details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
   </section>
 
   <section class="box">
-    <h2>2. Ce qu'il y a au-dessus de chaque levier</h2>
+    <h2>2. Le nombre de leviers et leur contenu</h2>
+    <div class="nombre">
+      <span class="nl">Nombre de leviers</span>
+      <span class="pas"><button class="btn" id="nbMoins" aria-label="Un levier de moins">−</button>
+      <input type="number" id="nbLeviers" min="2" max="40" step="1" inputmode="numeric" aria-label="Nombre de leviers">
+      <button class="btn" id="nbPlus" aria-label="Un levier de plus">+</button></span>
+      <span class="hint nh">de 2 à 40, puis remplissez chaque levier ci-dessous</span>
+    </div>
     <p class="hint">Une photo ou un texte par levier, et la bonne réponse. Chaque levier est soit à <b>deux réponses</b> (les libellés du haut et du bas), soit un <b>QCM</b> de 2 à 4 choix (A, B, C, D) : la question et ses choix sont alors écrits dans la photo ou le texte. De 2 à 40 leviers.</p>
     <div class="items" id="items"></div>
     <div class="addrow">
@@ -276,8 +289,28 @@ function dessinerItems(){
     });
     box.appendChild(d);
   });
-  if(!cfg.items.length) box.innerHTML='<p class="hint">Aucun levier pour l\'instant. Ajoutez des photos ou des textes.</p>';
+  if(!cfg.items.length) box.innerHTML='<p class="hint">Aucun levier pour l\'instant. Choisissez leur nombre ci-dessus, ou ajoutez des photos ou des textes.</p>';
+  majNombre();
 }
+
+/* Nombre de leviers : on règle le total, puis on remplit chaque levier */
+function majNombre(){ $('nbLeviers').value=cfg.items.length; }
+function fixerNombre(n){
+  n=Math.max(2,Math.min(40,Math.round(+n)||0));
+  const k=cfg.items.length;
+  if(n>k){ for(let x=k;x<n;x++) cfg.items.push({texte:'',rep:''}); }
+  else if(n<k){
+    const pleins=cfg.items.slice(n).filter(it=>it.f||(it.texte||'').trim()||it.rep).length;
+    if(pleins && !confirm(`Retirer les ${k-n} dernier(s) levier(s) ? ${pleins} d'entre eux sont déjà remplis.`)){ majNombre(); return; }
+    cfg.items.length=n;
+  }
+  dessinerItems(); garder();
+  if(n>k){ const t=$('it'+k); t&&t.scrollIntoView({block:'center',behavior:'smooth'}); }
+  msg(`${n} leviers. Remplissez chacun avec une photo ou un texte, et sa bonne réponse.`);
+}
+$('nbMoins').onclick=()=>fixerNombre(cfg.items.length-1);
+$('nbPlus').onclick=()=>fixerNombre(cfg.items.length+1);
+$('nbLeviers').addEventListener('change',e=>fixerNombre(e.target.value));
 $('addPhotos').onclick=()=>{ $('filePhotos').value=''; $('filePhotos').click(); };
 $('filePhotos').onchange=async e=>{
   const files=[...e.target.files].slice(0, 40-cfg.items.length);
