@@ -41,19 +41,45 @@ button{cursor:pointer}
 .btn[disabled]{opacity:.5;cursor:wait}
 .banner{font-size:13px;color:var(--amber);border:1px dashed var(--brass-lo);padding:6px 10px;margin-bottom:10px;text-align:center}
 
-/* ---------- onglets ---------- */
-.tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 0;scrollbar-width:thin}
-.tab{flex:0 0 auto;font-family:var(--f-display);font-size:13px;letter-spacing:.06em;padding:9px 14px 7px;border:2px solid var(--brass-lo);border-bottom:0;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--plate-hi),var(--plate));color:var(--brass-hi);position:relative;text-align:left;line-height:1.15}
-.tab small{display:block;font-family:var(--f-type);font-size:11px;letter-spacing:0;color:#bfb08c}
-.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--brass)}
-.tab[aria-selected="true"] small{color:var(--ink-soft)}
-.tab .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red)}
 
-/* ---------- le livre ---------- */
+/* ---------- carte des planques ---------- */
+.layout{display:grid;gap:18px}
+.mapbox{background:linear-gradient(180deg,var(--plate-hi),var(--plate));border:3px solid var(--brass-lo);border-radius:6px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+.mapbox figcaption{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-family:var(--f-display);font-size:12px;letter-spacing:.14em;color:var(--brass-hi);padding:2px 4px 8px}
+.mapbox figcaption span{font-family:var(--f-type);letter-spacing:0;color:#bfb08c}
+.mapbox figure{margin:0}
+#map{display:block;width:100%;height:auto;border-radius:3px;touch-action:manipulation}
+#map .grid{stroke:#b9a77c;stroke-width:1;opacity:.55}
+#map .gl{font-family:var(--f-type);font-size:13px;fill:#8a7651}
+#map .hill{fill:#d3c299;stroke:#a8946a;stroke-width:1;stroke-dasharray:2 4}
+#map .park{fill:#c9cf9d;stroke:#97a06a;stroke-width:1}
+#map .river{fill:none;stroke:#8fb0bf;stroke-linecap:round;stroke-linejoin:round}
+#map .river.in{stroke:#b9d0d8}
+#map .road{fill:none;stroke:#a8946a;stroke-width:2;stroke-dasharray:10 6}
+#map .place{font-family:var(--f-display);fill:#6e5a3c;letter-spacing:.25em}
+#map .riv{font-family:var(--f-type);font-style:italic;fill:#55798a;font-size:15px}
+#map .tgl{fill:none;stroke:var(--red);stroke-width:2.5;stroke-dasharray:7 7;opacity:.8;animation:wire 1.4s linear infinite}
+#map .tgn{font-family:var(--f-display);font-size:13px;fill:var(--red)}
+@keyframes wire{to{stroke-dashoffset:-28}}
+#map .pin{cursor:pointer}
+#map .pin .hit{fill:transparent}
+#map .pin .body{fill:var(--ink);stroke:var(--brass);stroke-width:3}
+#map .pin.qg .body{fill:var(--red);stroke:var(--brass-hi)}
+#map .pin .ini{font-family:var(--f-display);font-size:16px;fill:var(--amber);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+#map .pin .nm{font-family:var(--f-display);font-size:19px;fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:4px}
+#map .pin .cl{font-family:var(--f-type);font-size:14px;fill:var(--ink-soft);text-anchor:middle;paint-order:stroke;stroke:var(--paper);stroke-width:4px}
+#map .pin.on .body{stroke:var(--amber);stroke-width:5;filter:drop-shadow(0 0 6px var(--amber))}
+#map .pin:hover .body,#map .pin:focus-visible .body{stroke:var(--brass-hi);stroke-width:5}
+#map .pin:focus{outline:none}
+#map .pin .new{fill:var(--red);stroke:var(--paper);stroke-width:2;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){#map .tgl,#map .pin .new{animation:none}}
+
+/* ---------- le dossier ---------- */
 .book{position:relative;background:linear-gradient(90deg,var(--brass-lo),var(--brass) 1.2%,var(--brass-lo) 2.4%,transparent 2.4%),var(--plate);border:3px solid var(--brass-lo);border-radius:4px 10px 10px 4px;padding:14px 14px 14px 26px;box-shadow:0 10px 30px rgba(0,0,0,.55);perspective:1600px}
 .book::before,.book::after{content:"";position:absolute;left:8px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--brass-hi),var(--brass-lo))}
 .book::before{top:12px}.book::after{bottom:12px}
-.page{background:linear-gradient(180deg,var(--paper),var(--paper-lo));color:var(--ink);border-radius:2px 6px 6px 2px;min-height:60vh;padding:22px clamp(14px,3vw,34px) 28px;box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.45);transform-origin:left center}
+.page{container-type:inline-size;background:linear-gradient(180deg,var(--paper),var(--paper-lo));color:var(--ink);border-radius:2px 6px 6px 2px;min-height:50vh;padding:22px clamp(14px,3vw,34px) 28px;box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.45);transform-origin:left center}
 .page.out{animation:turnOut .28s ease-in forwards}
 .page.in{animation:turnIn .32s ease-out}
 @keyframes turnOut{to{transform:rotateY(-70deg);opacity:.2}}
@@ -71,7 +97,7 @@ button{cursor:pointer}
 .stats{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--ink-soft)}
 .stats b{font-family:var(--f-display);font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums;margin-right:4px}
 .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px}
-@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+@container (max-width:620px){.cols{grid-template-columns:minmax(0,1fr)}}
 .sec{display:grid;gap:10px;align-content:start}
 .sec + .sec{margin-top:22px}
 .sec h3{margin:0;font-family:var(--f-display);font-size:15px;letter-spacing:.14em;display:flex;align-items:center;gap:8px}
@@ -107,7 +133,8 @@ button{cursor:pointer}
 /* sommaire */
 .gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px}
 .gauge{background:var(--ink);color:var(--paper);border:2px solid var(--brass-lo);border-radius:4px;padding:10px;text-align:center;display:grid;gap:2px}
-.gauge b{font-family:var(--f-display);font-size:28px;color:var(--amber);font-variant-numeric:tabular-nums}
+.gauge b{font-family:var(--f-display);font-size:28px;line-height:1.1;color:var(--amber);font-variant-numeric:tabular-nums}
+.gauge b.mot{font-size:19px;align-self:center}
 .gauge span{font-size:12px;color:#bfb08c}
 .toc{display:grid;gap:6px;margin:0;padding:0;list-style:none}
 .toc button{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;background:none;border:0;border-bottom:1px dotted var(--ink-soft);padding:6px 0;text-align:left;color:var(--ink)}
@@ -116,6 +143,7 @@ button{cursor:pointer}
 .toc span{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 .feed{display:grid;gap:8px}
 .feed .it{font-size:13px;display:grid;gap:2px;border-bottom:1px dotted var(--paper-lo);padding-bottom:6px}
+.feed .it .linkish{justify-self:start;text-align:left}
 .feed .it em{font-style:normal;color:var(--ink-soft);font-size:11px}
 .rule{background:var(--ink);color:var(--paper);padding:12px 14px;border-radius:3px;font-size:13px;line-height:1.5}
 .rule b{color:var(--amber);font-family:var(--f-display);letter-spacing:.1em;font-weight:400}
@@ -160,14 +188,28 @@ dialog::backdrop{background:rgba(10,8,6,.7)}
     </div>
   </div>
   <div class="banner" id="banner" hidden></div>
-  <nav class="tabs" id="tabs" role="tablist" aria-label="Pages du carnet"></nav>
-  <div class="book">
-    <article class="page" id="page" tabindex="-1" aria-live="polite"></article>
-  </div>
-  <div class="turn">
-    <button class="btn ghost" id="prev" type="button">◀ PAGE PRÉC.</button>
-    <span class="folio" id="folio"></span>
-    <button class="btn ghost" id="next" type="button">PAGE SUIV. ▶</button>
+  <div class="layout">
+    <div class="mapbox">
+      <figure>
+        <figcaption>PLAN DES PLANQUES · LYON 1943 <span>Touche une planque pour ouvrir son dossier</span></figcaption>
+        <svg id="map" viewBox="60 140 900 460" role="group" aria-label="Plan de Lyon et des planques du Réseau">
+          <rect x="60" y="140" width="900" height="460" fill="#e9dcb8"/>
+          <g id="mapBase"></g>
+          <g id="mapWires"></g>
+          <g id="mapPins"></g>
+        </svg>
+      </figure>
+    </div>
+    <div>
+      <div class="book">
+        <article class="page" id="page" tabindex="-1" aria-live="polite"></article>
+      </div>
+      <div class="turn">
+        <button class="btn ghost" id="prev" type="button">◀ PRÉC.</button>
+        <span class="folio" id="folio"></span>
+        <button class="btn ghost" id="next" type="button">SUIV. ▶</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -235,14 +277,18 @@ const SUPABASE_URL = "";
 const SUPABASE_CLE = "";
 
 /* Les classes du réseau. Le même identifiant doit figurer dans la table
-   « classes_codes » de la base, avec le code secret de la classe. */
+   « classes_codes » de la base, avec le code secret de la classe.
+   « planque » est le nom de résistant choisi par l'équipe de la classe : c'est
+   lui qui s'affiche sur le plan (noms provisoires pour l'instant) ;
+   x, y : position de la planque sur le plan. */
+const QG = {planque:"La Traboule", sous:"QG du Réseau", x:452, y:372};
 const CLASSES = [
-  {id:"jouhaux-a",   classe:"CM2 A",     ecole:"École Léon Jouhaux",          ville:"Villeurbanne",        eleves:20},
-  {id:"jouhaux-b",   classe:"CM2 B",     ecole:"École Léon Jouhaux",          ville:"Villeurbanne",        eleves:20},
-  {id:"jouhaux-c",   classe:"CM2 C",     ecole:"École Léon Jouhaux",          ville:"Villeurbanne",        eleves:20},
-  {id:"berthelot",   classe:"CM1-CM2",   ecole:"École Berthelot",             ville:"Villeurbanne",        eleves:21},
-  {id:"grattetciel", classe:"3e",        ecole:"Collège des Gratte-Ciel",     ville:"Villeurbanne",        eleves:30},
-  {id:"rousseau",    classe:"3e",        ecole:"Collège Jean-Jacques Rousseau", ville:"Tassin-la-Demi-Lune", eleves:27},
+  {id:"jouhaux-a",   planque:"Le Grenier",          classe:"CM2 A",   ecole:"École Léon Jouhaux",            ville:"Villeurbanne",        eleves:20, x:640, y:330},
+  {id:"jouhaux-b",   planque:"L'Imprimerie",        classe:"CM2 B",   ecole:"École Léon Jouhaux",            ville:"Villeurbanne",        eleves:20, x:760, y:250},
+  {id:"jouhaux-c",   planque:"La Cave",             classe:"CM2 C",   ecole:"École Léon Jouhaux",            ville:"Villeurbanne",        eleves:20, x:872, y:322},
+  {id:"berthelot",   planque:"L'Atelier du relieur", classe:"CM1-CM2", ecole:"École Berthelot",               ville:"Villeurbanne",        eleves:21, x:672, y:452},
+  {id:"grattetciel", planque:"Le Toit",             classe:"3e",      ecole:"Collège des Gratte-Ciel",       ville:"Villeurbanne",        eleves:30, x:850, y:420},
+  {id:"rousseau",    planque:"La Ferme",            classe:"3e",      ecole:"Collège Jean-Jacques Rousseau", ville:"Tassin-la-Demi-Lune", eleves:27, x:170, y:352},
 ];
 const TYPES = [
   {id:"fuite",  label:"Une fuite",     titre:"Registre des fuites",           aide:"Raconte ce qui s'est passé, sans écrire la donnée elle-même. Oui : « J'ai donné ma date de naissance pour m'inscrire à un jeu. » Non : « 12/03/2014 »."},
@@ -318,37 +364,86 @@ const vus = lire("vus", {});
 
 function el(tag, cls, txt){ const n = document.createElement(tag); if (cls) n.className = cls; if (txt !== undefined) n.textContent = txt; return n; }
 function quand(iso){ try { return new Date(iso).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"}); } catch(e){ return ""; } }
-function nomClasse(id){ const c = byId[id]; return c ? `${c.classe} · ${c.ecole.replace(/^(École|Collège) /,"")}` : id; }
+function nomClasse(id){ const c = byId[id]; return c ? `${c.planque} · ${c.classe} ${c.ecole.replace(/^(École|Collège) /,"")}` : id; }
 function dernier(id){ return entrees.filter(e => e.classe === id || e.destinataire === id).reduce((m, e) => e.created_at > m ? e.created_at : m, ""); }
 
-function rendreOnglets(){
-  const t = $("#tabs"); t.innerHTML = "";
-  PAGES.forEach(p => {
-    const b = el("button", "tab"); b.type = "button"; b.setAttribute("role", "tab");
-    b.setAttribute("aria-selected", p === courant ? "true" : "false");
-    if (p === "sommaire") { b.append("Sommaire"); b.append(el("small", "", "le réseau")); }
-    else { const c = byId[p]; b.append(c.classe); b.append(el("small", "", c.ecole.replace(/^(École|Collège) /,""))); const d = dernier(p); if (d && p !== courant && (!vus[p] || d > vus[p])) b.append(el("i", "dot")); }
-    b.onclick = () => aller(p);
-    t.append(b);
+const SVG = "http://www.w3.org/2000/svg";
+function sv(tag, attrs, txt){ const n = document.createElementNS(SVG, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (txt !== undefined) n.textContent = txt; return n; }
+
+/* Fond du plan, dessiné une fois : quadrillage, collines, parc, fleuves, routes, noms. */
+function dessinerFond(){
+  const g = $("#mapBase");
+  for (let x = 100; x < 960; x += 100) { g.append(sv("line", {class:"grid", x1:x, y1:140, x2:x, y2:600})); g.append(sv("text", {class:"gl", x:x + 42, y:158}, "ABCDEFGHI"[x / 100 - 1])); }
+  for (let y = 200; y < 600; y += 100) { g.append(sv("line", {class:"grid", x1:60, y1:y, x2:960, y2:y})); g.append(sv("text", {class:"gl", x:68, y:y + 54}, String(y / 100 - 1))); }
+  g.append(sv("ellipse", {class:"hill", cx:375, cy:385, rx:62, ry:85}));
+  g.append(sv("ellipse", {class:"hill", cx:455, cy:262, rx:78, ry:40}));
+  g.append(sv("ellipse", {class:"park", cx:585, cy:238, rx:58, ry:40}));
+  g.append(sv("path", {class:"road", d:"M540 330 C620 328 760 340 960 336"}));
+  g.append(sv("path", {class:"road", d:"M345 372 C290 362 230 356 60 350"}));
+  const saone = "M330 140 C352 200 418 220 405 268 C392 310 352 330 378 378 C402 424 448 468 488 528";
+  const rhone = "M960 168 C860 186 760 206 660 212 C590 218 545 246 534 298 C522 352 522 430 500 520 C488 568 480 590 476 600";
+  [[saone, 16], [rhone, 24]].forEach(([d, w]) => { g.append(sv("path", {class:"river", d, "stroke-width":w})); g.append(sv("path", {class:"river in", d, "stroke-width":w * .45})); });
+  g.append(sv("text", {class:"riv", x:300, y:205, transform:"rotate(62 300 205)"}, "Saône"));
+  g.append(sv("text", {class:"riv", x:548, y:420, transform:"rotate(-84 548 420)"}, "Rhône"));
+  g.append(sv("text", {class:"place", x:420, y:560, "font-size":30}, "LYON"));
+  g.append(sv("text", {class:"place", x:640, y:580, "font-size":24}, "VILLEURBANNE"));
+  g.append(sv("text", {class:"place", x:96, y:300, "font-size":18}, "TASSIN"));
+  g.append(sv("text", {class:"gl", x:340, y:470}, "Fourvière"));
+  g.append(sv("text", {class:"gl", x:420, y:236}, "Croix-Rousse"));
+  g.append(sv("text", {class:"gl", x:548, y:242}, "Tête d'Or"));
+  const r = sv("g", {transform:"translate(905 545)"});
+  r.append(sv("path", {d:"M0 -30 L8 0 L0 30 L-8 0 Z", fill:"#6e5a3c"}));
+  r.append(sv("path", {d:"M0 -30 L8 0 L-8 0 Z", fill:"#c0392b"}));
+  r.append(sv("text", {class:"place", x:-7, y:-36, "font-size":16}, "N"));
+  g.append(r);
+  g.append(sv("line", {x1:90, y1:575, x2:190, y2:575, stroke:"#6e5a3c", "stroke-width":4}));
+  g.append(sv("text", {class:"gl", x:90, y:566}, "1 km"));
+}
+
+function rendreCarte(){
+  const pos = id => id === "sommaire" ? QG : byId[id];
+  const w = $("#mapWires"); w.innerHTML = "";
+  const paires = {};
+  entrees.filter(e => e.type === "mot" && byId[e.classe] && byId[e.destinataire]).forEach(e => { const k = [e.classe, e.destinataire].sort().join("|"); paires[k] = (paires[k] || 0) + 1; });
+  Object.entries(paires).forEach(([k, n]) => {
+    const [a, b] = k.split("|").map(pos);
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1;
+    const cx = mx - dy / L * L * .18, cy = my + dx / L * L * .18;
+    w.append(sv("path", {class:"tgl", d:`M${a.x} ${a.y} Q${cx} ${cy} ${b.x} ${b.y}`}));
+    if (n > 1) w.append(sv("text", {class:"tgn", x:(mx + cx) / 2, y:(my + cy) / 2}, "×" + n));
   });
-  const sel = t.querySelector('[aria-selected="true"]'); if (sel) sel.scrollIntoView({block:"nearest", inline:"nearest"});
+  const p = $("#mapPins"); p.innerHTML = "";
+  PAGES.forEach(id => {
+    const c = pos(id), qg = id === "sommaire";
+    const g = sv("g", {class:"pin" + (qg ? " qg" : "") + (id === courant ? " on" : ""), transform:`translate(${c.x} ${c.y})`, tabindex:"0", role:"button", "aria-label":qg ? "QG du Réseau : vue d'ensemble" : `${c.planque}, planque de la classe ${c.classe} de l'${c.ecole}`});
+    g.append(sv("circle", {class:"hit", r:36}));
+    g.append(sv("circle", {class:"body", r:qg ? 20 : 17}));
+    const n = qg ? entrees.length : entrees.filter(e => e.classe === id).length;
+    g.append(sv("text", {class:"ini"}, qg ? "QG" : String(n)));
+    g.append(sv("text", {class:"nm", y:qg ? 40 : 37}, c.planque));
+    g.append(sv("text", {class:"cl", y:qg ? 56 : 53}, qg ? c.sous : `${c.classe} · ${c.ecole.replace(/^(École|Collège) /, "")}`));
+    if (!qg) { const d = dernier(id); if (d && id !== courant && (!vus[id] || d > vus[id])) g.append(sv("circle", {class:"new", cx:14, cy:-14, r:6})); }
+    g.addEventListener("click", () => aller(id));
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); aller(id); } });
+    p.append(g);
+  });
 }
 
 function aller(p){
   if (p === courant) return;
   const page = $("#page");
-  const fin = () => { courant = p; try { history.replaceState(null, "", "#" + p); } catch(e){} rendre(); page.classList.remove("out"); page.classList.add("in"); page.focus({preventScroll:true}); setTimeout(() => page.classList.remove("in"), 400); };
+  const fin = () => { courant = p; try { history.replaceState(null, "", "#" + p); } catch(e){} rendre(); page.classList.remove("out"); page.classList.add("in"); page.focus({preventScroll:true}); if (matchMedia("(max-width: 980px)").matches) page.scrollIntoView({behavior:"smooth", block:"start"}); setTimeout(() => page.classList.remove("in"), 400); };
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return fin();
   page.classList.add("out"); setTimeout(fin, 260);
 }
 
 function rendre(){
   if (courant !== "sommaire") { vus[courant] = new Date().toISOString(); garder("vus", vus); }
-  rendreOnglets();
+  rendreCarte();
   const page = $("#page"); page.innerHTML = "";
   if (courant === "sommaire") pageSommaire(page); else pageClasse(page, courant);
   const i = PAGES.indexOf(courant);
-  $("#folio").textContent = `page ${i + 1} / ${PAGES.length}`;
+  $("#folio").textContent = i === 0 ? "QG" : `planque ${i} / ${PAGES.length - 1}`;
   $("#prev").disabled = i === 0; $("#next").disabled = i === PAGES.length - 1;
   const c = byId[moi.classe];
   $("#meChip").innerHTML = ""; if (c) { $("#meChip").append("Tu écris pour "); $("#meChip").append(el("b", "", c.classe + " · " + c.ecole.replace(/^(École|Collège) /,""))); $("#meChip").append(" · " + moi.agent); } else $("#meChip").textContent = "Classe non choisie";
@@ -356,18 +451,18 @@ function rendre(){
 
 function pageSommaire(page){
   const fuites = entrees.filter(e => e.type === "fuite");
-  const ph = el("header", "ph"); const h = el("div"); h.append(el("h2", "", "Le Réseau, semaine après semaine")); h.append(el("p", "", `${CLASSES.length} classes · ${CLASSES.reduce((s, c) => s + c.eleves, 0)} agents · Métropole de Lyon`)); ph.append(h); ph.append(el("span", "stamp", "CONFIDENTIEL"));
+  const ph = el("header", "ph"); const h = el("div"); h.append(el("h2", "", "QG du Réseau · La Traboule")); h.append(el("p", "", `${CLASSES.length} classes · ${CLASSES.reduce((s, c) => s + c.eleves, 0)} agents · Métropole de Lyon`)); ph.append(h); ph.append(el("span", "stamp", "CONFIDENTIEL"));
   page.append(ph);
   const g = el("div", "gauges");
   const evit = fuites.length ? Math.round(100 * fuites.filter(e => e.necessaire === "non").length / fuites.length) + " %" : "—";
   const comptes = {}; fuites.forEach(e => (e.donnees || []).forEach(d => comptes[d] = (comptes[d] || 0) + 1));
   const top = Object.entries(comptes).sort((a, b) => b[1] - a[1])[0];
-  [[fuites.length, "fuites consignées"], [entrees.filter(e => e.type === "mot").length, "télégrammes échangés"], [evit, "fuites évitables"], [top ? lbl(DONNEES, top[0]) : "—", "donnée la plus semée"]].forEach(([v, l]) => { const d = el("div", "gauge"); d.append(el("b", "", v)); d.append(el("span", "", l)); g.append(d); });
+  [[fuites.length, "fuites consignées"], [entrees.filter(e => e.type === "mot").length, "télégrammes échangés"], [evit, "fuites évitables"], [top ? lbl(DONNEES, top[0]) : "—", "donnée la plus semée"]].forEach(([v, l]) => { const d = el("div", "gauge"); d.append(el("b", typeof v === "string" && !/%|—/.test(v) ? "mot" : "", v)); d.append(el("span", "", l)); g.append(d); });
   page.append(g);
   const cols = el("div", "cols");
-  const a = el("div"); const s1 = el("section", "sec"); s1.append(el("h3", "", "LES PAGES DU CARNET"));
+  const a = el("div"); const s1 = el("section", "sec"); s1.append(el("h3", "", "LES PLANQUES"));
   const toc = el("ul", "toc");
-  CLASSES.forEach(c => { const li = el("li"); const b = el("button"); b.type = "button"; b.append(el("strong", "", `${c.classe} · ${c.ecole}`)); const n = entrees.filter(e => e.classe === c.id).length; b.append(el("span", "", `${c.ville} · ${n} écrit${n > 1 ? "s" : ""}`)); b.onclick = () => aller(c.id); li.append(b); toc.append(li); });
+  CLASSES.forEach(c => { const li = el("li"); const b = el("button"); b.type = "button"; b.append(el("strong", "", `${c.planque} · ${c.classe} ${c.ecole.replace(/^(École|Collège) /, "")}`)); const n = entrees.filter(e => e.classe === c.id).length; b.append(el("span", "", `${c.ville} · ${n} écrit${n > 1 ? "s" : ""}`)); b.onclick = () => aller(c.id); li.append(b); toc.append(li); });
   s1.append(toc); a.append(s1);
   const s3 = el("section", "sec"); s3.append(el("h3", "", "RÈGLE D'OR")); const r = el("div", "rule"); r.append(el("b", "", "ON RACONTE, ON NE DONNE PAS. ")); r.append("Ici on écrit ce qui s'est passé, jamais la donnée elle-même : pas de vrai nom, d'adresse, de numéro, de pseudo ni de photo. On signe avec son nom de code."); s3.append(r); a.append(s3);
   const b2 = el("div"); const s2 = el("section", "sec"); s2.append(el("h3", "", "DERNIÈRES NOUVELLES"));
@@ -386,12 +481,12 @@ function pageClasse(page, id){
   const siennes = entrees.filter(e => e.classe === id);
   const fuites = siennes.filter(e => e.type === "fuite");
   const ph = el("header", "ph"); const h = el("div");
-  h.append(el("h2", "", `${c.classe} · ${c.ecole}`)); h.append(el("p", "", `${c.ville} · ${c.eleves} agents`));
+  h.append(el("h2", "", c.planque)); h.append(el("p", "", `Planque de la classe ${c.classe} · ${c.ecole} · ${c.ville} · ${c.eleves} agents`));
   const st = el("div", "stats"); st.style.marginTop = "8px";
   const evit = fuites.length ? Math.round(100 * fuites.filter(e => e.necessaire === "non").length / fuites.length) : null;
   [[fuites.length, fuites.length > 1 ? "fuites" : "fuite"], [evit === null ? "—" : evit + " %", "évitables"], [entrees.filter(e => e.destinataire === id).length, "télégramme(s) reçu(s)"]].forEach(([v, l]) => { const s = el("span"); s.append(el("b", "", v)); s.append(l); st.append(s); });
   h.append(st); ph.append(h);
-  if (moi.classe === id) ph.append(el("span", "stamp", "NOTRE PAGE"));
+  if (moi.classe === id) ph.append(el("span", "stamp", "NOTRE PLANQUE"));
   page.append(ph);
   const cols = el("div", "cols");
   const g = el("div"), d = el("div");
@@ -472,7 +567,7 @@ function majFormulaire(){
   $("#lblTexte").textContent = k === "fuite" ? "RACONTE (FACULTATIF)" : k === "mot" ? "TON TÉLÉGRAMME" : "ÉCRIS ICI";
   $("#helpTexte").textContent = t.aide;
   const d = $("#dest"); const garde = d.value; d.innerHTML = "";
-  CLASSES.filter(c => c.id !== moi.classe).forEach(c => d.append(new Option(`${c.classe} · ${c.ecole}`, c.id)));
+  CLASSES.filter(c => c.id !== moi.classe).forEach(c => d.append(new Option(`${c.planque} · ${c.classe} ${c.ecole}`, c.id)));
   if (garde) d.value = garde;
   $("#warn").hidden = true;
 }
@@ -537,6 +632,7 @@ async function rafraichir(){
   catch (e) { $("#banner").hidden = false; $("#banner").textContent = "Le carnet ne répond pas pour l'instant. Les pages se mettront à jour toutes seules."; }
   if (!document.querySelector("dialog[open]")) rendre();
 }
+dessinerFond();
 rafraichir();
 if (ENLIGNE) setInterval(() => { if (document.visibilityState === "visible") rafraichir(); }, 30000);
 </script>
