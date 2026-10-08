@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Chronophone R-43</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -354,7 +358,7 @@ button{font:inherit;color:inherit}
 .zoom .zprev{left:1vw}.zoom .znext{right:1vw}
 
 /* ---------- Écrans étroits ---------- */
-@media (max-width:820px){
+@media (max-width:820px), (max-height:500px){
   body{overflow:auto}
   .machine{height:auto;min-height:100%}
   .head{grid-template-columns:1fr 1fr}
@@ -919,3 +923,5 @@ document.getElementById('fs').addEventListener('click',()=>{
   }catch(e){}
 });
 </script>
+
+</html>
