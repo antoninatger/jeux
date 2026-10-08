@@ -2,68 +2,51 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fausses conversations · Ressources profs</title>
-<meta name="description" content="Créer une fausse conversation WhatsApp, SMS ou Instagram pour la classe : image à télécharger ou lecture animée, message par message.">
+<meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-content">
+<title>Fausses conversations · Jeux et ressources pédagogiques</title>
+<meta name="description" content="Créer une fausse conversation WhatsApp, SMS ou Instagram pour la classe, en écrivant directement dans le téléphone : image à télécharger ou lecture animée, message par message.">
 <style>
 :root{--bg:#f4f1ea;--panel:#fff;--ink:#1d1b18;--doux:#6b665d;--bord:#e2ddd2;--acc:#1f6f5c;--acc2:#e9f3ef;--warn:#b3261e;--r:12px}
 @media (prefers-color-scheme:dark){:root{--bg:#16150f;--panel:#201e19;--ink:#f1ede4;--doux:#a8a196;--bord:#38352d;--acc:#5cc4a6;--acc2:#1f3530}}
 *{box-sizing:border-box}
+html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
-.haut{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid var(--bord);background:var(--panel)}
-.haut h1{font-size:19px;margin:0}
-.haut p{margin:0;color:var(--doux);font-size:13.5px;flex:1;min-width:220px}
-.haut a{color:var(--acc)}
-.page{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;max-width:1180px;margin:0 auto;padding:20px}
-@media (max-width:900px){.page{grid-template-columns:1fr;padding:16px}.apercu{order:-1;position:static}.apercu .ecran{height:560px}}
-.bloc{background:var(--panel);border:1px solid var(--bord);border-radius:var(--r);padding:16px;margin-bottom:16px}
-.bloc h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
-.bloc h2 .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px}
-.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-label.ch{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--doux)}
-input[type=text],input[type=time],input[type=number],select,textarea{background:var(--bg);border:1px solid var(--bord);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
-textarea{resize:vertical}
-input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+[hidden]{display:none!important}
+.haut{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bord);background:var(--panel);position:sticky;top:0;z-index:20}
+.haut h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.haut a{color:var(--acc);font-size:13.5px;text-decoration:none;white-space:nowrap}
 .btn{border:1px solid var(--bord);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--acc)}
 .btn.prim{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
 .btn.warn{color:var(--warn)}
-.btn.mini{padding:3px 8px;font-size:13px}
-.seg{display:flex;flex-wrap:wrap;gap:6px}
-.seg .btn[aria-pressed=true]{background:var(--acc2);border-color:var(--acc);font-weight:600}
-.rang{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.aide{font-size:12.5px;color:var(--doux);margin:6px 0 0}
-kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--bg)}
-/* Qui écrit */
-.qui{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.qui .btn{display:flex;align-items:center;gap:6px}
-.qui .btn[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
-.pastille{width:10px;height:10px;border-radius:50%;display:inline-block}
-.compose{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
-.compose textarea{min-height:44px}
-/* Liste des messages */
-.liste{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-height:460px;overflow:auto;padding-right:2px}
-.lm{display:grid;grid-template-columns:96px minmax(0,1fr) 104px auto;gap:6px;align-items:start;border:1px solid var(--bord);border-radius:8px;padding:6px;background:var(--bg)}
-.lm.date{grid-template-columns:96px minmax(0,1fr) auto}
-.lm.vise{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc2)}
-.lm select,.lm input,.lm textarea{padding:4px 6px;font-size:13.5px}
-.lm textarea{min-height:30px;height:30px}
-.lm .outils{display:flex;gap:2px}
-.lm .outils button{border:0;background:none;cursor:pointer;padding:3px 5px;border-radius:6px;color:var(--doux)}
-.lm .outils button:hover{background:var(--panel);color:var(--ink)}
-.lm .st{grid-column:3}
-.lm img{max-width:70px;max-height:50px;border-radius:4px;display:block}
-.vide{color:var(--doux);font-size:13.5px;padding:8px 0}
-.personnes{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.personne{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center}
-.personne input[type=color]{width:34px;height:30px;padding:0;border:1px solid var(--bord);border-radius:6px;background:none}
-.apercu{position:sticky;top:12px;align-self:start}
-.apercu .rang{justify-content:center}
-.note{font-size:12px;color:var(--doux);text-align:center;margin:8px 0 0}
-#msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
-#msgBox.on{opacity:1}
+.btn.mini{padding:4px 9px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:default}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+input[type=text],input[type=time],input[type=number],select,textarea{background:var(--bg);border:1px solid var(--bord);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
 input[type=file]{display:none}
+#reglBtn{display:none}
+
+.page{display:grid;grid-template-columns:330px minmax(0,1fr);gap:28px;max-width:1100px;margin:0 auto;padding:20px}
+.regl{align-self:start;position:sticky;top:66px;max-height:calc(100vh - 80px);overflow:auto;padding-right:4px}
+.bloc{background:var(--panel);border:1px solid var(--bord);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.bloc h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin:0 0 10px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg .btn{flex:1}
+.seg .btn[aria-pressed=true]{background:var(--acc2);border-color:var(--acc);font-weight:600}
+.ligne{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.ligne label{font-size:13.5px}
+.champ2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.champ2 label,.lab{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--doux)}
+.perso{display:grid;grid-template-columns:34px 1fr auto;gap:6px;align-items:center;margin-top:6px}
+.perso input[type=color]{width:34px;height:32px;padding:0;border:1px solid var(--bord);border-radius:8px;background:none;cursor:pointer}
+.perso .moi{width:34px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--acc2);font-size:12px;font-weight:600;color:var(--acc)}
+.aide{font-size:12.5px;color:var(--doux);margin:8px 0 0}
+kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--bg)}
+
+.scene-edit{display:flex;flex-direction:column;align-items:center;gap:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.astuce{font-size:12.5px;color:var(--doux);text-align:center;max-width:420px;margin:0}
 
 /* ================= Téléphone ================= */
 .tel{width:min(380px,100%);margin:0 auto;border-radius:44px;background:#111;padding:10px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
@@ -152,91 +135,151 @@ input[type=file]{display:none}
 .app-insta.sombre{--t-bg:#000;--t-ink:#fff;--t-hdr:#000;--t-hdr-ink:#fff;--t-eux:#262626;--t-eux-ink:#fff;--t-bas:#000;--t-champ:#262626}
 .app-insta.sombre .tete{border-color:#262626}
 
-/* ================= Lecture en classe ================= */
+
+
+/* ---------- Écriture dans le téléphone ---------- */
+.edit .fil{cursor:default}
+.edit .b:hover{filter:brightness(.97)}
+.edit .b.choisi{outline:2px solid #f59f00;outline-offset:2px}
+.vide-tel{margin:auto;text-align:center;color:var(--t-doux);font-size:13.5px;padding:20px;line-height:1.5}
+.vide-tel b{color:var(--t-ink)}
+.ecrire{background:var(--t-bas);padding:6px 8px 12px;display:flex;flex-direction:column;gap:6px;border-top:.5px solid rgba(0,0,0,.06)}
+.qui{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:1px;align-items:center}
+.qui .sp{flex:1;min-width:4px}
+.qui .lbl{font-size:11.5px;color:var(--t-doux);white-space:nowrap}
+.qui::-webkit-scrollbar{display:none}
+.qui button{border:1px solid rgba(127,127,127,.35);background:var(--t-champ);color:var(--t-ink);border-radius:999px;padding:3px 10px 3px 4px;font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.qui button .pt{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:9.5px;font-weight:700}
+.qui button[aria-pressed=true]{background:var(--c,#00a884);border-color:var(--c,#00a884);color:#fff;font-weight:600}
+.qui button[aria-pressed=true] .pt{background:rgba(255,255,255,.3)!important}
+.tete .id{cursor:pointer}
+.zone{display:flex;align-items:flex-end;gap:6px}
+.zone textarea{flex:1;resize:none;border-radius:20px;padding:9px 14px;background:var(--t-champ);color:var(--t-ink);border:var(--t-champ-bord);font-size:15px;line-height:1.3;max-height:110px;min-height:40px;outline:none}
+.zone textarea::placeholder{color:var(--t-doux)}
+.rb{width:40px;height:40px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;flex:none;color:#fff;font-weight:700;font-size:14px;position:relative}
+.rb svg{width:19px;height:19px}
+.rb.plus{background:transparent;color:var(--t-doux);font-size:24px;font-weight:400;width:30px}
+.rb.env{background:var(--t-rond);transition:background .15s}
+.cote{font-size:11.5px;color:var(--t-doux);text-align:center;margin-top:-2px}
+.cote b{color:var(--t-ink)}
+.outils-msg{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.outils-msg button{border:1px solid rgba(127,127,127,.35);background:var(--t-champ);color:var(--t-ink);border-radius:8px;padding:4px 8px;font-size:12.5px;cursor:pointer}
+.outils-msg button.ok{background:var(--t-rond);color:#fff;border-color:transparent;font-weight:600}
+.outils-msg button.del{color:#d63939}
+.menu-plus{position:absolute;left:8px;bottom:66px;background:var(--t-champ);color:var(--t-ink);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.25);padding:6px;display:flex;flex-direction:column;z-index:5;min-width:210px}
+.menu-plus button{border:0;background:none;text-align:left;padding:9px 10px;border-radius:8px;font-size:14px;cursor:pointer;color:inherit}
+.menu-plus button:hover{background:rgba(127,127,127,.15)}
+
+/* Fenêtres */
+dialog{border:1px solid var(--bord);border-radius:14px;background:var(--panel);color:var(--ink);padding:18px;width:min(560px,calc(100vw - 24px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin:0 0 8px;font-size:17px}
+dialog textarea{min-height:220px;font:14px/1.45 ui-monospace,Menlo,monospace}
+dialog .ligne{justify-content:flex-end}
+#msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;max-width:calc(100vw - 30px);text-align:center}
+#msgBox.on{opacity:1}
+
+/* Lecture en classe */
 #scene{position:fixed;inset:0;background:#0d0d0f;z-index:40;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 #scene.on{display:flex}
 #scene .tel{transform-origin:top center}
 #scene .bas{color:#9a9aa2;font-size:13px;display:flex;gap:14px;align-items:center}
 #scene .bas .btn{background:#222;border-color:#333;color:#eee}
 #scene.on~#msgBox{bottom:auto;top:18px}
+
+.scene-edit .ecran{height:clamp(500px,calc(100vh - 160px),720px)}
+/* ---------- Téléphone (écran étroit) : le téléphone prend tout l'écran ---------- */
+@media (max-width:820px){
+  #reglBtn{display:inline-block}
+  .page{display:block;padding:0}
+  .regl{display:none;position:fixed;inset:0;height:100vh;height:100dvh;z-index:30;max-height:none;background:var(--bg);padding:12px 12px 80px;overflow:auto}
+  body.regl-on .regl{display:block}
+  .regl .fermer{display:flex!important}
+  .scene-edit{gap:8px;padding-bottom:10px}
+  .scene-edit .tel{width:100%;border-radius:0;padding:0;box-shadow:none;background:none}
+  .scene-edit .ecran{border-radius:0;height:calc(100dvh - 120px);min-height:420px}
+  .scene-edit .barre{display:none}
+  .actions{padding:0 10px}
+  .astuce{display:none}
+  #msgBox{bottom:auto;top:62px}
+}
+.regl .fermer{display:none;justify-content:space-between;align-items:center;margin-bottom:10px}
 </style>
 </head>
 <body>
 <header class="haut">
-  <a href="./" style="font-size:13.5px">← Ressources profs</a><h1>Fausses conversations</h1>
-  <p>Créez une conversation WhatsApp, SMS ou Instagram, puis téléchargez-la en image ou faites-la défiler en classe, message par message. Rien n'est envoyé sur Internet : tout reste sur votre ordinateur.</p>
+  <a href="https://antoninatger.com/jeux/fausses-conversations/" title="Retour">←</a>
+  <h1>Fausses conversations</h1>
+  <button class="btn mini" id="annuler" title="Annuler (Ctrl+Z)" disabled>↶ Annuler</button>
+  <button class="btn mini" id="reglBtn">⚙ Réglages</button>
 </header>
 
 <main class="page">
-<div class="edit">
+<aside class="regl" id="regl" aria-label="Réglages">
+  <div class="fermer"><b>Réglages</b><button class="btn prim" id="reglFin">Terminé</button></div>
+
   <section class="bloc">
-    <h2><span class="n">1</span>Application</h2>
+    <h2>Application</h2>
     <div class="seg" id="apps">
       <button class="btn" data-app="whatsapp">WhatsApp</button>
-      <button class="btn" data-app="sms">SMS (iPhone)</button>
+      <button class="btn" data-app="sms">SMS</button>
       <button class="btn" data-app="insta">Instagram</button>
     </div>
-    <div class="rang">
+    <div class="ligne">
       <label><input type="checkbox" id="sombre"> Mode sombre</label>
-      <label id="vertL"><input type="checkbox" id="vert"> Bulles vertes (SMS sans iMessage)</label>
+      <label id="vertL"><input type="checkbox" id="vert"> Bulles vertes</label>
     </div>
   </section>
 
   <section class="bloc">
-    <h2><span class="n">2</span>Avec qui ?</h2>
-    <div class="grille">
-      <label class="ch">Nom affiché en haut<input type="text" id="titre" maxlength="40"></label>
-      <label class="ch" id="statutL">Sous le nom<input type="text" id="statut" maxlength="50" placeholder="en ligne"></label>
-      <label class="ch">Heure du téléphone<input type="time" id="heure"></label>
-      <label class="ch">Batterie (%)<input type="number" id="batt" min="1" max="100"></label>
-    </div>
-    <div class="rang">
-      <button class="btn" id="photoBtn">Photo de profil</button>
-      <button class="btn mini warn" id="photoDel" hidden>Retirer la photo</button>
-      <label><input type="checkbox" id="groupe"> Conversation de groupe</label>
-    </div>
-    <div id="pers" class="personnes"></div>
-    <div class="rang" id="persAdd" hidden><button class="btn mini" id="addPers">+ Une personne</button></div>
+    <h2>Personnages</h2>
+    <div class="perso"><span class="moi">Moi</span><span style="font-size:13.5px;color:var(--doux)">Vous : vos bulles à droite</span><span></span></div>
+    <div id="persos"></div>
+    <div class="ligne"><button class="btn mini" id="addPers">+ Un personnage</button><span class="aide" style="margin:0">À partir de deux, c'est un groupe.</span></div>
+    <div id="grpL" class="lab" style="margin-top:10px">Nom du groupe<input type="text" id="titre" maxlength="40"></div>
+    <div class="lab" style="margin-top:8px">Sous le nom<input type="text" id="statut" maxlength="60" placeholder="en ligne"></div>
+    <div class="ligne"><button class="btn mini" id="photoBtn">Photo de profil</button><button class="btn mini warn" id="photoDel" hidden>Retirer</button></div>
   </section>
 
   <section class="bloc">
-    <h2><span class="n">3</span>Les messages</h2>
-    <div class="qui" id="qui" role="group" aria-label="Qui écrit ?"></div>
-    <div class="compose">
-      <textarea id="texte" rows="2" placeholder="Écrivez un message, puis Entrée"></textarea>
-      <button class="btn prim" id="ajout">Ajouter</button>
+    <h2>Heures</h2>
+    <div class="champ2">
+      <label>Premier message<input type="time" id="debut"></label>
+      <label>Entre deux messages<select id="ecart"><option value="1">1 minute</option><option value="2">2 minutes</option><option value="5">5 minutes</option><option value="alea">Au hasard (réaliste)</option><option value="0">Même minute</option></select></label>
     </div>
-    <div class="rang">
-      <label class="ch" style="flex-direction:row;align-items:center;gap:6px">Heure <input type="time" id="hMsg" style="width:auto"></label>
-      <button class="btn mini" id="addDate">+ Séparateur de date</button>
-      <button class="btn mini" id="addImg">+ Photo dans la conversation</button>
-      <label><input type="checkbox" id="alterner" checked> Alterner qui écrit</label>
-    </div>
-    <p class="aide"><kbd>Entrée</kbd> ajoute le message · <kbd>Maj</kbd>+<kbd>Entrée</kbd> va à la ligne · <kbd>Tab</kbd> change qui écrit. L'heure avance toute seule d'une minute. Cliquez sur une bulle du téléphone pour la retrouver ici.</p>
-    <div class="liste" id="liste"></div>
+    <p class="aide">Les heures se calculent toutes seules. Pour sauter du temps, touchez un message puis 🕒 pour fixer son heure : la suite repart de là.</p>
+    <div class="champ2"><label>Batterie (%)<input type="number" id="batt" min="1" max="100"></label></div>
   </section>
 
   <section class="bloc">
-    <h2><span class="n">4</span>Garder et réutiliser</h2>
-    <div class="rang" style="margin-top:0">
-      <button class="btn" id="sauver">Enregistrer la conversation</button>
-      <button class="btn" id="ouvrir">Ouvrir une conversation</button>
-      <select id="exemples" class="btn" style="width:auto"><option value="">Charger un exemple…</option></select>
-      <button class="btn warn" id="effacer">Tout effacer</button>
+    <h2>Conversations</h2>
+    <select id="exemples"><option value="">Charger un exemple…</option></select>
+    <div class="ligne">
+      <button class="btn mini" id="coller">Coller un dialogue</button>
+      <button class="btn mini" id="sauver">Enregistrer</button>
+      <button class="btn mini" id="ouvrir">Ouvrir</button>
+      <button class="btn mini warn" id="effacer">Tout effacer</button>
     </div>
-    <p class="aide">« Enregistrer » crée un petit fichier à garder sur votre ordinateur ou à envoyer à un collègue ; « Ouvrir » le recharge pour le modifier.</p>
+    <p class="aide">« Enregistrer » crée un petit fichier à garder ou à envoyer à un collègue. Rien n'est envoyé sur Internet.</p>
   </section>
-</div>
+</aside>
 
-<aside class="apercu">
+<section class="scene-edit">
   <div id="tel"></div>
-  <div class="rang">
+  <div class="actions">
     <button class="btn prim" id="png">Télécharger l'image</button>
     <button class="btn prim" id="jouer">Lire en classe ▶</button>
   </div>
-  <p class="note">L'image téléchargée porte la mention discrète « Conversation fictive ».</p>
-</aside>
+  <p class="astuce"><kbd>Entrée</kbd> envoie · <kbd>Tab</kbd> change qui écrit · <kbd>Maj</kbd>+<kbd>Entrée</kbd> va à la ligne · un clic sur une bulle pour la modifier. L'image porte la mention discrète « Conversation fictive ».</p>
+</section>
 </main>
+
+<dialog id="dlgColler">
+  <h3>Coller un dialogue</h3>
+  <p class="aide" style="margin:0 0 8px">Une réplique par ligne, sous la forme <b>Nom : message</b>. « Moi » écrit à droite, les autres noms deviennent des personnages. Une ligne <b>--- Lundi ---</b> ajoute un séparateur de date.</p>
+  <textarea id="collerTxt" placeholder="Lucas : Salut ça va ?&#10;Moi : Oui et toi ?&#10;Lucas : Tu fais quoi ce soir ?"></textarea>
+  <div class="ligne"><label><input type="checkbox" id="collerRemplacer" checked> Remplacer la conversation</label><span style="flex:1"></span><button class="btn" id="collerNon">Annuler</button><button class="btn prim" id="collerOui">Créer la conversation</button></div>
+</dialog>
 
 <div id="scene" aria-hidden="true">
   <div id="sceneTel"></div>
@@ -252,227 +295,294 @@ input[type=file]{display:none}
 'use strict';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const COUL=['#25d366','#e8590c','#7048e8','#d6336c','#1c7ed6','#2b8a3e','#c2255c','#5f3dc4'];
-const NOMS_COUL=['#1f7aec','#e542a3','#91ab01','#d3622a','#9a4ccf','#00a3a3','#c4532d'];
+const COUL=['#1f7aec','#e542a3','#d3622a','#9a4ccf','#00a3a3','#91ab01','#c4532d','#25a244'];
 
 /* ---------- Exemples ---------- */
+const M=(de,texte,x)=>Object.assign({de,texte},x||{});
 const EXEMPLES={
-  arnaque:{nom:"Arnaque « Coucou maman »",c:{app:'whatsapp',sombre:false,titre:'+33 7 56 12 48 90',statut:'en ligne',heure:'19:42',batt:58,groupe:false,
-    pers:[{id:'p1',nom:'+33 7 56 12 48 90',coul:COUL[1]}],
-    msgs:[{de:'date',texte:"Aujourd'hui"},
-      {de:'p1',texte:"Coucou maman c'est moi, j'ai cassé mon téléphone 😩 c'est mon nouveau numéro, tu peux l'enregistrer",heure:'19:31'},
-      {de:'moi',texte:"Léa ? C'est toi ?",heure:'19:33',st:'lu'},
-      {de:'p1',texte:"Oui c'est moi ! Je suis chez une copine, je t'écris de son ordi",heure:'19:33'},
-      {de:'p1',texte:"J'ai un petit problème, je dois payer une facture urgente aujourd'hui et ma banque bloque tout avec le nouveau téléphone",heure:'19:34'},
-      {de:'moi',texte:"Pourquoi tu ne m'appelles pas ?",heure:'19:36',st:'lu'},
-      {de:'p1',texte:"Le micro marche pas 😕 tu peux faire un virement de 680 € ? Je te rembourse demain promis ❤️",heure:'19:36'},
-      {de:'p1',texte:"C'est vraiment urgent maman stp",heure:'19:37'},
-      {de:'moi',texte:"Donne-moi le RIB",heure:'19:40',st:'recu'}]}},
-  emprise:{nom:"Emprise : Lucas et Sophie",c:{app:'whatsapp',sombre:false,titre:'Lucas 💬',statut:'en ligne',heure:'20:21',batt:73,groupe:false,
-    pers:[{id:'p1',nom:'Lucas 💬',coul:COUL[4]}],
-    msgs:[{de:'date',texte:'Vendredi 15 mars'},
-      {de:'p1',texte:'Tu vas encore à une soirée sans moi ?',heure:'20:07'},
-      {de:'moi',texte:"Mais enfin loulou, c'est une soirée entre copines.",heure:'20:08',st:'lu'},
-      {de:'p1',texte:"Bah ouais, mais…\nMoi, je sais pas quoi faire ce soir.\nJe m'ennuie.",heure:'20:10'},
-      {de:'moi',texte:'Tu veux pas jouer à la console ?',heure:'20:11',st:'lu'},
-      {de:'p1',texte:"Bof 😅. Quand t'es pas là, je me sens pas bien.\nC'est comme un vide.\nJe suis content que tu sois avec tes copines. Mais pour moi ça va vraiment être une soirée DIFFICILE.",heure:'20:13'},
-      {de:'moi',texte:'… Tu veux que je reste avec toi ?',heure:'20:14',st:'lu'},
-      {de:'p1',texte:"Tu fais ce que tu veux, ma chérie.\nMais ça compterait vraiment pour moi si tu tenais compte de ce que je ressens là.",heure:'20:16'},
-      {de:'moi',texte:'Bah écoute, ouais…\nJe vais dire à mes copines que je reste avec toi.',heure:'20:18',st:'lu'},
-      {de:'p1',texte:"J'ai tellement de la chance d'être avec toi.\nT'es la plus belle chose qui me soit arrivée ❤️❤️❤️",heure:'20:20'}]}},
-  rumeur:{nom:"Rumeur dans le groupe de classe",c:{app:'whatsapp',sombre:false,titre:'4e B 📚',statut:'Inès, Mehdi, Tom, vous',heure:'21:12',batt:41,groupe:true,
-    pers:[{id:'p1',nom:'Mehdi',coul:NOMS_COUL[0]},{id:'p2',nom:'Inès',coul:NOMS_COUL[1]},{id:'p3',nom:'Tom',coul:NOMS_COUL[3]}],
-    msgs:[{de:'date',texte:"Aujourd'hui"},
-      {de:'p1',texte:"Vous avez vu ? Le collège ferme lundi, c'est sur Insta 😱",heure:'21:02'},
-      {de:'p2',texte:'Quoi ?? Pourquoi ?',heure:'21:02'},
-      {de:'p1',texte:"Il paraît qu'il y a des punaises de lit partout",heure:'21:03'},
-      {de:'p3',texte:'Mon cousin a dit pareil',heure:'21:04'},
-      {de:'moi',texte:"C'est qui qui l'a posté ?",heure:'21:06',st:'lu'},
-      {de:'p1',texte:'Un compte, je sais plus lequel',heure:'21:07'},
-      {de:'p2',texte:'Je transfère au groupe de ma sœur',heure:'21:08'},
-      {de:'moi',texte:"Attendez, le site du collège n'en parle pas",heure:'21:11',st:'lu'}]}},
+  arnaque:{nom:"Arnaque « Coucou maman »",c:{app:'whatsapp',titre:'',statut:'',debut:'19:31',ecart:'alea',batt:58,
+    pers:[{id:'p1',nom:'+33 7 56 12 48 90',coul:'#8a8f98'}],
+    msgs:[M('date',"Aujourd'hui"),M('p1',"Coucou maman c'est moi, j'ai cassé mon téléphone 😩 c'est mon nouveau numéro, tu peux l'enregistrer"),M('moi',"Léa ? C'est toi ?"),M('p1',"Oui c'est moi ! Je suis chez une copine"),M('p1',"J'ai un petit problème, je dois payer une facture urgente aujourd'hui et ma banque bloque tout avec le nouveau téléphone"),M('moi',"Pourquoi tu ne m'appelles pas ?"),M('p1',"Le micro marche pas 😕 tu peux faire un virement de 680 € ? Je te rembourse demain promis ❤️"),M('p1',"C'est vraiment urgent maman stp"),M('moi',"Donne-moi le RIB",{st:'recu'})]}},
+  emprise:{nom:"Emprise : Lucas et Sophie",c:{app:'whatsapp',titre:'',statut:'',debut:'20:07',ecart:'alea',batt:73,
+    pers:[{id:'p1',nom:'Lucas 💬',coul:'#1c7ed6'}],
+    msgs:[M('date','Vendredi 15 mars'),M('p1','Tu vas encore à une soirée sans moi ?'),M('moi',"Mais enfin loulou, c'est une soirée entre copines."),M('p1',"Bah ouais, mais…\nMoi, je sais pas quoi faire ce soir.\nJe m'ennuie."),M('moi','Tu veux pas jouer à la console ?'),M('p1',"Bof 😅. Quand t'es pas là, je me sens pas bien.\nC'est comme un vide.\nJe suis content que tu sois avec tes copines. Mais pour moi ça va vraiment être une soirée DIFFICILE."),M('moi','… Tu veux que je reste avec toi ?'),M('p1',"Tu fais ce que tu veux, ma chérie.\nMais ça compterait vraiment pour moi si tu tenais compte de ce que je ressens là."),M('moi','Bah écoute, ouais…\nJe vais dire à mes copines que je reste avec toi.'),M('p1',"J'ai tellement de la chance d'être avec toi.\nT'es la plus belle chose qui me soit arrivée ❤️❤️❤️")]}},
+  rumeur:{nom:"Rumeur dans le groupe de classe",c:{app:'whatsapp',titre:'4e B 📚',statut:'',debut:'21:02',ecart:'alea',batt:41,
+    pers:[{id:'p1',nom:'Mehdi',coul:COUL[0]},{id:'p2',nom:'Inès',coul:COUL[1]},{id:'p3',nom:'Tom',coul:COUL[2]}],
+    msgs:[M('date',"Aujourd'hui"),M('p1',"Vous avez vu ? Le collège ferme lundi, c'est sur Insta 😱"),M('p2','Quoi ?? Pourquoi ?'),M('p1',"Il paraît qu'il y a des punaises de lit partout"),M('p3','Mon cousin a dit pareil'),M('moi',"C'est qui qui l'a posté ?"),M('p1','Un compte, je sais plus lequel'),M('p2','Je transfère au groupe de ma sœur'),M('moi',"Attendez, le site du collège n'en parle pas")]}},
 };
-const VIDE=()=>({app:'whatsapp',sombre:false,vert:false,titre:'Camille',statut:'en ligne',heure:'18:24',batt:76,photo:null,groupe:false,
+const VIDE=()=>({app:'whatsapp',sombre:false,vert:false,titre:'',statut:'',debut:'18:24',ecart:'1',batt:76,photo:null,
   pers:[{id:'p1',nom:'Camille',coul:COUL[0]}],msgs:[]});
 
 /* ---------- État ---------- */
-const CLE='faux-messages:brouillon';
-let C=VIDE(), qui='moi', vise=-1;
-try{ const s=localStorage.getItem(CLE); if(s) C=Object.assign(VIDE(),JSON.parse(s)); }catch(e){}
+const CLE='faux-messages:v2';
+let C=VIDE(), actif='moi', sel=-1, hist=[];
+function normaliser(c){
+  c=Object.assign(VIDE(),c);
+  if(!Array.isArray(c.pers)||!c.pers.length) c.pers=VIDE().pers;
+  c.msgs=(c.msgs||[]).map(m=>{ const n={...m}; if(n.heure&&!n.h&&n.de!=='date') n.h=n.heure.replace(/^.*?(\d{1,2}:\d{2}).*$/,'$1'); delete n.heure; delete n.name; return n; });
+  if(c.groupe===false&&c.pers.length>1) c.pers=c.pers.slice(0,1);
+  delete c.groupe; delete c.heure;
+  return c;
+}
+try{ const s=localStorage.getItem(CLE)||localStorage.getItem('faux-messages:brouillon'); if(s) C=normaliser(JSON.parse(s)); }catch(e){}
 let tGarde; function garder(){ clearTimeout(tGarde); tGarde=setTimeout(()=>{ try{ localStorage.setItem(CLE,JSON.stringify(C)); }catch(e){ msg("Trop gros pour être gardé dans le navigateur : pensez à « Enregistrer »."); } },250); }
-function msg(t){ const b=$('msgBox'); b.textContent=t; b.classList.add('on'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('on'),2600); }
+function avant(){ hist.push(JSON.stringify(C)); if(hist.length>80) hist.shift(); $('annuler').disabled=false; }
+function annuler(){ if(!hist.length) return; C=JSON.parse(hist.pop()); sel=-1; $('annuler').disabled=!hist.length; tout(); garder(); }
+function msg(t){ const b=$('msgBox'); b.textContent=t; b.classList.add('on'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('on'),2800); }
 const personne=id=>C.pers.find(p=>p.id===id);
-const nomDe=id=>id==='moi'?'Moi':(personne(id)||{}).nom||'?';
+const groupe=()=>C.pers.length>1;
+const titre=()=>groupe() ? (C.titre||'Groupe') : (C.pers[0].nom||'Contact');
 const initiales=n=>(n||'?').replace(/[^\p{L}\p{N} ]/gu,'').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'#';
+const sous=()=>C.statut || (groupe() ? C.pers.map(p=>p.nom).join(', ')+', vous' : 'en ligne');
 
-/* ---------- Téléphone ---------- */
-function telHTML(opt={}){
-  const n=opt.n??C.msgs.length, app=C.app;
-  const groupe=C.groupe&&C.pers.length>1;
-  const p1=C.pers[0]||{nom:'?'};
-  const av=C.photo?`<img src="${C.photo}" alt="">`:esc(initiales(C.titre));
-  const avCoul=C.photo?'':`style="background:${groupe?'#8a8f98':(p1.coul||'#8a8f98')}"`;
-  const sous = app==='whatsapp' ? (C.statut||'') : app==='insta' ? (C.statut||'') : '';
-  let fil='', ms=C.msgs.slice(0,n);
-  ms.forEach((m,i)=>{
-    const prev=ms[i-1], next=ms[i+1];
-    if(m.de==='date'){ fil+=`<div class="sep${opt.nouv===i?' nouv':''}" data-i="${i}">${esc(m.texte)}</div>`; return; }
-    const suite=prev&&prev.de===m.de, fin=!next||next.de!==m.de;
-    const moi=m.de==='moi';
-    let qn='';
-    if(groupe&&!moi&&!suite){ const p=personne(m.de)||{}; qn=`<span class="qn" style="${app==='whatsapp'?'color:'+(p.coul||'#1f7aec'):''}">${esc(p.nom)}</span>`; }
-    let tk='';
-    if(moi&&app==='whatsapp'){ tk = m.st==='envoye'?'<span class="tk">✓</span>': m.st==='recu'?'<span class="tk">✓✓</span>':'<span class="tk lu">✓✓</span>'; }
-    const img=m.img?`<img src="${m.img}" alt="">`:'';
-    const txt=m.texte?esc(m.texte):'';
-    fil+=`<div class="b ${moi?'moi':'eux'}${suite?' suite':''}${fin?' fin':''}${opt.nouv===i?' nouv':''}" data-i="${i}">${qn}${img}${txt}<span class="h">${esc(m.heure||'')}${tk}</span></div>`;
+/* ---------- Heures automatiques ---------- */
+const enMin=h=>{ const m=/^(\d{1,2}):(\d{2})/.exec(h||''); return m ? +m[1]*60+ +m[2] : null; };
+const enH=t=>{ t=((t%1440)+1440)%1440; return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); };
+function heures(){
+  let t=enMin(C.debut)??(18*60+24), prem=true, prev=null; const out=[];
+  C.msgs.forEach((m,i)=>{
+    if(m.de==='date'){ out.push(''); return; }
+    if(m.h&&enMin(m.h)!=null) t=enMin(m.h);
+    else if(!prem){ const e=C.ecart; const r=((i*2654435761)>>>0)%100;
+      t += e==='alea' ? (prev===m.de ? (r<60?0:1) : 1+(r%3)) : (+e||0); }
+    prem=false; prev=m.de; out.push(enH(t));
   });
-  if(opt.frappe) fil+='<div class="frappe"><i></i><i></i><i></i></div>';
-  // « Lu / Vu » sous le dernier message envoyé (SMS, Instagram)
-  if(app!=='whatsapp'&&!opt.frappe){ const last=ms[ms.length-1]; if(last&&last.de==='moi'){ fil+=`<div class="vu">${app==='sms'?(last.st==='lu'?'Lu '+esc(last.heure||''):'Distribué'):(last.st==='lu'?'Vu':'Envoyé')}</div>`; } }
-  const saisie = app==='whatsapp' ? `<div class="champ">☺&nbsp;&nbsp;Message</div><div class="rond">🎤</div>`
-    : app==='sms' ? `<div class="rond" style="background:#e9e9eb;color:#8e8e93">＋</div><div class="champ">${C.vert?'SMS':'iMessage'}</div>`
+  return out;
+}
+
+/* ---------- Rendu du téléphone ---------- */
+function filHTML(n,opt={}){
+  const H=heures(), ms=C.msgs.slice(0,n), app=C.app, g=groupe();
+  let s='';
+  ms.forEach((m,i)=>{
+    const p=ms[i-1], nx=ms[i+1];
+    if(m.de==='date'){ s+=`<div class="sep${opt.nouv===i?' nouv':''}${sel===i&&opt.edit?' choisi':''}" data-i="${i}">${esc(m.texte)}</div>`; return; }
+    const suite=p&&p.de===m.de, fin=!nx||nx.de!==m.de, moi=m.de==='moi';
+    let qn=''; if(g&&!moi&&!suite){ const q=personne(m.de)||{}; qn=`<span class="qn" style="${app==='whatsapp'?'color:'+(q.coul||COUL[0]):''}">${esc(q.nom)}</span>`; }
+    let tk=''; if(moi&&app==='whatsapp') tk = m.st==='envoye'?'<span class="tk">✓</span>': m.st==='recu'?'<span class="tk">✓✓</span>':'<span class="tk lu">✓✓</span>';
+    s+=`<div class="b ${moi?'moi':'eux'}${suite?' suite':''}${fin?' fin':''}${opt.nouv===i?' nouv':''}${sel===i&&opt.edit?' choisi':''}" data-i="${i}">${qn}${m.img?`<img src="${m.img}" alt="">`:''}${m.texte?esc(m.texte):''}<span class="h">${H[i]}${tk}</span></div>`;
+  });
+  if(opt.frappe) s+='<div class="frappe"><i></i><i></i><i></i></div>';
+  if(app!=='whatsapp'&&!opt.frappe){ const l=ms[ms.length-1]; if(l&&l.de==='moi') s+=`<div class="vu">${app==='sms'?(l.st==='recu'||l.st==='envoye'?'Distribué':'Lu '+H[ms.length-1]):(l.st==='recu'||l.st==='envoye'?'Envoyé':'Vu')}</div>`; }
+  if(opt.edit&&!ms.length) s+=`<div class="vide-tel"><b>1.</b> Touchez le nom en haut pour le changer.<br><b>2.</b> En bas, choisissez <b>qui écrit</b>.<br><b>3.</b> Tapez le message, puis <b>Entrée</b>.<br><br>Les heures se mettent toutes seules.<br>Touchez une bulle pour la modifier.<br><br>Pour voir un exemple : ⚙ Réglages.</div>`;
+  return s;
+}
+function horloge(n){ const H=heures().slice(0,n).filter(Boolean); return H.length?H[H.length-1]:(C.debut||'18:24'); }
+function barreHTML(n){ const b=Math.max(1,Math.min(100,+C.batt||76));
+  return `<span>${horloge(n)}</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><path d="M7.5 2.2c2.1 0 4 .8 5.5 2.1l1.2-1.3A9.5 9.5 0 0 0 7.5.4 9.5 9.5 0 0 0 .8 3l1.2 1.3a7.7 7.7 0 0 1 5.5-2.1Zm0 3.3c1.2 0 2.3.4 3.2 1.2l1.2-1.3a6.4 6.4 0 0 0-8.8 0l1.2 1.3c.9-.8 2-1.2 3.2-1.2Zm0 3.2c-.4 0-.8.2-1.1.4l1.1 1.2 1.1-1.2c-.3-.2-.7-.4-1.1-.4Z"/></svg><span class="batt${b<=20?' bas':''}"><i style="width:${b}%"></i></span></span>`; }
+function teteHTML(){
+  const g=groupe(), p1=C.pers[0];
+  const av=C.photo?`<img src="${C.photo}" alt="">`:esc(initiales(titre()));
+  const st=C.photo?'':`style="background:${g?'#8a8f98':(p1.coul||'#8a8f98')}"`;
+  const act = C.app==='whatsapp' ? '<span>📹</span><span>📞</span><span>⋮</span>' : C.app==='insta' ? '<span>📞</span><span>📹</span>' : '';
+  return `<span class="ret">‹</span><span class="av" ${st}>${av}</span><span class="id"><div class="nom">${esc(titre())}</div><div class="sous">${esc(C.app==='sms'?'':sous())}</div></span><span class="act">${act}</span>`;
+}
+function saisieHTML(){
+  return C.app==='whatsapp' ? `<div class="champ">☺&nbsp;&nbsp;Message</div><div class="rond">🎤</div>`
+    : C.app==='sms' ? `<div class="rond" style="background:#e9e9eb;color:#8e8e93">＋</div><div class="champ">${C.vert?'SMS':'iMessage'}</div>`
     : `<div class="rond">📷</div><div class="champ">Écrire un message…</div>`;
-  const act = app==='whatsapp' ? '<span>📹</span><span>📞</span><span>⋮</span>' : app==='insta' ? '<span>📞</span><span>📹</span>' : '';
-  const b=Math.max(1,Math.min(100,+C.batt||76));
-  return `<div class="tel${opt.export?' export':''}"><div class="ecran app-${app}${C.sombre?' sombre':''}${C.vert?' vert':''}">
-    <div class="barre"><span>${esc(C.heure||'')}</span><span class="ic"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><path d="M7.5 2.2c2.1 0 4 .8 5.5 2.1l1.2-1.3A9.5 9.5 0 0 0 7.5.4 9.5 9.5 0 0 0 .8 3l1.2 1.3a7.7 7.7 0 0 1 5.5-2.1Zm0 3.3c1.2 0 2.3.4 3.2 1.2l1.2-1.3a6.4 6.4 0 0 0-8.8 0l1.2 1.3c.9-.8 2-1.2 3.2-1.2Zm0 3.2c-.4 0-.8.2-1.1.4l1.1 1.2 1.1-1.2c-.3-.2-.7-.4-1.1-.4Z"/></svg><span class="batt${b<=20?' bas':''}"><i style="width:${b}%"></i></span></span></div>
-    <div class="tete"><span class="ret">‹</span><span class="av" ${avCoul}>${av}</span><span class="id"><div class="nom">${esc(C.titre||'')}</div><div class="sous">${esc(sous)}</div></span><span class="act">${act}</span></div>
-    <div class="fil">${fil}</div>
-    <div class="saisie">${saisie}</div>
-    <div class="marque">Conversation fictive</div>
+}
+const classeEcran=()=>`ecran app-${C.app}${C.sombre?' sombre':''}${C.vert?' vert':''}`;
+function telHTML(opt={}){
+  const n=opt.n??C.msgs.length;
+  return `<div class="tel${opt.export?' export':''}"><div class="${classeEcran()}">
+    <div class="barre">${barreHTML(n)}</div><div class="tete">${teteHTML()}</div>
+    <div class="fil">${filHTML(n,opt)}</div><div class="saisie">${saisieHTML()}</div><div class="marque">Conversation fictive</div></div></div>`;
+}
+
+/* ---------- Téléphone modifiable ---------- */
+const SVG_ENV='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg>';
+function construireTel(){
+  $('tel').innerHTML=`<div class="tel edit"><div class="${classeEcran()}" id="ecran">
+    <div class="barre" id="barre"></div><div class="tete" id="tete"></div>
+    <div class="fil" id="fil"></div>
+    <div class="ecrire">
+      <div class="outils-msg" id="outilsMsg" hidden></div>
+      <div class="qui" id="qui" role="group" aria-label="Qui écrit ?"></div>
+      <div class="zone">
+        <button class="rb plus" id="plus" title="Ajouter…" aria-label="Ajouter une photo, un séparateur…">+</button>
+        <textarea id="texte" rows="1" placeholder="Message" aria-label="Message"></textarea>
+        <button class="rb env" id="env" title="Envoyer (Entrée)" aria-label="Envoyer">${SVG_ENV}</button>
+      </div>
+      <div class="cote" id="cote"></div>
+    </div>
+    <div class="menu-plus" id="menuPlus" hidden>
+      <button data-p="img">📷 Photo dans la conversation</button>
+      <button data-p="date">📅 Séparateur de date</button>
+      <button data-p="coller">📋 Coller un dialogue</button>
+    </div>
   </div></div>`;
+  brancherTel();
 }
-function dessinerTel(){
-  const box=$('tel'); box.innerHTML=telHTML();
-  const f=box.querySelector('.fil'); f.scrollTop=f.scrollHeight;
-  if(vise>=0){ const e=f.querySelector(`[data-i="${vise}"]`); if(e) e.scrollIntoView({block:'nearest'}); }
+function majTel(scroll){
+  const e=$('ecran'); if(!e) return construireTel(), majTel(true);
+  e.className=classeEcran();
+  $('barre').innerHTML=barreHTML(C.msgs.length); $('tete').innerHTML=teteHTML();
+  const f=$('fil'); const enBas=f.scrollHeight-f.scrollTop-f.clientHeight<40;
+  f.innerHTML=filHTML(C.msgs.length,{edit:true});
+  if(scroll||enBas) f.scrollTop=f.scrollHeight;
+  majEcrire();
 }
-$('tel').addEventListener('click',e=>{ const b=e.target.closest('[data-i]'); if(!b) return; vise=+b.dataset.i; dessinerListe(); const r=document.querySelector(`.lm[data-i="${vise}"]`); if(r){ r.scrollIntoView({block:'nearest',behavior:'smooth'}); const t=r.querySelector('textarea,input[type=text]'); t&&t.focus(); } });
+function majEcrire(){
+  if(actif!=='moi'&&!personne(actif)) actif=C.pers[0].id;
+  const m=C.msgs[sel];
+  const qui = sel>=0&&m ? m.de : actif;
+  const c = qui==='moi' ? null : (personne(qui)||C.pers[0]);
+  const couleurMoi=getComputedStyle($('ecran')).getPropertyValue('--t-rond')||'#00a884';
+  const q=$('qui'); q.hidden = sel>=0&&m&&m.de==='date';
+  q.innerHTML='<span class="lbl">Qui écrit ?</span>'+C.pers.map(p=>`<button data-q="${p.id}" aria-pressed="${qui===p.id}" style="--c:${p.coul||'#8a8f98'}"><span class="pt" style="background:${p.coul||'#8a8f98'}">${esc(initiales(p.nom))}</span>${esc(p.nom||'?')}</button>`).join('')
+    +`<span class="sp"></span><button data-q="moi" aria-pressed="${qui==='moi'}" style="--c:${couleurMoi}">Moi<span class="pt" style="background:${couleurMoi}">→</span></button>`;
+  $('env').style.background = c ? (c.coul||'#8a8f98') : '';
+  $('cote').innerHTML = sel>=0 ? (m&&m.de==='date' ? 'Modifier le séparateur' : 'Modifier le message · <b>'+esc(m.de==='moi'?'Moi':(personne(m.de)||{}).nom)+'</b>')
+    : (actif==='moi' ? 'Vous écrivez : bulle <b>à droite</b>' : `<b>${esc(c.nom||'?')}</b> écrit : bulle à gauche`)+' · <kbd>Tab</kbd> change';
+  $('texte').placeholder = sel>=0 ? 'Texte du message' : (actif==='moi'?'Votre message…':'Message de '+(c.nom||'?')+'…');
+  const o=$('outilsMsg'); o.hidden=sel<0;
+  if(sel>=0&&m){
+    const H=heures();
+    o.innerHTML = m.de==='date'
+      ? `<button class="ok" data-o="ok">✓ Valider</button><button data-o="up">↑</button><button data-o="down">↓</button><button class="del" data-o="del">Supprimer</button><button data-o="fin">Fermer</button>`
+      : `<button class="ok" data-o="ok">✓ Valider</button><button data-o="heure">🕒 ${m.h?m.h+' (fixée)':H[sel]}</button>${m.de==='moi'&&C.app!=='insta'?`<button data-o="st">${m.st==='envoye'?'✓ Envoyé':m.st==='recu'?'✓✓ Reçu':'✓✓ Lu'}</button>`:''}<button data-o="up">↑</button><button data-o="down">↓</button><button data-o="ins">Insérer avant</button><button class="del" data-o="del">Supprimer</button><button data-o="fin">Fermer</button>`;
+  }
+}
+function grow(){ const t=$('texte'); t.style.height='auto'; t.style.height=Math.min(110,t.scrollHeight)+'px'; }
+let insererA=-1;
+function envoyer(de){
+  const t=$('texte'); const v=t.value.replace(/\s+$/,'');
+  if(sel>=0){ const m=C.msgs[sel]; avant(); m.texte=v; if(de&&m.de!=='date') m.de=de; sel=-1; t.value=''; grow(); majTel(); garder(); return; }
+  if(de) actif=de;
+  if(!v.trim()){ majEcrire(); t.focus(); return; }
+  avant();
+  const m={de:actif,texte:v}; if(actif==='moi') m.st='lu';
+  if(insererA>=0){ C.msgs.splice(insererA,0,m); insererA++; } else C.msgs.push(m);
+  t.value=''; grow(); majTel(insererA<0); garder(); t.focus();
+}
+function choisir(i){
+  if(i===sel){ fermerEdition(); return; }
+  sel=i; insererA=-1; const m=C.msgs[i]; const t=$('texte'); t.value=m.texte||''; grow(); majTel(); t.focus(); t.setSelectionRange(t.value.length,t.value.length);
+}
+function fermerEdition(){ sel=-1; $('texte').value=''; grow(); majTel(); }
+function brancherTel(){
+  const t=$('texte');
+  t.addEventListener('input',grow);
+  t.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){ e.preventDefault(); envoyer(sel>=0?null:actif); }
+    else if(e.key==='Tab'&&!e.ctrlKey&&!e.altKey&&!e.metaKey){ e.preventDefault(); if(sel>=0) return; const ids=['moi',...C.pers.map(p=>p.id)]; actif=ids[(ids.indexOf(actif)+(e.shiftKey?ids.length-1:1))%ids.length]; majEcrire(); }
+    else if(e.key==='Escape'&&sel>=0){ e.preventDefault(); fermerEdition(); }
+    else if(e.key==='ArrowUp'&&!t.value&&sel<0&&C.msgs.length){ e.preventDefault(); choisir(C.msgs.length-1); }
+  });
+  $('env').onclick=()=>{ envoyer(sel>=0?null:actif); };
+  $('qui').onclick=e=>{ const b=e.target.closest('[data-q]'); if(!b) return;
+    if(sel>=0){ const m=C.msgs[sel]; if(m&&m.de!=='date'&&m.de!==b.dataset.q){ avant(); m.de=b.dataset.q; if(m.de==='moi'&&!m.st) m.st='lu'; majTel(); garder(); } }
+    else { actif=b.dataset.q; majEcrire(); }
+    t.focus(); };
+  $('tete').onclick=e=>{ if(!e.target.closest('.id')) return; const g=groupe(); const v=prompt(g?'Nom du groupe':'Nom de la personne', titre()); if(v===null||!v.trim()) return; avant(); if(g) C.titre=v.trim(); else C.pers[0].nom=v.trim(); tout(); garder(); };
+  $('fil').onclick=e=>{ const b=e.target.closest('[data-i]'); if(b) choisir(+b.dataset.i); };
+  $('plus').onclick=e=>{ e.stopPropagation(); $('menuPlus').hidden=!$('menuPlus').hidden; };
+  document.addEventListener('click',e=>{ if(!e.target.closest('#menuPlus')) $('menuPlus').hidden=true; });
+  $('menuPlus').onclick=e=>{ const b=e.target.closest('[data-p]'); if(!b) return; $('menuPlus').hidden=true; const k=b.dataset.p;
+    if(k==='img'){ $('fImg').value=''; $('fImg').click(); }
+    else if(k==='date'){ const v=prompt('Texte du séparateur (« Hier », « Lundi 12 mars »…)', C.msgs.some(m=>m.de==='date')?'':"Aujourd'hui"); if(v&&v.trim()){ avant(); const m={de:'date',texte:v.trim()}; if(insererA>=0){ C.msgs.splice(insererA,0,m); insererA++; } else C.msgs.push(m); majTel(true); garder(); } }
+    else if(k==='coller') ouvrirColler(); };
+  $('outilsMsg').onclick=e=>{ const b=e.target.closest('[data-o]'); if(!b) return; const k=b.dataset.o, m=C.msgs[sel];
+    if(k==='ok') return envoyer(null);
+    if(k==='fin') return fermerEdition();
+    avant();
+    if(k==='del'){ C.msgs.splice(sel,1); sel=-1; t.value=''; grow(); }
+    else if(k==='cote'){ const ids=['moi',...C.pers.map(p=>p.id)]; m.de=ids[(ids.indexOf(m.de)+1)%ids.length]; if(m.de==='moi'&&!m.st) m.st='lu'; }
+    else if(k==='heure'){ const H=heures(); const v=prompt('Heure de ce message (laisser vide pour la calculer automatiquement)', m.h||H[sel]); if(v===null){ hist.pop(); return; } if(v.trim()&&enMin(v)==null){ hist.pop(); return msg('Heure non comprise : écrivez par exemple 14:05.'); } if(v.trim()) m.h=enH(enMin(v)); else delete m.h; }
+    else if(k==='st'){ m.st = m.st==='envoye' ? 'lu' : m.st==='recu' ? 'envoye' : 'recu'; }
+    else if(k==='up'&&sel>0){ [C.msgs[sel-1],C.msgs[sel]]=[C.msgs[sel],C.msgs[sel-1]]; sel--; }
+    else if(k==='down'&&sel<C.msgs.length-1){ [C.msgs[sel+1],C.msgs[sel]]=[C.msgs[sel],C.msgs[sel+1]]; sel++; }
+    else if(k==='ins'){ insererA=sel; sel=-1; t.value=''; grow(); msg('Les prochains messages s\'insèrent avant celui-ci. Échap pour revenir à la fin.'); }
+    majTel(); garder(); t.focus(); };
+}
 
 /* ---------- Réglages ---------- */
 function dessinerReglages(){
   document.querySelectorAll('#apps [data-app]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.app===C.app));
   $('sombre').checked=!!C.sombre; $('vert').checked=!!C.vert; $('vertL').hidden=C.app!=='sms';
-  $('titre').value=C.titre||''; $('statut').value=C.statut||''; $('statutL').hidden=C.app==='sms';
-  $('heure').value=C.heure||''; $('batt').value=C.batt||'';
-  $('photoDel').hidden=!C.photo; $('groupe').checked=!!C.groupe;
-  dessinerPers();
-}
-function dessinerPers(){
-  const box=$('pers'); box.innerHTML='';
-  $('persAdd').hidden=!C.groupe;
-  if(!C.groupe){ dessinerQui(); return; }
+  $('grpL').hidden=!groupe(); $('titre').value=C.titre||''; $('statut').value=C.statut||''; $('statut').placeholder=groupe()?C.pers.map(p=>p.nom).join(', ')+', vous':'en ligne';
+  $('debut').value=C.debut||''; $('ecart').value=C.ecart||'1'; $('batt').value=C.batt||'';
+  $('photoDel').hidden=!C.photo;
+  const box=$('persos'); box.innerHTML='';
   C.pers.forEach((p,k)=>{
-    const d=document.createElement('div'); d.className='personne';
-    d.innerHTML=`<input type="color" value="${p.coul||'#1f7aec'}" aria-label="Couleur du nom"><input type="text" maxlength="30" value="${esc(p.nom)}" aria-label="Nom de la personne ${k+1}" placeholder="Prénom"><button class="btn mini warn" ${C.pers.length<2?'disabled':''} aria-label="Retirer ${esc(p.nom)}">✕</button>`;
+    const d=document.createElement('div'); d.className='perso';
+    d.innerHTML=`<input type="color" value="${p.coul||COUL[0]}" aria-label="Couleur de ${esc(p.nom)}"><input type="text" maxlength="30" value="${esc(p.nom)}" placeholder="Prénom ou numéro" aria-label="Nom du personnage ${k+1}"><button class="btn mini warn" ${C.pers.length<2?'disabled':''} title="Retirer" aria-label="Retirer ${esc(p.nom)}">✕</button>`;
     const [col,nom,del]=d.querySelectorAll('input,button');
-    col.oninput=()=>{ p.coul=col.value; garder(); dessinerTel(); dessinerQui(); };
-    nom.oninput=()=>{ p.nom=nom.value; garder(); dessinerTel(); dessinerQui(); };
-    del.onclick=()=>{ if(C.msgs.some(m=>m.de===p.id)&&!confirm(`Retirer ${p.nom||'cette personne'} et ses messages ?`)) return; C.msgs=C.msgs.filter(m=>m.de!==p.id); C.pers.splice(k,1); if(qui===p.id) qui='moi'; tout(); garder(); };
+    col.onchange=()=>{ avant(); p.coul=col.value; majTel(); garder(); };
+    nom.onfocus=()=>avant();
+    nom.oninput=()=>{ p.nom=nom.value; $('statut').placeholder=groupe()?C.pers.map(p=>p.nom).join(', ')+', vous':'en ligne'; majTel(); garder(); };
+    del.onclick=()=>{ const n=C.msgs.filter(m=>m.de===p.id).length; if(n&&!confirm(`Retirer ${p.nom||'ce personnage'} et ses ${n} message(s) ?`)) return; avant(); C.msgs=C.msgs.filter(m=>m.de!==p.id); C.pers.splice(k,1); if(actif===p.id) actif='moi'; tout(); garder(); };
     box.appendChild(d);
   });
-  dessinerQui();
 }
-function dessinerQui(){
-  const box=$('qui'); const ids=['moi',...(C.groupe?C.pers.map(p=>p.id):[C.pers[0].id])];
-  if(!ids.includes(qui)) qui='moi';
-  box.innerHTML='<span style="font-size:13px;color:var(--doux);align-self:center">Qui écrit ?</span>'+ids.map(id=>{ const p=personne(id); const nom=id==='moi'?'Moi':(C.groupe?p.nom:(C.titre||p.nom)); return `<button class="btn" data-q="${id}" aria-pressed="${qui===id}"><span class="pastille" style="background:${id==='moi'?'#8a8f98':(p.coul||'#1f7aec')}"></span>${esc(nom||'?')}</button>`; }).join('');
-}
-$('qui').addEventListener('click',e=>{ const b=e.target.closest('[data-q]'); if(!b) return; qui=b.dataset.q; dessinerQui(); $('texte').focus(); });
-document.querySelectorAll('#apps [data-app]').forEach(b=>b.onclick=()=>{ C.app=b.dataset.app; tout(); garder(); });
-$('sombre').onchange=e=>{ C.sombre=e.target.checked; dessinerTel(); garder(); };
-$('vert').onchange=e=>{ C.vert=e.target.checked; dessinerTel(); garder(); };
-$('titre').oninput=e=>{ C.titre=e.target.value; if(!C.groupe&&C.pers[0]) C.pers[0].nom=e.target.value; dessinerTel(); dessinerQui(); garder(); };
-$('statut').oninput=e=>{ C.statut=e.target.value; dessinerTel(); garder(); };
-$('heure').oninput=e=>{ C.heure=e.target.value; dessinerTel(); garder(); };
-$('batt').oninput=e=>{ C.batt=e.target.value; dessinerTel(); garder(); };
-$('groupe').onchange=e=>{ C.groupe=e.target.checked;
-  if(C.groupe&&C.pers.length<2){ C.pers[0].nom=C.pers[0].nom&&C.pers[0].nom!==C.titre?C.pers[0].nom:'Alex'; C.pers[0].coul=NOMS_COUL[0]; C.pers.push({id:nouvId(),nom:'Sam',coul:NOMS_COUL[1]}); if(!C.titre||C.titre==='Camille') C.titre='Le groupe'; C.statut=C.pers.map(p=>p.nom).join(', ')+', vous'; }
-  if(!C.groupe){ const reste=C.pers.slice(1).map(p=>p.id); if(C.msgs.some(m=>reste.includes(m.de))){ if(!confirm('Revenir à une conversation à deux ? Les messages des autres personnes seront attribués à la première.')){ e.target.checked=true; C.groupe=true; return; } C.msgs.forEach(m=>{ if(reste.includes(m.de)) m.de=C.pers[0].id; }); } C.pers=C.pers.slice(0,1); C.pers[0].nom=C.titre; }
-  tout(); garder(); };
+document.querySelectorAll('#apps [data-app]').forEach(b=>b.onclick=()=>{ avant(); C.app=b.dataset.app; tout(); garder(); });
+const reg=(id,f,ev='input')=>{ $(id).addEventListener('focus',()=>avant()); $(id).addEventListener(ev,e=>{ f(e.target); majTel(); garder(); }); };
+$('sombre').onchange=e=>{ avant(); C.sombre=e.target.checked; majTel(); garder(); };
+$('vert').onchange=e=>{ avant(); C.vert=e.target.checked; majTel(); garder(); };
+reg('titre',t=>C.titre=t.value); reg('statut',t=>C.statut=t.value);
+reg('debut',t=>C.debut=t.value); reg('ecart',t=>C.ecart=t.value,'change'); reg('batt',t=>C.batt=t.value);
 const nouvId=()=>'p'+(Math.max(0,...C.pers.map(p=>+p.id.slice(1)||0))+1);
-$('addPers').onclick=()=>{ if(C.pers.length>=8) return msg('8 personnes au plus.'); C.pers.push({id:nouvId(),nom:'',coul:NOMS_COUL[C.pers.length%NOMS_COUL.length]}); dessinerPers(); const ins=$('pers').querySelectorAll('input[type=text]'); ins[ins.length-1].focus(); garder(); };
+$('addPers').onclick=()=>{ if(C.pers.length>=8) return msg('8 personnages au plus.'); avant(); C.pers.push({id:nouvId(),nom:'',coul:COUL[C.pers.length%COUL.length]}); if(!C.titre) C.titre='Le groupe'; tout(); garder(); const ins=$('persos').querySelectorAll('input[type=text]'); ins[ins.length-1].focus(); };
 
 /* ---------- Images ---------- */
 function reduire(file,max){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(file),im=new Image(); im.onload=()=>{ const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)); const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*k); c.height=Math.round(im.naturalHeight*k); const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg',.82)); }; im.onerror=()=>{ URL.revokeObjectURL(u); rej(); }; im.src=u; }); }
 $('photoBtn').onclick=()=>{ $('fPhoto').value=''; $('fPhoto').click(); };
-$('fPhoto').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ C.photo=await reduire(f,200); dessinerReglages(); dessinerTel(); garder(); }catch(x){ msg('Image illisible.'); } };
-$('photoDel').onclick=()=>{ C.photo=null; dessinerReglages(); dessinerTel(); garder(); };
-$('addImg').onclick=()=>{ $('fImg').value=''; $('fImg').click(); };
-$('fImg').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const img=await reduire(f,800); ajouter({de:qui,texte:$('texte').value.trim(),img}); $('texte').value=''; }catch(x){ msg('Image illisible.'); } };
+$('fPhoto').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const p=await reduire(f,200); avant(); C.photo=p; tout(); garder(); }catch(x){ msg('Image illisible.'); } };
+$('photoDel').onclick=()=>{ avant(); C.photo=null; tout(); garder(); };
+$('fImg').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const img=await reduire(f,800); avant(); const t=$('texte'); const m={de:actif,texte:t.value.trim(),img}; if(actif==='moi') m.st='lu'; if(insererA>=0){ C.msgs.splice(insererA,0,m); insererA++; } else C.msgs.push(m); t.value=''; grow(); majTel(true); garder(); }catch(x){ msg('Image illisible.'); } };
 
-/* ---------- Ajouter un message ---------- */
-const plusUneMinute=h=>{ const m=/^(\d{1,2}):(\d{2})$/.exec(h||''); if(!m) return h; let t=(+m[1]*60+ +m[2]+1)%1440; return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); };
-function derniereHeure(){ for(let i=C.msgs.length-1;i>=0;i--) if(C.msgs[i].heure) return C.msgs[i].heure; return ''; }
-function proposerHeure(){ const h=derniereHeure(); $('hMsg').value = h ? plusUneMinute(h) : (C.heure||'12:00'); }
-function ajouter(m){
-  if(m.de!=='date'){ m.heure=$('hMsg').value||''; if(m.de==='moi') m.st='lu'; }
-  C.msgs.push(m); vise=-1;
-  if(m.de!=='date'&&$('alterner').checked){ const ids=['moi',...(C.groupe?C.pers.map(p=>p.id):[C.pers[0].id])]; qui=ids[(ids.indexOf(qui)+1)%ids.length]; }
-  if(m.heure && C.heure && m.heure>C.heure) C.heure=m.heure;   // l'horloge du téléphone suit la conversation
-  tout(); garder(); proposerHeure(); $('texte').focus();
-}
-$('ajout').onclick=()=>{ const t=$('texte').value.trim(); if(!t){ $('texte').focus(); return msg('Écrivez d\'abord le message.'); } ajouter({de:qui,texte:t}); $('texte').value=''; };
-$('texte').addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('ajout').click(); }
-  else if(e.key==='Tab'&&!e.shiftKey&&!e.ctrlKey&&!e.altKey){ e.preventDefault(); const ids=[...document.querySelectorAll('#qui [data-q]')].map(b=>b.dataset.q); qui=ids[(ids.indexOf(qui)+1)%ids.length]; dessinerQui(); }
-});
-$('addDate').onclick=()=>{ const t=prompt('Texte du séparateur (par exemple « Hier », « Lundi 12 mars »)', C.msgs.some(m=>m.de==='date')?'':"Aujourd'hui"); if(t&&t.trim()) ajouter({de:'date',texte:t.trim()}); };
-
-/* ---------- Liste éditable ---------- */
-function dessinerListe(){
-  const box=$('liste'); box.innerHTML='';
-  if(!C.msgs.length){ box.innerHTML='<div class="vide">Aucun message pour l\'instant. Écrivez le premier ci-dessus, ou chargez un exemple en bas.</div>'; return; }
-  const ids=['moi',...(C.groupe?C.pers.map(p=>p.id):[C.pers[0].id])];
-  C.msgs.forEach((m,i)=>{
-    const d=document.createElement('div'); d.className='lm'+(m.de==='date'?' date':'')+(i===vise?' vise':''); d.dataset.i=i;
-    const outils=`<span class="outils"><button data-a="up" title="Monter" aria-label="Monter">↑</button><button data-a="down" title="Descendre" aria-label="Descendre">↓</button><button data-a="del" title="Supprimer" aria-label="Supprimer">✕</button></span>`;
-    if(m.de==='date'){
-      d.innerHTML=`<span style="font-size:12.5px;color:var(--doux);padding-top:5px">Séparateur</span><input type="text" value="${esc(m.texte)}" aria-label="Séparateur de date">${outils}`;
-      d.querySelector('input').oninput=e=>{ m.texte=e.target.value; dessinerTel(); garder(); };
-    } else {
-      const sel=`<select aria-label="Qui écrit">${ids.map(id=>`<option value="${id}"${m.de===id?' selected':''}>${esc(id==='moi'?'Moi':(C.groupe?personne(id).nom:(C.titre||personne(id).nom))||'?')}</option>`).join('')}</select>`;
-      const st = m.de==='moi' ? `<select class="st" aria-label="État"><option value="envoye"${m.st==='envoye'?' selected':''}>Envoyé</option><option value="recu"${m.st==='recu'?' selected':''}>Reçu</option><option value="lu"${!m.st||m.st==='lu'?' selected':''}>Lu</option></select>` : '';
-      d.innerHTML=`${sel}<div>${m.img?`<img src="${m.img}" alt="">`:''}<textarea aria-label="Texte du message">${esc(m.texte||'')}</textarea></div><input type="time" value="${esc(m.heure||'')}" aria-label="Heure">${outils}${st?`<span></span>${st}`:''}`;
-      const ta=d.querySelector('textarea'); const fit=()=>{ ta.style.height='auto'; ta.style.height=Math.max(30,ta.scrollHeight+2)+'px'; };
-      ta.oninput=()=>{ m.texte=ta.value; fit(); dessinerTel(); garder(); }; requestAnimationFrame(fit);
-      d.querySelector('select').onchange=e=>{ m.de=e.target.value; if(m.de==='moi'&&!m.st) m.st='lu'; dessinerListe(); dessinerTel(); garder(); };
-      d.querySelector('input[type=time]').oninput=e=>{ m.heure=e.target.value; dessinerTel(); garder(); };
-      const s=d.querySelector('.st'); if(s) s.onchange=e=>{ m.st=e.target.value; dessinerTel(); garder(); };
-    }
-    d.querySelector('.outils').onclick=e=>{ const a=e.target.closest('[data-a]'); if(!a) return; const k=a.dataset.a;
-      if(k==='up'&&i>0){ [C.msgs[i-1],C.msgs[i]]=[C.msgs[i],C.msgs[i-1]]; vise=i-1; }
-      else if(k==='down'&&i<C.msgs.length-1){ [C.msgs[i+1],C.msgs[i]]=[C.msgs[i],C.msgs[i+1]]; vise=i+1; }
-      else if(k==='del'){ C.msgs.splice(i,1); vise=-1; }
-      else return;
-      dessinerListe(); dessinerTel(); garder(); proposerHeure();
-      const r=document.querySelector(`.lm[data-i="${vise}"] [data-a="${k}"]`); r&&r.focus(); };
-    d.addEventListener('focusin',()=>{ if(vise!==i){ document.querySelectorAll('.lm.vise').forEach(x=>x.classList.remove('vise')); vise=i; d.classList.add('vise'); } });
-    box.appendChild(d);
-  });
-}
-function tout(){ dessinerReglages(); dessinerListe(); dessinerTel(); }
+/* ---------- Coller un dialogue ---------- */
+function ouvrirColler(){ $('collerTxt').value=''; $('collerRemplacer').checked=true; $('dlgColler').showModal(); $('collerTxt').focus(); }
+$('coller').onclick=ouvrirColler;
+$('collerNon').onclick=()=>$('dlgColler').close();
+$('collerOui').onclick=()=>{
+  const lignes=$('collerTxt').value.split(/\r?\n/); const rempl=$('collerRemplacer').checked;
+  const pers=rempl?[]:C.pers.map(p=>({...p})), msgs=rempl?[]:C.msgs.slice();
+  const MOI=/^(moi|je|vous|me|toi \(moi\))$/i;
+  const idDe=nom=>{ if(MOI.test(nom)) return 'moi'; let p=pers.find(x=>x.nom.toLowerCase()===nom.toLowerCase()); if(!p){ p={id:'p'+(pers.length?Math.max(...pers.map(x=>+x.id.slice(1)||0))+1:1),nom,coul:COUL[pers.length%COUL.length]}; pers.push(p); } return p.id; };
+  let der=null, n=0;
+  for(const brut of lignes){
+    const l=brut.trim(); if(!l){ der=null; continue; }
+    const d=/^[-–—=*]{2,}\s*(.+?)\s*[-–—=*]{2,}$/.exec(l); if(d){ msgs.push({de:'date',texte:d[1]}); der=null; continue; }
+    const r=/^\[?(?:\d{1,2}[:h]\d{2}\]?\s*[-–]?\s*)?([^:]{1,30}?)\s*:\s+(.*)$/.exec(l);
+    if(r){ const de=idDe(r[1].trim()); der={de,texte:r[2]}; if(de==='moi') der.st='lu'; msgs.push(der); n++; }
+    else if(der){ der.texte+='\n'+l; }
+    else { der={de:'moi',texte:l,st:'lu'}; msgs.push(der); n++; }
+  }
+  if(!n) return msg('Aucune réplique trouvée : écrivez « Nom : message », une par ligne.');
+  avant();
+  if(!pers.length) pers.push(VIDE().pers[0]);
+  C.pers=pers; C.msgs=msgs; if(pers.length>1&&!C.titre) C.titre='Le groupe'; sel=-1; insererA=-1; actif='moi';
+  $('dlgColler').close(); tout(); garder(); msg(`${n} message(s) créé(s). Cliquez sur une bulle pour la modifier.`);
+};
 
 /* ---------- Enregistrer / ouvrir / exemples ---------- */
 function telecharger(nom,blob){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nom; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
-const nomFichier=()=>(C.titre||'conversation').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase()||'conversation';
-$('sauver').onclick=()=>{ telecharger(nomFichier()+'.conversation.json',new Blob([JSON.stringify({type:'fausse-conversation',v:1,c:C})],{type:'application/json'})); msg('Fichier enregistré dans vos téléchargements.'); };
+const nomFichier=()=>titre().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase()||'conversation';
+$('sauver').onclick=()=>{ telecharger(nomFichier()+'.conversation.json',new Blob([JSON.stringify({type:'fausse-conversation',v:2,c:C})],{type:'application/json'})); msg('Fichier enregistré dans vos téléchargements.'); };
 $('ouvrir').onclick=()=>{ $('fJson').value=''; $('fJson').click(); };
-$('fJson').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const j=JSON.parse(await f.text()); if(j.type!=='fausse-conversation'||!j.c||!Array.isArray(j.c.msgs)) throw 0; C=Object.assign(VIDE(),j.c); qui='moi'; vise=-1; tout(); garder(); proposerHeure(); msg('Conversation ouverte.'); }catch(x){ msg('Ce fichier n\'est pas une conversation enregistrée ici.'); } };
+$('fJson').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const j=JSON.parse(await f.text()); if(j.type!=='fausse-conversation'||!j.c||!Array.isArray(j.c.msgs)) throw 0; avant(); C=normaliser(j.c); actif='moi'; sel=-1; tout(); garder(); msg('Conversation ouverte.'); }catch(x){ msg('Ce fichier n\'est pas une conversation enregistrée ici.'); } };
 for(const [k,v] of Object.entries(EXEMPLES)){ const o=document.createElement('option'); o.value=k; o.textContent=v.nom; $('exemples').appendChild(o); }
-$('exemples').onchange=e=>{ const k=e.target.value; e.target.value=''; if(!k) return; if(C.msgs.length&&!confirm('Remplacer la conversation en cours par l\'exemple ?')) return; C=Object.assign(VIDE(),JSON.parse(JSON.stringify(EXEMPLES[k].c))); qui='moi'; vise=-1; tout(); garder(); proposerHeure(); };
-$('effacer').onclick=()=>{ if(!confirm('Effacer toute la conversation ?')) return; C=VIDE(); qui='moi'; vise=-1; tout(); garder(); proposerHeure(); };
+$('exemples').onchange=e=>{ const k=e.target.value; e.target.value=''; if(!k) return; avant(); C=normaliser(JSON.parse(JSON.stringify(EXEMPLES[k].c))); actif='moi'; sel=-1; insererA=-1; tout(); garder(); fermerRegl(); msg('Exemple chargé. « Annuler » revient à votre conversation.'); };
+$('effacer').onclick=()=>{ if(!C.msgs.length||confirm('Effacer toute la conversation ?')){ avant(); const p=C.pers, a=C.app; C=VIDE(); C.app=a; if(p.length===1) C.pers=p; actif='moi'; sel=-1; insererA=-1; tout(); garder(); } };
+$('annuler').onclick=annuler;
+addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'){ const a=document.activeElement; if(a&&(a.tagName==='TEXTAREA'||a.tagName==='INPUT')&&a.value) return; e.preventDefault(); annuler(); } });
+
+/* ---------- Réglages sur téléphone ---------- */
+function fermerRegl(){ document.body.classList.remove('regl-on'); }
+$('reglBtn').onclick=()=>document.body.classList.add('regl-on');
+$('reglFin').onclick=fermerRegl;
 
 /* ---------- Image PNG ---------- */
 $('png').onclick=async()=>{
-  if(!window.html2canvas) return msg('Il faut une connexion Internet la première fois pour créer l\'image.');
+  if(!C.msgs.length) return msg('Écrivez d\'abord des messages.');
+  if(!window.html2canvas) return msg('Il faut une connexion Internet pour créer l\'image.');
   const hote=document.createElement('div'); hote.style.cssText='position:fixed;left:-10000px;top:0;width:400px';
-  hote.innerHTML=telHTML({export:true}); document.body.appendChild(hote);
-  const ecran=hote.querySelector('.ecran');
+  const s=sel; sel=-1; hote.innerHTML=telHTML({export:true}); sel=s; document.body.appendChild(hote);
   try{
     await (document.fonts?document.fonts.ready:Promise.resolve());
-    const cv=await html2canvas(ecran,{scale:2,backgroundColor:null,useCORS:true,logging:false});
+    const cv=await html2canvas(hote.querySelector('.ecran'),{scale:2,backgroundColor:null,useCORS:true,logging:false});
     cv.toBlob(b=>{ telecharger(nomFichier()+'.png',b); msg('Image enregistrée dans vos téléchargements.'); },'image/png');
   }catch(x){ msg('L\'image n\'a pas pu être créée. Essayez une capture d\'écran.'); }
   finally{ hote.remove(); }
@@ -483,17 +593,17 @@ let pas=0, tFrappe=null;
 function sceneDessiner(nouv){
   clearTimeout(tFrappe);
   const box=$('sceneTel');
-  const rendre=(n,frappe,nv)=>{ box.innerHTML=telHTML({n,frappe,nouv:nv}); const f=box.querySelector('.fil'); f.scrollTop=f.scrollHeight; ajusterScene(); $('sInfo').textContent=`${Math.min(n,C.msgs.length)} / ${C.msgs.length}`; };
+  const rendre=(n,frappe,nv)=>{ const s=sel; sel=-1; box.innerHTML=telHTML({n,frappe,nouv:nv}); sel=s; const f=box.querySelector('.fil'); f.scrollTop=f.scrollHeight; ajusterScene(); $('sInfo').textContent=`${Math.min(n,C.msgs.length)} / ${C.msgs.length}`; };
   const m=C.msgs[pas-1];
   if(nouv&&m&&m.de!=='moi'&&m.de!=='date'){ rendre(pas-1,true); tFrappe=setTimeout(()=>rendre(pas,false,pas-1),Math.min(1600,500+(m.texte||'').length*18)); }
   else rendre(pas,false,nouv?pas-1:undefined);
 }
-function ajusterScene(){ const t=$('sceneTel').querySelector('.tel'); if(!t) return; const k=Math.min((innerHeight-80)/t.offsetHeight,(innerWidth-20)/380,1.6); t.style.transform=`scale(${k})`; $('sceneTel').style.height=(t.offsetHeight*k)+'px'; }
+function ajusterScene(){ const t=$('sceneTel').querySelector('.tel'); if(!t) return; const k=Math.min((innerHeight-80)/t.offsetHeight,(innerWidth-20)/t.offsetWidth,1.6); t.style.transform=`scale(${k})`; $('sceneTel').style.height=(t.offsetHeight*k)+'px'; }
 addEventListener('resize',()=>{ if($('scene').classList.contains('on')) ajusterScene(); });
 function sceneSuiv(){ if(pas<C.msgs.length){ pas++; sceneDessiner(true); } }
 function scenePrec(){ if(pas>0){ pas--; sceneDessiner(false); } }
 function sceneFin(){ clearTimeout(tFrappe); $('scene').classList.remove('on'); $('scene').setAttribute('aria-hidden','true'); try{ document.fullscreenElement&&document.exitFullscreen(); }catch(e){} $('jouer').focus(); }
-$('jouer').onclick=()=>{ if(!C.msgs.length) return msg('Ajoutez d\'abord des messages.'); pas=0; $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false'); try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} sceneDessiner(false); };
+$('jouer').onclick=()=>{ if(!C.msgs.length) return msg('Écrivez d\'abord des messages.'); pas=0; $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false'); try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} sceneDessiner(false); };
 $('sSuiv').onclick=e=>{ e.stopPropagation(); sceneSuiv(); }; $('sPrec').onclick=e=>{ e.stopPropagation(); scenePrec(); }; $('sFin').onclick=e=>{ e.stopPropagation(); sceneFin(); };
 $('scene').addEventListener('click',e=>{ if(!e.target.closest('.bas')) sceneSuiv(); });
 addEventListener('keydown',e=>{ if(!$('scene').classList.contains('on')) return;
@@ -502,7 +612,9 @@ addEventListener('keydown',e=>{ if(!$('scene').classList.contains('on')) return;
   else if(['ArrowLeft','ArrowUp','Backspace','PageUp'].includes(e.key)){ e.preventDefault(); scenePrec(); } });
 document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement&&$('scene').classList.contains('on')) ajusterScene(); });
 
-tout(); proposerHeure();
+function tout(){ dessinerReglages(); majTel(); }
+construireTel(); tout(); $('fil').scrollTop=1e6;
+if(matchMedia('(min-width:821px)').matches) $('texte').focus();
 </script>
 </body>
 </html>
