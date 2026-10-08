@@ -374,6 +374,7 @@ body.dense .doubt .lbl,body.dense .why{font-size:clamp(8px,.7vw,15px);letter-spa
   background:linear-gradient(#f3ead2,#e2d5b3);color:var(--ink);font-family:var(--f-type);
   font-size:10px;line-height:1.2;text-align:left;overflow:hidden;overflow-wrap:anywhere;white-space:pre-line}
 .thumb .ttxt>span{display:block;max-width:100%}
+.thumb .ttxt small.tch{display:block;margin-top:.5em;font-size:.72em;opacity:.75;white-space:normal}
 
 /* ---------- Levier QCM (2 à 4 positions : A, B, C, D) ---------- */
 .channel.qcm .tag.down{visibility:hidden}
@@ -922,7 +923,7 @@ for(let i=0;i<N;i++){
   const slotQ = K ? Array.from({length:K},(_,j)=>{ const top=posQ(i,j+1), h=80/(K-1);
       return `<span class="ql" style="top:${top}%">${LETTRES[j]}</span><button class="qz" data-v="${j+1}" style="top:${Math.max(0,top-h/2)}%;height:${h}%" aria-label="${nomItem(i)} : réponse ${LETTRES[j]}"></button>`; }).join('') : '';
   ch.innerHTML = `
-    <button class="thumb" id="thumb${i}" aria-label="Agrandir ${nomItem(i).toLowerCase()}">${ITEMS[i].f?`<img src="${ITEMS[i].t||ITEMS[i].f}" alt="">`:`<span class="ttxt"><span>${esc((ITEMS[i].texte||'').replace(/\n{3,}/g,'\n\n').trim())}</span></span>`}</button>
+    <button class="thumb" id="thumb${i}" aria-label="Agrandir ${nomItem(i).toLowerCase()}">${ITEMS[i].f?`<img src="${ITEMS[i].t||ITEMS[i].f}" alt="">`:`<span class="ttxt"><span>${texteCarte(i)}</span></span>`}</button>
     <div class="num"><span class="jewel"></span>${n}</div>
     <div class="tag up">${K?'—':esc(C.haut)}</div>
     <div class="slot">
@@ -1370,10 +1371,19 @@ pFile.addEventListener('change',async()=>{
   }catch(x){ pMsg(x.message==='jeu' ? 'Ce fichier vient d\'un autre jeu.' : 'Ce fichier n\'est pas un fichier « Mes réponses » de ce jeu (ou il a été modifié).','ko'); }
 });
 
+/* ---------- Carte QCM : la question seule, les choix au clic ---------- */
+function texteCarte(i){
+  const t=(ITEMS[i].texte||'').replace(/\n{3,}/g,'\n\n').trim(), k=nbChoix(i);
+  if(!k) return esc(t);
+  const L=t.split('\n'), j=L.findIndex(l=>/^\s*\(?[A-Da-d]\s*[.)\]:\-]/.test(l));
+  if(j<1) return esc(t);
+  return esc(L.slice(0,j).join('\n').trim())+`<small class="tch">${LETTRES.slice(0,k).split('').join(' · ')}<br>cliquer pour voir les choix</small>`;
+}
 /* ---------- Textes au-dessus des leviers : taille ajustée à la case ---------- */
 function ajusterTextes(){
   document.querySelectorAll('.thumb .ttxt').forEach(b=>{
     const t=b.firstElementChild; if(!t||!b.clientHeight) return;
+    const h=t.querySelector('.tch'); if(h) h.style.display=b.clientHeight<70?'none':'';
     let lo=5, hi=Math.max(6,Math.min(40,b.clientHeight/2));
     while(hi-lo>.5){ const m=(lo+hi)/2; b.style.fontSize=m+'px'; (t.scrollHeight<=b.clientHeight*.88 && t.scrollWidth<=b.clientWidth) ? lo=m : hi=m; }
     b.style.fontSize=lo+'px';
