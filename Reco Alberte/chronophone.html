@@ -207,6 +207,9 @@ button{font:inherit;color:inherit}
   pointer-events:none;
 }
 .channel[data-state="1"] .knob{top:13%}
+.knob{pointer-events:auto;cursor:grab;touch-action:none;z-index:2}
+.knob::after{content:"";position:absolute;inset:-35%;border-radius:50%}
+.channel.drag .knob{transition:none;cursor:grabbing;filter:brightness(1.12)}
 .channel[data-state="-1"] .knob{top:87%}
 .zone{
   position:absolute;left:0;right:0;height:50%;
@@ -866,6 +869,44 @@ for(let i=0;i<N;i++){
     sauver();
   });
   ch.querySelector('.why').addEventListener('click',()=>openFiche(i));
+  attraper(i);
+}
+
+/* ---------- Faire glisser la manette du levier ---------- */
+function positionsLevier(i){
+  const K=nbChoix(i);
+  return K ? Array.from({length:K},(_,j)=>({v:j+1,p:posQ(i,j+1)})) : [{v:1,p:13},{v:0,p:50},{v:-1,p:87}];
+}
+function attraper(i){
+  const ch=channels[i], knob=ch.querySelector('.knob'), slot=ch.querySelector('.slot');
+  let y0=null, bouge=false;
+  knob.addEventListener('pointerdown',e=>{
+    if(busy) return;
+    e.preventDefault(); y0=e.clientY; bouge=false;
+    try{ knob.setPointerCapture(e.pointerId); }catch(x){}
+  });
+  knob.addEventListener('pointermove',e=>{
+    if(y0===null) return;
+    if(!bouge && Math.abs(e.clientY-y0)<4) return;
+    bouge=true; ch.classList.add('drag');
+    const r=slot.getBoundingClientRect(), pos=positionsLevier(i);
+    const lo=Math.min(...pos.map(o=>o.p)), hi=Math.max(...pos.map(o=>o.p));
+    knob.style.top=Math.max(lo,Math.min(hi,(e.clientY-r.top)/r.height*100))+'%';
+  });
+  const lacher=e=>{
+    if(y0===null) return;
+    y0=null; ch.classList.remove('drag');
+    if(!bouge){ // simple clic : comme avant, on agit sur la zone sous la manette
+      knob.style.pointerEvents='none'; const z=document.elementFromPoint(e.clientX,e.clientY); knob.style.pointerEvents='';
+      if(z&&slot.contains(z)&&z.tagName==='BUTTON') z.click(); return; }
+    const r=slot.getBoundingClientRect(), p=(e.clientY-r.top)/r.height*100;
+    let best=positionsLevier(i).reduce((a,b)=>Math.abs(b.p-p)<Math.abs(a.p-p)?b:a);
+    knob.style.top='';
+    if(busy){ afficherLevier(i); return; }
+    setLever(i,best.v);
+  };
+  knob.addEventListener('pointerup',lacher);
+  knob.addEventListener('pointercancel',lacher);
 }
 
 function afficherLevier(i){
