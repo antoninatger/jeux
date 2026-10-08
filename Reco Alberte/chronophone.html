@@ -519,7 +519,7 @@ const SUCCESS_LINK = "https://www.laclasse.com/portail/?token=17021134:vWBq8xDiA
 /* ================================================================= */
 
 const N = 22;
-const state = Array(N).fill(0);      // 1 = IA, -1 = pas IA, 0 = neutre
+const state = Array(N).fill(0);      // 1 = IA, -1 = réel, 0 = neutre
 const doubt = Array(N).fill(false);
 let attempts = 0, busy = false, solved = false;
 
@@ -709,9 +709,9 @@ for(let i=0;i<N;i++){
     <div class="slot">
       <div class="groove"></div><div class="mid"></div><div class="knob"></div>
       <button class="zone up" id="up${i}" aria-label="Photo ${i+1} : IA"></button>
-      <button class="zone down" id="down${i}" aria-label="Photo ${i+1} : pas IA"></button>
+      <button class="zone down" id="down${i}" aria-label="Photo ${i+1} : réel"></button>
     </div>
-    <div class="tag down">PAS IA</div>
+    <div class="tag down">RÉEL</div>
     <button class="doubt" id="doubt${i}" aria-pressed="false" aria-label="Photo ${i+1} : doute">
       <span class="btn"></span><span class="lbl">DOUTE</span>
     </button>`;
