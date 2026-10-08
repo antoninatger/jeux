@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ressources profs · Antonin Atger</title>
+<meta name="description" content="Des outils libres pour les enseignants : créer un escape game à leviers, fabriquer une fausse conversation WhatsApp, SMS ou Instagram pour la classe.">
+<style>
+:root{--bg:#f4f1ea;--panel:#fff;--ink:#1d1b18;--doux:#6b665d;--bord:#e2ddd2;--acc:#1f6f5c;--acc2:#e9f3ef}
+@media (prefers-color-scheme:dark){:root{--bg:#16150f;--panel:#201e19;--ink:#f1ede4;--doux:#a8a196;--bord:#38352d;--acc:#5cc4a6;--acc2:#1f3530}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px 60px}
+.sur{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--doux);margin:0 0 6px}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.1;margin:0 0 12px}
+.lead{color:var(--doux);font-size:17px;max-width:680px;margin:0 0 32px}
+.cartes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.carte{background:var(--panel);border:1px solid var(--bord);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+.carte:hover{border-color:var(--acc);transform:translateY(-2px)}
+.carte .ico{font-size:30px;line-height:1}
+.carte h2{font-size:20px;margin:0}
+.carte p{margin:0;color:var(--doux)}
+.carte ul{margin:0;padding-left:18px;color:var(--doux);font-size:14.5px}
+.carte .go{margin-top:auto;padding-top:6px;color:var(--acc);font-weight:600}
+.libre{margin-top:36px;padding:18px 20px;border-radius:12px;background:var(--acc2);font-size:15px}
+.libre a{color:var(--acc)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="sur">Ressources profs</p>
+  <h1>Des outils pour rendre le cours plus vivant</h1>
+  <p class="lead">Libres et gratuits, sans inscription : prenez-les, adaptez-les à votre classe, utilisez-les comme vous voulez. Tout fonctionne dans le navigateur et rien n'est envoyé sur Internet.</p>
+
+  <div class="cartes">
+    <a class="carte" href="../Reco%20Alberte/chronophone-atelier.html">
+      <span class="ico" aria-hidden="true">🎛️</span>
+      <h2>Atelier du Chronophone</h2>
+      <p>Fabriquez votre propre escape game : une question par levier, les élèves trouvent la bonne combinaison pour ouvrir le canal.</p>
+      <ul><li>Questions à deux réponses ou QCM, texte ou photo</li><li>Import d'un fichier Word ou PDF</li><li>Un seul fichier à donner aux élèves</li></ul>
+      <span class="go">Créer un jeu →</span>
+    </a>
+    <a class="carte" href="faux-messages.html">
+      <span class="ico" aria-hidden="true">💬</span>
+      <h2>Fausses conversations</h2>
+      <p>Écrivez une conversation WhatsApp, SMS ou Instagram, puis téléchargez-la en image ou faites-la défiler en classe, message par message.</p>
+      <ul><li>Conversations à deux ou de groupe</li><li>Mode « lecture en classe » avec « en train d'écrire… »</li><li>Exemples prêts : arnaque, emprise, rumeur</li></ul>
+      <span class="go">Créer une conversation →</span>
+    </a>
+  </div>
+
+  <p class="libre">Une idée d'outil, un retour après l'avoir utilisé en classe ? <a href="https://antoninatger.com/contact/">Écrivez-moi</a>.</p>
+</main>
+</body>
+</html>
