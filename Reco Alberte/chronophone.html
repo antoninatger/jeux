@@ -518,6 +518,83 @@ body.dense .why .wl{display:none} body.dense .why .ws{display:inline}
   .knob,.pull .handle{transition:none}
   .telegram .paper{animation:none}
 }
+
+/* =================== Ambiances (choisies dans l'atelier) =================== */
+/* Papiers (bande, télégramme, textes) : variables communes */
+body{--p1:#f6eed8;--p2:#e7dbbb;--p-ink:var(--ink)}
+body.amb-futur,body.amb-arcade{--p-ink:var(--brass-hi)}
+body:not(.amb-vapeur) .tape,body:not(.amb-vapeur) .telegram .paper,body:not(.amb-vapeur) .zoom .mtxt,
+body:not(.amb-vapeur) .fiche .media .mtxt,body:not(.amb-vapeur) .thumb .ttxt,body:not(.amb-vapeur) .partie .card{
+  background:linear-gradient(var(--p1),var(--p2));color:var(--p-ink)}
+body:not(.amb-vapeur) .telegram .hdr{border-color:var(--p-ink)}
+body:not(.amb-vapeur) .telegram p a,body:not(.amb-vapeur) .telegram .ctl,body:not(.amb-vapeur) .partie .ctl{color:var(--p-ink);border-color:var(--p-ink)}
+body:not(.amb-vapeur) .partie .ctl.prim{background:var(--brass);color:var(--ink);border-color:var(--brass)}
+body:not(.amb-vapeur) .fiche textarea{background:var(--p1);color:var(--p-ink);border-color:var(--brass-lo)}
+body:not(.amb-vapeur) .tag{background:var(--plate-hi)}
+body:not(.amb-vapeur) .tape.ko{color:var(--red)} body:not(.amb-vapeur) .tape.ok{color:var(--green)}
+body:not(.amb-vapeur) .stamp{color:var(--green);border-color:var(--green);top:6%;right:4%}
+body:not(.amb-vapeur) .telegram h2{margin-top:28px}
+
+/* ---- Futuriste : verre sombre, néons cyan et magenta ---- */
+body.amb-futur{
+  --iron:#040812;--plate:#0a1324;--plate-hi:#10203a;
+  --brass:#35dcff;--brass-hi:#b5f6ff;--brass-lo:#185e7c;
+  --verdigris:#ff4fd8;--enamel:#d7f5ff;--ink:#02101b;
+  --amber:#ffd23e;--red:#ff3b6b;--green:#3dffa8;
+  --f-display:"Orbitron","Eurostile","Arial Black",sans-serif;
+  --f-type:"Share Tech Mono",ui-monospace,monospace;
+  --p1:#0b1a2e;--p2:#08121f;
+}
+body.amb-futur .machine{background:
+  radial-gradient(ellipse 80% 50% at 50% 0%,rgba(53,220,255,.16),transparent 70%),
+  linear-gradient(rgba(53,220,255,.05) 1px,transparent 1px) 0 0/100% 32px,
+  linear-gradient(90deg,rgba(53,220,255,.05) 1px,transparent 1px) 0 0/32px 100%,
+  var(--iron)}
+body.amb-futur .gauge,body.amb-futur .counter,body.amb-futur .master,body.amb-futur .channel,body.amb-futur .ctl{
+  box-shadow:0 0 0 1px rgba(53,220,255,.35),0 0 18px rgba(53,220,255,.12) inset}
+body.amb-futur .nameplate{background:linear-gradient(135deg,rgba(53,220,255,.18),rgba(255,79,216,.12)),#071223;
+  border:2px solid var(--brass);color:var(--brass-hi);box-shadow:0 0 24px rgba(53,220,255,.35),inset 0 0 30px rgba(53,220,255,.12)}
+body.amb-futur .nameplate h1{letter-spacing:.16em;text-shadow:0 0 8px var(--brass),0 0 22px rgba(53,220,255,.7)}
+body.amb-futur .reso-stamp{color:var(--verdigris);border-color:var(--verdigris);mix-blend-mode:normal;text-shadow:0 0 6px var(--verdigris)}
+body.amb-futur .knob{background:radial-gradient(circle at 40% 35%,#ffffff 0 8%,#9ff3ff 20%,var(--brass) 50%,#0b4d66 85%);
+  box-shadow:0 0 14px var(--brass),0 0 4px #fff inset}
+body.amb-futur .groove,body.amb-futur .pull .track{background:#01040a;box-shadow:inset 0 0 8px #000,0 0 0 2px var(--brass-lo),0 0 10px rgba(53,220,255,.3)}
+body.amb-futur .pull .handle{background:radial-gradient(circle at 40% 35%,#fff 0 7%,#ff9cec 25%,var(--verdigris) 55%,#6b0a5a 95%);box-shadow:0 0 20px var(--verdigris)}
+body.amb-futur .tape{border-left:3px solid var(--brass);border-right:3px solid var(--brass);text-shadow:0 0 6px rgba(181,246,255,.6)}
+body.amb-futur .telegram .paper{border:2px solid var(--brass);box-shadow:0 0 40px rgba(53,220,255,.35)}
+body.amb-futur .drum{background:linear-gradient(#01040a,#0c1a2c 45%,#0c1a2c 55%,#01040a);color:var(--brass-hi)}
+
+/* ---- Arcade : rétro jeux vidéo, pixels et couleurs vives ---- */
+body.amb-arcade{
+  --iron:#0d0221;--plate:#1b0b40;--plate-hi:#28125c;
+  --brass:#ffd400;--brass-hi:#fff27a;--brass-lo:#8a6a00;
+  --verdigris:#00e5ff;--enamel:#f4f0ff;--ink:#12052b;
+  --amber:#ff9f1c;--red:#ff2e63;--green:#39ff14;
+  --f-display:"Press Start 2P","Courier New",monospace;
+  --f-type:"VT323",ui-monospace,monospace;
+  --p1:#12052b;--p2:#1d0a45;
+}
+body.amb-arcade{font-size:1.15em}
+body.amb-arcade *{border-radius:0 !important}
+body.amb-arcade .machine{background:
+  repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 2px,transparent 2px 4px),
+  radial-gradient(ellipse 90% 60% at 50% 0%,rgba(255,46,99,.25),transparent 70%),
+  var(--iron)}
+body.amb-arcade .nameplate{background:linear-gradient(#ff2e63,#7b1fa2);border:4px solid var(--brass);color:var(--brass);box-shadow:6px 6px 0 #000}
+body.amb-arcade .nameplate h1{font-size:clamp(18px,3.2vw,60px);letter-spacing:.06em;text-shadow:4px 4px 0 #000}
+body.amb-arcade .nameplate .model,body.amb-arcade .nameplate .warn{color:#fff;opacity:1}
+body.amb-arcade .reso-stamp{color:var(--verdigris);border:3px solid var(--verdigris);mix-blend-mode:normal;font-size:clamp(8px,.8vw,14px)}
+body.amb-arcade .gauge,body.amb-arcade .counter,body.amb-arcade .master,body.amb-arcade .channel{border:3px solid var(--brass-lo);box-shadow:4px 4px 0 #000}
+body.amb-arcade .knob{background:var(--brass);box-shadow:inset -4px -4px 0 var(--brass-lo),inset 4px 4px 0 var(--brass-hi),3px 3px 0 #000}
+body.amb-arcade .pull .handle{background:var(--red);box-shadow:inset -5px -5px 0 #8c0f33,inset 5px 5px 0 #ff8fab,4px 4px 0 #000}
+body.amb-arcade .groove,body.amb-arcade .pull .track{background:#000;box-shadow:0 0 0 3px var(--brass-lo)}
+body.amb-arcade .doubt .btn,body.amb-arcade .biglamp,body.amb-arcade .jewel{border-radius:0 !important}
+body.amb-arcade .tape{border:3px solid var(--green);color:var(--green);font-size:clamp(16px,1.7vw,32px)}
+body.amb-arcade .telegram .paper{border:4px solid var(--brass);box-shadow:8px 8px 0 #000}
+body.amb-arcade .telegram h2{font-size:clamp(18px,2.6vw,40px);color:var(--brass)}
+body.amb-arcade .drum{background:#000;color:var(--green)}
+body.amb-arcade .cap,body.amb-arcade .num{font-family:var(--f-display);font-size:clamp(7px,.7vw,13px);letter-spacing:.04em}
+body.amb-arcade .master .call{line-height:1.5;font-size:clamp(12px,1.3vw,24px)}
 </style>
 
 <div class="machine" id="machine">
@@ -661,6 +738,16 @@ const posQ = (i,v) => { const k=nbChoix(i); return 10+80*(v-1)/(k-1); };        
 const codeJeu = () => state.map((v,i)=> nbChoix(i) ? (LETTRES[v-1]||'-') : (v===1?'1':'0')).join('');
 const libChoix = (i,v) => nbChoix(i) ? (LETTRES[v-1]||'') : v===1?C.haut : v===-1?C.bas : '';
 const choixCode = (i,v) => nbChoix(i) ? (LETTRES[v-1]||null) : v===1?'haut' : v===-1?'bas' : null;
+
+/* ---------- Ambiance du jeu ---------- */
+const AMBIANCES={
+  vapeur:{arc:['127,168,255','120,160,255','235,242,255','200,220,255']},
+  futur:{arc:['53,220,255','53,220,255','230,252,255','255,79,216'], fonts:'Orbitron:wght@500;800&family=Share+Tech+Mono'},
+  arcade:{arc:['57,255,20','255,212,0','255,255,220','0,229,255'], fonts:'Press+Start+2P&family=VT323'}
+};
+const AMB = AMBIANCES[C.ambiance] ? C.ambiance : 'vapeur', ARCC = AMBIANCES[AMB].arc;
+document.body.classList.add('amb-'+AMB);
+if(AMBIANCES[AMB].fonts){ const l=document.createElement('link'); l.rel='stylesheet'; l.href='https://fonts.googleapis.com/css2?family='+AMBIANCES[AMB].fonts+'&display=swap'; document.head.appendChild(l); }
 (function habiller(){
   const set=(id,t)=>{ const el=document.getElementById(id); if(el){ el.textContent=t; el.hidden=!t; } };
   set('tTitre',C.titre); set('tModele',C.modele); set('tAvert',C.avert); set('tTampon',C.tampon);
@@ -772,14 +859,14 @@ const fx = (()=>{
       if(a.life>a.dur){arcs.splice(i,1);continue;}
       if(!a.pts||a.life%2===0) a.pts=bolt(a.x1,a.y1,a.x2,a.y2);
       const fade=1-a.life/(a.dur+1);
-      c.shadowColor='#7fa8ff'; c.shadowBlur=14;
-      c.strokeStyle=`rgba(120,160,255,${.35*fade})`; c.lineWidth=a.w*4; strokePts(a.pts);
+      c.shadowColor=`rgb(${ARCC[0]})`; c.shadowBlur=14;
+      c.strokeStyle=`rgba(${ARCC[1]},${.35*fade})`; c.lineWidth=a.w*4; strokePts(a.pts);
       c.shadowBlur=0;
-      c.strokeStyle=`rgba(235,242,255,${fade})`; c.lineWidth=a.w; strokePts(a.pts);
+      c.strokeStyle=`rgba(${ARCC[2]},${fade})`; c.lineWidth=a.w; strokePts(a.pts);
       if(Math.random()<.35){ // petite branche
         const p=a.pts[(Math.random()*a.pts.length)|0];
         const br=bolt(p[0],p[1],p[0]+rnd(-30,30),p[1]+rnd(-30,30));
-        c.strokeStyle=`rgba(200,220,255,${.6*fade})`; c.lineWidth=a.w*.6; strokePts(br);
+        c.strokeStyle=`rgba(${ARCC[3]},${.6*fade})`; c.lineWidth=a.w*.6; strokePts(br);
       }
     }
     c.globalCompositeOperation='source-over';
