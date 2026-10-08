@@ -109,13 +109,15 @@ button{font:inherit;color:inherit}
 .nameplate .warn{font-size:clamp(9px,.8vw,14px);opacity:.75}
 .nameplate{position:relative}
 .reso-stamp{
-  position:absolute;right:3%;top:50%;transform:translateY(-50%) rotate(-11deg);
-  font-family:var(--f-display);font-weight:700;letter-spacing:.18em;
-  font-size:clamp(12px,1.5vw,28px);
+  position:absolute;right:1.6%;bottom:9%;transform:rotate(-8deg);
+  font-family:var(--f-display);font-weight:700;letter-spacing:.14em;white-space:nowrap;
+  font-size:clamp(10px,1.05vw,21px);
   color:#8e1d0c;border:3px double #8e1d0c;border-radius:5px;
-  padding:.2em .5em .15em .7em;opacity:.78;
+  padding:.2em .5em .15em .65em;opacity:.8;
   mix-blend-mode:multiply;
 }
+@media (max-width:820px),(max-height:500px){ .reso-stamp{bottom:auto;top:10%;right:2.5%} }
+@media (max-width:600px){ .reso-stamp{position:static;order:9;align-self:center;transform:rotate(-4deg);margin-top:6px} }
 .telegram .from{font-size:clamp(12px,1.1vw,18px);letter-spacing:.12em;margin-top:10px}
 .telegram .sig{font-size:clamp(16px,1.6vw,26px);text-align:right;margin:-8px 0 20px}
 
@@ -445,10 +447,10 @@ button{font:inherit;color:inherit}
     </div>
 
     <div class="nameplate">
-      <span class="reso-stamp" aria-label="Réseau RÉSO">RÉSO</span>
+      <span class="reso-stamp" aria-label="Réseau Self Data">SELF DATA</span>
       <h1>CHRONOPHONE</h1>
       <div class="model">Poste d'Alberte Bourde · Lyon · Modèle R-43</div>
-      <div class="warn">Propriété du réseau RÉSO. Détruire l'appareil plutôt que le laisser à la Gestapo.</div>
+      <div class="warn">Propriété du réseau Self Data. Détruire l'appareil plutôt que le laisser à la Gestapo.</div>
     </div>
 
     <div class="counter riveted">
@@ -497,7 +499,7 @@ button{font:inherit;color:inherit}
 
 <div class="telegram" id="telegram" hidden>
   <div class="paper" role="dialog" aria-modal="true" aria-labelledby="tgTitle">
-    <div class="hdr"><span>TÉLÉGRAMME · RÉSO</span><span>LYON · 1943</span></div>
+    <div class="hdr"><span>TÉLÉGRAMME · SELF DATA</span><span>LYON · 1943</span></div>
     <div class="from">DE : ALBERTE B. · POSTE R-43</div>
     <h2 id="tgTitle">CANAL OUVERT</h2>
     <p id="tgMsg"></p>
