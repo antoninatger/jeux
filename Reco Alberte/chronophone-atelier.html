@@ -51,15 +51,18 @@ textarea{resize:vertical;min-height:70px;line-height:1.4}
 .btn.warn{color:#ff9c86;border-color:#7a2a1a}
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
 .et2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);margin-bottom:6px}
-.ambs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
-.amb{border:2px solid var(--brass-lo);border-radius:10px;padding:0;overflow:hidden;cursor:pointer;background:#000;color:#fff;text-align:left;font:inherit}
+.ambs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.ambc{display:flex;flex-direction:column;gap:6px}
+.ambc .voir{background:transparent;border:1px solid var(--brass-lo);border-radius:8px;color:var(--brass-hi);font:inherit;font-size:13px;padding:6px 8px;cursor:pointer}
+.ambc .voir:hover{border-color:var(--brass-hi);background:rgba(241,212,136,.08)}
+.amb{width:100%;border:2px solid var(--brass-lo);border-radius:10px;padding:0;overflow:hidden;cursor:pointer;background:#000;color:#fff;text-align:left;font:inherit}
 .amb[aria-pressed="true"]{border-color:var(--brass-hi);box-shadow:0 0 0 3px rgba(241,212,136,.35)}
-.amb .ap{height:86px;display:grid;place-items:center;font-size:22px;letter-spacing:.12em;font-weight:700}
+.amb .ap{height:86px;display:grid;place-items:center;white-space:nowrap;overflow:hidden;font-size:clamp(15px,1.5vw,22px);letter-spacing:.12em;font-weight:700}
 .amb .an{display:block;padding:8px 10px;background:rgba(0,0,0,.6);font-size:14px}
 .amb .an small{display:block;color:#b9a888;font-size:12px;margin-top:2px}
 .amb.vapeur .ap{background:linear-gradient(#f1d488,#c9a24a 45%,#6e5119);color:#1c1510;font-family:"Stardos Stencil",serif}
-.amb.coffre .ap{background:linear-gradient(100deg,rgba(255,255,255,.35),transparent 30%,transparent 70%,rgba(255,255,255,.2)),linear-gradient(#e8ebee,#a9b0b8 50%,#6f767e);color:#15171a;font-family:"Bebas Neue",sans-serif;font-weight:400;font-size:30px;letter-spacing:.14em}
-.amb.spatial .ap{background:radial-gradient(1.4px 1.4px at 15% 25%,#fff,transparent),radial-gradient(1px 1px at 70% 15%,#fff,transparent),radial-gradient(1px 1px at 88% 60%,#fff,transparent),radial-gradient(ellipse 120% 50% at 50% 150%,rgba(79,209,255,.7),transparent 70%),#070a10;color:#ff8a2a;font-family:"Rajdhani",sans-serif;font-size:26px;letter-spacing:.18em}
+.amb.coffre .ap{background:linear-gradient(100deg,rgba(255,255,255,.35),transparent 30%,transparent 70%,rgba(255,255,255,.2)),linear-gradient(#e8ebee,#a9b0b8 50%,#6f767e);color:#15171a;font-family:"Bebas Neue",sans-serif;font-weight:400;font-size:clamp(20px,2vw,30px);letter-spacing:.14em}
+.amb.spatial .ap{background:radial-gradient(1.4px 1.4px at 15% 25%,#fff,transparent),radial-gradient(1px 1px at 70% 15%,#fff,transparent),radial-gradient(1px 1px at 88% 60%,#fff,transparent),radial-gradient(ellipse 120% 50% at 50% 150%,rgba(79,209,255,.7),transparent 70%),#070a10;color:#ff8a2a;font-family:"Rajdhani",sans-serif;font-size:clamp(17px,1.7vw,26px);letter-spacing:.18em}
 .amb.labo .ap{background:repeating-linear-gradient(135deg,#f2c230 0 10px,#16140c 10px 20px) top/100% 7px no-repeat,repeating-linear-gradient(135deg,#f2c230 0 10px,#16140c 10px 20px) bottom/100% 7px no-repeat,linear-gradient(#202823,#0e130f);color:#8cff5a;text-shadow:0 0 10px rgba(140,255,90,.7);font-family:"Creepster",fantasy;font-weight:400;letter-spacing:.06em}
 .amb.grimoire .ap{background:radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#fff,transparent),radial-gradient(1px 1px at 85% 75%,#fff,transparent),radial-gradient(ellipse at 50% 0%,rgba(195,155,255,.45),transparent 70%),#170e29;color:#ffe7a6;text-shadow:0 0 12px rgba(255,231,166,.6);font-family:"Cinzel Decorative",serif;letter-spacing:.04em}
 .labels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -161,7 +164,7 @@ a.lien{color:var(--brass-hi)}
     </ol>
     <div class="et2" style="margin-top:14px">Le style du jeu <small style="font-weight:400;opacity:.8">: à choisir maintenant ou plus tard, vos questions restent les mêmes</small></div>
     <div class="ambs" id="ambs"></div>
-    <p>Première fois ? <button class="btn prim" id="exemple">Ouvrir un exemple</button> pour voir un jeu déjà rempli. Votre travail est gardé tout seul sur cet ordinateur, dans ce navigateur.</p>
+    <p>Première fois ? <button class="btn prim" id="exemple">Partir de l'exemple</button> : cinq questions déjà écrites, à modifier pour faire les vôtres. Votre travail est gardé tout seul sur cet ordinateur, dans ce navigateur.</p>
   </div>
 
   <section class="box">
@@ -287,7 +290,7 @@ Réponse : non
   </div>
 </div>
 <div class="essai" id="essai" hidden>
-  <div class="eb"><span>ESSAI DU JEU · rien n'est envoyé aux élèves</span><button class="btn" id="essaiFin">Voir le message de fin</button><button class="btn prim" id="essaiFermer">Revenir à l'atelier</button></div>
+  <div class="eb"><span id="essaiTitre">ESSAI DU JEU · rien n'est envoyé aux élèves</span><button class="btn" id="essaiFin">Voir le message de fin</button><button class="btn prim" id="essaiFermer">Revenir à l'atelier</button></div>
   <iframe id="essaiFrame" title="Essai du jeu"></iframe>
 </div>
 
@@ -307,7 +310,7 @@ const TEXTES_AMB={
   grimoire:{attente:'Placez les {n} pierres de lune sur une rune puis lancez le sort avec la baguette.', echec:'Les runes ne répondent pas, vérifiez vos pierres.', succes:'Le sort fonctionne. Bien joué !', enTete:'PARCHEMIN', message:'Bravo, le sort a fonctionné ! Vous avez trouvé la bonne combinaison.'}
 };
 function textesAmbiance(k){ Object.keys(TEXTES_AMB.vapeur).forEach(c=>{ const tous=Object.values(TEXTES_AMB).map(t=>t[c]).filter(Boolean); if(tous.includes(cfg[c])) cfg[c]=(TEXTES_AMB[k]&&TEXTES_AMB[k][c])||TEXTES_AMB.vapeur[c]; }); CHAMPS.forEach(c=>{ $(c).value=cfg[c]||''; }); };
-function dessinerAmbs(){ if(cfg.ambiance==='futur') cfg.ambiance='spatial'; if(!AMBS.some(x=>x[0]===cfg.ambiance)) cfg.ambiance='vapeur'; const a=$('ambs'); a.innerHTML=''; AMBS.forEach(([k,ap,n,d])=>{ const b=document.createElement('button'); b.className='amb '+k; b.setAttribute('aria-pressed',(cfg.ambiance||'vapeur')===k); b.innerHTML=`<span class="ap">${ap}</span><span class="an">${n}<small>${d}</small></span>`; b.onclick=()=>{ cfg.ambiance=k; textesAmbiance(k); dessinerAmbs(); garder(); msg('Ambiance « '+n+' » choisie. Cliquez « Essayer le jeu » pour la voir.'); }; a.appendChild(b); }); }
+function dessinerAmbs(){ if(cfg.ambiance==='futur') cfg.ambiance='spatial'; if(!AMBS.some(x=>x[0]===cfg.ambiance)) cfg.ambiance='vapeur'; const a=$('ambs'); a.innerHTML=''; AMBS.forEach(([k,ap,n,d])=>{ const w=document.createElement('div'); w.className='ambc'; const b=document.createElement('button'); b.className='amb '+k; b.setAttribute('aria-pressed',(cfg.ambiance||'vapeur')===k); b.innerHTML=`<span class="ap">${ap}</span><span class="an">${n}<small>${d}</small></span>`; b.onclick=()=>{ cfg.ambiance=k; textesAmbiance(k); dessinerAmbs(); garder(); msg('Ambiance « '+n+' » choisie. Cliquez « Essayer le jeu » pour la voir.'); }; const v=document.createElement('button'); v.className='voir'; v.type='button'; v.textContent='▶ Voir un exemple'; v.setAttribute('aria-label','Voir un exemple de jeu en style '+n); v.onclick=()=>apercuStyle(k,n); w.append(b,v); a.appendChild(w); }); }
 const EXEMPLE = () => Object.assign(DEFAUT(), {
   ambiance:'spatial', haut:'VRAI', bas:'FAUX', titre:'DATA-MATON', modele:'Exemple · Les données personnelles', tampon:'EXEMPLE',
   message:'Bravo ! Vous savez repérer ce qui est une donnée personnelle. Mission suivante : vérifiez les réglages de confidentialité d\'un de vos comptes.',
@@ -536,16 +539,24 @@ function moteur(){
   const b64=$('moteur').textContent.trim();
   return new TextDecoder().decode(Uint8Array.from(atob(b64),c=>c.charCodeAt(0)));
 }
-function fabriquer(idJeu){
-  const code=cfg.items.map(it=> it.q ? it.rep : (it.rep==='h'?'1':'0')).join('');
+function fabriquer(idJeu, src=cfg){
+  const code=src.items.map(it=> it.q ? it.rep : (it.rep==='h'?'1':'0')).join('');
   const jeu={ id:idJeu };
-  CHAMPS.forEach(k=>{ jeu[k]=(cfg[k]||'').trim(); }); jeu.ambiance=cfg.ambiance||'vapeur';
-  jeu.items=cfg.items.map(it=> Object.assign(it.f ? {f:it.f,t:it.t} : {texte:it.texte.trim()}, it.q?{q:it.q}:{}));
+  CHAMPS.forEach(k=>{ jeu[k]=(src[k]||'').trim(); }); jeu.ambiance=src.ambiance||'vapeur';
+  jeu.items=src.items.map(it=> Object.assign(it.f ? {f:it.f,t:it.t} : {texte:it.texte.trim()}, it.q?{q:it.q}:{}));
   jeu.hash=cyrb53(idJeu+':'+code);
   const json=JSON.stringify(jeu).replace(/<\//g,'<\\/').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
   return '<!doctype html>\n<html lang="fr">\n'+moteur().replace('/*CONFIG*/{}', ()=>json)+'\n</html>\n';
 }
+/* Aperçu d'un style avec le jeu d'exemple, sans toucher au travail en cours */
+function apercuStyle(k,n){
+  const ex=EXEMPLE(); ex.ambiance=k;
+  $('essaiTitre').textContent='EXEMPLE · '+n;
+  $('essaiFrame').srcdoc=fabriquer('apercu-'+k, ex);
+  $('essai').hidden=false;
+}
 $('essayer').onclick=()=>{
+  $('essaiTitre').textContent="ESSAI DU JEU · rien n'est envoyé aux élèves";
   const e=verifier(); if(e){ msg(e,'ko'); return; }
   $('essaiFrame').srcdoc=fabriquer('essai-'+cfg.id);
   $('essai').hidden=false; msg('Essai en cours.');
