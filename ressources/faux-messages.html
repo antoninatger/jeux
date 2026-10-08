@@ -176,6 +176,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog h3{margin:0 0 8px;font-size:17px}
 dialog textarea{min-height:220px;font:14px/1.45 ui-monospace,Menlo,monospace}
 dialog .ligne{justify-content:flex-end}
+.scan{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 10px}
+#scanEtat{background:var(--acc2);border-radius:8px;padding:8px 10px;color:var(--ink)}
 #msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;max-width:calc(100vw - 30px);text-align:center}
 #msgBox.on{opacity:1}
 
@@ -255,7 +257,7 @@ dialog .ligne{justify-content:flex-end}
     <h2>Conversations</h2>
     <select id="exemples"><option value="">Charger un exemple…</option></select>
     <div class="ligne">
-      <button class="btn mini" id="coller">Coller un dialogue</button>
+      <button class="btn mini" id="coller">Importer un dialogue (texte, photo, PDF, Word)</button>
       <button class="btn mini" id="sauver">Enregistrer</button>
       <button class="btn mini" id="ouvrir">Ouvrir</button>
       <button class="btn mini warn" id="effacer">Tout effacer</button>
@@ -275,7 +277,12 @@ dialog .ligne{justify-content:flex-end}
 </main>
 
 <dialog id="dlgColler">
-  <h3>Coller un dialogue</h3>
+  <h3>Importer un dialogue</h3>
+  <div class="scan">
+    <button class="btn prim" id="scanBtn">📷 Photo, scan, PDF ou Word</button>
+    <span class="aide" style="margin:0">ou collez le texte ci-dessous</span>
+  </div>
+  <p class="aide" id="scanEtat" hidden></p>
   <p class="aide" style="margin:0 0 8px">Une réplique par ligne, sous la forme <b>Nom : message</b>. « Moi » écrit à droite, les autres noms deviennent des personnages. Une ligne <b>--- Lundi ---</b> ajoute un séparateur de date.</p>
   <textarea id="collerTxt" placeholder="Lucas : Salut ça va ?&#10;Moi : Oui et toi ?&#10;Lucas : Tu fais quoi ce soir ?"></textarea>
   <div class="ligne"><label><input type="checkbox" id="collerRemplacer" checked> Remplacer la conversation</label><span style="flex:1"></span><button class="btn" id="collerNon">Annuler</button><button class="btn prim" id="collerOui">Créer la conversation</button></div>
@@ -289,6 +296,7 @@ dialog .ligne{justify-content:flex-end}
 <input type="file" id="fPhoto" accept="image/*">
 <input type="file" id="fImg" accept="image/*">
 <input type="file" id="fJson" accept=".json,application/json">
+<input type="file" id="fScan" accept="image/*,.pdf,.docx,.txt,application/pdf">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -409,6 +417,7 @@ function construireTel(){
     <div class="menu-plus" id="menuPlus" hidden>
       <button data-p="img">📷 Photo dans la conversation</button>
       <button data-p="date">📅 Séparateur de date</button>
+      <button data-p="scan">📷 Scanner un dialogue</button>
       <button data-p="coller">📋 Coller un dialogue</button>
     </div>
   </div></div>`;
@@ -482,7 +491,8 @@ function brancherTel(){
   $('menuPlus').onclick=e=>{ const b=e.target.closest('[data-p]'); if(!b) return; $('menuPlus').hidden=true; const k=b.dataset.p;
     if(k==='img'){ $('fImg').value=''; $('fImg').click(); }
     else if(k==='date'){ const v=prompt('Texte du séparateur (« Hier », « Lundi 12 mars »…)', C.msgs.some(m=>m.de==='date')?'':"Aujourd'hui"); if(v&&v.trim()){ avant(); const m={de:'date',texte:v.trim()}; if(insererA>=0){ C.msgs.splice(insererA,0,m); insererA++; } else C.msgs.push(m); majTel(true); garder(); } }
-    else if(k==='coller') ouvrirColler(); };
+    else if(k==='coller') ouvrirColler();
+    else if(k==='scan'){ ouvrirColler(); $('fScan').value=''; $('fScan').click(); } };
   $('outilsMsg').onclick=e=>{ const b=e.target.closest('[data-o]'); if(!b) return; const k=b.dataset.o, m=C.msgs[sel];
     if(k==='ok') return envoyer(null);
     if(k==='fin') return fermerEdition();
@@ -533,7 +543,7 @@ $('photoDel').onclick=()=>{ avant(); C.photo=null; tout(); garder(); };
 $('fImg').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const img=await reduire(f,800); avant(); const t=$('texte'); const m={de:actif,texte:t.value.trim(),img}; if(actif==='moi') m.st='lu'; if(insererA>=0){ C.msgs.splice(insererA,0,m); insererA++; } else C.msgs.push(m); t.value=''; grow(); majTel(true); garder(); }catch(x){ msg('Image illisible.'); } };
 
 /* ---------- Coller un dialogue ---------- */
-function ouvrirColler(){ $('collerTxt').value=''; $('collerRemplacer').checked=true; $('dlgColler').showModal(); $('collerTxt').focus(); }
+function ouvrirColler(){ etatScan(''); $('collerTxt').value=''; $('collerRemplacer').checked=true; $('dlgColler').showModal(); $('collerTxt').focus(); }
 $('coller').onclick=ouvrirColler;
 $('collerNon').onclick=()=>$('dlgColler').close();
 $('collerOui').onclick=()=>{
@@ -541,20 +551,74 @@ $('collerOui').onclick=()=>{
   const pers=rempl?[]:C.pers.map(p=>({...p})), msgs=rempl?[]:C.msgs.slice();
   const MOI=/^(moi|je|vous|me|toi \(moi\))$/i;
   const idDe=nom=>{ if(MOI.test(nom)) return 'moi'; let p=pers.find(x=>x.nom.toLowerCase()===nom.toLowerCase()); if(!p){ p={id:'p'+(pers.length?Math.max(...pers.map(x=>+x.id.slice(1)||0))+1:1),nom,coul:COUL[pers.length%COUL.length]}; pers.push(p); } return p.id; };
-  let der=null, n=0;
+  let der=null, n=0, ignorees=0;
   for(const brut of lignes){
     const l=brut.trim(); if(!l){ der=null; continue; }
     const d=/^[-–—=*]{2,}\s*(.+?)\s*[-–—=*]{2,}$/.exec(l); if(d){ msgs.push({de:'date',texte:d[1]}); der=null; continue; }
-    const r=/^\[?(?:\d{1,2}[:h]\d{2}\]?\s*[-–]?\s*)?([^:]{1,30}?)\s*:\s+(.*)$/.exec(l);
-    if(r){ const de=idDe(r[1].trim()); der={de,texte:r[2]}; if(de==='moi') der.st='lu'; msgs.push(der); n++; }
+    const r=/^(?:[-•*·]\s*|\d{1,3}[.)]\s+)?\[?(?:\d{1,2}[:h]\d{2}\]?\s*[-–]?\s*)?([^:]{1,30}?)\s*:\s*(.+)$/.exec(l)
+      || /^(?:[-•*·]\s*)?((?:[A-ZÀ-Ý][\p{L}'’.-]*)(?:\s[A-ZÀ-Ý][\p{L}'’.-]*){0,2})\s+[-–—>]\s*(.+)$/u.exec(l)
+      || /^([A-ZÀ-Ý]{2,}(?:\s[A-ZÀ-Ý]{2,})?)\s*[.—–-]\s+(.+)$/u.exec(l);
+    const nomOK=n=>/^[\p{L}\p{Extended_Pictographic}][\p{L}\p{M}\p{Extended_Pictographic}'’ .-]{0,29}$/u.test(n)&&n.split(/\s+/).length<=4 || /^\+?[\d .]{6,20}$/.test(n);
+    if(r&&nomOK(r[1].trim())){ const de=idDe(r[1].trim()); der={de,texte:r[2]}; if(de==='moi') der.st='lu'; msgs.push(der); n++; }
     else if(der){ der.texte+='\n'+l; }
-    else { der={de:'moi',texte:l,st:'lu'}; msgs.push(der); n++; }
+    else ignorees++;   // titre ou texte avant la première réplique
   }
   if(!n) return msg('Aucune réplique trouvée : écrivez « Nom : message », une par ligne.');
   avant();
   if(!pers.length) pers.push(VIDE().pers[0]);
   C.pers=pers; C.msgs=msgs; if(pers.length>1&&!C.titre) C.titre='Le groupe'; sel=-1; insererA=-1; actif='moi';
-  $('dlgColler').close(); tout(); garder(); msg(`${n} message(s) créé(s). Cliquez sur une bulle pour la modifier.`);
+  $('dlgColler').close(); tout(); garder(); msg(`${n} message(s) créé(s)${ignorees?`, ${ignorees} ligne(s) sans nom ignorée(s)`:''}. Touchez une bulle pour la modifier.`);
+};
+
+/* ---------- Scanner un dialogue : photo (lecture du texte), PDF, Word, texte ---------- */
+const charger=src=>new Promise((ok,ko)=>{ if(document.querySelector(`script[src="${src}"]`)) return ok(); const e=document.createElement('script'); e.src=src; e.onload=ok; e.onerror=()=>ko(new Error('reseau')); document.head.appendChild(e); });
+const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/';
+function etatScan(t){ const e=$('scanEtat'); e.hidden=!t; e.textContent=t||''; }
+async function lireImages(sources){
+  await charger(TESS+'tesseract.min.js');
+  const w=await Tesseract.createWorker('fra',1,{workerPath:TESS+'worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/fra@1.0.0/4.0.0_best_int',
+    logger:m=>{ if(m.status==='recognizing text') etatScan(`Lecture du texte… ${Math.round(m.progress*100)} %`); else if(/load|initializ/.test(m.status)) etatScan('Préparation de la lecture (la première fois, quelques secondes)…'); }});
+  let txt=''; try{ for(const s of sources){ const r=await w.recognize(s); txt+=r.data.text+'\n'; } } finally{ await w.terminate(); }
+  return txt;
+}
+async function lirePdf(file){
+  await charger('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise; let txt='';
+  for(let i=1;i<=pdf.numPages;i++){ const c=await (await pdf.getPage(i)).getTextContent(); let y=null;
+    for(const it of c.items){ if(y!==null&&Math.abs(it.transform[5]-y)>2) txt+='\n'; txt+=it.str; y=it.transform[5]; } txt+='\n'; }
+  if(txt.replace(/\s/g,'').length>20) return txt;
+  // PDF scanné : on photographie chaque page puis on lit le texte
+  const imgs=[]; for(let i=1;i<=Math.min(pdf.numPages,10);i++){ const pg=await pdf.getPage(i); const v=pg.getViewport({scale:2}); const cv=document.createElement('canvas'); cv.width=v.width; cv.height=v.height; await pg.render({canvasContext:cv.getContext('2d'),viewport:v}).promise; imgs.push(cv); }
+  return lireImages(imgs);
+}
+async function lireWord(file){ await charger('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js'); return (await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()})).value; }
+function nettoyer(t){ return t.replace(/\r/g,'').replace(/[ \t]+/g,' ').replace(/\u00a0/g,' ').replace(/\n{3,}/g,'\n\n').trim(); }
+$('scanBtn').onclick=()=>{ $('fScan').value=''; $('fScan').click(); };
+$('fScan').onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  if(!$('dlgColler').open) ouvrirColler();
+  const nom=f.name.toLowerCase(); $('scanBtn').disabled=true; etatScan('Lecture du fichier…');
+  try{
+    let t;
+    if(nom.endsWith('.pdf')||f.type==='application/pdf') t=await lirePdf(f);
+    else if(nom.endsWith('.docx')) t=await lireWord(f);
+    else if(nom.endsWith('.txt')||f.type.startsWith('text/')) t=await f.text();
+    else if(f.type.startsWith('image/')) t=await lireImages([f]);
+    else throw new Error('format');
+    t=nettoyer(t);
+    if(!t) throw new Error('vide');
+    const ta=$('collerTxt'); ta.value=(ta.value.trim()?ta.value.trim()+'\n':'')+t;
+    const n=t.split('\n').filter(l=>/^[^:\n]{1,30}:\s*\S/.test(l)).length;
+    etatScan(n ? 'Texte lu. Vérifiez-le et corrigez si besoin (une photo peut contenir des erreurs), puis « Créer la conversation ».'
+               : 'Texte lu, mais sans « Nom : message ». Ajoutez les noms en début de ligne, puis « Créer la conversation ».');
+    ta.focus();
+  }catch(x){
+    etatScan(x.message==='format' ? 'Format non pris en charge : photo, PDF, Word (.docx) ou texte.'
+      : x.message==='vide' ? 'Aucun texte trouvé dans ce fichier.'
+      : x.message==='reseau' ? 'Il faut une connexion Internet pour lire une photo ou un PDF.'
+      : 'Le fichier n\'a pas pu être lu. Essayez une photo plus nette, bien droite et éclairée.');
+  }finally{ $('scanBtn').disabled=false; }
 };
 
 /* ---------- Enregistrer / ouvrir / exemples ---------- */
