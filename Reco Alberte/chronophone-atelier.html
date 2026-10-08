@@ -103,6 +103,26 @@ details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
 .bar .btns{display:contents}
 .bar .msg{flex:1;min-width:200px;font-size:14px;color:#d9ccb0}
 .bar .msg.ko{color:#ff9c86}.bar .msg.ok{color:#8fe39a}
+.intro .pas4{margin:0 0 8px;padding-left:22px;line-height:1.7;font-size:15px}
+.intro p{margin:0;line-height:1.6}
+.intro .btn{margin:0 4px}
+.compte{margin-left:auto;font-family:var(--f-type);font-size:14px;padding:3px 10px;border-radius:99px;background:#5a2a14;color:#ffd7c2;letter-spacing:.02em}
+.compte.tout{background:#1f4d26;color:#c8f5cf}
+.compte:empty{display:none}
+.item .manque{display:none;margin-left:8px;font-family:var(--f-type);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#ffb38a;vertical-align:middle}
+.item.incomplet{border-color:rgba(255,150,100,.55)}
+.item.incomplet .manque{display:inline}
+a.lien{color:var(--brass-hi)}
+.apres{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(6,5,3,.8)}
+.apres[hidden]{display:none}
+.apres .card{width:min(640px,100%);max-height:100%;overflow:auto;background:linear-gradient(var(--paper),var(--paper-lo));color:var(--ink);border-radius:10px;padding:22px 26px;line-height:1.5;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.apres h3{margin:0 0 10px;font-family:var(--f-display);font-size:28px;letter-spacing:.06em}
+.apres ol{padding-left:22px}.apres li{margin:6px 0}
+.apres .note{font-size:14px;opacity:.85}
+.apres .row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.apres .btn{color:var(--ink);border-color:var(--ink);background:transparent}
+.apres .btn.prim{background:var(--ink);color:var(--paper)}
+.bar #nouveau{margin-left:18px}
 .essai{position:fixed;inset:0;z-index:20;background:#000;display:flex;flex-direction:column}
 .essai[hidden]{display:none}
 .essai .eb{display:flex;gap:10px;align-items:center;padding:8px 12px;background:#0e0b08;border-bottom:2px solid var(--brass-lo)}
@@ -115,17 +135,25 @@ details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
 <div class="wrap">
   <header class="plate">
     <h1>ATELIER DU CHRONOPHONE</h1>
-    <p>Fabriquez votre propre machine : vos leviers, vos photos ou vos textes, vos réponses, votre message final.</p>
+    <p>Créez un jeu d'énigmes pour vos élèves : vos questions, vos photos ou vos textes, les bonnes réponses et un message de fin.</p>
   </header>
-  <p class="intro">Réglez la machine ci-dessous, cliquez <b>Essayer le jeu</b> pour la tester, puis <b>Télécharger le jeu</b> : vous obtenez un seul fichier .html à ouvrir dans un navigateur, à déposer sur l'ENT ou sur un site. Votre travail est gardé automatiquement dans ce navigateur. Pensez aussi à <b>Enregistrer la configuration</b> pour pouvoir la modifier plus tard ailleurs.</p>
+  <div class="intro">
+    <ol class="pas4">
+      <li><b>Les réponses possibles</b> (oui/non, vrai/faux…)</li>
+      <li><b>Vos questions</b> : à écrire, ou à importer d'un document Word</li>
+      <li><b>Le message de fin</b> que lisent les élèves</li>
+      <li><b>Essayer</b>, puis <b>Télécharger pour les élèves</b></li>
+    </ol>
+    <p>Première fois ? <button class="btn prim" id="exemple">Ouvrir un exemple</button> pour voir un jeu déjà rempli. Votre travail est gardé tout seul sur cet ordinateur, dans ce navigateur.</p>
+  </div>
 
   <section class="box">
-    <h2>1. Les leviers</h2>
-    <p class="hint">Ce qui s'affiche en haut et en bas de chaque levier. Les élèves placent chaque levier en haut ou en bas, puis abaissent la manette rouge. <b>Le nombre de leviers se choisit dans la partie 2.</b></p>
+    <h2>1. Les deux réponses possibles</h2>
+    <p class="hint">Dans le jeu, chaque question a son levier, que l'élève place en haut ou en bas. Choisissez un modèle ou écrivez vos deux réponses. Les QCM (A, B, C, D) n'en ont pas besoin. <b>Le nombre de questions se choisit dans la partie 2.</b></p>
     <div class="presets" id="presets"></div>
     <div class="labels">
-      <label class="f">En haut <input type="text" id="haut" maxlength="24"></label>
-      <label class="f">En bas <input type="text" id="bas" maxlength="24"></label>
+      <label class="f">Réponse du haut <input type="text" id="haut" maxlength="24"></label>
+      <label class="f">Réponse du bas <input type="text" id="bas" maxlength="24"></label>
     </div>
   </section>
 
@@ -134,16 +162,16 @@ details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
     <div class="etape">
       <div class="et"><span class="pastille">A</span> Combien de questions ?</div>
       <div class="nombre">
-        <span class="pas"><button class="btn" id="nbMoins" aria-label="Un levier de moins">−</button>
-        <input type="number" id="nbLeviers" min="2" max="40" step="1" inputmode="numeric" aria-label="Nombre de leviers">
-        <button class="btn" id="nbPlus" aria-label="Un levier de plus">+</button></span>
-        <span class="hint nh">leviers (de 2 à 40). Les cases à remplir apparaissent en dessous.</span>
+        <span class="pas"><button class="btn" id="nbMoins" aria-label="Une question de moins">−</button>
+        <input type="number" id="nbLeviers" min="2" max="40" step="1" inputmode="numeric" aria-label="Nombre de questions">
+        <button class="btn" id="nbPlus" aria-label="Une question de plus">+</button></span>
+        <span class="hint nh">questions (de 2 à 40). Les cases à remplir apparaissent en dessous.</span>
       </div>
       <div class="ou">ou, si vos questions sont déjà écrites dans un document :
         <button class="btn prim" id="scan">Importer des questions (Word, PDF, texte)</button></div>
     </div>
     <div class="etape">
-      <div class="et"><span class="pastille">B</span> Remplissez chaque case</div>
+      <div class="et"><span class="pastille">B</span> Remplissez chaque case <span class="compte" id="compte"></span></div>
       <ol class="consigne">
         <li><b>Écrivez la question</b> dans la zone claire, ou cliquez <b>Mettre une photo</b>.</li>
         <li><b>Type de réponse</b> : « Deux réponses » (haut / bas, réglés dans la partie 1) ou QCM A-D. Pour un QCM, écrivez aussi les choix A, B, C… sous la question.</li>
@@ -154,13 +182,14 @@ details summary{cursor:pointer;color:var(--brass);letter-spacing:.06em}
     <div class="addrow">
       <button class="btn prim" id="addText">+ Ajouter une question</button>
       <button class="btn" id="addQcm">+ Ajouter un QCM</button>
-      <button class="btn" id="addPhotos">+ Ajouter des photos (une par levier)</button>
+      <button class="btn" id="addPhotos">+ Ajouter des photos (une question par photo)</button>
       <input type="file" id="fileDoc" accept=".docx,.pdf,.txt,.md,.text,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
       <input type="file" id="filePhotos" accept="image/*" multiple hidden>
       <input type="file" id="fileOne" accept="image/*" hidden>
     </div>
     <details id="aideScan">
-      <summary>Comment écrire le document pour l'import automatique ?</summary>
+      <summary>Comment écrire le document pour l'import automatique ? (modèle Word à télécharger)</summary>
+      <p class="hint" style="margin-top:8px"><a class="lien" href="https://antoninatger.github.io/jeux/Reco%20Alberte/modele-questions-chronophone.docx" download>Télécharger le modèle Word</a> : remplacez les questions d'exemple par les vôtres, enregistrez, puis cliquez « Importer des questions ».</p>
       <div class="hint" style="margin-top:8px;white-space:pre-wrap;font-family:var(--f-type)">Une question par paragraphe, les choix sur les lignes suivantes, la bonne réponse indiquée si vous voulez :
 
 1. Quel réglage protège le mieux ton compte ?
@@ -179,8 +208,8 @@ Réponse : non
   </section>
 
   <section class="box">
-    <h2>3. Le télégramme final</h2>
-    <p class="hint">Ce que les élèves lisent quand la bonne combinaison ouvre le canal.</p>
+    <h2>3. Le message de fin</h2>
+    <p class="hint">Ce que les élèves lisent quand toutes leurs réponses sont justes. Pour le voir, cliquez « Essayer le jeu » puis « Voir le message de fin ».</p>
     <div class="grid">
       <label class="f" style="grid-column:1/-1">Message de félicitations <textarea id="message" maxlength="1200"></textarea></label>
       <label class="f">Lien à ouvrir ensuite <small>facultatif, commence par https://</small><input type="url" id="lien" maxlength="500"></label>
@@ -189,24 +218,24 @@ Réponse : non
   </section>
 
   <section class="box">
-    <h2>4. L'ambiance et la plaque de la machine</h2>
+    <h2>4. L'ambiance et le titre du jeu</h2>
     <div class="et2">Ambiance du jeu</div>
     <div class="ambs" id="ambs"></div>
     <div class="grid">
-      <label class="f">Titre <input type="text" id="titre" maxlength="24"></label>
+      <label class="f">Titre du jeu <input type="text" id="titre" maxlength="24"></label>
       <label class="f">Sous-titre <input type="text" id="modele" maxlength="80"></label>
-      <label class="f">Tampon rouge <input type="text" id="tampon" maxlength="20"></label>
-      <label class="f">Mention <input type="text" id="avert" maxlength="140"></label>
+      <label class="f">Tampon <small>facultatif</small><input type="text" id="tampon" maxlength="20"></label>
+      <label class="f">Petite ligne sous le titre <small>facultatif</small><input type="text" id="avert" maxlength="140"></label>
     </div>
     <details>
-      <summary>Plus de réglages (textes de la bande, télégramme)</summary>
+      <summary>Autres textes du jeu (facultatif)</summary>
       <div class="grid" style="margin-top:12px">
-        <label class="f">Bande : en attente <small>{n} = nombre de leviers</small><input type="text" id="attente" maxlength="160"></label>
-        <label class="f">Bande : réussite <input type="text" id="succes" maxlength="160"></label>
-        <label class="f">Bande : échec <input type="text" id="echec" maxlength="160"></label>
-        <label class="f">En-tête du télégramme <input type="text" id="enTete" maxlength="40"></label>
-        <label class="f">Lieu et date du télégramme <input type="text" id="lieu" maxlength="40"></label>
-        <label class="f">Expéditeur du télégramme <input type="text" id="de" maxlength="60"></label>
+        <label class="f">Consigne pendant le jeu <small>{n} = nombre de questions</small><input type="text" id="attente" maxlength="160"></label>
+        <label class="f">Message quand tout est juste <input type="text" id="succes" maxlength="160"></label>
+        <label class="f">Message quand une réponse est fausse <input type="text" id="echec" maxlength="160"></label>
+        <label class="f">En-tête du message de fin <input type="text" id="enTete" maxlength="40"></label>
+        <label class="f">Lieu et date du message de fin <input type="text" id="lieu" maxlength="40"></label>
+        <label class="f">Expéditeur du message de fin <input type="text" id="de" maxlength="60"></label>
       </div>
     </details>
   </section>
@@ -214,18 +243,31 @@ Réponse : non
 
 <div class="bar">
   <div class="in">
-    <span class="msg" id="msg">Brouillon gardé dans ce navigateur.</span>
+    <span class="msg" id="msg">Travail gardé sur cet ordinateur.</span>
     <div class="btns"><button class="btn prim" id="essayer">Essayer le jeu</button>
-    <button class="btn prim" id="telecharger">Télécharger le jeu</button>
-    <button class="btn" id="exporter">Enregistrer la configuration</button>
-    <button class="btn" id="importer">Ouvrir une configuration</button>
-    <button class="btn warn" id="nouveau">Tout recommencer</button></div>
+    <button class="btn prim" id="telecharger">Télécharger pour les élèves</button>
+    <button class="btn" id="exporter" title="Un fichier pour modifier ce jeu plus tard, sur n'importe quel ordinateur">Sauvegarder mon travail</button>
+    <button class="btn" id="importer">Reprendre un travail</button>
+    <button class="btn warn" id="nouveau">Tout effacer</button></div>
     <input type="file" id="fileCfg" accept=".json,application/json" hidden>
   </div>
 </div>
 
+<div class="apres" id="apres" hidden role="dialog" aria-modal="true" aria-labelledby="apTitre">
+  <div class="card">
+    <h3 id="apTitre">Et maintenant ?</h3>
+    <p>Votre jeu est dans le dossier <b>Téléchargements</b> de cet ordinateur : <b id="apNom"></b>. C'est un seul fichier, qui s'ouvre dans un navigateur (Firefox, Chrome, Edge…).</p>
+    <ol>
+      <li><b>Sur l'ENT</b> : déposez ce fichier dans un espace de la classe (documents, casier, cahier de textes). Les élèves le téléchargent, puis l'ouvrent d'un double-clic.</li>
+      <li><b>Sur les ordinateurs de la salle</b> : copiez-le dans le dossier partagé ou sur une clé USB, puis double-clic.</li>
+      <li><b>Au tableau</b> : ouvrez-le sur l'ordinateur du vidéoprojecteur et cliquez « Plein écran ».</li>
+    </ol>
+    <p class="note">Sur tablette ou téléphone, un fichier .html s'ouvre mal : préférez les ordinateurs. Pour modifier ce jeu plus tard, cliquez aussi « Sauvegarder mon travail ».</p>
+    <div class="row"><button class="btn" id="apSauver">Sauvegarder mon travail</button><button class="btn prim" id="apFermer">C'est noté</button></div>
+  </div>
+</div>
 <div class="essai" id="essai" hidden>
-  <div class="eb"><span>ESSAI DU JEU · rien n'est envoyé aux élèves</span><button class="btn prim" id="essaiFermer">Revenir à l'atelier</button></div>
+  <div class="eb"><span>ESSAI DU JEU · rien n'est envoyé aux élèves</span><button class="btn" id="essaiFin">Voir le message de fin</button><button class="btn prim" id="essaiFermer">Revenir à l'atelier</button></div>
   <iframe id="essaiFrame" title="Essai du jeu"></iframe>
 </div>
 
@@ -236,6 +278,21 @@ const $=id=>document.getElementById(id);
 const PRESETS=[['IA','RÉEL'],['OUI','NON'],['VRAI','FAUX'],['FAKE','INFO'],['DANGER','SANS RISQUE'],['PUBLIC','PRIVÉ']];
 const AMBS=[['vapeur','RÉSISTANCE 1943','Steampunk','laiton, vapeur et télégramme'],['futur','NÉON 2099','Futuriste','verre sombre, néons cyan et magenta'],['arcade','PLAYER 1','Arcade','rétro jeux vidéo, pixels']];
 function dessinerAmbs(){ const a=$('ambs'); a.innerHTML=''; AMBS.forEach(([k,ap,n,d])=>{ const b=document.createElement('button'); b.className='amb '+k; b.setAttribute('aria-pressed',(cfg.ambiance||'vapeur')===k); b.innerHTML=`<span class="ap">${ap}</span><span class="an">${n}<small>${d}</small></span>`; b.onclick=()=>{ cfg.ambiance=k; dessinerAmbs(); garder(); msg('Ambiance « '+n+' » choisie. Cliquez « Essayer le jeu » pour la voir.'); }; a.appendChild(b); }); }
+const EXEMPLE = () => Object.assign(DEFAUT(), {
+  ambiance:'futur', haut:'VRAI', bas:'FAUX', titre:'DATA-MATON', modele:'Exemple · Les données personnelles', tampon:'EXEMPLE',
+  message:'Bravo ! Vous savez repérer ce qui est une donnée personnelle. Mission suivante : vérifiez les réglages de confidentialité d\'un de vos comptes.',
+  items:[
+    {texte:'Ton prénom et ton nom sont des données personnelles.',rep:'h'},
+    {texte:'Une photo de groupe où l\'on reconnaît ton visage n\'est pas une donnée personnelle.',rep:'b'},
+    {texte:'Quelle information permet le plus facilement de te retrouver ?\nA. Ta couleur préférée\nB. Le nom de ton collège et ta classe\nC. Ton plat préféré',q:3,rep:'B'},
+    {texte:'Un site peut connaître ta position grâce à ton téléphone.',rep:'h'},
+    {texte:'Qui peut voir une publication « publique » ?\nA. Seulement tes amis\nB. Tout le monde, même sans compte\nC. Personne\nD. Seulement ta famille',q:4,rep:'B'}
+  ]});
+$('exemple').onclick=()=>{
+  if(cfg.items.some(it=>!estVide(it)) && !confirm('Remplacer votre travail actuel par l\'exemple ? (Pensez d\'abord à « Sauvegarder mon travail » si vous voulez le garder.)')) return;
+  cfg=EXEMPLE(); remplirChamps(); dessinerItems(); garder();
+  msg('Exemple ouvert : 5 questions déjà remplies. Cliquez « Essayer le jeu », puis modifiez-le ou cliquez « Tout effacer » pour commencer le vôtre.','ok');
+};
 const CHAMPS=['haut','bas','message','lien','signature','titre','modele','tampon','avert','attente','succes','echec','enTete','lieu','de'];
 const DEFAUT = () => ({
   v:1, id:'j'+Math.random().toString(36).slice(2,10),
@@ -259,7 +316,7 @@ const DB = (()=>{
 })();
 let tSave=0;
 let msgJusque=0;
-function garder(){ clearTimeout(tSave); tSave=setTimeout(()=>DB.set('brouillon',cfg).then(()=>{ if(Date.now()>msgJusque) msg('Brouillon gardé dans ce navigateur.'); }).catch(()=>msg('Ce navigateur ne garde pas le brouillon : pensez à « Enregistrer la configuration ».','ko')),400); }
+function garder(){ clearTimeout(tSave); tSave=setTimeout(()=>DB.set('brouillon',cfg).then(()=>{ if(Date.now()>msgJusque) msg('Travail gardé sur cet ordinateur.'); }).catch(()=>msg('Ce navigateur ne garde pas votre travail : pensez à « Sauvegarder mon travail ».','ko')),400); }
 function msg(t,c=''){ const m=$('msg'); m.textContent=t; m.className='msg '+c; if(c||t.length>60) msgJusque=Date.now()+8000; }
 
 /* ---------- Champs simples ---------- */
@@ -285,6 +342,12 @@ function lireImage(file){
 
 /* ---------- Liste des leviers ---------- */
 let cible=-1;
+const estComplet = it => (it.f || (it.texte||'').trim()) && (it.q ? 'ABCD'.slice(0,it.q).includes(it.rep||'-') : (it.rep==='h'||it.rep==='b'));
+function majCompte(){
+  const n=cfg.items.length, ok=cfg.items.filter(estComplet).length;
+  const c=$('compte'); c.textContent = n ? `${ok} / ${n} complètes` : ''; c.className='compte'+(n&&ok===n?' tout':'');
+  cfg.items.forEach((it,i)=>{ const d=$('it'+i); if(d) d.classList.toggle('incomplet', !estComplet(it)); });
+}
 const estVide = it => !it.f && !(it.texte||'').trim() && !it.rep && !it.q;
 function oterVides(){ const k=cfg.items.length; cfg.items=cfg.items.filter(it=>!estVide(it)); return k-cfg.items.length; }
 function dessinerItems(){
@@ -292,7 +355,7 @@ function dessinerItems(){
   cfg.items.forEach((it,i)=>{
     const d=document.createElement('div'); d.className='item'; d.id='it'+i;
     d.innerHTML=`
-      <div class="top"><span class="no">${String(i+1).padStart(2,'0')}</span>
+      <div class="top"><span class="no">${String(i+1).padStart(2,'0')}<span class="manque">à compléter</span></span>
         <span class="tools"><button class="btn" data-a="up" title="Monter" aria-label="Monter le levier ${i+1}">↑</button><button class="btn" data-a="down" title="Descendre" aria-label="Descendre le levier ${i+1}">↓</button><button class="btn warn" data-a="del" title="Supprimer" aria-label="Supprimer le levier ${i+1}">✕</button></span></div>
       <div class="qlbl">${it.f?'Photo':'Question ou texte'}</div>
       <div class="media ${it.f?'':'txt'}"></div>
@@ -312,12 +375,12 @@ function dessinerItems(){
     d.querySelector('select').onchange=e=>{ it.q=+e.target.value||0; if(!it.q) delete it.q; it.rep=''; dessinerItems(); garder(); };
     const m=d.querySelector('.media');
     if(it.f){ const im=document.createElement('img'); im.src=it.t||it.f; im.alt='Photo du levier '+(i+1); m.appendChild(im); }
-    else { const ta=document.createElement('textarea'); ta.maxLength=400; ta.placeholder=it.q?'Écrivez la question ici, puis les choix :\nA. …\nB. …':'Écrivez la question ici (ou une affirmation, un titre d\'article…)'; ta.value=it.texte||''; ta.setAttribute('aria-label','Texte du levier '+(i+1)); ta.oninput=()=>{ it.texte=ta.value; garder(); }; m.appendChild(ta); }
+    else { const ta=document.createElement('textarea'); ta.maxLength=400; ta.placeholder=it.q?'Écrivez la question ici, puis les choix :\nA. …\nB. …':'Écrivez la question ici (ou une affirmation, un titre d\'article…)'; ta.value=it.texte||''; ta.setAttribute('aria-label','Texte du levier '+(i+1)); ta.oninput=()=>{ it.texte=ta.value; garder(); majCompte(); }; m.appendChild(ta); }
     d.addEventListener('click',e=>{
       const a=e.target.closest('[data-a]'); if(!a) return; const k=a.dataset.a;
       if(k==='up'&&i>0){ [cfg.items[i-1],cfg.items[i]]=[cfg.items[i],cfg.items[i-1]]; }
       else if(k==='down'&&i<cfg.items.length-1){ [cfg.items[i+1],cfg.items[i]]=[cfg.items[i],cfg.items[i+1]]; }
-      else if(k==='del'){ if(!confirm('Supprimer le levier '+(i+1)+' ?')) return; cfg.items.splice(i,1); }
+      else if(k==='del'){ if(!confirm('Supprimer la question '+(i+1)+' ?')) return; cfg.items.splice(i,1); }
       else if(k==='photo'){ cible=i; $('fileOne').value=''; $('fileOne').click(); return; }
       else if(k==='texte'){ delete it.f; delete it.t; it.texte=it.texte||''; }
       else if(k.startsWith('r:')){ it.rep=k.slice(2); }
@@ -327,7 +390,7 @@ function dessinerItems(){
     box.appendChild(d);
   });
   if(cfg.items.length<40){ const a=document.createElement('button'); a.className='ajout'; a.innerHTML='+ Ajouter une question<small>une case de plus à remplir</small>'; a.onclick=()=>$('addText').click(); box.appendChild(a); }
-  majNombre();
+  majNombre(); majCompte();
 }
 
 /* Nombre de leviers : on règle le total, puis on remplit chaque levier */
@@ -338,12 +401,12 @@ function fixerNombre(n){
   if(n>k){ for(let x=k;x<n;x++) cfg.items.push({texte:'',rep:''}); }
   else if(n<k){
     const pleins=cfg.items.slice(n).filter(it=>it.f||(it.texte||'').trim()||it.rep).length;
-    if(pleins && !confirm(`Retirer les ${k-n} dernier(s) levier(s) ? ${pleins} d'entre eux sont déjà remplis.`)){ majNombre(); return; }
+    if(pleins && !confirm(`Retirer les ${k-n} dernière(s) question(s) ? ${pleins} d'entre elles sont déjà remplies.`)){ majNombre(); return; }
     cfg.items.length=n;
   }
   dessinerItems(); garder();
   if(n>k){ const t=$('it'+k); t&&t.scrollIntoView({block:'center',behavior:'smooth'}); }
-  msg(`${n} leviers. Remplissez chacun avec une photo ou un texte, et sa bonne réponse.`);
+  msg(`${n} questions. Remplissez chaque case : la question (ou une photo) et sa bonne réponse.`);
 }
 $('nbMoins').onclick=()=>fixerNombre(cfg.items.length-1);
 $('nbPlus').onclick=()=>fixerNombre(cfg.items.length+1);
@@ -352,7 +415,7 @@ $('addPhotos').onclick=()=>{ $('filePhotos').value=''; $('filePhotos').click(); 
 $('filePhotos').onchange=async e=>{
   oterVides();
   const files=[...e.target.files].slice(0, 40-cfg.items.length);
-  if(!files.length){ msg('40 leviers au maximum.','ko'); return; }
+  if(!files.length){ msg('40 questions au maximum.','ko'); return; }
   msg('Préparation des photos…');
   for(const f of files){ try{ const r=await lireImage(f); cfg.items.push({f:r.f,t:r.t,rep:''}); }catch(x){ msg('Une image n\'a pas pu être lue : '+f.name,'ko'); } }
   dessinerItems(); garder();
@@ -361,19 +424,19 @@ $('fileOne').onchange=async e=>{
   const f=e.target.files[0]; if(!f||cible<0) return;
   try{ const r=await lireImage(f); Object.assign(cfg.items[cible],{f:r.f,t:r.t}); delete cfg.items[cible].texte; dessinerItems(); garder(); }catch(x){ msg('Image illisible.','ko'); }
 };
-$('addQcm').onclick=()=>{ if(cfg.items.length>=40){ msg('40 leviers au maximum.','ko'); return; } cfg.items.push({texte:'Question ?\nA. \nB. \nC. \nD. ',q:4,rep:''}); dessinerItems(); garder(); const t=$('it'+(cfg.items.length-1)); t&&t.scrollIntoView({block:'center'}); t&&t.querySelector('textarea').focus(); };
-$('addText').onclick=()=>{ if(cfg.items.length>=40){ msg('40 leviers au maximum.','ko'); return; } cfg.items.push({texte:'',rep:''}); dessinerItems(); garder(); const t=$('it'+(cfg.items.length-1)); t&&t.scrollIntoView({block:'center'}); t&&t.querySelector('textarea').focus(); };
+$('addQcm').onclick=()=>{ if(cfg.items.length>=40){ msg('40 questions au maximum.','ko'); return; } cfg.items.push({texte:'Question ?\nA. \nB. \nC. \nD. ',q:4,rep:''}); dessinerItems(); garder(); const t=$('it'+(cfg.items.length-1)); t&&t.scrollIntoView({block:'center'}); t&&t.querySelector('textarea').focus(); };
+$('addText').onclick=()=>{ if(cfg.items.length>=40){ msg('40 questions au maximum.','ko'); return; } cfg.items.push({texte:'',rep:''}); dessinerItems(); garder(); const t=$('it'+(cfg.items.length-1)); t&&t.scrollIntoView({block:'center'}); t&&t.querySelector('textarea').focus(); };
 
 /* ---------- Fabrication du jeu ---------- */
 function verifier(){
   document.querySelectorAll('.item.bad').forEach(x=>x.classList.remove('bad'));
-  if(cfg.items.length<2) return 'Il faut au moins 2 leviers.';
-  if(!cfg.haut.trim()||!cfg.bas.trim()) return 'Donnez un libellé pour le haut et pour le bas des leviers.';
+  if(cfg.items.length<2) return 'Il faut au moins 2 questions.';
+  if(!cfg.haut.trim()||!cfg.bas.trim()) return 'Écrivez la réponse du haut et celle du bas (partie 1).';
   for(let i=0;i<cfg.items.length;i++){
     const it=cfg.items[i];
-    if(!it.f && !(it.texte||'').trim()){ $('it'+i).classList.add('bad'); $('it'+i).scrollIntoView({block:'center'}); return 'Le levier '+(i+1)+' n\'a ni photo ni texte.'; }
+    if(!it.f && !(it.texte||'').trim()){ $('it'+i).classList.add('bad'); $('it'+i).scrollIntoView({block:'center'}); return 'La question '+(i+1)+' est vide : écrivez-la ou mettez une photo.'; }
     const ok = it.q ? 'ABCD'.slice(0,it.q).includes(it.rep||'-') : (it.rep==='h'||it.rep==='b');
-    if(!ok){ $('it'+i).classList.add('bad'); $('it'+i).scrollIntoView({block:'center'}); return 'Choisissez la bonne position du levier '+(i+1)+'.'; }
+    if(!ok){ $('it'+i).classList.add('bad'); $('it'+i).scrollIntoView({block:'center'}); return 'Cliquez la bonne réponse de la question '+(i+1)+'.'; }
   }
   if(cfg.lien && !/^https?:\/\//i.test(cfg.lien)) return 'Le lien doit commencer par https://';
   return '';
@@ -396,23 +459,31 @@ $('essayer').onclick=()=>{
   $('essaiFrame').srcdoc=fabriquer('essai-'+cfg.id);
   $('essai').hidden=false; msg('Essai en cours.');
 };
+$('essaiFin').onclick=()=>{ try{ const w=$('essaiFrame').contentWindow; w.win(false); }catch(x){ msg('Aperçu impossible dans ce navigateur.','ko'); } };
+$('apFermer').onclick=()=>{ $('apres').hidden=true; };
+$('apSauver').onclick=()=>{ $('exporter').click(); };
+$('apres').addEventListener('click',e=>{ if(e.target===$('apres')) $('apres').hidden=true; });
+addEventListener('keydown',e=>{ if(e.key==='Escape') $('apres').hidden=true; });
 $('essaiFermer').onclick=()=>{ $('essai').hidden=true; $('essaiFrame').srcdoc=''; };
 function telechargerFichier(nom,contenu,type){
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([contenu],{type})); a.download=nom;
   document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },2000);
 }
+const nomFichier=()=>slug(cfg.titre||'jeu').slice(0,30);
 const slug=t=>(t||'jeu').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'jeu';
 $('telecharger').onclick=()=>{
   const e=verifier(); if(e){ msg(e,'ko'); return; }
-  telechargerFichier('chronophone-'+slug(cfg.titre+'-'+cfg.modele)+'.html', fabriquer(cfg.id), 'text/html');
-  msg('Jeu téléchargé. Ouvrez le fichier dans un navigateur, ou déposez-le sur l\'ENT.','ok');
+  const nom=nomFichier()+'.html';
+  telechargerFichier(nom, fabriquer(cfg.id), 'text/html');
+  msg('Jeu téléchargé : « '+nom+' ».','ok');
+  $('apNom').textContent=nom; $('apres').hidden=false; $('apFermer').focus();
 };
-$('exporter').onclick=()=>{ telechargerFichier('chronophone-config-'+slug(cfg.titre+'-'+cfg.modele)+'.json', JSON.stringify(cfg), 'application/json'); msg('Configuration enregistrée (elle contient les réponses : ne la donnez pas aux élèves).','ok'); };
+$('exporter').onclick=()=>{ const nom=nomFichier()+'-sauvegarde.json'; telechargerFichier(nom, JSON.stringify(cfg), 'application/json'); msg('Travail sauvegardé dans Téléchargements : « '+nom+' ». Gardez-le pour modifier ce jeu plus tard (il contient les réponses : ne le donnez pas aux élèves).','ok'); };
 $('importer').onclick=()=>{ $('fileCfg').value=''; $('fileCfg').click(); };
 $('fileCfg').onchange=async e=>{
   const f=e.target.files[0]; if(!f) return;
-  try{ const c=JSON.parse(await f.text()); if(!Array.isArray(c.items)) throw 0; cfg=Object.assign(DEFAUT(),c); remplirChamps(); dessinerItems(); garder(); msg('Configuration ouverte.','ok'); }
-  catch(x){ msg('Ce fichier n\'est pas une configuration du Chronophone.','ko'); }
+  try{ const c=JSON.parse(await f.text()); if(!Array.isArray(c.items)) throw 0; cfg=Object.assign(DEFAUT(),c); remplirChamps(); dessinerItems(); garder(); msg('Travail repris.','ok'); }
+  catch(x){ msg('Ce fichier n\'est pas une sauvegarde du Chronophone (fichier .json).','ko'); }
 };
 $('nouveau').onclick=()=>{ if(!confirm('Effacer cette machine et repartir de zéro ?')) return; cfg=DEFAUT(); remplirChamps(); dessinerItems(); garder(); };
 
