@@ -123,6 +123,14 @@ button{cursor:pointer}
 .etape b{color:var(--ink);font-family:var(--f-display);font-weight:400}
 .etape select{padding:4px 6px;border:1px solid var(--ink-soft);background:#f6eedb;color:var(--ink);border-radius:3px}
 .full{margin-top:22px}
+.missions button.ferme{color:var(--ink-soft);cursor:not-allowed;background:repeating-linear-gradient(135deg,transparent 0 8px,rgba(0,0,0,.05) 8px 16px)}
+.synthese{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:22px;padding:12px 14px;background:var(--ink);color:var(--paper);border-radius:3px;font-size:13px}
+.synthese span{flex:1 1 220px}
+.synthese .btn{font-size:12px;padding:8px 12px}
+.prof-rows{display:grid;gap:8px}
+.prof-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px;border-bottom:1px dotted var(--brass-lo);padding-bottom:8px}
+.prof-row b{font-family:var(--f-display);font-weight:400;color:var(--brass-hi)}
+.prof-row select{width:auto}
 /* le kit de survie */
 .kit{background:#fbf5e4;border:2px solid var(--ink);padding:14px;display:grid;gap:8px;box-shadow:3px 3px 0 var(--brass-lo)}
 .kit .k-hd{font-family:var(--f-display);font-size:11px;letter-spacing:.14em;color:var(--ink-soft);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
@@ -226,6 +234,7 @@ dialog::backdrop{background:rgba(10,8,6,.7)}
     </div>
     <div class="me">
       <span class="chip-me" id="meChip">Classe non choisie</span>
+      <button class="btn ghost" id="btnProf" type="button">Enseignant</button>
       <button class="btn ghost" id="btnClasse" type="button">Ma classe</button>
       <button class="btn" id="btnEcrire" type="button">ÉCRIRE</button>
     </div>
@@ -267,6 +276,19 @@ dialog::backdrop{background:rgba(10,8,6,.7)}
       <div class="me"><span class="chip-me" id="agentChip"></span><button class="btn ghost" type="button" id="reroll">Un autre</button></div>
       <p class="help">Jamais ton vrai prénom ici : un agent du Réseau signe toujours avec son nom de code.</p></div>
     <div class="acts"><button class="btn ghost" value="cancel" formnovalidate>Annuler</button><button class="btn" id="okClasse" value="ok">VALIDER</button></div>
+  </form>
+</dialog>
+
+<!-- espace enseignant -->
+<dialog id="dlgProf">
+  <form class="dlg" id="fProf" method="dialog">
+    <h2>ESPACE ENSEIGNANT</h2>
+    <div><label class="lbl" for="codeProf">CODE ENSEIGNANT</label><input type="text" id="codeProf" autocomplete="off" autocapitalize="characters" maxlength="12">
+      <p class="help">Les élèves ne voient que les missions que vous avez ouvertes. Changer la mission d'une classe l'ouvre (ou la referme) aussitôt pour elle.</p></div>
+    <div class="prof-rows" id="profRows"></div>
+    <div class="prof-row"><span><b>Toutes les classes</b></span><span class="me"><select id="profTous"><option value="">…</option><option value="3">mission 3</option><option value="4">mission 4</option><option value="5">mission 5</option></select></span></div>
+    <div class="warn" id="profWarn" hidden></div>
+    <div class="acts"><button class="btn" value="ok">FERMER</button></div>
   </form>
 </dialog>
 
@@ -410,14 +432,14 @@ const EXEMPLES = [
   {classe:"jouhaux-b",type:"mot",destinataire:"rousseau",texte:"Votre guide nous intéresse. Vous pouvez nous l'envoyer quand il sera fini ?",agent:"Castor-63"},
   {classe:"rousseau",type:"mot",destinataire:"berthelot",texte:"Pour l'enceinte : on a trouvé comment effacer l'historique des demandes. On vous explique ?",agent:"Martre-74"},
   {classe:"jouhaux-a",type:"kit",titre:"Avant de poster, je demande",themes:["photos"],format:"affiche",public:"ecole",texte:"Un autocollant et une affiche pour la salle info.\nRègle 1 : je demande avant de prendre quelqu'un en photo.\nRègle 2 : je demande avant de la publier.",agent:"Merle-15"},
-  {classe:"grattetciel",type:"etape",mission:4,agent:"Renard-11"},
+  {classe:"grattetciel",type:"ouverture",mission:4},
   {classe:"grattetciel",type:"kit",titre:"Le cadenas",themes:["motdepasse"],format:"affiche",public:"jeunes",texte:"Une affiche pour les CM2 : comment fabriquer un mot de passe solide avec une phrase.",agent:"Faucon-38"},
   {classe:"grattetciel",type:"kit",titre:"Le cadenas",themes:["motdepasse","arnaques"],format:"video",public:"jeunes",texte:"Finalement un tuto vidéo de 2 minutes :\n1. une phrase secrète\n2. des chiffres et des signes\n3. jamais le même mot de passe partout\n4. ne jamais le donner, même à un « copain » en ligne.",agent:"Renard-11"},
   {classe:"grattetciel",type:"action",texte:"On a écrit le script du tuto et réparti les rôles : 2 acteurs, 1 caméra, 1 monteur.",agent:"Faucon-38"},
   {classe:"grattetciel",type:"aide",texte:"Quelqu'un sait filmer un écran de téléphone sans montrer de vraies infos ?",agent:"Renard-11"},
-  {classe:"rousseau",type:"etape",mission:4,agent:"Martre-74"},
+  {classe:"rousseau",type:"ouverture",mission:4},
   {classe:"rousseau",type:"kit",titre:"Ton compte en 5 minutes",themes:["reseaux","geoloc"],format:"guide",public:"jeunes",texte:"Un guide en 4 étapes : compte privé, localisation coupée, qui peut m'écrire, que faire si on m'embête.",agent:"Corbeau-56"},
-  {classe:"rousseau",type:"etape",mission:5,agent:"Corbeau-56"},
+  {classe:"rousseau",type:"ouverture",mission:5},
   {classe:"rousseau",type:"final",titre:"Ton compte en 5 minutes",texte:"Notre guide tient sur une page recto verso. On l'a testé avec des 6e : ils ont tous réussi à passer leur compte en privé et à couper la localisation en moins de 5 minutes.",agent:"Corbeau-56"},
   {classe:"jouhaux-b",type:"avis",destinataire:"rousseau",texte:"Super clair ! On l'a essayé en classe, la partie sur la localisation nous a appris plein de choses.",agent:"Castor-63"},
 ].map((e, i) => ({id:"ex"+i, exemple:true, created_at:new Date(Date.now() - (30 - i) * 3.6e6).toISOString(), ...e}));
@@ -429,9 +451,9 @@ async function charger(){
   if (!r.ok) throw new Error("lecture " + r.status);
   entrees = await r.json();
 }
-async function envoyer(e){
+async function envoyer(e, code = moi.code){
   if (!ENLIGNE) { const l = lire("essai", []); l.push({...e, id:"local"+Date.now(), created_at:new Date().toISOString()}); garder("essai", l); return; }
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/entrees`, {method:"POST", headers:{apikey:SUPABASE_CLE, Authorization:"Bearer "+SUPABASE_CLE, "Content-Type":"application/json", Prefer:"return=minimal"}, body:JSON.stringify({...e, code:moi.code})});
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/entrees`, {method:"POST", headers:{apikey:SUPABASE_CLE, Authorization:"Bearer "+SUPABASE_CLE, "Content-Type":"application/json", Prefer:"return=minimal"}, body:JSON.stringify({...e, code})});
   if (!r.ok) { const t = await r.text(); const err = new Error(t); err.status = r.status; throw err; }
 }
 
@@ -443,11 +465,12 @@ const vus = lire("vus", {});
 function el(tag, cls, txt){ const n = document.createElement(tag); if (cls) n.className = cls; if (txt !== undefined) n.textContent = txt; return n; }
 function quand(iso){ try { return new Date(iso).toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"}); } catch(e){ return ""; } }
 function nomClasse(id){ const c = byId[id]; return c ? `${c.planque} · ${c.classe} ${c.ecole.replace(/^(École|Collège) /,"")}` : id; }
-function mission(id){ let m = 3; entrees.forEach(e => { if (e.classe === id && e.type === "etape" && e.mission) m = e.mission; }); return m; }
+/* La mission ouverte pour une classe : la dernière ouverture décidée par l'enseignant. */
+function mission(id){ let m = 3; entrees.forEach(e => { if (e.classe === id && e.type === "ouverture" && e.mission) m = e.mission; }); return m; }
 function dernierKit(id, type = "kit"){ const l = entrees.filter(e => e.classe === id && e.type === type); return l[l.length - 1]; }
 function vise(e){ return (e.type === "mot" || e.type === "avis") ? e.destinataire : e.classe; }
 function resume(e){
-  if (e.type === "etape") return `Passe à la mission ${e.mission} · ${MISSIONS[e.mission] ? MISSIONS[e.mission].nom : ""}`;
+  if (e.type === "ouverture") return `Mission ${e.mission} · ${MISSIONS[e.mission] ? MISSIONS[e.mission].nom : ""} ouverte par l'enseignant`;
   const t = (e.titre ? e.titre + (e.texte ? " · " : "") : "") + (e.texte || "");
   return t.length > 110 ? t.slice(0, 110) + "…" : t;
 }
@@ -574,7 +597,7 @@ function pageSommaire(page){
   if (!recents.length) s2.append(el("p", "empty", "Le carnet est encore vierge. Choisis ta classe puis appuie sur « Écrire » pour la première entrée."));
   recents.forEach(e => { const it = el("div", "it"); const t = TYPES.find(t => t.id === e.type);
     const head = el("button", "linkish"); head.type = "button"; head.textContent = e.destinataire ? `${nomClasse(e.classe)} → ${nomClasse(e.destinataire)}` : nomClasse(e.classe); head.onclick = () => aller(vise(e));
-    it.append(head); it.append(el("span", "", resume(e))); it.append(el("em", "", `${t ? t.label : "Étape"} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`)); feed.append(it); });
+    it.append(head); it.append(el("span", "", resume(e))); it.append(el("em", "", `${t ? t.label : "Ouverture"} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`)); feed.append(it); });
   s2.append(feed); b2.append(s2);
   cols.append(a, b2); page.append(cols);
 }
@@ -582,7 +605,7 @@ function pageSommaire(page){
 const vueMission = {};
 function pageClasse(page, id){
   const c = byId[id], m = mission(id), mienne = moi.classe === id;
-  const vue = vueMission[id] || m;
+  const vue = Math.min(vueMission[id] || m, m);
   const siennes = entrees.filter(e => e.classe === id);
   const fuites = siennes.filter(e => e.type === "fuite");
   const ph = el("header", "ph"); const h = el("div");
@@ -592,18 +615,16 @@ function pageClasse(page, id){
   [[fuites.length, fuites.length > 1 ? "fuites" : "fuite"], [evit === null ? "—" : evit + " %", "évitables"], [entrees.filter(e => e.destinataire === id).length, "message(s) reçu(s)"]].forEach(([v, l]) => { const s = el("span"); s.append(el("b", "", v)); s.append(l); st.append(s); });
   h.append(st);
   const et = el("div", "etape");
-  if (mienne) {
-    const lab = el("label", "", "Notre équipe en est à la"); lab.htmlFor = "selMission"; et.append(lab);
-    const sel = el("select"); sel.id = "selMission"; [3, 4, 5].forEach(n => sel.append(new Option(`mission ${n} · ${MISSIONS[n].nom}`, n))); sel.value = m;
-    sel.onchange = () => changerMission(+sel.value, sel); et.append(sel);
-  } else { et.append("En ce moment : "); et.append(el("b", "", `mission ${m} · ${MISSIONS[m].nom}`)); }
+  et.append("Mission ouverte : "); et.append(el("b", "", `${m} · ${MISSIONS[m].nom}`));
   h.append(et); ph.append(h);
   if (mienne) ph.append(el("span", "stamp", "NOTRE PLANQUE"));
   page.append(ph);
   const strip = el("div", "missions"); strip.setAttribute("role", "group"); strip.setAttribute("aria-label", "Missions");
-  [3, 4, 5].forEach(n => { const b = el("button", n < m ? "fait" : n === m ? "encours" : ""); b.type = "button"; b.setAttribute("aria-pressed", n === vue ? "true" : "false");
-    b.append(el("b", "", `MISSION ${n}`)); b.append(el("small", "", MISSIONS[n].nom + (n < m ? " · faite" : n === m ? " · en cours" : "")));
-    b.onclick = () => { vueMission[id] = n; rendre(); }; strip.append(b); });
+  [3, 4, 5].forEach(n => { const b = el("button", n < m ? "fait" : n === m ? "encours" : "ferme"); b.type = "button"; b.setAttribute("aria-pressed", n === vue ? "true" : "false");
+    b.append(el("b", "", `MISSION ${n}`)); b.append(el("small", "", MISSIONS[n].nom + (n < m ? " · faite" : n === m ? " · en cours" : " · pas encore ouverte")));
+    if (n > m) { b.disabled = true; b.title = "Ton enseignant ouvrira cette mission quand ce sera le moment."; }
+    else b.onclick = () => { vueMission[id] = n; rendre(); };
+    strip.append(b); });
   page.append(strip);
   page.append(el("p", "consigne", MISSIONS[vue].consigne));
   const cols = el("div", "cols"); const g = el("div"), d = el("div");
@@ -622,15 +643,128 @@ function pageClasse(page, id){
     d.append(section(id, "avis", entrees.filter(e => e.type === "avis" && e.destinataire === id).slice().reverse().map(carteAvis)));
   }
   cols.append(g, d); page.append(cols);
+  const sy = el("div", "synthese"); sy.append(el("span", "", `Fin de la mission ${vue} : récupérez la synthèse de tout ce que ${mienne ? "vous avez" : "l'équipe a"} fait, pour la déposer sur l'ENT.`));
+  const bt = el("button", "btn", "TÉLÉCHARGER LA SYNTHÈSE"); bt.type = "button"; bt.onclick = () => telechargerSynthese(id, vue);
+  const bc = el("button", "btn ghost", "Copier le texte"); bc.type = "button"; bc.onclick = () => copierSynthese(id, vue);
+  sy.append(bt, bc); page.append(sy);
   const tg = section(id, "mot", entrees.filter(e => e.type === "mot" && e.destinataire === id).slice().reverse().map(carteTelegramme)); tg.classList.add("full"); page.append(tg);
 }
 
-async function changerMission(n, sel){
-  sel.disabled = true;
-  try { await envoyer({classe:moi.classe, type:"etape", agent:moi.agent, mission:n}); delete vueMission[moi.classe]; await rafraichir(); toast(`Mission ${n} · ${MISSIONS[n].nom}`); }
-  catch (err) { sel.value = mission(moi.classe); toast(err.status === 401 || err.status === 403 || /row-level/i.test(err.message) ? "Code de classe refusé" : "Réseau coupé, réessaie"); }
-  finally { sel.disabled = false; }
+/* ---------- synthèse de fin de mission ---------- */
+/* Ce que l'équipe a fait pendant une mission : entre l'ouverture de cette
+   mission et celle de la suivante (le brouillon du kit et la présentation
+   reprennent leur dernière version). */
+function fenetre(id, n){
+  const ouv = entrees.filter(e => e.classe === id && e.type === "ouverture");
+  const t = k => { const o = ouv.find(e => e.mission === k); return o ? o.created_at : null; };
+  const debut = n === 3 ? "" : (t(n) || ""), fin = (n < 5 && t(n + 1)) || "\uffff";
+  return e => e.created_at >= debut && e.created_at < fin;
 }
+function synthese(id, n){
+  const c = byId[id], dans = fenetre(id, n);
+  const a = entrees.filter(e => (e.classe === id || e.destinataire === id) && e.type !== "ouverture");
+  const pendant = a.filter(dans);
+  const de = t => pendant.filter(e => e.classe === id && e.type === t);
+  const note = e => ({texte:e.texte, pied:signature(e)});
+  const versionKit = (e, k) => ({tete:[e.titre, (e.themes || []).map(x => lbl(THEMES, x)).join(", "), lbl(FORMATS, e.format), e.public ? "pour " + lbl(PUBLICS, e.public).toLowerCase() : ""].filter(Boolean).join(" · "), texte:e.texte, pied:`version ${k} · ${signature(e)}`});
+  const kits = a.filter(e => e.classe === id && e.type === "kit");
+  const suivante = n < 5 && entrees.find(o => o.classe === id && o.type === "ouverture" && o.mission === n + 1);
+  const kitsAvant = kits.filter(e => e.created_at < (suivante ? suivante.created_at : "\uffff"));
+  const blocs = [], chiffres = [];
+  if (n === 3) {
+    const f = de("fuite");
+    const ev = f.length ? Math.round(100 * f.filter(e => e.necessaire === "non").length / f.length) + " %" : "—";
+    const cpt = {}; f.forEach(e => (e.donnees || []).forEach(d => cpt[d] = (cpt[d] || 0) + 1));
+    const top = Object.entries(cpt).sort((x, y) => y[1] - x[1]).slice(0, 3).map(([d, k]) => `${lbl(DONNEES, d)} (${k})`).join(", ");
+    chiffres.push([f.length, "fuites consignées"], [ev, "fuites évitables"], [top || "—", "données les plus semées"]);
+    blocs.push({titre:"Registre des fuites", items:f.map(e => ({tete:`${e.jour || ""} · ${(e.donnees || []).map(x => lbl(DONNEES, x)).join(" + ")} · ${lbl(LIEUX, e.lieu)} · ${{non:"pas nécessaire", oui:"nécessaire", nsp:"je ne sais pas"}[e.necessaire] || ""} · danger ${e.danger || "?"}/3`, texte:e.texte, pied:signature(e)}))});
+    blocs.push({titre:"Ce qu'on pense", items:de("pensee").map(note)});
+    blocs.push({titre:"Nos idées pour le kit", items:de("projet").map(note)});
+    const k = kitsAvant[kitsAvant.length - 1];
+    blocs.push({titre:"Brouillon du kit de survie", items:k ? [versionKit(k, kitsAvant.length)] : []});
+  } else if (n === 4) {
+    const v = kits.filter(dans);
+    chiffres.push([de("action").length, "séances au journal"], [v.length, "versions du kit"], [de("aide").length, "appels au réseau"]);
+    const k = kitsAvant[kitsAvant.length - 1];
+    blocs.push({titre:"Notre kit de survie (dernière version)", items:k ? [versionKit(k, kitsAvant.length)] : []});
+    blocs.push({titre:"Journal d'atelier", items:de("action").map(note)});
+    blocs.push({titre:"Nos appels au réseau", items:de("aide").map(note)});
+  } else {
+    const f = a.filter(e => e.classe === id && e.type === "final"), fin = f[f.length - 1];
+    const recus = a.filter(e => e.type === "avis" && e.destinataire === id), donnes = a.filter(e => e.type === "avis" && e.classe === id);
+    chiffres.push([recus.length, "avis reçus"], [donnes.length, "avis donnés"]);
+    blocs.push({titre:"Présentation finale", items:fin ? [{tete:fin.titre, texte:fin.texte, pied:(fin.lien ? fin.lien + " · " : "") + signature(fin)}] : []});
+    blocs.push({titre:"Avis reçus du réseau", items:recus.map(e => ({tete:"De " + nomClasse(e.classe), texte:e.texte, pied:signature(e)}))});
+    blocs.push({titre:"Nos avis sur les autres projets", items:donnes.map(e => ({tete:"Pour " + nomClasse(e.destinataire), texte:e.texte, pied:signature(e)}))});
+  }
+  blocs.push({titre:"Télégrammes reçus", items:pendant.filter(e => e.type === "mot" && e.destinataire === id).map(e => ({tete:"De " + nomClasse(e.classe), texte:e.texte, pied:signature(e)}))});
+  blocs.push({titre:"Télégrammes envoyés", items:pendant.filter(e => e.type === "mot" && e.classe === id).map(e => ({tete:"À " + nomClasse(e.destinataire), texte:e.texte, pied:signature(e)}))});
+  return {titre:`Mission ${n} · ${MISSIONS[n].nom}`, equipe:`${c.planque} · ${c.classe} · ${c.ecole} (${c.ville})`, date:new Date().toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"}), chiffres, blocs};
+}
+function synthText(s){
+  const L = [`CARNET DE BORD DU RÉSEAU · ${s.titre.toUpperCase()}`, s.equipe, `Synthèse du ${s.date}`, ""];
+  if (s.chiffres.length) L.push(s.chiffres.map(([v, l]) => `${v} ${l}`).join(" · "), "");
+  s.blocs.forEach(b => { L.push(b.titre.toUpperCase()); if (!b.items.length) L.push("(rien pour cette mission)"); b.items.forEach(i => { if (i.tete) L.push("• " + i.tete); if (i.texte) L.push((i.tete ? "  " : "• ") + i.texte); }); L.push(""); });
+  return L.join("\n");
+}
+function esc(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, ch => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[ch])); }
+function synthHTML(s){
+  const blocs = s.blocs.map(b => `<section><h2>${esc(b.titre)}</h2>${b.items.length ? b.items.map(i => `<div class="it">${i.tete ? `<b>${esc(i.tete)}</b>` : ""}${i.texte ? `<p>${esc(i.texte)}</p>` : ""}${i.pied ? `<small>${esc(i.pied)}</small>` : ""}</div>`).join("") : `<p class="vide">Rien pour cette mission.</p>`}</section>`).join("");
+  return `<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(s.titre)} · ${esc(s.equipe)}</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Special+Elite&family=Caveat:wght@500&display=swap">
+<style>body{margin:0;background:#ece2c8;color:#1c1510;font:15px/1.5 "Special Elite","Courier New",monospace;padding:24px 16px}main{max-width:760px;margin:0 auto}
+header{border-bottom:3px double #1c1510;padding-bottom:12px;margin-bottom:18px}small.k{letter-spacing:.3em;color:#6e5119}h1{font-family:"Stardos Stencil",serif;font-size:34px;margin:4px 0}
+.eq{font-size:16px}.chif{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.chif div{background:#1c1510;color:#ece2c8;padding:8px 12px;border-radius:3px}.chif b{color:#ffb23e;font-family:"Stardos Stencil",serif;font-size:20px;margin-right:6px}
+h2{font-family:"Stardos Stencil",serif;font-size:18px;letter-spacing:.1em;border-bottom:1px dashed #5c4a35;margin:22px 0 10px}.it{background:#f6eedb;border-left:4px solid #c9a24a;padding:8px 12px;margin-bottom:8px;break-inside:avoid}
+.it p{margin:4px 0;font-family:Caveat,cursive;font-size:21px;line-height:1.2;color:#3b5b8a;white-space:pre-line}.it small{color:#5c4a35;font-size:11px;overflow-wrap:anywhere}.vide{font-style:italic;color:#5c4a35}
+button{font:inherit;padding:8px 14px;border:2px solid #1c1510;background:#c9a24a;cursor:pointer;margin-top:18px}@media print{button{display:none}body{background:#fff}}</style>
+<main><header><small class="k">RÉSEAU ALBERTE · CARNET DE BORD</small><h1>${esc(s.titre)}</h1><div class="eq">${esc(s.equipe)}</div><div>Synthèse du ${esc(s.date)}</div>
+${s.chiffres.length ? `<div class="chif">${s.chiffres.map(([v, l]) => `<div><b>${esc(v)}</b>${esc(l)}</div>`).join("")}</div>` : ""}</header>${blocs}
+<button onclick="print()">Imprimer ou enregistrer en PDF</button></main></html>`;
+}
+function nomFichier(id, n){ return `carnet-mission-${n}-` + byId[id].planque.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".html"; }
+function telechargerSynthese(id, n){
+  try {
+    const blob = new Blob([synthHTML(synthese(id, n))], {type:"text/html"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nomFichier(id, n);
+    document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast("Synthèse téléchargée");
+  } catch (e) { toast("Téléchargement impossible ici : utilise « Copier le texte »"); }
+}
+async function copierSynthese(id, n){
+  try { await navigator.clipboard.writeText(synthText(synthese(id, n))); toast("Texte copié : colle-le sur l'ENT"); }
+  catch (e) { toast("Copie impossible ici : utilise « Télécharger »"); }
+}
+
+/* ---------- espace enseignant : ouvrir les missions ---------- */
+function rendreProf(){
+  const box = $("#profRows"); box.innerHTML = "";
+  CLASSES.forEach(c => {
+    const r = el("div", "prof-row"); const t = el("span"); t.append(el("b", "", c.planque)); t.append(" · " + c.classe + " " + c.ecole.replace(/^(École|Collège) /, "")); r.append(t);
+    const sel = el("select"); sel.setAttribute("aria-label", "Mission ouverte pour " + c.planque);
+    [3, 4, 5].forEach(n => sel.append(new Option(`mission ${n} · ${MISSIONS[n].nom}`, n))); sel.value = mission(c.id);
+    sel.onchange = () => ouvrir([c.id], +sel.value);
+    r.append(sel); box.append(r);
+  });
+}
+async function ouvrir(ids, n){
+  const w = $("#profWarn"); w.hidden = true;
+  const code = $("#codeProf").value.trim().toUpperCase();
+  if (ENLIGNE && !code) { w.textContent = "Saisissez d'abord le code enseignant."; w.hidden = false; rendreProf(); return; }
+  garder("prof", code);
+  try {
+    for (const id of ids) if (mission(id) !== n) await envoyer({classe:id, type:"ouverture", mission:n}, code);
+    await rafraichir(); rendreProf();
+    toast(ids.length > 1 ? `Mission ${n} ouverte pour toutes les classes` : `Mission ${n} ouverte pour ${byId[ids[0]].planque}`);
+  } catch (err) {
+    w.textContent = (err.status === 401 || err.status === 403 || /row-level/i.test(err.message)) ? "Code enseignant refusé." : "Réseau coupé : réessayez dans un moment.";
+    w.hidden = false; await rafraichir(); rendreProf();
+  }
+}
+$("#btnProf").onclick = () => { $("#codeProf").value = lire("prof", ""); $("#profWarn").hidden = true; $("#profTous").value = ""; rendreProf(); $("#dlgProf").showModal(); };
+$("#dlgProf").addEventListener("close", () => rendre());
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (PAGES.includes(h) && h !== courant) aller(h); });
+$("#profTous").onchange = () => { const n = +$("#profTous").value; if (n) ouvrir(CLASSES.map(c => c.id), n); };
 
 function sectionKit(id, type){
   const t = TYPES.find(x => x.id === type);
@@ -676,7 +810,7 @@ function section(id, type, cartes){
   }
   return s;
 }
-function signature(e){ return `${e.agent || "Agent inconnu"} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`; }
+function signature(e){ return `${e.agent || (e.type === "ouverture" ? "Enseignant" : "Agent inconnu")} · ${quand(e.created_at)}${e.exemple ? " · exemple" : ""}`; }
 function carteFuite(e){
   const n = el("div", "leak");
   n.append(el("span", "day", e.jour || "—"));
