@@ -157,17 +157,20 @@ a.lien{color:var(--brass-hi)}
       <li><b>Le message de fin</b> que lisent les élèves</li>
       <li><b>Essayer</b>, puis <b>Télécharger pour les élèves</b></li>
     </ol>
+    <div class="et2" style="margin-top:14px">Le style du jeu <small style="font-weight:400;opacity:.8">: à choisir maintenant ou plus tard, vos questions restent les mêmes</small></div>
+    <div class="ambs" id="ambs"></div>
     <p>Première fois ? <button class="btn prim" id="exemple">Ouvrir un exemple</button> pour voir un jeu déjà rempli. Votre travail est gardé tout seul sur cet ordinateur, dans ce navigateur.</p>
   </div>
 
   <section class="box">
     <h2>1. Les deux réponses possibles</h2>
-    <p class="hint">Dans le jeu, chaque question a son levier, que l'élève place en haut ou en bas. Choisissez un modèle ou écrivez vos deux réponses. Les QCM (A, B, C, D) n'en ont pas besoin. <b>Le nombre de questions se choisit dans la partie 2.</b></p>
+    <p class="hint">Dans le jeu, chaque question a son levier, que l'élève place en haut ou en bas. Cliquez sur un modèle, ou écrivez vos deux réponses dans les cases. Les QCM (A, B, C, D) n'en ont pas besoin. <b>Le nombre de questions se choisit dans la partie 2.</b></p>
     <div class="presets" id="presets"></div>
     <div class="labels">
-      <label class="f">Réponse du haut <input type="text" id="haut" maxlength="24"></label>
-      <label class="f">Réponse du bas <input type="text" id="bas" maxlength="24"></label>
+      <label class="f">Réponse du haut <input type="text" id="haut" maxlength="16" placeholder="par exemple : VRAI"></label>
+      <label class="f">Réponse du bas <input type="text" id="bas" maxlength="16" placeholder="par exemple : FAUX"></label>
     </div>
+    <p class="hint">16 caractères au plus. Un ou deux mots courts se lisent mieux sous les leviers, surtout avec beaucoup de questions.</p>
   </section>
 
   <section class="box">
@@ -234,9 +237,8 @@ Réponse : non
   </section>
 
   <section class="box">
-    <h2>4. L'ambiance et le titre du jeu</h2>
-    <div class="et2">Ambiance du jeu</div>
-    <div class="ambs" id="ambs"></div>
+    <h2>4. Le titre du jeu</h2>
+    <p class="hint">Le style se change tout en haut de la page, à tout moment : vos questions ne bougent pas.</p>
     <div class="grid">
       <label class="f">Titre du jeu <input type="text" id="titre" maxlength="24"></label>
       <label class="f">Sous-titre <input type="text" id="modele" maxlength="80"></label>
@@ -291,7 +293,7 @@ Réponse : non
 <script>
 const cyrb53=(str,seed=1943)=>{let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507);h1^=Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507);h2^=Math.imul(h1^(h1>>>13),3266489909);return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);};
 const $=id=>document.getElementById(id);
-const PRESETS=[['IA','RÉEL'],['OUI','NON'],['VRAI','FAUX'],['FAKE','INFO'],['DANGER','SANS RISQUE'],['PUBLIC','PRIVÉ']];
+const PRESETS=[['VRAI','FAUX'],['OUI','NON']];
 const AMBS=[['vapeur','RÉSISTANCE 1943','Steampunk','laiton, vapeur et télégramme'],['futur','NÉON 2099','Futuriste','verre sombre, néons cyan et magenta'],['arcade','PLAYER 1','Arcade','rétro jeux vidéo, pixels']];
 function dessinerAmbs(){ const a=$('ambs'); a.innerHTML=''; AMBS.forEach(([k,ap,n,d])=>{ const b=document.createElement('button'); b.className='amb '+k; b.setAttribute('aria-pressed',(cfg.ambiance||'vapeur')===k); b.innerHTML=`<span class="ap">${ap}</span><span class="an">${n}<small>${d}</small></span>`; b.onclick=()=>{ cfg.ambiance=k; dessinerAmbs(); garder(); msg('Ambiance « '+n+' » choisie. Cliquez « Essayer le jeu » pour la voir.'); }; a.appendChild(b); }); }
 const EXEMPLE = () => Object.assign(DEFAUT(), {
@@ -312,7 +314,7 @@ $('exemple').onclick=()=>{
 const CHAMPS=['haut','bas','message','lien','signature','titre','modele','tampon','avert','attente','succes','echec','enTete','lieu','de'];
 const DEFAUT = () => ({
   v:1, id:'j'+Math.random().toString(36).slice(2,10),
-  ambiance:'vapeur', haut:'IA', bas:'RÉEL', items:[{texte:'',rep:''},{texte:'',rep:''},{texte:'',rep:''},{texte:'',rep:''}],
+  ambiance:'vapeur', haut:'', bas:'', items:[],
   message:'Bravo, le canal est ouvert ! Vous avez trouvé la bonne combinaison.', lien:'', signature:'Le professeur',
   titre:'CHRONOPHONE', modele:'Poste de la classe · Modèle personnalisé', tampon:'TOP SECRET',
   avert:"Propriété du réseau. Ne pas laisser l'appareil sans surveillance.",
@@ -472,7 +474,7 @@ function dessinerItems(){
 /* Nombre de leviers : on règle le total, puis on remplit chaque levier */
 function majNombre(){ $('nbLeviers').value=cfg.items.length; }
 function fixerNombre(n){
-  n=Math.max(2,Math.min(40,Math.round(+n)||0));
+  n=Math.max(1,Math.min(40,Math.round(+n)||0));
   const k=cfg.items.length;
   if(n>k){ for(let x=k;x<n;x++) cfg.items.push({texte:'',rep:''}); }
   else if(n<k){
@@ -507,7 +509,7 @@ $('addText').onclick=()=>{ if(cfg.items.length>=40){ msg('40 questions au maximu
 function verifier(){
   document.querySelectorAll('.item.bad').forEach(x=>x.classList.remove('bad'));
   if(cfg.items.length<2) return 'Il faut au moins 2 questions.';
-  if(!cfg.haut.trim()||!cfg.bas.trim()) return 'Écrivez la réponse du haut et celle du bas (partie 1).';
+  if(cfg.items.some(it=>!it.q)&&(!cfg.haut.trim()||!cfg.bas.trim())){ $('haut').scrollIntoView({block:'center'}); return 'Choisissez les deux réponses possibles : cliquez « VRAI / FAUX », « OUI / NON », ou écrivez les vôtres (partie 1).'; }
   for(let i=0;i<cfg.items.length;i++){
     const it=cfg.items[i];
     if(!it.f && !(it.texte||'').trim()){ $('it'+i).classList.add('bad'); $('it'+i).scrollIntoView({block:'center'}); return 'La question '+(i+1)+' est vide : écrivez-la ou mettez une photo.'; }
