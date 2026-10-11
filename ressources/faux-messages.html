@@ -216,6 +216,7 @@ dialog .ligne{justify-content:flex-end}
   <h1>Fausses conversations</h1>
   <button class="btn mini" id="annuler" title="Annuler (Ctrl+Z)" disabled>↶ Annuler</button>
   <button class="btn mini" id="reglBtn">⚙ Réglages</button>
+  <button class="btn mini" type="button" onclick="window.PartageJeux&&PartageJeux.ouvrir('partage')" title="Faire connaître l’outil ou donner votre avis">📣 Partager</button>
 </header>
 
 <main class="page">
@@ -682,5 +683,6 @@ function tout(){ dessinerReglages(); majTel(); }
 construireTel(); tout(); $('fil').scrollTop=1e6;
 if(matchMedia('(min-width:821px)').matches) $('texte').focus();
 </script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Fausses conversations" data-flottant="non" data-url="https://antoninatger.com/jeux/fausses-conversations/" data-texte="Fausses conversations, un outil gratuit pour créer de faux échanges WhatsApp, SMS ou Instagram à projeter en classe"></script>
 </body>
 </html>

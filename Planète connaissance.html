@@ -304,6 +304,7 @@ canvas{display:block;width:100%;height:100%}
     <div class="final-stars" id="win-stars">⭐⭐⭐</div>
     <p class="s-desc" data-i18n="winDesc2">Tu distingues parfaitement les faits des opinions. Mission accomplie, cosmonaute !</p>
     <button class="s-btn" onclick="restartGame()" data-i18n="newMissionBtn">🔄 NOUVELLE MISSION</button>
+    <div class="pj-rangee" style="margin-top:16px"></div>
   </div>
 </div>
 
@@ -315,6 +316,7 @@ canvas{display:block;width:100%;height:100%}
     <p class="s-desc" data-i18n-html="overDesc">Les astéroïdes ont eu raison de toi…<br>
       Rappelle-toi : un <strong style="color:#00ff88">FAIT</strong> se prouve, une <strong style="color:#ff3cac">OPINION</strong> exprime un avis personnel !</p>
     <button class="s-btn red-btn" onclick="restartGame()" data-i18n="restartBtn">🔄 RECOMMENCER</button>
+    <div class="pj-rangee" style="margin-top:16px"></div>
   </div>
 </div>
 
@@ -356,5 +358,6 @@ I18N.register({
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'planete-connaissance-en.js' : 'planete-connaissance.js') + '"><\/scr' + 'ipt>');
 </script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Planète connaissance" data-position="bas-gauche" data-texte="Planète connaissance, un jeu gratuit pour apprendre à distinguer les faits des opinions" data-texte-en="Planet Knowledge, a free game to learn to tell facts from opinions"></script>
 </body>
 </html>

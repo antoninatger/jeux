@@ -156,6 +156,7 @@ header{text-align:center;}
   <p id="end-msg"></p>
   <button class="bigbtn" id="retry-btn"></button>
   <button class="bigbtn gold" onclick="location.reload()" data-i18n="replay">🔄 Rejouer</button>
+  <div class="pj-rangee" style="margin-top:18px"></div>
 </div>
 
 <script src="../i18n.js"></script>
@@ -192,5 +193,6 @@ document.querySelector(".back-hub").addEventListener("click", function(e){
 // Aiguillage FR/EN : charge la version française (app.js) ou anglaise (app-en.js) selon la langue choisie.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
 </script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Arène de rhétorique" data-texte="L’Arène de rhétorique, un jeu gratuit pour démasquer les sophismes et les ruses du discours" data-texte-en="The Rhetoric Arena, a free game to unmask fallacies and tricks of speech"></script>
 </body>
 </html>

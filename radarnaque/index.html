@@ -16,6 +16,7 @@
       <div class="spacer"></div>
       <button class="topbtn" id="menu-btn" title="Revenir au menu" data-i18n="menu" data-i18n-title="menuTitle" style="display:none">🏠 Menu</button>
       <button class="topbtn" id="gloss-btn" title="Les mots à connaître" data-i18n="gloss" data-i18n-title="glossTitle">📖 Définitions</button>
+      <button class="topbtn" id="partage-btn" title="Faire connaître le jeu" onclick="window.PartageJeux&&PartageJeux.ouvrir('partage')">📣 <span data-i18n="partager">Partager</span></button>
       <button class="topbtn" id="avis-btn" title="Donner votre avis" data-i18n="avis" data-i18n-title="avisTitle">💬 Avis</button>
       <div class="textsize" aria-label="Taille du texte" data-i18n-aria-label="textAria">
         <span data-i18n="textLabel">Texte</span>
@@ -60,7 +61,7 @@
       pageTitle: "Radar’naque — S’entraîner à déjouer les pièges en ligne",
       menu: "🏠 Menu", menuTitle: "Revenir au menu",
       gloss: "📖 Définitions", glossTitle: "Les mots à connaître",
-      avis: "💬 Avis", avisTitle: "Donner votre avis",
+      avis: "💬 Avis", avisTitle: "Donner votre avis", partager: "Partager",
       textLabel: "Texte", textAria: "Taille du texte", fbClose: "Fermer",
       fbTitle: "💬 Votre avis sur Radar’naque",
       fbSub: "Vous avez aimé&nbsp;? Une remarque, une idée d’amélioration&nbsp;? Écrivez-moi, je lis tout&nbsp;!",
@@ -71,7 +72,7 @@
       pageTitle: "Radar’naque — Practise spotting online traps",
       menu: "🏠 Menu", menuTitle: "Back to menu",
       gloss: "📖 Definitions", glossTitle: "Words to know",
-      avis: "💬 Feedback", avisTitle: "Give your feedback",
+      avis: "💬 Feedback", avisTitle: "Give your feedback", partager: "Share",
       textLabel: "Text", textAria: "Text size", fbClose: "Close",
       fbTitle: "💬 Your feedback on Radar’naque",
       fbSub: "Did you enjoy it? A comment, an idea for improvement? Write to me — I read everything!",
@@ -84,5 +85,6 @@
   document.write('<scr' + 'ipt src="' + (_en ? 'scenarios-en.js' : 'scenarios.js') + '"><\/scr' + 'ipt>');
   document.write('<scr' + 'ipt src="' + (_en ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
   </script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Radar’naque" data-flottant="non" data-avis="non" data-texte="Radar’naque, un jeu gratuit pour repérer les arnaques en ligne" data-texte-en="Radar’naque, a free game to spot online scams"></script>
 </body>
 </html>
