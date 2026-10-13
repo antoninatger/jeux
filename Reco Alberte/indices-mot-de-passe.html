@@ -38,6 +38,7 @@
   @keyframes flick{from{transform:scale(1,1) rotate(-2deg)}to{transform:scale(.92,1.08) rotate(2deg)}}
   .flame.home{position:absolute;left:50%;top:-8px}
   .candle.empty{cursor:default}
+  .paperbox.burning{animation:shake .5s 2}
   .glow{position:absolute;width:160px;height:160px;border-radius:50%;pointer-events:none;z-index:3;
     background:radial-gradient(circle,rgba(255,170,60,.35),rgba(255,140,40,0) 70%);transform:translate(-50%,-50%)}
 
@@ -82,6 +83,9 @@
   @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
   .smallbtn{background:none;border:1px solid #4a3a2a;color:#d8c7a6;border-radius:18px;padding:6px 12px;font:13px system-ui,sans-serif;cursor:pointer;margin-top:8px}
 
+  .histo{margin-top:14px;border-left:3px solid #9a3b22;background:#2a211a;border-radius:0 10px 10px 0;padding:10px 14px;font:13.5px/1.55 system-ui,sans-serif;color:#d8c7a6}
+  .histo b{color:#f3e9d2}
+  .histo .h{font:700 11px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#e0a07a;margin-bottom:4px}
   /* ---- carnet ---- */
   .carnet{margin-top:16px;background:var(--paper);color:var(--ink);border-radius:10px;padding:14px 16px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
   .carnet h2{font-size:15px;margin:0 0 8px;letter-spacing:1px}
@@ -102,10 +106,11 @@
 
   <!-- 1. Encre sympathique -->
   <section class="stage" id="s0">
-    <p class="consigne">Cette feuille semble blanche… mais Alberte a écrit au <b>jus de citron</b>. <b>Attrape la flamme de la bougie</b> et passe-la sous toute la feuille pour faire apparaître le message.</p>
+    <p class="consigne">Cette feuille semble blanche… mais Alberte a écrit au <b>jus de citron</b>. <b>Attrape la flamme de la bougie</b> et passe-la sous la feuille pour faire apparaître le message. Trop vite, rien n'apparaît ; trop longtemps au même endroit, <b>la feuille brûle</b>. Trouve le bon rythme !</p>
     <div class="paperbox" id="paper"><canvas id="cv"></canvas></div>
     <div class="candle-row"><div class="candle" id="candle"><div class="flame home" id="flameHome"></div></div></div>
     <div class="msg" id="m0"></div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Les résistants et les agents envoyés par Londres écrivaient vraiment à l'<b>encre sympathique</b> : jus de citron, lait, ou encres spéciales fournies par les services secrets britanniques. Le message, invisible, se cachait par exemple entre les lignes d'une lettre ordinaire. Une fois chauffé, il réapparaissait.</div>
   </section>
 
   <!-- 2. Lettre et carton -->
@@ -116,6 +121,7 @@
       <div class="card" id="card"></div>
     </div></div>
     <div class="msg" id="m1"></div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Le <b>carton percé</b> s'appelle une grille de Cardan, du nom du savant italien Jérôme Cardan qui l'a décrite au XVI<sup>e</sup> siècle. Rien ne prouve que la Résistance s'en soit servie. En revanche, elle cachait bien ses messages dans des lettres d'apparence banale, et les codait avec des grilles ou des poèmes appris par cœur, comme le faisaient les agents formés à Londres. L'idée reste la même : un texte anodin peut en cacher un autre.</div>
   </section>
 
   <!-- 3. Radio Londres -->
@@ -137,6 +143,7 @@
       </div>
     </div>
     <div class="msg" id="m2"></div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Chaque soir, depuis Londres, la BBC diffusait l'émission <b>« Les Français parlent aux Français »</b>. Ses <b>messages personnels</b>, des phrases absurdes comme « Jean a de longues moustaches », étaient des signaux convenus à l'avance avec les réseaux : annoncer un parachutage d'armes, confirmer l'arrivée d'un agent… Début juin 1944, les vers de Verlaine « Les sanglots longs des violons de l'automne » ont prévenu certains réseaux que le Débarquement était imminent. Les messages de cette page sont inventés.</div>
   </section>
 
   <div class="carnet">
@@ -178,17 +185,22 @@ function show(i){
   if(i === 1) layoutCard();
 }
 
-/* ================= 1. Encre sympathique ================= */
+/* ================= 1. Encre sympathique =================
+   La chaleur s'accumule sur une grille (GX × GY cases) tant que la flamme reste dessous :
+   trop vite, le citron ne brunit pas ; trop longtemps au même endroit, le papier roussit puis brûle. */
 const paper = $("paper"), cv = $("cv"), ctx = cv.getContext("2d");
-let textCv, heatCv, heatCtx, tmpCv, samples = [], W = 0, H = 0, heatCount = 0;
+const GX = 48, GY = 36;
+const REVEAL = 1.0, SCORCH = 2.6, HOLE = 3.6;   // seuils de chaleur
+const RATE = 2.4;                               // chaleur par seconde au centre de la flamme
+const BURN_LIMIT = 0.008;                       // part de la feuille trouée avant qu'elle parte en fumée
+let heat = new Float32Array(GX*GY), textCv, maskCv, tmpCv, samples = [], W = 0, H = 0, burnt = false;
+let flameAt = null, lastT = 0;
 function sizeInk(){
   const r = paper.getBoundingClientRect();
-  if(!r.width || (Math.round(r.width) === W)) return;
+  if(!r.width || Math.round(r.width) === W) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const old = heatCv;
   W = Math.round(r.width); H = Math.round(r.height);
-  [cv].forEach(c => { c.width = W*dpr; c.height = H*dpr; });
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+  cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
   textCv = document.createElement("canvas"); textCv.width = W; textCv.height = H;
   const t = textCv.getContext("2d");
   const fs = Math.max(16, Math.round(W/17));
@@ -198,43 +210,77 @@ function sizeInk(){
   lines.push(cur);
   const lh = fs*1.45, y0 = H/2 - (lines.length-1)*lh/2;
   lines.forEach((l,i) => t.fillText(l, W/2, y0 + i*lh));
-  heatCv = document.createElement("canvas"); heatCv.width = W; heatCv.height = H; heatCtx = heatCv.getContext("2d");
-  if(old) heatCtx.drawImage(old, 0, 0, W, H);
+  maskCv = document.createElement("canvas"); maskCv.width = GX; maskCv.height = GY;
   tmpCv = document.createElement("canvas"); tmpCv.width = W; tmpCv.height = H;
   const d = t.getImageData(0,0,W,H).data; samples = [];
-  for(let y=0; y<H; y+=6) for(let x=0; x<W; x+=6) if(d[(y*W+x)*4+3] > 120) samples.push([x,y]);
-  if(found[0]){ heatCtx.fillStyle = "#000"; heatCtx.fillRect(0,0,W,H); }
+  for(let y=0; y<H; y+=6) for(let x=0; x<W; x+=6) if(d[(y*W+x)*4+3] > 120) samples.push([Math.min(GX-1, x*GX/W|0), Math.min(GY-1, y*GY/H|0)]);
+  if(found[0]) heat.fill(REVEAL + .1);
   render();
 }
-function heatAt(x, y){
-  const g = heatCtx.createRadialGradient(x, y, 0, x, y, W*0.11);
-  g.addColorStop(0, "rgba(0,0,0,.22)"); g.addColorStop(1, "rgba(0,0,0,0)");
-  heatCtx.fillStyle = g; heatCtx.beginPath(); heatCtx.arc(x, y, W*0.11, 0, 7); heatCtx.fill();
-  if(++heatCount % 12 === 0) checkInk();
-  render();
+function addHeat(px, py, dt){
+  const gx = px/W*GX, gy = py/H*GY, R = 4.5;
+  for(let y = Math.max(0, gy-R|0); y <= Math.min(GY-1, gy+R|0); y++)
+    for(let x = Math.max(0, gx-R|0); x <= Math.min(GX-1, gx+R|0); x++){
+      const dd = ((x+.5-gx)**2 + (y+.5-gy)**2) / (R*R);
+      if(dd < 1) heat[y*GX+x] += RATE * dt * (1-dd) * (1-dd);
+    }
 }
 function render(){
   if(!tmpCv) return;
+  // masque de révélation (alpha = chaleur jusqu'au seuil), lissé en l'agrandissant
+  const m = maskCv.getContext("2d"), img = m.createImageData(GX, GY);
+  for(let i=0;i<GX*GY;i++){ img.data[i*4+3] = Math.min(255, heat[i]/REVEAL*255); }
+  m.putImageData(img, 0, 0);
   const t = tmpCv.getContext("2d");
   t.globalCompositeOperation = "source-over"; t.clearRect(0,0,W,H);
-  t.drawImage(textCv, 0, 0); t.globalCompositeOperation = "destination-in"; t.drawImage(heatCv, 0, 0);
+  t.drawImage(textCv, 0, 0);
+  t.globalCompositeOperation = "destination-in"; t.imageSmoothingEnabled = true; t.drawImage(maskCv, 0, 0, W, H);
   ctx.clearRect(0,0,W,H);
-  ctx.globalAlpha = .18; ctx.drawImage(heatCv, 0, 0); ctx.globalAlpha = 1; // léger roussi du papier
   ctx.drawImage(tmpCv, 0, 0);
+  // roussi puis brûlure : une petite image (une case = un pixel) agrandie et lissée
+  const bimg = m.createImageData(GX, GY);
+  for(let i=0;i<GX*GY;i++){
+    const h = heat[i];
+    if(h <= SCORCH) continue;
+    const k = Math.min(1, (h-SCORCH)/(HOLE-SCORCH));
+    bimg.data[i*4] = h >= HOLE ? 32 : 120-80*k; bimg.data[i*4+1] = h >= HOLE ? 25 : 70-50*k; bimg.data[i*4+2] = h >= HOLE ? 20 : 20-10*k;
+    bimg.data[i*4+3] = h >= HOLE ? 255 : 70 + 170*k;
+  }
+  m.putImageData(bimg, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(maskCv, 0, 0, W, H);
 }
+function holes(){ let n = 0; for(let i=0;i<GX*GY;i++) if(heat[i] >= HOLE) n++; return n / (GX*GY); }
 function checkInk(){
-  if(found[0] || !samples.length) return;
-  const d = heatCtx.getImageData(0,0,W,H).data;
-  const ok = samples.filter(([x,y]) => d[(y*W+x)*4+3] > 150).length;
-  if(ok / samples.length > 0.92) markFound(0);
+  if(found[0] || burnt || !samples.length) return;
+  if(holes() > BURN_LIMIT){ burnPaper(); return; }
+  const ok = samples.filter(([x,y]) => { const h = heat[y*GX+x]; return h >= REVEAL*.8 && h < HOLE; }).length;
+  if(ok / samples.length > 0.9) markFound(0);
 }
+function burnPaper(){
+  burnt = true; dropFlame();
+  paper.classList.add("burning");
+  $("m0").style.color = "#e5734d";
+  $("m0").textContent = "🔥 La feuille a pris feu ! Tu as laissé la flamme trop longtemps au même endroit. Alberte t'en glisse une autre…";
+  setTimeout(() => {
+    heat.fill(0); burnt = false; paper.classList.remove("burning");
+    $("m0").textContent = ""; $("m0").style.color = ""; render();
+  }, 2600);
+}
+// boucle : la chaleur dépend du temps passé sous la feuille, pas du nombre de mouvements
+function loop(t){
+  const dt = Math.min(.05, (t - lastT)/1000 || 0); lastT = t;
+  if(flameAt && !burnt && !found[0]){ addHeat(flameAt[0], flameAt[1], dt); render(); checkInk(); }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
 /* la flamme : on la prend sur la bougie, on la promène sous la feuille */
 const candle = $("candle"), flameHome = $("flameHome");
-let flame = null, glow = null, dragging = false, moved = false;
+let flame = null, glow = null, dragging = false;
 function pickFlame(e){
-  if(dragging) return;
+  if(dragging || burnt) return;
   e.preventDefault();
-  dragging = true; moved = false;
+  dragging = true;
   flameHome.style.visibility = "hidden"; candle.classList.add("empty");
   flame = document.createElement("div"); flame.className = "flame";
   glow = document.createElement("div"); glow.className = "glow";
@@ -243,19 +289,18 @@ function pickFlame(e){
 }
 function moveFlame(e){
   if(!dragging) return;
-  moved = true;
   const x = e.clientX, y = e.clientY;
+  flame.style.position = glow.style.position = "absolute";
   flame.style.left = x + "px"; flame.style.top = (y + window.scrollY) + "px";
-  flame.style.position = "absolute";
   const r = paper.getBoundingClientRect();
   const inside = x > r.left && x < r.right && y > r.top && y < r.bottom;
   glow.style.display = inside ? "block" : "none";
-  glow.style.left = x + "px"; glow.style.top = (y + window.scrollY - 20) + "px"; glow.style.position = "absolute";
-  if(inside) heatAt(x - r.left, y - r.top - 20);
+  glow.style.left = x + "px"; glow.style.top = (y + window.scrollY - 20) + "px";
+  flameAt = inside ? [x - r.left, y - r.top - 20] : null;
 }
 function dropFlame(){
   if(!dragging) return;
-  dragging = false;
+  dragging = false; flameAt = null;
   flame && flame.remove(); glow && glow.remove(); flame = glow = null;
   flameHome.style.visibility = ""; candle.classList.remove("empty");
   checkInk();
@@ -328,12 +373,12 @@ function placeCard(){
 const SCRIPT = [
   "Ici Londres ! Les Français parlent aux Français.",
   "Veuillez d'abord écouter quelques messages personnels.",
-  { m: "Les carottes sont cuites." },
+  { m: "Le canari chante en sol." },
   { m: "Le chat de la voisine a mangé la confiture." },
-  { m: "Jean a de longues moustaches." },
+  { m: "Le pharmacien a perdu son chapeau." },
   { m: "Le facteur s'est endormi dans la boîte aux lettres." },
   { m: TEXTS[2], alb: true },
-  { m: "Les sanglots longs des violons de l'automne." },
+  { m: "La lune est pleine de poireaux." },
   { m: "Le parapluie de grand-mère chante faux." },
   "Fin des messages personnels."
 ];
