@@ -272,7 +272,7 @@ const INTRO_ALBERTE = [
           Laissé vide, l'écran accepte tout code qui suit la recette :
           l'initiale, puis uniquement des lettres, pour un total de `longueur` caractères. */
 const VERROU = {
-  code: "",
+  code: "APAYERNE",
   initiale: "A",
   longueur: 8,               // âge d'Alberte en 1908 (née en 1900 dans le jeu)
   nomMari: "BOURDE",         // piège : ce n'est pas son nom de jeune fille
