@@ -223,7 +223,7 @@ dialog .ligne{justify-content:flex-end}
 #fiche img.carte{width:100%;border-radius:10px;margin-top:14px;filter:grayscale(1)}
 #fiche .adr{font-size:17px;margin-top:8px}
 #fiche .fermer{margin-top:18px;width:100%;padding:11px;border-radius:24px;border:0;background:#333;color:#fff;font-size:15px;cursor:pointer}
-#depart{position:fixed;inset:0;z-index:70;background:#0d0d0f;color:#eee;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;text-align:center;padding:20px;cursor:pointer;font-family:Georgia,serif}
+#depart{position:fixed;inset:0;z-index:70;background:#0d0d0f;color:#eee;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;text-align:center;padding:20px;font-family:Georgia,serif}
 #depart .tampon{border:3px solid #c0392b;color:#e74c3c;padding:6px 16px;font:700 22px/1.2 'Courier New',monospace;letter-spacing:.12em;transform:rotate(-4deg)}
 #depart p{max-width:30em;font-size:19px;line-height:1.5;margin:0}
 #depart .go{font:600 17px system-ui,sans-serif;background:#25d366;color:#05301a;border-radius:30px;padding:12px 26px}
@@ -253,6 +253,25 @@ dialog .ligne{justify-content:flex-end}
 #indice li span.ex{font-size:14px;color:#54656f}
 #indice .ok{margin-top:14px;width:100%;padding:11px;border-radius:24px;border:0;background:#111b21;color:#fff;font-size:15px;cursor:pointer}
 #indice .ok:focus-visible{outline:3px solid #25d366}
+#indice .consigne{font-size:14px;color:#54656f;margin-bottom:8px}
+#indice .choix{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#indice .opt{text-align:left;padding:9px 10px;border-radius:10px;border:2px solid #d9dee2;background:#fff;color:#111b21;font-size:15px;cursor:pointer}
+#indice .opt[aria-pressed="true"]{border-color:#00a884;background:#e7f8f2;font-weight:600}
+#indice .opt.rate{border-color:#e0a3a3;background:#fbeaea;color:#8a3a3a}
+#indice textarea{width:100%;box-sizing:border-box;border:2px solid #d9dee2;border-radius:10px;padding:9px 10px;font:16px system-ui,sans-serif;resize:none}
+#indice textarea:focus{outline:none;border-color:#00a884}
+#indRes{min-height:1.3em;margin-top:8px;font-size:14px;color:#b4542a;font-weight:600}
+#indice li{position:relative}
+#indice li.manque{background:#fff6dc}
+#indice li.faux{background:#fbeaea;opacity:.85}
+#indice li.faux b{text-decoration:line-through}
+#indice .mk{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap;align-self:center}
+#indice .mk.ok{color:#00875f;font-size:18px}#indice .mk.manque{color:#9a6b00}#indice .mk.faux{color:#b33;font-size:18px}
+#indice .ok[hidden]{display:none}
+#depart .modes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+#depart .mode{display:flex;flex-direction:column;align-items:center;gap:4px;font:600 17px system-ui,sans-serif;background:#25d366;color:#05301a;border:0;border-radius:18px;padding:12px 22px;cursor:pointer;min-width:200px}
+#depart .mode.dur{background:#eee;color:#111}
+#depart .mode small{font-weight:400;font-size:13px;opacity:.8}
 </style>
 </head>
 <body>
@@ -340,7 +359,7 @@ dialog .ligne{justify-content:flex-end}
   <div id="sceneTel"></div>
   <div class="bas"><button class="btn" id="sPrec">◀</button><span id="sInfo"></span><span id="sInd" title="Données personnelles repérées">🔎 0</span><button class="btn" id="sSuiv" aria-label="Message suivant">▶</button><button class="btn lire" id="sAuto" type="button">▶ Lecture</button><button class="btn" id="sFin">Quitter (Échap)</button></div>
 </div>
-<div id="indice" aria-hidden="true"><div class="carte-ind" role="dialog" aria-modal="true" aria-labelledby="indTit"><div class="tit" id="indTit">Donnée personnelle révélée</div><div class="cit" id="indCit"></div><ul id="indCats"></ul><button class="ok" type="button" id="indOk">Continuer</button></div></div>
+<div id="indice" aria-hidden="true"><div class="carte-ind" role="dialog" aria-modal="true" aria-labelledby="indTit"><div class="tit" id="indTit">Quelle donnée cela révèle-t-il ?</div><div class="cit" id="indCit"></div><div id="indQ"></div><ul id="indCats"></ul><div id="indRes" role="status"></div><button class="ok" type="button" id="indVal">Valider</button><button class="ok" type="button" id="indOk" hidden>Continuer</button></div></div>
 <div id="fiche" aria-hidden="true"><div class="feuille" role="dialog" aria-label="Informations sur l’image">
   <img class="apercu" src="" alt="">
   <div class="d" data-meta="metaDate">jeudi 12 novembre 1942 · 19:55</div>
@@ -349,10 +368,10 @@ dialog .ligne{justify-content:flex-end}
   <img class="carte" src="" alt="Carte de Lyon">
   <div class="adr" data-meta="metaLieu">16 Rue des Capucins, 69001 Lyon, France</div>
   <button class="fermer" type="button">Fermer</button></div></div>
-<div id="depart" role="button" tabindex="0" aria-label="Lire les messages interceptés">
+<div id="depart">
   <div class="tampon">INTERCEPTÉ</div>
-  <p>Ce téléphone appartenait à un résistant lyonnais.<br>Lisez les messages de son groupe : quelles informations ont-ils laissé échapper ?<br><span style="font-size:16px;color:#c9c9cf">Mettez sur pause et cliquez sur un mot, une photo ou un nom pour savoir quelle donnée il révèle.</span></p>
-  <div class="go">Lire les messages ▶</div>
+  <p>Ce téléphone appartenait à un résistant lyonnais.<br>Lisez les messages de son groupe : quelles informations ont-ils laissé échapper ?<br><span style="font-size:16px;color:#c9c9cf">Cliquez sur un mot, une photo ou un nom : quelle donnée personnelle révèle-t-il ?</span></p>
+  <div class="modes"><button type="button" class="mode" data-mode="qcm">🧭 Mode QCM<small>des choix vous aident</small></button><button type="button" class="mode dur" data-mode="libre">🎯 Mode Texte libre<small>à vous de tout écrire</small></button></div>
   <p style="font:14px system-ui,sans-serif;color:#9a9aa2;margin:0">Espace : lecture ou pause · flèches : message suivant ou précédent</p>
   <button class="edit" type="button" id="departEdit">Modifier la conversation</button>
 </div>
@@ -793,16 +812,63 @@ function marquerZones(box){
   document.querySelectorAll('#fiche [data-meta]').forEach(e=>{ const c=INDICES.find(c=>c.kind==='meta'&&c.champ===e.dataset.meta); if(c){ e.dataset.k=c.k; e.classList.toggle('trouve',vus.has(c.k)); } });
   $('sInd').textContent=`🔎 ${vus.size} / ${INDICES.length}`; }
 function citation(c,el){ if(c.label) return c.label; if(c.txt) return '« '+c.txt+' »'; return el?el.textContent:''; }
+let modeJeu='qcm', reponses={};
+const MOTS={
+  identite:['nom','prenom','identite','qui c est','qui il est','qui elle est','signature','signe','papiers','s appelle','vrai nom','reconnaitre'],
+  lieu:['lieu','endroit','localis','position','adresse','place','rue','quartier','ville','gps','situer','situation','ou ils sont','ou il est','ou elle est','ou se trouve','geolocalis','plan','cachette','planque'],
+  heure:['heure','date','quand','moment','horaire','jour','rendez vous','rdv','temps','a quelle'],
+  domicile:['domicile','habite','habitation','maison','chez','appartement','logement','loge','dort','dormir','immeuble','vit ','vivre','hotel','cave','adresse'],
+  habitude:['habitude','toujours','souvent','chaque','tous les','regulier','routine','quotidien','trajet','travail','boulot','atelier','emploi du temps','velo','transport','frequent'],
+  proche:['famille','enfant','fille','fils','proche','mari','femme','ami','parent','soeur','frere','entourage','bebe','mere','pere'],
+  activite:['activite','radio','resistan','secret','clandestin','cacher','arme','reunion','mission','emetteur','poste','complot','ce qu ils font','ce qu il fait','projet','espion']};
+const normI=s=>' '+String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/['’`-]/g,' ').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()+' ';
+function comprendre(t){ const n=normI(t); return Object.keys(MOTS).filter(c=>MOTS[c].some(k=>n.includes(' '+k))); }
+function catLi(x,etat){ const d=CATS[x]||['❔',x,'']; const m=etat==='ok'?'<span class="mk ok">✓</span>':etat==='manque'?'<span class="mk manque">à trouver</span>':etat==='faux'?'<span class="mk faux">✗</span>':''; return `<li class="${etat||''}"><span class="ic" aria-hidden="true">${d[0]}</span><div><b>${esc(d[1])}</b><span class="ex">${esc(d[2])}</span></div>${m}</li>`; }
+let indK=-1, essais=0;
 function indiceOuvrir(k,el){ const c=INDICES[k]; if(!c) return;
   if(auto){ auto=false; planifier(); }
-  vus.add(k); document.querySelectorAll(`[data-k="${k}"]`).forEach(e=>e.classList.add('trouve')); $('sInd').textContent=`🔎 ${vus.size} / ${INDICES.length}`;
+  indK=k; essais=0;
   $('indCit').textContent=citation(c,el);
-  $('indCats').innerHTML=c.cats.map(x=>{ const d=CATS[x]||['❔',x,'']; return `<li><span class="ic" aria-hidden="true">${d[0]}</span><div><b>${esc(d[1])}</b><span class="ex">${esc(d[2])}</span></div></li>`; }).join('');
-  const f=$('indice'); f.classList.add('on'); f.setAttribute('aria-hidden','false'); $('indOk').focus();
-  if(vus.size===INDICES.length) setTimeout(()=>msg('Bravo : toutes les données personnelles sont repérées !'),400); }
-function indiceFermer(){ const f=$('indice'); f.classList.remove('on'); f.setAttribute('aria-hidden','true'); }
-$('indice').addEventListener('click',e=>{ e.stopPropagation(); if(e.target.id==='indice'||e.target.closest('#indOk')) indiceFermer(); });
-addEventListener('keydown',e=>{ if($('indice').classList.contains('on')){ e.stopImmediatePropagation(); if(e.key==='Escape'||e.key==='Enter'||e.key===' '){ e.preventDefault(); indiceFermer(); } } },true);
+  const f=$('indice'); f.classList.add('on'); f.setAttribute('aria-hidden','false');
+  if(reponses[k]) return montrerCorrection(c,reponses[k].choix,true);
+  $('indTit').textContent='Quelle donnée cela révèle-t-il ?';
+  $('indCats').innerHTML=''; $('indRes').textContent=''; $('indOk').hidden=true; $('indVal').hidden=false;
+  if(modeJeu==='qcm'){
+    $('indQ').innerHTML='<div class="consigne">Plusieurs réponses possibles.</div><div class="choix">'+Object.keys(CATS).map(x=>`<button type="button" class="opt" data-cat="${x}" aria-pressed="false"><span aria-hidden="true">${CATS[x][0]}</span> ${esc(CATS[x][1])}</button>`).join('')+'</div>';
+    $('indQ').querySelector('.opt').focus();
+  } else {
+    $('indQ').innerHTML='<div class="consigne">Écrivez avec vos mots ce que cela permet de savoir sur eux.</div><textarea id="indTxt" rows="2" maxlength="200" placeholder="Ex. : on sait où il habite…"></textarea>';
+    $('indTxt').focus();
+  }
+}
+function valider(){ const c=INDICES[indK]; if(!c) return;
+  let choix;
+  if(modeJeu==='qcm'){ choix=[...$('indQ').querySelectorAll('.opt[aria-pressed="true"]')].map(b=>b.dataset.cat); if(!choix.length){ $('indRes').textContent='Choisissez au moins une réponse.'; return; } }
+  else { const t=$('indTxt').value; choix=comprendre(t);
+    if(!choix.length){ $('indRes').textContent=t.trim()?'Je n’ai pas compris. Dites-le autrement : un lieu ? une heure ? un nom ? une habitude ?':'Écrivez d’abord votre réponse.'; $('indTxt').focus(); return; } }
+  const bons=choix.filter(x=>c.cats.includes(x)), faux=modeJeu==='libre'?[]:choix.filter(x=>!c.cats.includes(x));
+  if(!bons.length&&essais===0){ essais++; $('indRes').textContent=modeJeu==='qcm'?'Pas tout à fait… essayez encore !':'Pas tout à fait… cherchez encore !';
+    if(modeJeu==='qcm') choix.forEach(x=>{ const b=$('indQ').querySelector(`.opt[data-cat="${x}"]`); b.classList.add('rate'); b.setAttribute('aria-pressed','false'); });
+    return; }
+  reponses[indK]={choix,bon:bons.length>0&&!faux.length};
+  vus.add(indK); document.querySelectorAll(`[data-k="${indK}"]`).forEach(e=>e.classList.add('trouve')); $('sInd').textContent=`🔎 ${vus.size} / ${INDICES.length}`;
+  montrerCorrection(c,choix,false);
+  if(vus.size===INDICES.length) setTimeout(()=>msg('Bravo : toutes les données personnelles sont repérées !'),400);
+}
+function montrerCorrection(c,choix,deja){
+  const bons=choix.filter(x=>c.cats.includes(x)), faux=modeJeu==='libre'?[]:choix.filter(x=>!c.cats.includes(x));
+  $('indTit').textContent=deja?'Déjà repéré':(bons.length===c.cats.length&&!faux.length?'Bien vu !':bons.length?'Bien vu, en partie':'Voici la réponse');
+  $('indQ').innerHTML=''; $('indRes').textContent='';
+  $('indCats').innerHTML=c.cats.map(x=>catLi(x,choix.includes(x)?'ok':'manque')).join('')+faux.map(x=>catLi(x,'faux')).join('');
+  $('indVal').hidden=true; $('indOk').hidden=false; $('indOk').focus(); }
+function indiceFermer(){ const f=$('indice'); f.classList.remove('on'); f.setAttribute('aria-hidden','true'); indK=-1; }
+$('indice').addEventListener('click',e=>{ e.stopPropagation();
+  const o=e.target.closest('.opt'); if(o){ o.setAttribute('aria-pressed',o.getAttribute('aria-pressed')==='true'?'false':'true'); o.classList.remove('rate'); return; }
+  if(e.target.closest('#indVal')) return valider();
+  if(e.target.id==='indice'||e.target.closest('#indOk')) indiceFermer(); });
+addEventListener('keydown',e=>{ if(!$('indice').classList.contains('on')) return; e.stopImmediatePropagation();
+  if(e.key==='Escape'){ e.preventDefault(); return indiceFermer(); }
+  if(e.key==='Enter'&&!e.shiftKey){ if(e.target.closest&&e.target.closest('.opt')) return; e.preventDefault(); if(!$('indVal').hidden) valider(); else indiceFermer(); } },true);
 document.addEventListener('click',e=>{
   if(!$('scene').classList.contains('on')||e.target.closest('#indice')||e.target.closest('.infoImg')) return;
   const z=e.target.closest('[data-k]');
@@ -810,11 +876,11 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#sceneTel .w, #sceneTel .qn, #sceneTel .b img, #sceneTel .tete .nom')){ e.stopPropagation(); if(auto){ auto=false; planifier(); } msg('Rien de personnel ici… cherchez encore.'); return; }
   if(e.target.closest('#sceneTel .tel')) e.stopPropagation();
 },true);
-$('depart').onclick=()=>{ departFin(); $('jouer').click(); auto=true; planifier(); };
-$('depart').onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('depart').click(); } };
+document.querySelectorAll('#depart .mode').forEach(b=>b.onclick=e=>{ e.stopPropagation(); modeJeu=b.dataset.mode; departFin(); $('jouer').click(); auto=true; planifier(); });
+
 function tout(){ dessinerReglages(); majTel(); }
 construireTel(); tout(); $('fil').scrollTop=1e6;
-if(matchMedia('(min-width:821px)').matches) $('depart').focus();
+if(matchMedia('(min-width:821px)').matches) document.querySelector('#depart .mode').focus();
 </script>
 
 </body>
