@@ -268,6 +268,47 @@ dialog .ligne{justify-content:flex-end}
 #indice .mk{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap;align-self:center}
 #indice .mk.ok{color:#00875f;font-size:18px}#indice .mk.manque{color:#9a6b00}#indice .mk.faux{color:#b33;font-size:18px}
 #indice .ok[hidden]{display:none}
+#reec{position:fixed;inset:0;z-index:75;background:#e9e4d8;color:#1d1a14;display:none;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#reec.on{display:flex}
+#reec .r-haut{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:#1d1a14;color:#f3eee2}
+#reec .r-haut .sp{flex:1}
+#rCompte{font-size:14px;padding:4px 10px;border-radius:20px;background:#c0392b;color:#fff}
+#rCompte.zero{background:#1e8e5a}
+.r-btn{border:0;border-radius:20px;padding:8px 14px;font:600 14px system-ui,sans-serif;cursor:pointer;background:#e9e4d8;color:#1d1a14}
+.r-btn.vert{background:#25d366;color:#05301a}.r-btn.petit{background:transparent;text-decoration:underline;padding:6px 0;font-weight:400;color:#5b5446}
+#reec .r-corps{flex:1;overflow:auto;display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:18px;padding:16px;align-items:start}
+@media (max-width:760px){#reec .r-corps{grid-template-columns:1fr}}
+.carnet{background:#fbf7ec repeating-linear-gradient(#fbf7ec 0 27px,#d9e3ef 27px 28px);border-left:4px double #c0392b;border-radius:4px 10px 10px 4px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-family:Georgia,serif;position:sticky;top:0}
+@media (max-width:760px){.carnet{position:static}}
+.carnet h2{margin:0 0 4px;font-size:20px}.carnet h3{margin:16px 0 6px;font-size:16px}.carnet h4{margin:10px 0 4px;font:700 12px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#7a6f5c}
+.carnet .mini{margin:0 0 8px;font-size:13px;color:#5b5446}
+.code{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:3px 0;font-size:15px}
+.code .vrai{color:#5b5446}.code .fl{color:#9a9080}
+.code button{border:1.5px solid #1d1a14;background:#fff;border-radius:6px;padding:2px 8px;font:italic 600 15px Georgia,serif;cursor:pointer;color:#1d1a14}
+.code button:hover{background:#1d1a14;color:#fff}
+.code .groupe{border-style:dashed;font:13px system-ui,sans-serif;font-style:normal}
+.code .groupe[aria-pressed="true"]{background:#1e8e5a;border-color:#1e8e5a;color:#fff}
+.pistes{margin:0;padding:0;list-style:none;display:grid;gap:7px;font-size:14px;line-height:1.4}
+.pistes i{color:#5b5446}
+.r-msgs{display:flex;flex-direction:column;gap:8px;max-width:640px}
+.r-titre{font-size:13px;color:#5b5446;margin-bottom:4px}
+.r-titre input{display:block;width:100%;box-sizing:border-box;margin-top:3px;border:2px solid #cfc6b3;border-radius:10px;padding:8px 10px;font:600 16px system-ui,sans-serif;background:#fff}
+.r-m{background:#fff;border-radius:10px;padding:8px 10px;box-shadow:0 1px 2px rgba(0,0,0,.12);border-left:5px solid transparent;max-width:88%}
+.r-m.moi{align-self:flex-end;background:#e7fbe0}
+.r-m.alerte{border-left-color:#e0a800}
+.r-m.supp{opacity:.55}
+.r-m .qui{font:600 13px system-ui,sans-serif;display:flex;gap:8px;align-items:center}
+.r-m .qui .h{color:#8a8f98;font-weight:400}
+.r-m .qui .sp{flex:1}
+.r-m .x{border:0;background:none;font-size:13px;color:#8a3a3a;cursor:pointer;text-decoration:underline}
+.r-m textarea{width:100%;box-sizing:border-box;border:1.5px solid #e1ddd2;border-radius:8px;padding:6px 8px;font:15px/1.4 system-ui,sans-serif;resize:vertical;margin-top:4px;background:transparent}
+.r-m textarea:focus{outline:none;border-color:#00a884;background:#fff}
+.r-m img{max-width:220px;border-radius:8px;display:block;margin-top:4px}
+.r-m .opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.r-m .opts button{border:1.5px solid #cfc6b3;background:#fff;border-radius:16px;padding:4px 10px;font-size:13px;cursor:pointer}
+.r-m .opts button[aria-pressed="true"]{background:#1d1a14;color:#fff;border-color:#1d1a14}
+.r-m .reste{font-size:13px;color:#8a6200;margin-top:4px}
+#scene.resultat .bas::before{content:"Version réécrite";font-size:13px;color:#25d366;font-weight:700}
 #export{position:fixed;inset:0;z-index:85;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
 #export.on{display:flex}
 #export .carte-ind{background:#fff;color:#111b21;width:min(420px,100%);border-radius:16px;padding:20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -368,7 +409,7 @@ dialog .ligne{justify-content:flex-end}
 
 <div id="scene" aria-hidden="true">
   <div id="sceneTel"></div>
-  <div class="bas"><button class="btn" id="sPrec">◀</button><span id="sInfo"></span><span id="sInd" title="Données personnelles repérées">🔎 0</span><button class="btn" id="sPdf" type="button" title="Télécharger le rapport en PDF">📄 PDF</button><button class="btn" id="sSuiv" aria-label="Message suivant">▶</button><button class="btn lire" id="sAuto" type="button">▶ Lecture</button><button class="btn" id="sFin">Quitter (Échap)</button></div>
+  <div class="bas"><button class="btn" id="sPrec">◀</button><span id="sInfo"></span><span id="sInd" title="Données personnelles repérées">🔎 0</span><button class="btn" id="sReec" type="button" title="Réécrire les messages avec le carnet de codes">✏️ Réécrire</button><button class="btn" id="sPdf" type="button" title="Télécharger le rapport en PDF">📄 PDF</button><button class="btn" id="sSuiv" aria-label="Message suivant">▶</button><button class="btn lire" id="sAuto" type="button">▶ Lecture</button><button class="btn" id="sFin">Quitter (Échap)</button></div>
 </div>
 <div id="indice" aria-hidden="true"><div class="carte-ind" role="dialog" aria-modal="true" aria-labelledby="indTit"><div class="tit" id="indTit">Quelle donnée cela révèle-t-il ?</div><div class="cit" id="indCit"></div><div id="indQ"></div><ul id="indCats"></ul><div id="indRes" role="status"></div><button class="ok" type="button" id="indVal">Valider</button><button class="ok" type="button" id="indOk" hidden>Continuer</button></div></div>
 <div id="export" aria-hidden="true"><div class="carte-ind" role="dialog" aria-modal="true" aria-labelledby="expTit"><div class="tit" id="expTit">Rapport d'enquête</div>
@@ -377,6 +418,16 @@ dialog .ligne{justify-content:flex-end}
 <label class="lab">Classe<input id="expClasse" maxlength="30" autocomplete="off" placeholder="Ex. : CM2 A"></label>
 <div id="expRes" role="status"></div>
 <button class="ok" type="button" id="expGo">📄 Télécharger le PDF</button><button class="ok gris" type="button" id="expFermer">Fermer</button></div></div>
+<div id="reec" aria-hidden="true"><div class="r-haut"><b>✏️ Réécrire sans se trahir</b><span id="rCompte"></span><span class="sp"></span><button type="button" class="r-btn vert" id="rVoir">▶ Voir le résultat</button><button type="button" class="r-btn" id="rFermer">Fermer</button></div>
+<div class="r-corps"><aside class="carnet" aria-label="Carnet de codes"><h2>Carnet de codes</h2><p class="mini">Réservé au groupe. Cliquez dans un message, puis sur un code pour l'insérer.</p><div id="rCarnet"></div>
+<h3>Pistes pour corriger</h3><ul class="pistes">
+<li><b>✂️ Supprimer</b> ce qui n'est pas nécessaire. <i>« Je viendrai à vélo » → « Je viendrai ».</i></li>
+<li><b>🌫️ Rester vague</b> : l'autre sait déjà. <i>« à la planque n°3 à 17 heures » → « là où tu sais, à l'heure habituelle ».</i></li>
+<li><b>🕵️ Nom de code</b> : un mot du carnet à la place du vrai nom, du lieu ou de l'objet.</li>
+<li><b>🗣️ Le dire de vive voix</b> : une adresse ne s'écrit pas, elle se donne au rendez-vous.</li>
+<li><b>📷 Les photos</b> trahissent aussi : retirez-les, ou effacez leurs informations cachées.</li></ul>
+<button type="button" class="r-btn petit" id="rRaz">↺ Revenir aux messages d'origine</button></aside>
+<section class="r-msgs" aria-label="Messages à réécrire"><label class="r-titre">Nom du groupe<input id="rTitre" maxlength="40" autocomplete="off"></label><div id="rListe"></div></section></div></div>
 <div id="fiche" aria-hidden="true"><div class="feuille" role="dialog" aria-label="Informations sur l’image">
   <img class="apercu" src="" alt="">
   <div class="d" data-meta="metaDate">jeudi 12 novembre 1942 · 19:55</div>
@@ -904,7 +955,7 @@ $('expNoms').innerHTML=NOMS_RES.map(n=>`<option value="${esc(n)}">`).join('');
 const nomCat=x=>(CATS[x]||['',x])[1];
 function bilan(){ const R=Object.values(reponses); return {vus:R.length,bons:R.filter(r=>r.bon&&r.complet).length,partiels:R.filter(r=>r.bon&&!r.complet).length}; }
 function exportOuvrir(){ if(auto){ auto=false; planifier(); } const b=bilan();
-  $('expBilan').innerHTML=`<b>${b.vus}</b> donnée${b.vus>1?'s':''} repérée${b.vus>1?'s':''} sur ${INDICES.length}, dont <b>${b.bons}</b> bien classée${b.bons>1?'s':''}.<br>Le PDF reprend la conversation annotée, puis vos réponses rangées par type de donnée.`;
+  $('expBilan').innerHTML=`<b>${b.vus}</b> donnée${b.vus>1?'s':''} repérée${b.vus>1?'s':''} sur ${INDICES.length}, dont <b>${b.bons}</b> bien classée${b.bons>1?'s':''}.<br>Le PDF reprend la conversation annotée, vos réponses rangées par type de donnée et votre version réécrite.`;
   $('expRes').textContent=''; const f=$('export'); f.classList.add('on'); f.setAttribute('aria-hidden','false'); $('expEquipe').focus(); }
 function exportFermer(){ const f=$('export'); f.classList.remove('on'); f.setAttribute('aria-hidden','true'); }
 $('sPdf').onclick=e=>{ e.stopPropagation(); exportOuvrir(); };
@@ -956,9 +1007,78 @@ function pdfCreer(){
       ligne(`- ${citation(c).replace(/^« | »$/g,'')}`,{t:10.5,x:M+4,w:W-40,h:5}); p.setFont('helvetica','bold'); p.setFontSize(9); p.setTextColor(...(ok?[0,135,95]:[176,120,0])); p.text(ok?'trouvé':'non coché',M+W,y-5,{align:'right'});
       ligne('Votre réponse : '+reponseTexte(r),{t:9,x:M+8,w:W-12,c:[90,102,117],h:4.4}); });
   });
+  { const rest=restants(), modif=JSON.stringify(R)!==JSON.stringify(R0());
+    page(); titre('3. La conversation réécrite');
+    if(!modif) ligne('Les messages n’ont pas encore été réécrits (bouton « Réécrire »).',{c:[150,150,150]});
+    else { ligne(rest.length?`Il reste ${rest.length} donnée${rest.length>1?'s':''} personnelle${rest.length>1?'s':''} visible${rest.length>1?'s':''}.`:'Plus aucune donnée personnelle ne trahit le groupe.',{t:11.5,g:true,c:rest.length?[176,120,0]:[0,135,95],h:6.5});
+      ligne(`Groupe "${R.titre}" - membres : ${INDICES.filter(c=>c.kind==='pers').map(c=>R.noms[c.id]).join(', ')}`,{t:9.5,c:[90,102,117]}); y+=2;
+      MSGS_ORIG.forEach((m,i)=>{ const qui=nomAff(m.de); let t;
+        if(m.img){ t=R.photo[m.img]==='retirer'?null:(m.img==='radio'?'[Photo : la radio]'+(R.photo.radio==='infos'?' (informations cachées effacées)':''):'[Photo : la rue sous la fenêtre]'); }
+        else t=R.supp[i]||!R.msgs[i].trim()?null:R.msgs[i];
+        if(t==null){ ligne(`${m.h}  (message supprimé)`,{t:9.5,c:[160,160,160],h:4.8}); return; }
+        const changé=!m.img&&t!==m.t; ligne(`${m.h}  ${qui} : ${t}`,{t:10.5,c:changé?[0,105,75]:[17,27,33],h:5.2}); });
+      y+=3; ligne('En vert : les messages modifiés par l’équipe.',{t:9,c:[90,102,117]}); } }
   const n=p.getNumberOfPages(); for(let i=1;i<=n;i++){ p.setPage(i); p.setFont('helvetica','normal'); p.setFontSize(8.5); p.setTextColor(150,150,150); p.text(latin(`Message intercepté - ${eq||'equipe'} - page ${i} / ${n}`),105,291,{align:'center'}); }
   const nom='rapport-'+(latin(eq).toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'equipe')+'.pdf';
   telecharger(nom,p.output('blob')); $('expRes').textContent='PDF enregistré dans vos téléchargements.'; }
+
+/* ---------- Carnet de codes et réécriture ---------- */
+const CARNET=[{"titre": "Les membres du groupe", "codes": [{"vrai": "Edouard D.", "code": "Merle", "id": "ed"}, {"vrai": "Alberte Bourde", "code": "Rossignol", "id": "al"}, {"vrai": "Georges Durand", "code": "Castor", "id": "ge"}, {"vrai": "Maria Sokolowska", "code": "Hirondelle", "id": "ma"}, {"vrai": "Moi", "code": "Renard"}]}, {"titre": "Leurs proches", "codes": [{"vrai": "Hélène", "code": "Mésange"}, {"vrai": "la petite Anna", "code": "la petite"}]}, {"titre": "Les lieux", "codes": [{"vrai": "la planque n°3", "code": "la Volière"}, {"vrai": "la gare", "code": "le Grand Hall"}, {"vrai": "la place des Terreaux", "code": "le Bassin"}, {"vrai": "la préfecture", "code": "la Ruche"}, {"vrai": "l'hôtel Pasteur", "code": "l'Auberge"}, {"vrai": "la cave rue Mercière", "code": "le Grenier"}]}, {"titre": "Les heures et les objets", "codes": [{"vrai": "17 heures", "code": "l'heure du thé"}, {"vrai": "une réunion", "code": "une répétition"}, {"vrai": "des radios", "code": "des violons"}]}];
+const CLE_REEC='selfdata-reecriture-v1';
+const R0=()=>({titre:TITRE_ORIG+' 🎶',noms:Object.fromEntries(INDICES.filter(c=>c.kind==='pers').map(c=>[c.id,c.nom])),msgs:MSGS_ORIG.map(m=>m.t),supp:{},photo:{chars:'garder',radio:'garder'}});
+let R=R0(); try{ const s=JSON.parse(localStorage.getItem(CLE_REEC)||'null'); if(s&&Array.isArray(s.msgs)&&s.msgs.length===MSGS_ORIG.length) R=Object.assign(R0(),s); }catch(e){}
+let tR; function garderR(){ clearTimeout(tR); tR=setTimeout(()=>{ try{ localStorage.setItem(CLE_REEC,JSON.stringify(R)); }catch(e){} },300); }
+const nI=s=>normI(s).replace(/\s+/g,' ');
+function restants(){ const out=[];
+  INDICES.forEach(c=>{ let reste=false, ou=null;
+    if(c.kind==='m'){ const i=MSGS_ORIG.findIndex(m=>m.t===c.texte); ou=i; reste=!R.supp[i]&&nI(R.msgs[i]).includes(nI(c.txt)); }
+    else if(c.kind==='pers'){ ou='tete'; const v=nI(R.noms[c.id]); reste=nI(c.nom).trim().split(' ').some(w=>w.length>2&&v.includes(' '+w+' ')); }
+    else if(c.kind==='titre'){ ou='tete'; reste=nI(R.titre).includes(nI(c.txt)); }
+    else if(c.kind==='img'){ ou=MSGS_ORIG.findIndex(m=>m.img===c.img); reste=R.photo[c.img]!=='retirer'; }
+    else if(c.kind==='meta'){ ou=MSGS_ORIG.findIndex(m=>m.img==='radio'); reste=R.photo.radio==='garder'; }
+    if(reste) out.push({c,ou}); });
+  return out; }
+let rFocus=null, rPos=null;
+function carnetHTML(){ return CARNET.map(g=>`<h4>${esc(g.titre)}</h4>`+g.codes.map(x=>`<div class="code"><span class="vrai">${esc(x.vrai)}</span><span class="fl">→</span><button type="button" data-code="${esc(x.code)}" title="Insérer « ${esc(x.code)} » dans le message">${esc(x.code)}</button>${x.id?`<button type="button" class="groupe" data-pers="${x.id}" aria-pressed="${R.noms[x.id]===x.code}" title="Utiliser ce nom de code dans le groupe">${R.noms[x.id]===x.code?'✓ nom dans le groupe':'nom dans le groupe'}</button>`:''}</div>`).join('')).join(''); }
+function nomAff(de){ return de==='moi'?'Moi':(R.noms[de]||de); }
+function reecDessiner(){
+  $('rCarnet').innerHTML=carnetHTML(); $('rTitre').value=R.titre;
+  $('rListe').innerHTML=MSGS_ORIG.map((m,i)=>{ const moi=m.de==='moi';
+    const opts=m.img==='radio'?[['garder','Garder'],['infos','Effacer les infos cachées'],['retirer','Retirer la photo']]:m.img?[['garder','Garder'],['retirer','Retirer la photo']]:null;
+    return `<div class="r-m${moi?' moi':''}${R.supp[i]?' supp':''}" data-i="${i}"><div class="qui"><span>${esc(nomAff(m.de))}</span><span class="h">${m.h}</span><span class="sp"></span>${m.img?'':`<button type="button" class="x" data-supp="${i}">${R.supp[i]?'Remettre':'✂️ Supprimer'}</button>`}</div>
+      ${m.img?`<img src="${m.img==='radio'?RADIO:CHARS}" alt=""><div class="opts">${opts.map(o=>`<button type="button" data-photo="${m.img}" data-v="${o[0]}" aria-pressed="${R.photo[m.img]===o[0]}">${o[1]}</button>`).join('')}</div>`:R.supp[i]?'<div class="reste" style="color:#8a8f98">Message supprimé</div>':`<textarea rows="2" data-t="${i}" aria-label="Message de ${esc(nomAff(m.de))}">${esc(R.msgs[i])}</textarea>`}
+      <div class="reste" data-reste="${i}"></div></div>`; }).join('');
+  $('rListe').querySelectorAll('textarea').forEach(t=>{ t.style.height=Math.max(44,t.scrollHeight+4)+'px'; });
+  reecMaj(); }
+function reecMaj(){ const r=restants(); const par={};
+  r.forEach(o=>{ (par[o.ou]=par[o.ou]||new Set()); o.c.cats.forEach(x=>par[o.ou].add(x)); });
+  document.querySelectorAll('#rListe .r-m').forEach(el=>{ const i=+el.dataset.i, s=par[i]; el.classList.toggle('alerte',!!s); el.querySelector('[data-reste]').textContent=s?'⚠️ Encore visible : '+[...s].map(nomCat).join(', '):''; });
+  const t=$('rCompte'); t.textContent=r.length?`${r.length} donnée${r.length>1?'s':''} encore visible${r.length>1?'s':''}`:'Plus rien ne trahit le groupe ✓'; t.classList.toggle('zero',!r.length); }
+function reecOuvrir(){ if(auto){ auto=false; planifier(); } reecDessiner(); const f=$('reec'); f.classList.add('on'); f.setAttribute('aria-hidden','false'); }
+function reecFermer(){ const f=$('reec'); f.classList.remove('on'); f.setAttribute('aria-hidden','true'); }
+$('sReec').onclick=e=>{ e.stopPropagation(); reecOuvrir(); };
+$('rFermer').onclick=reecFermer;
+$('rTitre').oninput=()=>{ R.titre=$('rTitre').value; garderR(); reecMaj(); };
+$('rListe').addEventListener('input',e=>{ const t=e.target.closest('textarea'); if(!t) return; R.msgs[+t.dataset.t]=t.value; t.style.height='auto'; t.style.height=Math.max(44,t.scrollHeight+4)+'px'; garderR(); reecMaj(); });
+$('rListe').addEventListener('focusin',e=>{ const t=e.target.closest('textarea'); if(t) rFocus=t; });
+$('rListe').addEventListener('click',e=>{ const s=e.target.closest('[data-supp]'); if(s){ const i=+s.dataset.supp; R.supp[i]=!R.supp[i]; garderR(); reecDessiner(); return; }
+  const ph=e.target.closest('[data-photo]'); if(ph){ R.photo[ph.dataset.photo]=ph.dataset.v; garderR(); reecDessiner(); } });
+$('rCarnet').addEventListener('mousedown',e=>{ if(e.target.closest('[data-code]')) e.preventDefault(); });
+$('rCarnet').addEventListener('click',e=>{ const g=e.target.closest('[data-pers]'); if(g){ const x=CARNET.flatMap(g=>g.codes).find(x=>x.id===g.dataset.pers); R.noms[x.id]=R.noms[x.id]===x.code?INDICES.find(c=>c.kind==='pers'&&c.id===x.id).nom:x.code; garderR(); reecDessiner(); return; }
+  const b=e.target.closest('[data-code]'); if(!b) return;
+  const t=rFocus&&document.body.contains(rFocus)?rFocus:null; if(!t){ msg('Cliquez d’abord dans un message, à l’endroit où mettre le code.'); return; }
+  const a=t.selectionStart, z=t.selectionEnd, v=t.value, code=b.dataset.code;
+  t.value=v.slice(0,a)+code+v.slice(z); t.focus(); t.setSelectionRange(a+code.length,a+code.length); t.dispatchEvent(new Event('input',{bubbles:true})); });
+$('rRaz').onclick=()=>{ if(!confirm('Revenir aux messages d’origine ? Vos changements seront perdus.')) return; R=R0(); garderR(); reecDessiner(); };
+let C_ORIG=null;
+function versionReecrite(){ const b=JSON.parse(JSON.stringify(EDOUARD)); b.titre=R.titre||' ';
+  b.pers.forEach((p,k)=>{ const id=INDICES.filter(c=>c.kind==='pers')[k].id; p.nom=R.noms[id]||p.nom; });
+  const ms=[b.msgs[0]]; MSGS_ORIG.forEach((m,i)=>{ const o=b.msgs[i+1]; if(m.img){ if(R.photo[m.img]==='retirer') return; if(m.img==='radio'&&R.photo.radio!=='garder') delete o.meta; ms.push(o); return; }
+    if(R.supp[i]||!R.msgs[i].trim()) return; o.texte=R.msgs[i]; ms.push(o); });
+  b.msgs=ms; return normaliser(b); }
+$('rVoir').onclick=()=>{ if(!C_ORIG) C_ORIG=C; C=versionReecrite(); reecFermer(); $('scene').classList.add('resultat'); pas=0; sceneDessiner(false); auto=true; planifier(); };
+const _sceneFin=sceneFin; sceneFin=function(){ _sceneFin(); if(C_ORIG){ C=C_ORIG; C_ORIG=null; $('scene').classList.remove('resultat'); } };
+addEventListener('keydown',e=>{ if(!$('reec').classList.contains('on')) return; e.stopImmediatePropagation(); if(e.key==='Escape'){ e.preventDefault(); reecFermer(); } },true);
 document.querySelectorAll('#depart .mode').forEach(b=>b.onclick=e=>{ e.stopPropagation(); modeJeu=b.dataset.mode; departFin(); $('jouer').click(); auto=true; planifier(); });
 
 function tout(){ dessinerReglages(); majTel(); }
