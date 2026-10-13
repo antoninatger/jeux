@@ -202,6 +202,25 @@
   textarea.fb-field{border-radius:14px;min-height:90px;resize:vertical}
   input.fb-field{border-radius:22px}
   .fb-status{font-size:11.5px;color:var(--accent);min-height:14px;margin:0}
+  /* ---------- Écran de verrouillage ---------- */
+  .overlay.lockscreen{gap:12px}
+  .ls-clock{font-size:44px;font-weight:300;color:#fff;letter-spacing:2px;line-height:1}
+  .ls-date{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  .ls-dots{display:flex;gap:9px;justify-content:center;min-height:16px;flex-wrap:wrap;max-width:300px}
+  .ls-dots span{width:13px;height:13px;border-radius:50%;background:var(--accent)}
+  .ls-dots.shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:none}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+  .ls-input{width:100%;max-width:260px;text-align:center;letter-spacing:6px;text-transform:uppercase;
+    background:#0b0f16;border:1px solid var(--line);border-radius:22px;padding:12px 14px;color:#fff;font-size:17px;outline:none}
+  .ls-input:focus{border-color:var(--accent-dim)}
+  .ls-input:disabled{opacity:.45}
+  .ls-msg{font-size:12.5px;min-height:18px;color:var(--warn);margin:0;max-width:300px;line-height:1.5}
+  .ls-msg.ok{color:var(--accent)}
+  .ls-hints{display:flex;flex-direction:column;gap:6px;width:100%;max-width:320px}
+  .ls-hints div{font-size:12px;text-align:left;color:#bfe9d3;background:#0f1f18;border:1px solid var(--accent-dim);
+    border-radius:10px;padding:8px 11px;line-height:1.45}
+  #lsBtn:disabled{opacity:.4;cursor:default}
+  .ls-skip{background:none;border:none;color:var(--muted);font-size:11px;text-decoration:underline;cursor:pointer}
   .hidden{display:none!important}
 </style>
 </head>
@@ -226,6 +245,21 @@
       <span style="font-size:11px;color:var(--muted)">aucune aide : à vous de tout écrire</span>
     </div>
     <button class="btn big" onclick="openFeedback()">💬 Faire un retour au créateur</button>
+  </div>
+
+  <!-- ===== Écran de verrouillage : retrouver le mot de passe d'Alberte ===== -->
+  <div class="overlay lockscreen hidden" id="lockscreen">
+    <div class="ls-clock" id="lsClock">17:42</div>
+    <div class="ls-date">Lyon · novembre 1942</div>
+    <div class="lock" id="lsLock">🔒</div>
+    <h1>TÉLÉPHONE VERROUILLÉ</h1>
+    <p>Ce téléphone appartient à Alberte. Pour ouvrir la ligne, retrouvez son mot de passe grâce aux indices du réseau.</p>
+    <div class="ls-dots" id="lsDots"></div>
+    <input id="lsInput" class="ls-input" type="text" placeholder="Mot de passe" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <button class="btn" id="lsBtn" onclick="tryUnlock()">Déverrouiller</button>
+    <p class="ls-msg" id="lsMsg"></p>
+    <div class="ls-hints" id="lsHints"></div>
+    <button class="ls-skip hidden" id="lsSkip" onclick="unlockPhone(true)">Passer cette étape (enseignant)</button>
   </div>
 
   <!-- ===== Win overlay ===== -->

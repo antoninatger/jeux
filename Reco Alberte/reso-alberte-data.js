@@ -87,21 +87,22 @@ const SCENARIOS = [
   {
     id: "verrou",
     intro: [
-      "Résistants du futur… cette plaque de verre me demande un « code » secret pour la protéger.",
-      "Je vais mettre quelque chose de simple à retenir : mon année de naissance, 1900. Comme ça je ne l'oublierai jamais ! C'est une bonne idée, non ?"
+      "Maintenant, parlons de ce code secret qui protège la plaque de verre. Vous l'avez trouvé, et en bien peu de temps !",
+      "Je l'avais fabriqué avec l'initiale de mon prénom et mon nom de jeune fille, pour être sûre de ne jamais l'oublier. Personne d'autre que moi ne connaît mon nom de jeune fille : je peux le garder, non ?"
     ],
     good: {
-      kw: ["non","complique","complexe","difficile","dur","pas facile","pas simple","devine","personnel","evite","melange","long","autre chose","pas ton annee","pas 1900","fort","pas"],
-      retryKw: ["trouve","trouverait","deviner","deviné"],
-      reply: "Tu as raison… 1900, n'importe qui connaissant mon âge le devinerait en un instant. Je choisis plutôt un code compliqué, sans rapport avec moi, impossible à deviner.",
+      kw: ["non","change","complique","complexe","difficile","dur","pas facile","pas simple","trop facile","evite","melange","long","autre chose","autre code","sans rapport","chiffre","symbole","signe","phrase","fort","pas ca","pas ton nom"],
+      retryKw: ["trouve","trouverait","deviner","retrouver","dangereux","risque"],
+      reply: "Vous avez raison : si vous l'avez trouvé avec quelques papiers, un milicien qui fouillerait la mairie le trouverait aussi. Je choisis un code long, qui mélange lettres, chiffres et signes, et qui n'a aucun rapport avec ma vie.",
     },
     bad: {
-      kw: ["oui","1900","annee de naissance","simple","facile","bonne idee","retenir","vas y"],
-      insistKw: ["vas y","garde 1900","garde le","garde-le","quand meme","laisse comme ca","insiste","reste sur 1900","change pas","ne change pas","garde ce code","garde ton code"],
-      reply: "Voilà, mon code est 1900… mais un milicien qui connaît ma date de naissance l'aurait trouvé du premier coup. C'était bien trop facile à deviner.",
+      kw: ["oui","garde","personne","bonne idee","retenir","vas y","c est bien","ca va"],
+      priorityKw: ["oui","garde","ne change pas","change pas","personne ne","bonne idee"],   // vérifiés avant les bons mots-clés (« ne change pas » contient « change »)
+      insistKw: ["vas y","garde le","garde-le","quand meme","laisse comme ca","insiste","change pas","ne change pas","garde ce code","garde ton code"],
+      reply: "Je le garde… mais mon nom de jeune fille est écrit sur mon acte de mariage, à la mairie, et toute ma famille le connaît. Vous l'avez deviné en quelques minutes : un milicien en ferait autant.",
     },
-    note: { h:"🔒 Un bon mot de passe", t:"Évite les codes trop simples ou liés à toi (année de naissance, prénom) : ils sont faciles à deviner. Choisis un code long, compliqué et sans rapport avec ta vie." },
-    chips: ["Choisis un code compliqué","Pas ton année de naissance !","1900, bonne idée"]
+    note: { h:"🔒 Un bon mot de passe", t:"Un mot de passe fait avec tes informations personnelles (prénom, nom, date de naissance, nom de ton animal) se devine facilement : ces informations traînent un peu partout. Choisis un code long, qui mélange lettres, chiffres et signes, sans rapport avec ta vie." },
+    chips: ["Non, change-le, il est trop facile","Mélange lettres, chiffres et signes","Oui, garde-le"]
   },
   {
     id: "photo",
@@ -260,12 +261,26 @@ const FILLER_PATTERNS = [
 const VIOLENT_KW = ["tue les","tue le","tue la","tuer tout","frappe les","frappe le","massacre","abats les","abattre","extermine","bute les","buter"];
 const SUICIDE_KW = ["me suicider","envie de mourir","je veux mourir","plus envie de vivre","en finir avec ma vie","me faire du mal","me tuer","disparaitre pour toujours","je ne veux plus vivre"];
 
-/* --- Présentation d'Alberte au tout début --- */
+/* --- Présentation d'Alberte au tout début (juste après le déverrouillage) --- */
 const INTRO_ALBERTE = [
-  "Comment allez-vous, chers résistants du futur ?",
-  "Cela fait maintenant quelques mois que cette étrange plaque de verre nous relie, vous et moi, par-delà le temps.",
-  "Mais aujourd'hui, quelle joie : je suis si contente de pouvoir enfin vous parler en vrai, et non plus seulement par bribes éparses !",
-  "Cette fine plaque de verre qui s'illumine et affiche vos mots, je m'en sers maintenant depuis quelque temps déjà.",
-  "Mais j'aimerais vérifier avec vous, un point après l'autre, que je m'en sers vraiment comme il faut, et que j'ai bien retenu vos conseils.",
-  "J'ai grand besoin de vous. Guidez-moi pour m'en servir… et aidez-moi à ne laisser aucune trace, car la moindre erreur pourrait me faire prendre par la Milice."
+  "Cher résistant du futur, j'ai vu que vous êtes parvenu à me contacter. Je vous propose de reprendre dès le début pour m'expliquer comment fonctionne ce téléphone.",
+  "Guidez-moi pas à pas… et aidez-moi à ne laisser aucune trace, car la moindre erreur pourrait me faire prendre par la Milice."
 ];
+
+/* --- Écran de verrouillage : le mot de passe d'Alberte (mission 2, partie 1) ---
+   code : le mot de passe exact attendu, en lettres sans accents (ex. "AMARTIN").
+          Laissé vide, l'écran accepte tout code qui suit la recette :
+          l'initiale, puis uniquement des lettres, pour un total de `longueur` caractères. */
+const VERROU = {
+  code: "",
+  initiale: "A",
+  longueur: 8,               // âge d'Alberte en 1908 (née en 1900 dans le jeu)
+  nomMari: "BOURDE",         // piège : ce n'est pas son nom de jeune fille
+  essaisAvantBlocage: 3,
+  blocageSecondes: 30,
+  indices: [
+    "Indice du réseau : le code ne contient que des lettres, et il en compte autant que l'âge d'Alberte en 1908.",
+    "Indice du réseau : il commence par la première lettre de son prénom.",
+    "Indice du réseau : il continue avec le nom qu'elle portait avant de connaître son mari."
+  ]
+};

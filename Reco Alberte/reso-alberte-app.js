@@ -207,12 +207,85 @@ function startGame(m){
   clearSavedState();
   $("intro").classList.add("hidden");
   updateRisk(0); updateProgress();
-  alberteSay(INTRO_ALBERTE, ()=>{
-    input.disabled=false; sendBtn.disabled=false;
-    loadScenario();
-    input.focus();
-  });
+  showLockscreen();
 }
+
+/* --- Écran de verrouillage : retrouver le mot de passe d'Alberte avant d'ouvrir la ligne --- */
+let lsFails = 0, lsLockouts = 0, lsBlocked = false;
+function lsNorm(s){ return s.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,""); }
+function showLockscreen(){
+  lsFails = 0; lsLockouts = 0; lsBlocked = false;
+  const d = new Date();
+  $("lsClock").textContent = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  $("lsHints").innerHTML = ""; $("lsMsg").textContent = ""; $("lsMsg").className = "ls-msg";
+  $("lsSkip").classList.add("hidden");
+  $("lsInput").value = ""; renderDots();
+  $("lockscreen").classList.remove("hidden");
+  setTimeout(()=>$("lsInput").focus(), 50);
+}
+function renderDots(){
+  const n = $("lsInput").value.replace(/\s+/g,"").length;
+  $("lsDots").innerHTML = "<span></span>".repeat(n);
+}
+// renvoie "" si le code est bon, sinon le message à afficher
+function checkCode(raw){
+  const c = lsNorm(raw), V = VERROU;
+  if(V.code) return c === lsNorm(V.code) ? "" : (c.includes(V.nomMari) ? "Bourde, c'est le nom de son mari… pas celui qu'elle portait avant." : "Code incorrect.");
+  if(/[^A-Z]/.test(c)) return "Code incorrect.";
+  if(V.nomMari && c.includes(V.nomMari)) return "Bourde, c'est le nom de son mari… pas celui qu'elle portait avant.";
+  if(c.length !== V.longueur || c[0] !== V.initiale) return "Code incorrect.";
+  return "";
+}
+function tryUnlock(){
+  if(lsBlocked) return;
+  const raw = $("lsInput").value;
+  if(!lsNorm(raw)) return;
+  const err = checkCode(raw);
+  transcript.push({ who: "verrou", text: "Essai : " + lsNorm(raw) + (err ? " (refusé)" : " (accepté)") });
+  if(!err){ unlockPhone(false); return; }
+  lsFails++;
+  const dots = $("lsDots"); dots.classList.remove("shake"); void dots.offsetWidth; dots.classList.add("shake");
+  $("lsInput").value = ""; setTimeout(renderDots, 400);
+  const left = VERROU.essaisAvantBlocage - (lsFails % VERROU.essaisAvantBlocage);
+  if(lsFails % VERROU.essaisAvantBlocage === 0){ blockPhone(err); return; }
+  $("lsMsg").textContent = err + " Encore " + left + " essai" + (left>1?"s":"") + " avant le blocage.";
+}
+// comme un vrai téléphone : trop d'essais ratés bloquent l'appareil un moment
+function blockPhone(err){
+  lsBlocked = true; lsLockouts++;
+  const hint = VERROU.indices[lsLockouts-1];
+  if(hint){ const h = document.createElement("div"); h.textContent = hint; $("lsHints").appendChild(h); }
+  if(lsLockouts >= 2) $("lsSkip").classList.remove("hidden");
+  $("lsInput").disabled = true; $("lsBtn").disabled = true;
+  let t = VERROU.blocageSecondes;
+  const tick = ()=>{
+    if(t <= 0){
+      lsBlocked = false; $("lsInput").disabled = false; $("lsBtn").disabled = false;
+      $("lsMsg").textContent = "Vous pouvez réessayer."; $("lsInput").focus();
+      return;
+    }
+    $("lsMsg").textContent = err + " Trop d'essais : téléphone bloqué " + t + " s.";
+    t--; setTimeout(tick, 1000);
+  };
+  tick();
+}
+function unlockPhone(skipped){
+  lsBlocked = true;
+  $("lsLock").textContent = "🔓";
+  $("lsMsg").className = "ls-msg ok";
+  $("lsMsg").textContent = skipped ? "Étape passée." : "Code accepté. Le téléphone s'ouvre…";
+  addMsg("Système", skipped ? "🔓 Téléphone ouvert par l'enseignant." : "🔓 <b>Mot de passe trouvé.</b> La ligne avec Alberte est ouverte.", "sys");
+  setTimeout(()=>{
+    $("lockscreen").classList.add("hidden");
+    alberteSay(INTRO_ALBERTE, ()=>{
+      input.disabled=false; sendBtn.disabled=false;
+      loadScenario();
+      input.focus();
+    });
+  }, skipped ? 300 : 1100);
+}
+$("lsInput").addEventListener("input", renderDots);
+$("lsInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryUnlock(); });
 
 function loadScenario(){
   const sc = SCENARIOS[idx];
@@ -314,7 +387,9 @@ function handleSend(){
 
   // priorité au bon réflexe (avec mots-clés élargis après un échec), puis au mauvais, sinon incompris
   const extra = (failCount > 0 && sc.good.retryKw) ? sc.good.retryKw : [];
-  if(hit(text, sc.good.kw.concat(extra))){
+  if(sc.bad.priorityKw && hit(text, sc.bad.priorityKw) && !hit(text, ["non"])){
+    reactBad(sc, text);
+  } else if(hit(text, sc.good.kw.concat(extra))){
     reactGood(sc, text);
   } else if(hit(text, sc.bad.kw)){
     reactBad(sc, text);
