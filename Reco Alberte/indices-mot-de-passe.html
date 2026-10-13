@@ -3,163 +3,404 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indices du mot de passe</title>
+<title>Indices du réseau</title>
 <style>
-  @page{size:A4;margin:0}
-  :root{--ink:#2b2118;--paper:#f6efe0;--muted:#6d5f4c;--line:#c9b99a;--accent:#7a2e1f}
+  :root{--ink:#2b2118;--paper:#f3e9d2;--paper2:#e9dcbf;--muted:#76664f;--line:#c9b48e;--accent:#9a3b22;--ok:#2f7a4b;--wood:#3a2a1d;--bg:#161210}
   *{box-sizing:border-box}
-  body{margin:0;background:#d9cfbd;color:var(--ink);font-family:Georgia,"Times New Roman",serif}
-  .bar{position:sticky;top:0;z-index:5;background:#2b2118;color:#f6efe0;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-family:system-ui,sans-serif;font-size:14px}
-  .bar button{background:#f6efe0;color:#2b2118;border:none;border-radius:20px;padding:8px 16px;font-weight:700;cursor:pointer}
-  .bar span{opacity:.8}
-  .page{position:relative;width:210mm;height:297mm;margin:12px auto;background:var(--paper);overflow:hidden;padding:16mm 18mm;box-shadow:0 2px 10px rgba(0,0,0,.25);page-break-after:always;break-after:page}
-  .page:last-child{page-break-after:auto;break-after:auto}
-  h1{font-size:22pt;margin:0 0 2mm;letter-spacing:.5px}
-  h2{font-size:14pt;margin:6mm 0 2mm;color:var(--accent)}
-  .kicker{font:700 9pt system-ui,sans-serif;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:2mm}
-  p,li{font-size:11pt;line-height:1.5;margin:0 0 2mm}
-  ul,ol{padding-left:6mm;margin:0 0 2mm}
-  .box{border:1px solid var(--line);border-radius:3mm;padding:4mm 5mm;margin:3mm 0;background:rgba(255,255,255,.35)}
-  .sol{font:700 18pt "Courier New",monospace;letter-spacing:3px}
-  .small{font-size:9.5pt;color:var(--muted)}
-  .ink{font-family:"Brush Script MT","Segoe Script",cursive;font-size:30pt;line-height:1.55;text-align:center;margin:18mm 6mm;color:#b88a2a}
-  .guide{border:1.5px dashed var(--line);border-radius:3mm;height:120mm;margin-top:6mm;display:flex;align-items:center;justify-content:center;color:var(--line);font:10pt system-ui,sans-serif}
-  .sheet{position:absolute;top:44mm;left:29.10000000000001mm;width:151.79999999999998mm;height:157.5mm}
-  .frame{position:absolute;inset:-6mm;border:1.2px solid var(--ink)}
-  .mark{position:absolute;width:6mm;height:6mm}
-  .mark::before,.mark::after{content:"";position:absolute;background:var(--ink)}
-  .mark::before{left:50%;top:0;bottom:0;width:.4mm;transform:translateX(-50%)}
-  .mark::after{top:50%;left:0;right:0;height:.4mm;transform:translateY(-50%)}
-  .m1{left:-9mm;top:-9mm}.m2{right:-9mm;top:-9mm}.m3{left:-9mm;bottom:-9mm}.m4{right:-9mm;bottom:-9mm}
-  .letter span{position:absolute;width:3.3mm;height:7.5mm;line-height:7.5mm;text-align:center;font:5.5mm "Courier New",Courier,monospace;color:#1e1810}
-  .grille .card{position:absolute;inset:-6mm;background:#5b5147}
-  .grille i{position:absolute;background:#fff;outline:.4mm dashed #000}
-  .tip{position:absolute;left:18mm;right:18mm;bottom:14mm}
-  .radio{font-family:"Courier New",monospace;font-size:12pt;line-height:1.7}
-  .radio .alb{background:rgba(122,46,31,.12)}
-  .cut{border:1.5px dashed var(--ink);border-radius:2mm;padding:6mm;margin-top:6mm;position:relative}
-  .cut::before{content:"✂";position:absolute;top:-4.2mm;left:6mm;background:var(--paper);padding:0 1mm;font-size:12pt}
-  .cut .big{font:italic 15pt Georgia,serif;line-height:1.5}
-  @media print{
-    body{background:none}
-    .bar{display:none}
-    .page{margin:0;box-shadow:none}
-    .radio .alb{background:none}
-  }
-  @media screen and (max-width:820px){
-    .page{transform-origin:top left;margin:8px 0}
-  }
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--paper);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:16px 16px 40px}
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .top h1{font-size:20px;margin:0;letter-spacing:1px;flex:1}
+  .top a{color:#c9b48e;font:600 13px system-ui,sans-serif;text-decoration:none;border:1px solid #4a3a2a;border-radius:20px;padding:6px 12px}
+  body.embed .top a{display:none}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .tab{background:#241c16;border:1px solid #4a3a2a;color:#d8c7a6;border-radius:12px;padding:10px 6px;cursor:pointer;font:600 13px system-ui,sans-serif;text-align:center;line-height:1.3}
+  .tab small{display:block;font-weight:400;opacity:.7;font-size:11px}
+  .tab.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .tab.done::after{content:" ✓";color:#4fbf7d}
+  .tab.on.done::after{color:var(--ok)}
+  .stage{background:#201914;border:1px solid #3d3024;border-radius:16px;padding:14px;position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
+  .consigne{font:14px/1.5 system-ui,sans-serif;color:#d8c7a6;margin:0 0 12px}
+  .consigne b{color:#fff}
+  .hidden{display:none!important}
+
+  /* ---- 1. encre ---- */
+  .paperbox{position:relative;width:100%;aspect-ratio:4/3;border-radius:4px;overflow:hidden;
+    background:radial-gradient(ellipse at 30% 20%,#fbf5e6,#efe3c8 70%,#e4d3ad);box-shadow:0 6px 18px rgba(0,0,0,.5)}
+  .paperbox canvas{position:absolute;inset:0;width:100%;height:100%}
+  .candle-row{display:flex;justify-content:center;margin-top:16px;min-height:96px;align-items:flex-end}
+  .candle{position:relative;width:34px;height:70px;background:linear-gradient(90deg,#e9e0cc,#fffaf0 45%,#d9cfb8);border-radius:4px 4px 2px 2px;cursor:grab}
+  .candle::before{content:"";position:absolute;left:50%;top:-8px;width:2px;height:9px;background:#333;transform:translateX(-50%)}
+  .flame{position:absolute;width:30px;height:46px;pointer-events:none;z-index:4;transform:translate(-50%,-85%)}
+  .flame::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 70%,#fff7c2 0 18%,#ffcf4a 32%,#ff8a1f 55%,rgba(255,80,0,0) 72%);
+    border-radius:50% 50% 45% 45%/65% 65% 35% 35%;animation:flick .18s infinite alternate}
+  @keyframes flick{from{transform:scale(1,1) rotate(-2deg)}to{transform:scale(.92,1.08) rotate(2deg)}}
+  .flame.home{position:absolute;left:50%;top:-8px}
+  .candle.empty{cursor:default}
+  .glow{position:absolute;width:160px;height:160px;border-radius:50%;pointer-events:none;z-index:3;
+    background:radial-gradient(circle,rgba(255,170,60,.35),rgba(255,140,40,0) 70%);transform:translate(-50%,-50%)}
+
+  /* ---- 2. carton ---- */
+  .cardstage{position:relative;width:100%;overflow:hidden}
+  .cardinner{position:absolute;left:0;top:0;transform-origin:0 0}
+  .letter{position:absolute;background:linear-gradient(#f7efdc,#efe2c4);box-shadow:0 6px 18px rgba(0,0,0,.5)}
+  .letter span{position:absolute;width:13px;height:26px;line-height:26px;text-align:center;font:21.6px "Courier New",Courier,monospace;color:#2a2016}
+  .card{position:absolute;cursor:grab;filter:drop-shadow(0 8px 10px rgba(0,0,0,.55));transition:none}
+  .card.snap{transition:transform .5s cubic-bezier(.2,.8,.3,1)}
+  .card svg{display:block}
+  .card .lbl{position:absolute;right:14px;bottom:8px;font:600 13px system-ui,sans-serif;color:#d9c9a8;letter-spacing:2px;pointer-events:none}
+  .card.placed .lbl{display:none}
+  .hole-hi{fill:none;stroke:#ffd166;stroke-width:3;opacity:0}
+  .card.placed .hole-hi{opacity:1;transition:opacity .6s .4s}
+
+  /* ---- 3. radio ---- */
+  .radiobox{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:640px){.radiobox{grid-template-columns:1.1fr 1fr}}
+  .radio{background:linear-gradient(#5a3d27,#3a2717);border-radius:22px 22px 12px 12px;padding:16px;box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 8px 18px rgba(0,0,0,.5)}
+  .grille{height:90px;border-radius:12px;background:repeating-linear-gradient(90deg,#2a1c10 0 4px,#c8b48a 4px 6px);border:3px solid #241709;opacity:.9}
+  .dial{position:relative;height:40px;margin:12px 0;background:#f1e2b8;border-radius:6px;border:2px solid #241709;overflow:hidden;font:600 10px system-ui,sans-serif;color:#5a4630}
+  .dial .names{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 10px}
+  .dial .names b{color:var(--accent)}
+  .needle{position:absolute;top:0;bottom:0;width:3px;background:#c0261b;left:8%;transition:left 1.4s ease-in-out}
+  .knobs{display:flex;justify-content:space-between;align-items:center}
+  .knob{width:58px;height:58px;border-radius:50%;cursor:pointer;border:none;
+    background:radial-gradient(circle at 35% 30%,#d8c39a,#7a5a36 60%,#3b2a17);box-shadow:0 3px 6px rgba(0,0,0,.5);position:relative;transition:transform 1.4s}
+  .knob::after{content:"";position:absolute;left:50%;top:6px;width:4px;height:14px;background:#2a1c10;border-radius:2px;transform:translateX(-50%)}
+  .knob.pulse{animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,209,102,.6)}50%{box-shadow:0 0 0 10px rgba(255,209,102,0)}}
+  .brand{font:italic 15px Georgia,serif;color:#e6d2a6}
+  .sub{min-height:66px;margin-top:12px;background:#0f0c0a;border-radius:10px;padding:10px 12px;font:15px/1.45 "Courier New",monospace;color:#f3e9d2}
+  .keycard{background:var(--paper);color:var(--ink);border-radius:6px;padding:14px 16px;transform:rotate(-1.5deg);box-shadow:0 6px 14px rgba(0,0,0,.5);font:italic 16px/1.5 Georgia,serif}
+  .keycard .k{font:700 10px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:6px}
+  .keycard .sig{text-align:right;margin-top:6px}
+  .heard{margin-top:12px}
+  .heard p{font:13px system-ui,sans-serif;color:#d8c7a6;margin:0 0 6px}
+  .heard button{display:block;width:100%;text-align:left;margin:0 0 6px;background:#2a211a;border:1px solid #4a3a2a;color:#f3e9d2;border-radius:10px;padding:9px 12px;font:14px/1.4 "Courier New",monospace;cursor:pointer}
+  .heard button.bad{border-color:#a33;animation:shake .4s}
+  .heard button.good{border-color:#4fbf7d;background:#1d3326}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .smallbtn{background:none;border:1px solid #4a3a2a;color:#d8c7a6;border-radius:18px;padding:6px 12px;font:13px system-ui,sans-serif;cursor:pointer;margin-top:8px}
+
+  /* ---- carnet ---- */
+  .carnet{margin-top:16px;background:var(--paper);color:var(--ink);border-radius:10px;padding:14px 16px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .carnet h2{font-size:15px;margin:0 0 8px;letter-spacing:1px}
+  .carnet ol{margin:0;padding-left:20px}
+  .carnet li{font-size:15px;line-height:1.5;margin-bottom:6px;color:#9b8c72}
+  .carnet li.got{color:var(--ink);font-style:italic}
+  .msg{font:600 14px system-ui,sans-serif;color:#4fbf7d;margin-top:10px;min-height:20px}
 </style>
 </head>
 <body>
-<div class="bar">
-  <button onclick="window.print()">🖨️ Imprimer</button>
-  <button onclick="ecouter()">📻 Écouter l'émission (indice 3)</button>
-  <span>Imprimer en A4, à « taille réelle » (100 %), pour que la grille tombe pile sur la lettre.</span>
+<div class="wrap">
+  <div class="top"><h1>📂 Les indices du réseau</h1></div>
+  <div class="tabs">
+    <button class="tab on" data-t="0">Indice 1<small>L'encre invisible</small></button>
+    <button class="tab" data-t="1">Indice 2<small>La lettre et le carton</small></button>
+    <button class="tab" data-t="2">Indice 3<small>Radio Londres</small></button>
+  </div>
+
+  <!-- 1. Encre sympathique -->
+  <section class="stage" id="s0">
+    <p class="consigne">Cette feuille semble blanche… mais Alberte a écrit au <b>jus de citron</b>. <b>Attrape la flamme de la bougie</b> et passe-la sous toute la feuille pour faire apparaître le message.</p>
+    <div class="paperbox" id="paper"><canvas id="cv"></canvas></div>
+    <div class="candle-row"><div class="candle" id="candle"><div class="flame home" id="flameHome"></div></div></div>
+    <div class="msg" id="m0"></div>
+  </section>
+
+  <!-- 2. Lettre et carton -->
+  <section class="stage hidden" id="s1">
+    <p class="consigne">Une lettre bien ordinaire d'Alberte à sa cousine… Avec elle, un <b>carton percé</b>. <b>Fais glisser le carton</b> pile sur la lettre (ou clique dessus) et lis ce qui apparaît dans les fenêtres.</p>
+    <div class="cardstage" id="cardstage"><div class="cardinner" id="cardinner">
+      <div class="letter" id="letter"></div>
+      <div class="card" id="card"></div>
+    </div></div>
+    <div class="msg" id="m1"></div>
+  </section>
+
+  <!-- 3. Radio Londres -->
+  <section class="stage hidden" id="s2">
+    <p class="consigne">Alberte a glissé une carte sous la porte. <b>Tourne le bouton de la radio</b> pour capter Londres, écoute les messages personnels, puis désigne celui d'Alberte.</p>
+    <div class="radiobox">
+      <div>
+        <div class="radio">
+          <div class="grille"></div>
+          <div class="dial"><div class="names"><span>Paris</span><span>Vichy</span><span>Stuttgart</span><b>Londres</b></div><div class="needle" id="needle"></div></div>
+          <div class="knobs"><span class="brand">Radiola</span><button class="knob pulse" id="knob" aria-label="Tourner le bouton"></button></div>
+        </div>
+        <div class="sub" id="sub">…</div>
+      </div>
+      <div>
+        <div class="keycard"><div class="k">Carte glissée sous la porte</div>« Ce soir, écoutez Radio Londres. Mon message passera <b>juste après celui du facteur</b>. Il vous dira comment commence mon code, et ce qui vient ensuite. »<div class="sig">Alberte</div></div>
+        <div class="heard hidden" id="heard"><p>Quel message était celui d'Alberte ?</p><div id="heardList"></div>
+          <button class="smallbtn" id="again">🔁 Réécouter l'émission</button></div>
+      </div>
+    </div>
+    <div class="msg" id="m2"></div>
+  </section>
+
+  <div class="carnet">
+    <h2>🗒️ Carnet des indices</h2>
+    <ol>
+      <li id="c0">Indice 1 : pas encore trouvé</li>
+      <li id="c1">Indice 2 : pas encore trouvé</li>
+      <li id="c2">Indice 3 : pas encore trouvé</li>
+    </ol>
+  </div>
 </div>
 
-<!-- ============ Fiche enseignant ============ -->
-<section class="page">
-  <div class="kicker">Self Data · Mission 2 · Partie 1 · Fiche enseignant</div>
-  <h1>Le mot de passe d'Alberte</h1>
-  <p>Avant d'ouvrir la ligne avec Alberte (appli Réso Alberte), les élèves doivent déverrouiller son téléphone. Trois indices, chacun caché avec une technique différente, donnent la recette de son mot de passe.</p>
-  <div class="box">
-    <p><b>Solution :</b> <span class="sol">APAYERNE</span> (majuscules ou minuscules)</p>
-    <p class="small">A (initiale d'Alberte) + PAYERNE (son nom de demoiselle) = 8 lettres, l'âge qu'elle avait en 1908 (née en 1900 dans le jeu). Les élèves doivent trouver son nom de demoiselle dans vos documents.</p>
-  </div>
-  <h2>Les trois indices</h2>
-  <ol>
-    <li><b>Indice 1 · Encre sympathique</b> : le nombre de lettres et « que des lettres ». Page 2 : texte à recopier au jus de citron.</li>
-    <li><b>Indice 2 · La lettre et son carton</b> : une lettre banale d'Alberte à sa cousine ; posé dessus, le carton percé ne laisse lire que « mélange les deux mots qu'on utilise pour se présenter » (le prénom et le nom). Pages 3 et 4.</li>
-    <li><b>Indice 3 · Message personnel de Radio Londres</b> : parmi les messages absurdes de l'émission, celui d'Alberte dit « La petite A passe la première, son nom de demoiselle marche derrière elle ». Page 5 : texte à lire à voix haute (ou bouton « Écouter ») et carte-clé à découper.</li>
-  </ol>
-  <h2>Ce qu'on en retient</h2>
-  <p>Le code d'Alberte est fait de ses données personnelles. Les élèves l'ont trouvé avec quelques papiers : un milicien le pourrait aussi. Alberte y revient dans la conversation, juste après les étapes techniques.</p>
-  <h2>Un peu d'histoire</h2>
-  <p class="small">Encre sympathique et messages personnels de la BBC sont attestés dans la Résistance (« Les sanglots longs des violons de l'automne… », juin 1944). Le carton percé (grille de Cardan) est une technique bien plus ancienne, du XVI<sup>e</sup> siècle : un clin d'œil, pas une méthode documentée de la Résistance.</p>
-</section>
-
-<!-- ============ Indice 1 ============ -->
-<section class="page">
-  <div class="kicker">Indice 1 · Encre sympathique</div>
-  <h1>Le message invisible</h1>
-  <p><b>Fabrication :</b> recopiez ce texte au jus de citron, avec un coton-tige ou un pinceau fin, sur une feuille blanche. Laissez sécher : il devient invisible.</p>
-  <p><b>Révélation :</b> en chauffant le papier, le citron brunit et le texte apparaît. Un sèche-cheveux à fond ou un fer à repasser (par un adulte) suffisent ; avec une bougie, tenir la feuille haut au-dessus de la flamme.</p>
-  <div class="ink">Mon mot de passe compte autant de lettres que l'âge que j'avais en 1908.<br>Rien que des lettres : je suis nulle en calcul !</div>
-  <p class="small">Texte modèle (couleur du citron une fois chauffé). Gardez-le court : écrire au citron est long.</p>
-</section>
-
-<!-- ============ Indice 2 : lettre ============ -->
-<section class="page">
-  <div class="kicker">Indice 2 · La lettre</div>
-  <h1>Une lettre d'Alberte</h1>
-  <div class="sheet letter">
-    <div class="frame"></div>
-    <div class="mark m1"></div><div class="mark m2"></div><div class="mark m3"></div><div class="mark m4"></div>
-    <span style="left:0.0mm;top:0.0mm">L</span><span style="left:3.3mm;top:0.0mm">y</span><span style="left:6.6mm;top:0.0mm">o</span><span style="left:9.899999999999999mm;top:0.0mm">n</span><span style="left:13.2mm;top:0.0mm">,</span><span style="left:19.799999999999997mm;top:0.0mm">l</span><span style="left:23.099999999999998mm;top:0.0mm">e</span><span style="left:29.7mm;top:0.0mm">3</span><span style="left:36.3mm;top:0.0mm">n</span><span style="left:39.599999999999994mm;top:0.0mm">o</span><span style="left:42.9mm;top:0.0mm">v</span><span style="left:46.199999999999996mm;top:0.0mm">e</span><span style="left:49.5mm;top:0.0mm">m</span><span style="left:52.8mm;top:0.0mm">b</span><span style="left:56.099999999999994mm;top:0.0mm">r</span><span style="left:59.4mm;top:0.0mm">e</span><span style="left:66.0mm;top:0.0mm">1</span><span style="left:69.3mm;top:0.0mm">9</span><span style="left:72.6mm;top:0.0mm">4</span><span style="left:75.89999999999999mm;top:0.0mm">2</span><span style="left:0.0mm;top:15.0mm">M</span><span style="left:3.3mm;top:15.0mm">a</span><span style="left:9.899999999999999mm;top:15.0mm">c</span><span style="left:13.2mm;top:15.0mm">h</span><span style="left:16.5mm;top:15.0mm">è</span><span style="left:19.799999999999997mm;top:15.0mm">r</span><span style="left:23.099999999999998mm;top:15.0mm">e</span><span style="left:29.7mm;top:15.0mm">L</span><span style="left:33.0mm;top:15.0mm">o</span><span style="left:36.3mm;top:15.0mm">u</span><span style="left:39.599999999999994mm;top:15.0mm">i</span><span style="left:42.9mm;top:15.0mm">s</span><span style="left:46.199999999999996mm;top:15.0mm">e</span><span style="left:49.5mm;top:15.0mm">,</span><span style="left:0.0mm;top:30.0mm">I</span><span style="left:3.3mm;top:30.0mm">c</span><span style="left:6.6mm;top:30.0mm">i</span><span style="left:13.2mm;top:30.0mm">l</span><span style="left:16.5mm;top:30.0mm">a</span><span style="left:23.099999999999998mm;top:30.0mm">v</span><span style="left:26.4mm;top:30.0mm">i</span><span style="left:29.7mm;top:30.0mm">e</span><span style="left:36.3mm;top:30.0mm">e</span><span style="left:39.599999999999994mm;top:30.0mm">s</span><span style="left:42.9mm;top:30.0mm">t</span><span style="left:49.5mm;top:30.0mm">d</span><span style="left:52.8mm;top:30.0mm">u</span><span style="left:56.099999999999994mm;top:30.0mm">r</span><span style="left:59.4mm;top:30.0mm">e</span><span style="left:62.699999999999996mm;top:30.0mm">,</span><span style="left:69.3mm;top:30.0mm">m</span><span style="left:72.6mm;top:30.0mm">a</span><span style="left:75.89999999999999mm;top:30.0mm">i</span><span style="left:79.19999999999999mm;top:30.0mm">s</span><span style="left:85.8mm;top:30.0mm">n</span><span style="left:89.1mm;top:30.0mm">o</span><span style="left:92.39999999999999mm;top:30.0mm">u</span><span style="left:95.69999999999999mm;top:30.0mm">s</span><span style="left:102.3mm;top:30.0mm">t</span><span style="left:105.6mm;top:30.0mm">e</span><span style="left:108.89999999999999mm;top:30.0mm">n</span><span style="left:112.19999999999999mm;top:30.0mm">o</span><span style="left:115.5mm;top:30.0mm">n</span><span style="left:118.8mm;top:30.0mm">s</span><span style="left:125.39999999999999mm;top:30.0mm">b</span><span style="left:128.7mm;top:30.0mm">o</span><span style="left:132.0mm;top:30.0mm">n</span><span style="left:135.29999999999998mm;top:30.0mm">.</span><span style="left:0.0mm;top:37.5mm">H</span><span style="left:3.3mm;top:37.5mm">i</span><span style="left:6.6mm;top:37.5mm">e</span><span style="left:9.899999999999999mm;top:37.5mm">r</span><span style="left:16.5mm;top:37.5mm">s</span><span style="left:19.799999999999997mm;top:37.5mm">o</span><span style="left:23.099999999999998mm;top:37.5mm">i</span><span style="left:26.4mm;top:37.5mm">r</span><span style="left:29.7mm;top:37.5mm">,</span><span style="left:36.3mm;top:37.5mm">j</span><span style="left:39.599999999999994mm;top:37.5mm">&#x27;</span><span style="left:42.9mm;top:37.5mm">a</span><span style="left:46.199999999999996mm;top:37.5mm">i</span><span style="left:52.8mm;top:37.5mm">f</span><span style="left:56.099999999999994mm;top:37.5mm">a</span><span style="left:59.4mm;top:37.5mm">i</span><span style="left:62.699999999999996mm;top:37.5mm">t</span><span style="left:69.3mm;top:37.5mm">u</span><span style="left:72.6mm;top:37.5mm">n</span><span style="left:79.19999999999999mm;top:37.5mm">m</span><span style="left:82.5mm;top:37.5mm">é</span><span style="left:85.8mm;top:37.5mm">l</span><span style="left:89.1mm;top:37.5mm">a</span><span style="left:92.39999999999999mm;top:37.5mm">n</span><span style="left:95.69999999999999mm;top:37.5mm">g</span><span style="left:99.0mm;top:37.5mm">e</span><span style="left:105.6mm;top:37.5mm">d</span><span style="left:108.89999999999999mm;top:37.5mm">e</span><span style="left:115.5mm;top:37.5mm">r</span><span style="left:118.8mm;top:37.5mm">u</span><span style="left:122.1mm;top:37.5mm">t</span><span style="left:125.39999999999999mm;top:37.5mm">a</span><span style="left:128.7mm;top:37.5mm">b</span><span style="left:132.0mm;top:37.5mm">a</span><span style="left:135.29999999999998mm;top:37.5mm">g</span><span style="left:138.6mm;top:37.5mm">a</span><span style="left:141.9mm;top:37.5mm">s</span><span style="left:0.0mm;top:45.0mm">e</span><span style="left:3.3mm;top:45.0mm">t</span><span style="left:9.899999999999999mm;top:45.0mm">d</span><span style="left:13.2mm;top:45.0mm">e</span><span style="left:19.799999999999997mm;top:45.0mm">t</span><span style="left:23.099999999999998mm;top:45.0mm">o</span><span style="left:26.4mm;top:45.0mm">p</span><span style="left:29.7mm;top:45.0mm">i</span><span style="left:33.0mm;top:45.0mm">n</span><span style="left:36.3mm;top:45.0mm">a</span><span style="left:39.599999999999994mm;top:45.0mm">m</span><span style="left:42.9mm;top:45.0mm">b</span><span style="left:46.199999999999996mm;top:45.0mm">o</span><span style="left:49.5mm;top:45.0mm">u</span><span style="left:52.8mm;top:45.0mm">r</span><span style="left:56.099999999999994mm;top:45.0mm">s</span><span style="left:62.699999999999996mm;top:45.0mm">:</span><span style="left:69.3mm;top:45.0mm">l</span><span style="left:72.6mm;top:45.0mm">e</span><span style="left:75.89999999999999mm;top:45.0mm">s</span><span style="left:82.5mm;top:45.0mm">e</span><span style="left:85.8mm;top:45.0mm">n</span><span style="left:89.1mm;top:45.0mm">f</span><span style="left:92.39999999999999mm;top:45.0mm">a</span><span style="left:95.69999999999999mm;top:45.0mm">n</span><span style="left:99.0mm;top:45.0mm">t</span><span style="left:102.3mm;top:45.0mm">s</span><span style="left:108.89999999999999mm;top:45.0mm">d</span><span style="left:112.19999999999999mm;top:45.0mm">u</span><span style="left:118.8mm;top:45.0mm">v</span><span style="left:122.1mm;top:45.0mm">o</span><span style="left:125.39999999999999mm;top:45.0mm">i</span><span style="left:128.7mm;top:45.0mm">s</span><span style="left:132.0mm;top:45.0mm">i</span><span style="left:135.29999999999998mm;top:45.0mm">n</span><span style="left:141.9mm;top:45.0mm">e</span><span style="left:145.2mm;top:45.0mm">n</span><span style="left:0.0mm;top:52.5mm">o</span><span style="left:3.3mm;top:52.5mm">n</span><span style="left:6.6mm;top:52.5mm">t</span><span style="left:13.2mm;top:52.5mm">r</span><span style="left:16.5mm;top:52.5mm">e</span><span style="left:19.799999999999997mm;top:52.5mm">d</span><span style="left:23.099999999999998mm;top:52.5mm">e</span><span style="left:26.4mm;top:52.5mm">m</span><span style="left:29.7mm;top:52.5mm">a</span><span style="left:33.0mm;top:52.5mm">n</span><span style="left:36.3mm;top:52.5mm">d</span><span style="left:39.599999999999994mm;top:52.5mm">é</span><span style="left:42.9mm;top:52.5mm">.</span><span style="left:49.5mm;top:52.5mm">L</span><span style="left:52.8mm;top:52.5mm">e</span><span style="left:56.099999999999994mm;top:52.5mm">s</span><span style="left:62.699999999999996mm;top:52.5mm">d</span><span style="left:66.0mm;top:52.5mm">e</span><span style="left:69.3mm;top:52.5mm">u</span><span style="left:72.6mm;top:52.5mm">x</span><span style="left:79.19999999999999mm;top:52.5mm">p</span><span style="left:82.5mm;top:52.5mm">e</span><span style="left:85.8mm;top:52.5mm">t</span><span style="left:89.1mm;top:52.5mm">i</span><span style="left:92.39999999999999mm;top:52.5mm">t</span><span style="left:95.69999999999999mm;top:52.5mm">e</span><span style="left:99.0mm;top:52.5mm">s</span><span style="left:105.6mm;top:52.5mm">d</span><span style="left:108.89999999999999mm;top:52.5mm">e</span><span style="left:115.5mm;top:52.5mm">M</span><span style="left:118.8mm;top:52.5mm">a</span><span style="left:122.1mm;top:52.5mm">r</span><span style="left:125.39999999999999mm;top:52.5mm">i</span><span style="left:128.7mm;top:52.5mm">a</span><span style="left:135.29999999999998mm;top:52.5mm">v</span><span style="left:138.6mm;top:52.5mm">o</span><span style="left:141.9mm;top:52.5mm">n</span><span style="left:145.2mm;top:52.5mm">t</span><span style="left:0.0mm;top:60.0mm">m</span><span style="left:3.3mm;top:60.0mm">i</span><span style="left:6.6mm;top:60.0mm">e</span><span style="left:9.899999999999999mm;top:60.0mm">u</span><span style="left:13.2mm;top:60.0mm">x</span><span style="left:16.5mm;top:60.0mm">,</span><span style="left:23.099999999999998mm;top:60.0mm">l</span><span style="left:26.4mm;top:60.0mm">a</span><span style="left:33.0mm;top:60.0mm">f</span><span style="left:36.3mm;top:60.0mm">i</span><span style="left:39.599999999999994mm;top:60.0mm">è</span><span style="left:42.9mm;top:60.0mm">v</span><span style="left:46.199999999999996mm;top:60.0mm">r</span><span style="left:49.5mm;top:60.0mm">e</span><span style="left:56.099999999999994mm;top:60.0mm">e</span><span style="left:59.4mm;top:60.0mm">s</span><span style="left:62.699999999999996mm;top:60.0mm">t</span><span style="left:69.3mm;top:60.0mm">e</span><span style="left:72.6mm;top:60.0mm">n</span><span style="left:75.89999999999999mm;top:60.0mm">f</span><span style="left:79.19999999999999mm;top:60.0mm">i</span><span style="left:82.5mm;top:60.0mm">n</span><span style="left:89.1mm;top:60.0mm">t</span><span style="left:92.39999999999999mm;top:60.0mm">o</span><span style="left:95.69999999999999mm;top:60.0mm">m</span><span style="left:99.0mm;top:60.0mm">b</span><span style="left:102.3mm;top:60.0mm">é</span><span style="left:105.6mm;top:60.0mm">e</span><span style="left:108.89999999999999mm;top:60.0mm">.</span><span style="left:0.0mm;top:75.0mm">J</span><span style="left:3.3mm;top:75.0mm">e</span><span style="left:9.899999999999999mm;top:75.0mm">t</span><span style="left:13.2mm;top:75.0mm">&#x27;</span><span style="left:16.5mm;top:75.0mm">é</span><span style="left:19.799999999999997mm;top:75.0mm">c</span><span style="left:23.099999999999998mm;top:75.0mm">r</span><span style="left:26.4mm;top:75.0mm">i</span><span style="left:29.7mm;top:75.0mm">s</span><span style="left:36.3mm;top:75.0mm">c</span><span style="left:39.599999999999994mm;top:75.0mm">e</span><span style="left:42.9mm;top:75.0mm">s</span><span style="left:49.5mm;top:75.0mm">q</span><span style="left:52.8mm;top:75.0mm">u</span><span style="left:56.099999999999994mm;top:75.0mm">e</span><span style="left:59.4mm;top:75.0mm">l</span><span style="left:62.699999999999996mm;top:75.0mm">q</span><span style="left:66.0mm;top:75.0mm">u</span><span style="left:69.3mm;top:75.0mm">e</span><span style="left:72.6mm;top:75.0mm">s</span><span style="left:79.19999999999999mm;top:75.0mm">m</span><span style="left:82.5mm;top:75.0mm">o</span><span style="left:85.8mm;top:75.0mm">t</span><span style="left:89.1mm;top:75.0mm">s</span><span style="left:95.69999999999999mm;top:75.0mm">à</span><span style="left:102.3mm;top:75.0mm">l</span><span style="left:105.6mm;top:75.0mm">a</span><span style="left:112.19999999999999mm;top:75.0mm">h</span><span style="left:115.5mm;top:75.0mm">â</span><span style="left:118.8mm;top:75.0mm">t</span><span style="left:122.1mm;top:75.0mm">e</span><span style="left:125.39999999999999mm;top:75.0mm">,</span><span style="left:132.0mm;top:75.0mm">c</span><span style="left:135.29999999999998mm;top:75.0mm">a</span><span style="left:138.6mm;top:75.0mm">r</span><span style="left:145.2mm;top:75.0mm">l</span><span style="left:148.5mm;top:75.0mm">e</span><span style="left:0.0mm;top:82.5mm">f</span><span style="left:3.3mm;top:82.5mm">a</span><span style="left:6.6mm;top:82.5mm">c</span><span style="left:9.899999999999999mm;top:82.5mm">t</span><span style="left:13.2mm;top:82.5mm">e</span><span style="left:16.5mm;top:82.5mm">u</span><span style="left:19.799999999999997mm;top:82.5mm">r</span><span style="left:26.4mm;top:82.5mm">p</span><span style="left:29.7mm;top:82.5mm">a</span><span style="left:33.0mm;top:82.5mm">s</span><span style="left:36.3mm;top:82.5mm">s</span><span style="left:39.599999999999994mm;top:82.5mm">e</span><span style="left:46.199999999999996mm;top:82.5mm">t</span><span style="left:49.5mm;top:82.5mm">ô</span><span style="left:52.8mm;top:82.5mm">t</span><span style="left:56.099999999999994mm;top:82.5mm">.</span><span style="left:62.699999999999996mm;top:82.5mm">T</span><span style="left:66.0mm;top:82.5mm">u</span><span style="left:72.6mm;top:82.5mm">s</span><span style="left:75.89999999999999mm;top:82.5mm">a</span><span style="left:79.19999999999999mm;top:82.5mm">i</span><span style="left:82.5mm;top:82.5mm">s</span><span style="left:89.1mm;top:82.5mm">q</span><span style="left:92.39999999999999mm;top:82.5mm">u</span><span style="left:95.69999999999999mm;top:82.5mm">&#x27;</span><span style="left:99.0mm;top:82.5mm">o</span><span style="left:102.3mm;top:82.5mm">n</span><span style="left:108.89999999999999mm;top:82.5mm">m</span><span style="left:112.19999999999999mm;top:82.5mm">a</span><span style="left:115.5mm;top:82.5mm">n</span><span style="left:118.8mm;top:82.5mm">q</span><span style="left:122.1mm;top:82.5mm">u</span><span style="left:125.39999999999999mm;top:82.5mm">e</span><span style="left:132.0mm;top:82.5mm">d</span><span style="left:135.29999999999998mm;top:82.5mm">e</span><span style="left:0.0mm;top:90.0mm">t</span><span style="left:3.3mm;top:90.0mm">o</span><span style="left:6.6mm;top:90.0mm">u</span><span style="left:9.899999999999999mm;top:90.0mm">t</span><span style="left:16.5mm;top:90.0mm">:</span><span style="left:23.099999999999998mm;top:90.0mm">j</span><span style="left:26.4mm;top:90.0mm">&#x27;</span><span style="left:29.7mm;top:90.0mm">u</span><span style="left:33.0mm;top:90.0mm">t</span><span style="left:36.3mm;top:90.0mm">i</span><span style="left:39.599999999999994mm;top:90.0mm">l</span><span style="left:42.9mm;top:90.0mm">i</span><span style="left:46.199999999999996mm;top:90.0mm">s</span><span style="left:49.5mm;top:90.0mm">e</span><span style="left:56.099999999999994mm;top:90.0mm">l</span><span style="left:59.4mm;top:90.0mm">e</span><span style="left:66.0mm;top:90.0mm">v</span><span style="left:69.3mm;top:90.0mm">i</span><span style="left:72.6mm;top:90.0mm">e</span><span style="left:75.89999999999999mm;top:90.0mm">u</span><span style="left:79.19999999999999mm;top:90.0mm">x</span><span style="left:85.8mm;top:90.0mm">m</span><span style="left:89.1mm;top:90.0mm">a</span><span style="left:92.39999999999999mm;top:90.0mm">n</span><span style="left:95.69999999999999mm;top:90.0mm">t</span><span style="left:99.0mm;top:90.0mm">e</span><span style="left:102.3mm;top:90.0mm">a</span><span style="left:105.6mm;top:90.0mm">u</span><span style="left:112.19999999999999mm;top:90.0mm">d</span><span style="left:115.5mm;top:90.0mm">e</span><span style="left:122.1mm;top:90.0mm">m</span><span style="left:125.39999999999999mm;top:90.0mm">a</span><span style="left:128.7mm;top:90.0mm">m</span><span style="left:132.0mm;top:90.0mm">a</span><span style="left:135.29999999999998mm;top:90.0mm">n</span><span style="left:0.0mm;top:97.5mm">p</span><span style="left:3.3mm;top:97.5mm">o</span><span style="left:6.6mm;top:97.5mm">u</span><span style="left:9.899999999999999mm;top:97.5mm">r</span><span style="left:16.5mm;top:97.5mm">c</span><span style="left:19.799999999999997mm;top:97.5mm">o</span><span style="left:23.099999999999998mm;top:97.5mm">u</span><span style="left:26.4mm;top:97.5mm">d</span><span style="left:29.7mm;top:97.5mm">r</span><span style="left:33.0mm;top:97.5mm">e</span><span style="left:39.599999999999994mm;top:97.5mm">d</span><span style="left:42.9mm;top:97.5mm">e</span><span style="left:46.199999999999996mm;top:97.5mm">s</span><span style="left:52.8mm;top:97.5mm">c</span><span style="left:56.099999999999994mm;top:97.5mm">h</span><span style="left:59.4mm;top:97.5mm">a</span><span style="left:62.699999999999996mm;top:97.5mm">u</span><span style="left:66.0mm;top:97.5mm">s</span><span style="left:69.3mm;top:97.5mm">s</span><span style="left:72.6mm;top:97.5mm">o</span><span style="left:75.89999999999999mm;top:97.5mm">n</span><span style="left:79.19999999999999mm;top:97.5mm">s</span><span style="left:82.5mm;top:97.5mm">.</span><span style="left:89.1mm;top:97.5mm">I</span><span style="left:92.39999999999999mm;top:97.5mm">l</span><span style="left:99.0mm;top:97.5mm">f</span><span style="left:102.3mm;top:97.5mm">a</span><span style="left:105.6mm;top:97.5mm">u</span><span style="left:108.89999999999999mm;top:97.5mm">t</span><span style="left:115.5mm;top:97.5mm">b</span><span style="left:118.8mm;top:97.5mm">i</span><span style="left:122.1mm;top:97.5mm">e</span><span style="left:125.39999999999999mm;top:97.5mm">n</span><span style="left:132.0mm;top:97.5mm">s</span><span style="left:135.29999999999998mm;top:97.5mm">e</span><span style="left:0.0mm;top:105.0mm">d</span><span style="left:3.3mm;top:105.0mm">é</span><span style="left:6.6mm;top:105.0mm">b</span><span style="left:9.899999999999999mm;top:105.0mm">r</span><span style="left:13.2mm;top:105.0mm">o</span><span style="left:16.5mm;top:105.0mm">u</span><span style="left:19.799999999999997mm;top:105.0mm">i</span><span style="left:23.099999999999998mm;top:105.0mm">l</span><span style="left:26.4mm;top:105.0mm">l</span><span style="left:29.7mm;top:105.0mm">e</span><span style="left:33.0mm;top:105.0mm">r</span><span style="left:36.3mm;top:105.0mm">.</span><span style="left:0.0mm;top:120.0mm">L</span><span style="left:3.3mm;top:120.0mm">u</span><span style="left:6.6mm;top:120.0mm">n</span><span style="left:9.899999999999999mm;top:120.0mm">d</span><span style="left:13.2mm;top:120.0mm">i</span><span style="left:16.5mm;top:120.0mm">,</span><span style="left:23.099999999999998mm;top:120.0mm">j</span><span style="left:26.4mm;top:120.0mm">e</span><span style="left:33.0mm;top:120.0mm">d</span><span style="left:36.3mm;top:120.0mm">o</span><span style="left:39.599999999999994mm;top:120.0mm">i</span><span style="left:42.9mm;top:120.0mm">s</span><span style="left:49.5mm;top:120.0mm">a</span><span style="left:52.8mm;top:120.0mm">l</span><span style="left:56.099999999999994mm;top:120.0mm">l</span><span style="left:59.4mm;top:120.0mm">e</span><span style="left:62.699999999999996mm;top:120.0mm">r</span><span style="left:69.3mm;top:120.0mm">p</span><span style="left:72.6mm;top:120.0mm">r</span><span style="left:75.89999999999999mm;top:120.0mm">é</span><span style="left:79.19999999999999mm;top:120.0mm">s</span><span style="left:82.5mm;top:120.0mm">e</span><span style="left:85.8mm;top:120.0mm">n</span><span style="left:89.1mm;top:120.0mm">t</span><span style="left:92.39999999999999mm;top:120.0mm">e</span><span style="left:95.69999999999999mm;top:120.0mm">r</span><span style="left:102.3mm;top:120.0mm">m</span><span style="left:105.6mm;top:120.0mm">e</span><span style="left:108.89999999999999mm;top:120.0mm">s</span><span style="left:115.5mm;top:120.0mm">p</span><span style="left:118.8mm;top:120.0mm">a</span><span style="left:122.1mm;top:120.0mm">p</span><span style="left:125.39999999999999mm;top:120.0mm">i</span><span style="left:128.7mm;top:120.0mm">e</span><span style="left:132.0mm;top:120.0mm">r</span><span style="left:135.29999999999998mm;top:120.0mm">s</span><span style="left:141.9mm;top:120.0mm">à</span><span style="left:0.0mm;top:127.5mm">l</span><span style="left:3.3mm;top:127.5mm">a</span><span style="left:9.899999999999999mm;top:127.5mm">m</span><span style="left:13.2mm;top:127.5mm">a</span><span style="left:16.5mm;top:127.5mm">i</span><span style="left:19.799999999999997mm;top:127.5mm">r</span><span style="left:23.099999999999998mm;top:127.5mm">i</span><span style="left:26.4mm;top:127.5mm">e</span><span style="left:29.7mm;top:127.5mm">.</span><span style="left:36.3mm;top:127.5mm">P</span><span style="left:39.599999999999994mm;top:127.5mm">r</span><span style="left:42.9mm;top:127.5mm">i</span><span style="left:46.199999999999996mm;top:127.5mm">e</span><span style="left:52.8mm;top:127.5mm">p</span><span style="left:56.099999999999994mm;top:127.5mm">o</span><span style="left:59.4mm;top:127.5mm">u</span><span style="left:62.699999999999996mm;top:127.5mm">r</span><span style="left:69.3mm;top:127.5mm">q</span><span style="left:72.6mm;top:127.5mm">u</span><span style="left:75.89999999999999mm;top:127.5mm">e</span><span style="left:82.5mm;top:127.5mm">t</span><span style="left:85.8mm;top:127.5mm">o</span><span style="left:89.1mm;top:127.5mm">u</span><span style="left:92.39999999999999mm;top:127.5mm">t</span><span style="left:99.0mm;top:127.5mm">s</span><span style="left:102.3mm;top:127.5mm">e</span><span style="left:108.89999999999999mm;top:127.5mm">p</span><span style="left:112.19999999999999mm;top:127.5mm">a</span><span style="left:115.5mm;top:127.5mm">s</span><span style="left:118.8mm;top:127.5mm">s</span><span style="left:122.1mm;top:127.5mm">e</span><span style="left:128.7mm;top:127.5mm">b</span><span style="left:132.0mm;top:127.5mm">i</span><span style="left:135.29999999999998mm;top:127.5mm">e</span><span style="left:138.6mm;top:127.5mm">n</span><span style="left:141.9mm;top:127.5mm">.</span><span style="left:0.0mm;top:142.5mm">J</span><span style="left:3.3mm;top:142.5mm">e</span><span style="left:9.899999999999999mm;top:142.5mm">t</span><span style="left:13.2mm;top:142.5mm">&#x27;</span><span style="left:16.5mm;top:142.5mm">e</span><span style="left:19.799999999999997mm;top:142.5mm">m</span><span style="left:23.099999999999998mm;top:142.5mm">b</span><span style="left:26.4mm;top:142.5mm">r</span><span style="left:29.7mm;top:142.5mm">a</span><span style="left:33.0mm;top:142.5mm">s</span><span style="left:36.3mm;top:142.5mm">s</span><span style="left:39.599999999999994mm;top:142.5mm">e</span><span style="left:46.199999999999996mm;top:142.5mm">b</span><span style="left:49.5mm;top:142.5mm">i</span><span style="left:52.8mm;top:142.5mm">e</span><span style="left:56.099999999999994mm;top:142.5mm">n</span><span style="left:62.699999999999996mm;top:142.5mm">f</span><span style="left:66.0mm;top:142.5mm">o</span><span style="left:69.3mm;top:142.5mm">r</span><span style="left:72.6mm;top:142.5mm">t</span><span style="left:75.89999999999999mm;top:142.5mm">,</span><span style="left:0.0mm;top:150.0mm">T</span><span style="left:3.3mm;top:150.0mm">a</span><span style="left:9.899999999999999mm;top:150.0mm">c</span><span style="left:13.2mm;top:150.0mm">o</span><span style="left:16.5mm;top:150.0mm">u</span><span style="left:19.799999999999997mm;top:150.0mm">s</span><span style="left:23.099999999999998mm;top:150.0mm">i</span><span style="left:26.4mm;top:150.0mm">n</span><span style="left:29.7mm;top:150.0mm">e</span><span style="left:36.3mm;top:150.0mm">q</span><span style="left:39.599999999999994mm;top:150.0mm">u</span><span style="left:42.9mm;top:150.0mm">i</span><span style="left:49.5mm;top:150.0mm">t</span><span style="left:52.8mm;top:150.0mm">&#x27;</span><span style="left:56.099999999999994mm;top:150.0mm">a</span><span style="left:59.4mm;top:150.0mm">i</span><span style="left:62.699999999999996mm;top:150.0mm">m</span><span style="left:66.0mm;top:150.0mm">e</span>
-  </div>
-  <p class="tip small">Posez le carton (page suivante) sur la lettre en faisant coïncider les cadres et les croix des coins. Lisez ce qui apparaît dans les fenêtres, de haut en bas.</p>
-</section>
-
-<!-- ============ Indice 2 : grille ============ -->
-<section class="page">
-  <div class="kicker">Indice 2 · Le carton</div>
-  <h1>Le carton percé</h1>
-  <div class="sheet grille">
-    <div class="card"></div>
-    <div class="mark m1"></div><div class="mark m2"></div><div class="mark m3"></div><div class="mark m4"></div>
-    <i style="left:78.6mm;top:38.3mm;width:24.299999999999997mm;height:5.9mm"></i><i style="left:68.7mm;top:45.8mm;width:11.099999999999998mm;height:5.9mm"></i><i style="left:62.099999999999994mm;top:53.3mm;width:14.399999999999999mm;height:5.9mm"></i><i style="left:78.6mm;top:75.8mm;width:14.399999999999999mm;height:5.9mm"></i><i style="left:88.5mm;top:83.3mm;width:17.7mm;height:5.9mm"></i><i style="left:29.099999999999998mm;top:90.8mm;width:24.299999999999997mm;height:5.9mm"></i><i style="left:-0.6mm;top:98.3mm;width:14.399999999999999mm;height:5.9mm"></i><i style="left:131.4mm;top:98.3mm;width:7.8mm;height:5.9mm"></i><i style="left:68.7mm;top:120.8mm;width:30.9mm;height:5.9mm"></i>
-  </div>
-  <p class="tip small">Imprimez sur papier épais ou collez sur un carton. Découpez le cadre, puis évidez chaque fenêtre blanche au cutter (par un adulte).</p>
-</section>
-
-<!-- ============ Indice 3 : Radio Londres ============ -->
-<section class="page">
-  <div class="kicker">Indice 3 · Message personnel</div>
-  <h1>Ici Londres !</h1>
-  <p class="small">À lire à voix haute, lentement, d'une voix grave (ou bouton « Écouter » en haut de la page). Le message d'Alberte est surligné à l'écran, pas à l'impression.</p>
-  <div class="box radio" id="radioTxt">
-    <p>Ici Londres ! Les Français parlent aux Français.</p>
-    <p>Veuillez d'abord écouter quelques messages personnels.</p>
-    <p>Les carottes sont cuites. Je répète : les carottes sont cuites.</p>
-    <p>Le chat de la voisine a mangé la confiture.</p>
-    <p>Jean a de longues moustaches.</p>
-    <p>La girafe porte un col roulé.</p>
-    <p>Le facteur s'est endormi dans la boîte aux lettres.</p>
-    <p class="alb">La petite A passe la première, son nom de demoiselle marche derrière elle. Je répète : la petite A passe la première, son nom de demoiselle marche derrière elle.</p>
-    <p>Les sanglots longs des violons de l'automne.</p>
-    <p>Le parapluie de grand-mère chante faux.</p>
-  </div>
-  <div class="cut">
-    <p class="kicker" style="margin:0 0 2mm">Carte-clé à remettre aux élèves</p>
-    <p class="big">« Ce soir, écoutez Radio Londres. Mon message passera juste après celui du facteur. Il vous dira comment commence mon code et ce qui vient ensuite. »</p>
-    <p style="text-align:right;margin:0">Alberte</p>
-  </div>
-</section>
-
 <script>
-function ecouter(){
-  if(!("speechSynthesis" in window)){ alert("Ce navigateur ne sait pas lire le texte à voix haute."); return; }
-  speechSynthesis.cancel();
-  const lignes = [...document.querySelectorAll("#radioTxt p")].map(p => p.textContent);
-  const voix = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith("fr"));
-  lignes.forEach(t => {
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang = "fr-FR"; u.rate = 0.85; u.pitch = 0.8;
-    if(voix) u.voice = voix;
+const LETTER = {"cols": 46, "lines": ["Lyon, le 3 novembre 1942", "", "Ma chère Louise,", "", "Ici la vie est dure, mais nous tenons bon.", "Hier soir, j'ai fait un mélange de rutabagas", "et de topinambours : les enfants du voisin en", "ont redemandé. Les deux petites de Maria vont", "mieux, la fièvre est enfin tombée.", "", "Je t'écris ces quelques mots à la hâte, car le", "facteur passe tôt. Tu sais qu'on manque de", "tout : j'utilise le vieux manteau de maman", "pour coudre des chaussons. Il faut bien se", "débrouiller.", "", "Lundi, je dois aller présenter mes papiers à", "la mairie. Prie pour que tout se passe bien.", "", "Je t'embrasse bien fort,", "Ta cousine qui t'aime"], "holes": [[5, 24, 7], [6, 21, 3], [7, 19, 4], [10, 24, 4], [11, 27, 5], [12, 9, 7], [13, 0, 4], [13, 40, 2], [16, 21, 9]]};
+const TEXTS = [
+  "Mon mot de passe compte autant de lettres que l'âge que j'avais en 1908. Rien que des lettres : je suis nulle en calcul !",
+  "Mélange les deux mots qu'on utilise pour se présenter.",
+  "La petite A passe la première, son nom de demoiselle marche derrière elle."
+];
+if(new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");
+const $ = id => document.getElementById(id);
+const found = [false,false,false];
+function store(){ try{ localStorage.setItem("reso_indices", JSON.stringify(found)); }catch(e){} }
+function markFound(i){
+  if(found[i]) return;
+  found[i] = true; store();
+  document.querySelector('.tab[data-t="'+i+'"]').classList.add("done");
+  const li = $("c"+i); li.textContent = "« " + TEXTS[i] + " »"; li.classList.add("got");
+  $("m"+i).textContent = "✓ Indice " + (i+1) + " ajouté au carnet.";
+}
+/* --- onglets --- */
+let current = 0;
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => show(+t.dataset.t));
+function show(i){
+  current = i;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", +t.dataset.t === i));
+  [0,1,2].forEach(k => $("s"+k).classList.toggle("hidden", k !== i));
+  if(i === 0) sizeInk();
+  if(i === 1) layoutCard();
+}
+
+/* ================= 1. Encre sympathique ================= */
+const paper = $("paper"), cv = $("cv"), ctx = cv.getContext("2d");
+let textCv, heatCv, heatCtx, tmpCv, samples = [], W = 0, H = 0, heatCount = 0;
+function sizeInk(){
+  const r = paper.getBoundingClientRect();
+  if(!r.width || (Math.round(r.width) === W)) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const old = heatCv;
+  W = Math.round(r.width); H = Math.round(r.height);
+  [cv].forEach(c => { c.width = W*dpr; c.height = H*dpr; });
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  textCv = document.createElement("canvas"); textCv.width = W; textCv.height = H;
+  const t = textCv.getContext("2d");
+  const fs = Math.max(16, Math.round(W/17));
+  t.fillStyle = "#8a5a1c"; t.font = "italic " + fs + "px Georgia, serif"; t.textAlign = "center"; t.textBaseline = "middle";
+  const words = TEXTS[0].split(" "), lines = []; let cur = "";
+  words.forEach(w => { const s = cur ? cur + " " + w : w; if(t.measureText(s).width > W*0.84){ lines.push(cur); cur = w; } else cur = s; });
+  lines.push(cur);
+  const lh = fs*1.45, y0 = H/2 - (lines.length-1)*lh/2;
+  lines.forEach((l,i) => t.fillText(l, W/2, y0 + i*lh));
+  heatCv = document.createElement("canvas"); heatCv.width = W; heatCv.height = H; heatCtx = heatCv.getContext("2d");
+  if(old) heatCtx.drawImage(old, 0, 0, W, H);
+  tmpCv = document.createElement("canvas"); tmpCv.width = W; tmpCv.height = H;
+  const d = t.getImageData(0,0,W,H).data; samples = [];
+  for(let y=0; y<H; y+=6) for(let x=0; x<W; x+=6) if(d[(y*W+x)*4+3] > 120) samples.push([x,y]);
+  if(found[0]){ heatCtx.fillStyle = "#000"; heatCtx.fillRect(0,0,W,H); }
+  render();
+}
+function heatAt(x, y){
+  const g = heatCtx.createRadialGradient(x, y, 0, x, y, W*0.11);
+  g.addColorStop(0, "rgba(0,0,0,.22)"); g.addColorStop(1, "rgba(0,0,0,0)");
+  heatCtx.fillStyle = g; heatCtx.beginPath(); heatCtx.arc(x, y, W*0.11, 0, 7); heatCtx.fill();
+  if(++heatCount % 12 === 0) checkInk();
+  render();
+}
+function render(){
+  if(!tmpCv) return;
+  const t = tmpCv.getContext("2d");
+  t.globalCompositeOperation = "source-over"; t.clearRect(0,0,W,H);
+  t.drawImage(textCv, 0, 0); t.globalCompositeOperation = "destination-in"; t.drawImage(heatCv, 0, 0);
+  ctx.clearRect(0,0,W,H);
+  ctx.globalAlpha = .18; ctx.drawImage(heatCv, 0, 0); ctx.globalAlpha = 1; // léger roussi du papier
+  ctx.drawImage(tmpCv, 0, 0);
+}
+function checkInk(){
+  if(found[0] || !samples.length) return;
+  const d = heatCtx.getImageData(0,0,W,H).data;
+  const ok = samples.filter(([x,y]) => d[(y*W+x)*4+3] > 150).length;
+  if(ok / samples.length > 0.92) markFound(0);
+}
+/* la flamme : on la prend sur la bougie, on la promène sous la feuille */
+const candle = $("candle"), flameHome = $("flameHome");
+let flame = null, glow = null, dragging = false, moved = false;
+function pickFlame(e){
+  if(dragging) return;
+  e.preventDefault();
+  dragging = true; moved = false;
+  flameHome.style.visibility = "hidden"; candle.classList.add("empty");
+  flame = document.createElement("div"); flame.className = "flame";
+  glow = document.createElement("div"); glow.className = "glow";
+  document.body.append(glow, flame);
+  moveFlame(e);
+}
+function moveFlame(e){
+  if(!dragging) return;
+  moved = true;
+  const x = e.clientX, y = e.clientY;
+  flame.style.left = x + "px"; flame.style.top = (y + window.scrollY) + "px";
+  flame.style.position = "absolute";
+  const r = paper.getBoundingClientRect();
+  const inside = x > r.left && x < r.right && y > r.top && y < r.bottom;
+  glow.style.display = inside ? "block" : "none";
+  glow.style.left = x + "px"; glow.style.top = (y + window.scrollY - 20) + "px"; glow.style.position = "absolute";
+  if(inside) heatAt(x - r.left, y - r.top - 20);
+}
+function dropFlame(){
+  if(!dragging) return;
+  dragging = false;
+  flame && flame.remove(); glow && glow.remove(); flame = glow = null;
+  flameHome.style.visibility = ""; candle.classList.remove("empty");
+  checkInk();
+}
+candle.addEventListener("pointerdown", pickFlame);
+window.addEventListener("pointermove", moveFlame);
+window.addEventListener("pointerup", dropFlame);
+window.addEventListener("pointercancel", dropFlame);
+
+/* ================= 2. Lettre et carton ================= */
+const CW = 13, CH = 26, PAD = 22;
+const LW = LETTER.cols*CW + PAD*2, LH = LETTER.lines.length*CH + PAD*2;
+const START = { x: LW*0.12, y: LH*0.72, r: -9 };
+let cardPos = { ...START }, placed = false;
+(function buildLetter(){
+  const L = $("letter"); L.style.width = LW+"px"; L.style.height = LH+"px";
+  let h = "";
+  LETTER.lines.forEach((l,r) => [...l].forEach((ch,c) => { if(ch !== " ") h += '<span style="left:'+(PAD+c*CW)+'px;top:'+(PAD+r*CH)+'px">'+ch.replace("<","&lt;")+'</span>'; }));
+  L.innerHTML = h;
+  let d = "M0 0H"+LW+"V"+LH+"H0Z", hi = "";
+  LETTER.holes.forEach(([r,c,l]) => {
+    const x = PAD + c*CW - 3, y = PAD + r*CH + 2, w = l*CW + 6, hh = CH - 4;
+    d += "M"+x+" "+y+"V"+(y+hh)+"H"+(x+w)+"V"+y+"Z";
+    hi += '<rect class="hole-hi" x="'+x+'" y="'+y+'" width="'+w+'" height="'+hh+'" rx="2"/>';
+  });
+  $("card").innerHTML = '<svg width="'+LW+'" height="'+LH+'" viewBox="0 0 '+LW+' '+LH+'">'+
+    '<defs><pattern id="kraft" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#5b4a39"/><circle cx="2" cy="3" r=".7" fill="#6a5643"/></pattern></defs>'+
+    '<path d="'+d+'" fill="url(#kraft)" fill-rule="evenodd" stroke="#2c2117" stroke-width="2"/>'+hi+'</svg><div class="lbl">CARTON</div>';
+})();
+let scale = 1;
+function layoutCard(){
+  const box = $("cardstage"), w = box.clientWidth;
+  if(!w) return;
+  const totalW = LW + 10, totalH = LH + LH*0.72 + 40;
+  scale = Math.min(1, w / totalW);
+  $("cardinner").style.transform = "scale("+scale+")";
+  box.style.height = (placed ? LH + 10 : totalH) * scale + "px";
+  applyCard();
+}
+function applyCard(){ $("card").style.transform = "translate("+cardPos.x+"px,"+cardPos.y+"px) rotate("+cardPos.r+"deg)"; }
+const card = $("card");
+let drag = null;
+card.addEventListener("pointerdown", e => {
+  if(placed) return;
+  e.preventDefault(); card.setPointerCapture(e.pointerId); card.classList.remove("snap");
+  drag = { sx: e.clientX, sy: e.clientY, x: cardPos.x, y: cardPos.y, moved: false };
+});
+card.addEventListener("pointermove", e => {
+  if(!drag) return;
+  const dx = (e.clientX - drag.sx)/scale, dy = (e.clientY - drag.sy)/scale;
+  if(Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
+  cardPos.x = drag.x + dx; cardPos.y = drag.y + dy;
+  const dist = Math.hypot(cardPos.x, cardPos.y);
+  cardPos.r = START.r * Math.min(1, dist / Math.hypot(START.x, START.y));
+  applyCard();
+});
+card.addEventListener("pointerup", () => {
+  if(!drag) return;
+  const near = Math.hypot(cardPos.x, cardPos.y) < LW*0.14;
+  if(!drag.moved || near) placeCard(); // un clic pose le carton directement
+  drag = null;
+});
+function placeCard(){
+  placed = true; card.classList.add("snap","placed");
+  cardPos = { x: 0, y: 0, r: 0 }; applyCard();
+  setTimeout(() => { layoutCard(); markFound(1); }, 900);
+}
+
+/* ================= 3. Radio Londres ================= */
+const SCRIPT = [
+  "Ici Londres ! Les Français parlent aux Français.",
+  "Veuillez d'abord écouter quelques messages personnels.",
+  { m: "Les carottes sont cuites." },
+  { m: "Le chat de la voisine a mangé la confiture." },
+  { m: "Jean a de longues moustaches." },
+  { m: "Le facteur s'est endormi dans la boîte aux lettres." },
+  { m: TEXTS[2], alb: true },
+  { m: "Les sanglots longs des violons de l'automne." },
+  { m: "Le parapluie de grand-mère chante faux." },
+  "Fin des messages personnels."
+];
+let audio, noiseGain, playing = false;
+function startNoise(){
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const buf = audio.createBuffer(1, audio.sampleRate*2, audio.sampleRate), d = buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+    const src = audio.createBufferSource(); src.buffer = buf; src.loop = true;
+    const bp = audio.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1800; bp.Q.value = .7;
+    noiseGain = audio.createGain(); noiseGain.gain.value = .18;
+    src.connect(bp).connect(noiseGain).connect(audio.destination); src.start();
+    noiseGain.gain.setTargetAtTime(.025, audio.currentTime + 1.4, .4);
+    return () => { noiseGain.gain.setTargetAtTime(0, audio.currentTime, .2); setTimeout(() => src.stop(), 800); };
+  }catch(e){ return () => {}; }
+}
+function say(text){
+  return new Promise(res => {
+    $("sub").textContent = text;
+    const fallback = () => setTimeout(res, 900 + text.length*55);
+    if(!("speechSynthesis" in window)) return fallback();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "fr-FR"; u.rate = .85; u.pitch = .75;
+    const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith("fr")); if(v) u.voice = v;
+    let done = false; const end = () => { if(!done){ done = true; setTimeout(res, 650); } };
+    u.onend = end; u.onerror = end;
+    setTimeout(end, 2500 + text.length*110); // garde-fou si la synthèse ne répond pas
     speechSynthesis.speak(u);
   });
 }
-// à l'écran sur téléphone : réduire les pages A4 à la largeur disponible
-function ajuster(){
-  const w = window.innerWidth, a4 = 210 * 96 / 25.4;
-  document.querySelectorAll(".page").forEach(p => {
-    if(w < a4 + 20){ const k = (w - 16) / a4; p.style.zoom = k; } else p.style.zoom = "";
-  });
+async function broadcast(){
+  if(playing) return;
+  playing = true; $("knob").classList.remove("pulse"); $("heard").classList.add("hidden");
+  $("knob").style.transform = "rotate(" + (300 + Math.random()*60) + "deg)";
+  $("needle").style.left = "88%";
+  $("sub").textContent = "Krrrsshh…";
+  const stop = startNoise();
+  await new Promise(r => setTimeout(r, 1700));
+  for(const l of SCRIPT){
+    const text = typeof l === "string" ? l : l.m;
+    await say(text);
+    if(typeof l !== "string" && !l.alb) {} // les messages sont dits une fois
+  }
+  stop(); playing = false;
+  $("sub").textContent = "…";
+  showHeard();
 }
-window.addEventListener("resize", ajuster); ajuster();
-window.addEventListener("beforeprint", () => document.querySelectorAll(".page").forEach(p => p.style.zoom = ""));
-window.addEventListener("afterprint", ajuster);
+function showHeard(){
+  const list = $("heardList"); list.innerHTML = "";
+  SCRIPT.filter(l => typeof l !== "string").forEach(l => {
+    const b = document.createElement("button"); b.textContent = l.m;
+    b.onclick = () => {
+      if(l.alb){ b.classList.add("good"); markFound(2); }
+      else if(!found[2]){ b.classList.remove("bad"); void b.offsetWidth; b.classList.add("bad"); $("m2").textContent = "Ce n'est pas celui-là. Relis bien la carte d'Alberte."; }
+    };
+    list.appendChild(b);
+  });
+  $("heard").classList.remove("hidden");
+}
+$("knob").onclick = broadcast;
+$("again").onclick = broadcast;
+
+/* --- reprise --- */
+try{ JSON.parse(localStorage.getItem("reso_indices") || "[]").forEach((v,i) => { if(v){ markFound(i); if(i === 1){ placed = true; card.classList.add("placed"); cardPos = {x:0,y:0,r:0}; } } }); }catch(e){}
+window.addEventListener("resize", () => { W = 0; show(current); });
+show(0);
 </script>
 </body>
 </html>
