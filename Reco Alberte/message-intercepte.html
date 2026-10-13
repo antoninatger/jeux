@@ -831,7 +831,7 @@ function basculerAuto(){ auto=!auto; if(auto&&pas>=C.msgs.length){ pas=0; sceneD
 function sceneSuiv(){ if(pas<C.msgs.length){ pas++; sceneDessiner(true); } if(auto) planifier(); else majAuto(); }
 function scenePrec(){ if(pas>0){ pas--; sceneDessiner(false); } if(auto) planifier(); else majAuto(); }
 function sceneFin(){ auto=false; clearTimeout(tAuto); clearTimeout(tFrappe); $('scene').classList.remove('on'); $('scene').setAttribute('aria-hidden','true'); try{ document.fullscreenElement&&document.exitFullscreen(); }catch(e){} $('jouer').focus(); }
-$('jouer').onclick=()=>{ if(!C.msgs.length) return msg('Écrivez d\'abord des messages.'); pas=0; $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false'); try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} sceneDessiner(false); };
+$('jouer').onclick=()=>{ if(!C.msgs.length) return msg('Écrivez d\'abord des messages.'); pas=typeof pasGarde==='function'?pasGarde():0; $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false'); try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} sceneDessiner(false); };
 $('sSuiv').onclick=e=>{ e.stopPropagation(); sceneSuiv(); }; $('sAuto').onclick=e=>{ e.stopPropagation(); basculerAuto(); }; $('sPrec').onclick=e=>{ e.stopPropagation(); scenePrec(); }; $('sFin').onclick=e=>{ e.stopPropagation(); sceneFin(); };
 $('scene').addEventListener('click',e=>{ if(!e.target.closest('.bas')) sceneSuiv(); });
 addEventListener('keydown',e=>{ if(!$('scene').classList.contains('on')) return;
@@ -1079,6 +1079,9 @@ function versionReecrite(){ const b=JSON.parse(JSON.stringify(EDOUARD)); b.titre
 $('rVoir').onclick=()=>{ if(!C_ORIG) C_ORIG=C; C=versionReecrite(); reecFermer(); $('scene').classList.add('resultat'); pas=0; sceneDessiner(false); auto=true; planifier(); };
 const _sceneFin=sceneFin; sceneFin=function(){ _sceneFin(); if(C_ORIG){ C=C_ORIG; C_ORIG=null; $('scene').classList.remove('resultat'); } };
 addEventListener('keydown',e=>{ if(!$('reec').classList.contains('on')) return; e.stopImmediatePropagation(); if(e.key==='Escape'){ e.preventDefault(); reecFermer(); } },true);
+const CLE_PAS='selfdata-lecture-v1';
+function pasGarde(){ try{ const n=+localStorage.getItem(CLE_PAS)||0; return Math.max(0,Math.min(n,C.msgs.length)); }catch(e){ return 0; } }
+const _sceneDessiner=sceneDessiner; sceneDessiner=function(nouv){ _sceneDessiner(nouv); if(!C_ORIG){ try{ localStorage.setItem(CLE_PAS,String(pas)); }catch(e){} } };
 document.querySelectorAll('#depart .mode').forEach(b=>b.onclick=e=>{ e.stopPropagation(); modeJeu=b.dataset.mode; departFin(); $('jouer').click(); auto=true; planifier(); });
 
 function tout(){ dessinerReglages(); majTel(); }
