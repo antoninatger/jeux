@@ -280,7 +280,7 @@ const VERROU = {
   blocageSecondes: 30,
   indices: [
     "Indice du réseau : le code ne contient que des lettres, et il en compte autant que l'âge d'Alberte en 1908.",
-    "Indice du réseau : il commence par la première lettre de son prénom.",
-    "Indice du réseau : il continue avec le nom qu'elle portait avant de connaître son mari."
+    "Indice du réseau : il mélange les deux mots qu'on utilise pour se présenter.",
+    "Indice du réseau : la petite A passe la première, son nom de demoiselle marche derrière elle."
   ]
 };
