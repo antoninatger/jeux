@@ -37,9 +37,9 @@
     border-radius:50% 50% 45% 45%/65% 65% 35% 35%;animation:flick .18s infinite alternate}
   @keyframes flick{from{transform:scale(1,1) rotate(-2deg)}to{transform:scale(.92,1.08) rotate(2deg)}}
   .flame.home{position:absolute;left:50%;top:-8px}
-  .candle.empty{cursor:default}
+  .candle.held{position:fixed;z-index:10;cursor:grabbing}
   .paperbox.burning{animation:shake .5s 2}
-  .glow{position:absolute;width:160px;height:160px;border-radius:50%;pointer-events:none;z-index:3;
+  .glow{position:fixed;width:160px;height:160px;border-radius:50%;pointer-events:none;z-index:3;
     background:radial-gradient(circle,rgba(255,170,60,.35),rgba(255,140,40,0) 70%);transform:translate(-50%,-50%)}
 
   /* ---- 2. carton ---- */
@@ -106,9 +106,9 @@
 
   <!-- 1. Encre sympathique -->
   <section class="stage" id="s0">
-    <p class="consigne">Cette feuille semble blanche… mais Alberte a écrit au <b>jus de citron</b>. <b>Attrape la flamme de la bougie</b> et passe-la sous la feuille pour faire apparaître le message. Trop vite, rien n'apparaît ; trop longtemps au même endroit, <b>la feuille brûle</b>. Trouve le bon rythme !</p>
+    <p class="consigne">Cette feuille semble blanche… mais Alberte a écrit au <b>jus de citron</b>. <b>Attrape la bougie</b> et passe sa flamme sous la feuille pour faire apparaître le message. Trop vite, rien n'apparaît ; trop longtemps au même endroit, <b>la feuille brûle</b>. Trouve le bon rythme !</p>
     <div class="paperbox" id="paper"><canvas id="cv"></canvas></div>
-    <div class="candle-row"><div class="candle" id="candle"><div class="flame home" id="flameHome"></div></div></div>
+    <div class="candle-row"><div class="candle" id="candle"><div class="flame home"></div></div></div>
     <div class="msg" id="m0"></div>
     <div class="histo"><div class="h">📜 Dans l'histoire</div>Les résistants et les agents envoyés par Londres écrivaient vraiment à l'<b>encre sympathique</b> : jus de citron, lait, ou encres spéciales fournies par les services secrets britanniques. Le message, invisible, se cachait par exemple entre les lignes d'une lettre ordinaire. Une fois chauffé, il réapparaissait.</div>
   </section>
@@ -274,35 +274,35 @@ function loop(t){
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
-/* la flamme : on la prend sur la bougie, on la promène sous la feuille */
-const candle = $("candle"), flameHome = $("flameHome");
-let flame = null, glow = null, dragging = false;
+/* la bougie : on l'attrape et on la promène, flamme comprise, sous la feuille */
+const candle = $("candle");
+let glow = null, dragging = false, off = [0,0];
 function pickFlame(e){
   if(dragging || burnt) return;
   e.preventDefault();
   dragging = true;
-  flameHome.style.visibility = "hidden"; candle.classList.add("empty");
-  flame = document.createElement("div"); flame.className = "flame";
-  glow = document.createElement("div"); glow.className = "glow";
-  document.body.append(glow, flame);
+  const r = candle.getBoundingClientRect();
+  off = [e.clientX - r.left, e.clientY - r.top];
+  candle.classList.add("held");
+  glow = document.createElement("div"); glow.className = "glow"; document.body.append(glow);
   moveFlame(e);
 }
 function moveFlame(e){
   if(!dragging) return;
-  const x = e.clientX, y = e.clientY;
-  flame.style.position = glow.style.position = "absolute";
-  flame.style.left = x + "px"; flame.style.top = (y + window.scrollY) + "px";
+  const cx = e.clientX - off[0], cy = e.clientY - off[1];
+  candle.style.left = cx + "px"; candle.style.top = cy + "px";
+  const fx = cx + candle.offsetWidth/2, fy = cy - 22;   // centre de la flamme, au-dessus de la mèche
   const r = paper.getBoundingClientRect();
-  const inside = x > r.left && x < r.right && y > r.top && y < r.bottom;
+  const inside = fx > r.left && fx < r.right && fy > r.top && fy < r.bottom;
   glow.style.display = inside ? "block" : "none";
-  glow.style.left = x + "px"; glow.style.top = (y + window.scrollY - 20) + "px";
-  flameAt = inside ? [x - r.left, y - r.top - 20] : null;
+  glow.style.left = fx + "px"; glow.style.top = fy + "px";
+  flameAt = inside ? [fx - r.left, fy - r.top] : null;
 }
 function dropFlame(){
   if(!dragging) return;
   dragging = false; flameAt = null;
-  flame && flame.remove(); glow && glow.remove(); flame = glow = null;
-  flameHome.style.visibility = ""; candle.classList.remove("empty");
+  glow && glow.remove(); glow = null;
+  candle.classList.remove("held"); candle.style.left = candle.style.top = "";
   checkInk();
 }
 candle.addEventListener("pointerdown", pickFlame);
@@ -377,7 +377,7 @@ const SCRIPT = [
   { m: "Le chat de la voisine a mangé la confiture." },
   { m: "Le pharmacien a perdu son chapeau." },
   { m: "Le facteur s'est endormi dans la boîte aux lettres." },
-  { m: TEXTS[2], alb: true },
+  { m: TEXTS[2] + " Je répète : " + TEXTS[2].charAt(0).toLowerCase() + TEXTS[2].slice(1), alb: true },
   { m: "La lune est pleine de poireaux." },
   { m: "Le parapluie de grand-mère chante faux." },
   "Fin des messages personnels."
@@ -392,13 +392,25 @@ function startNoise(){
     const bp = audio.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1800; bp.Q.value = .7;
     noiseGain = audio.createGain(); noiseGain.gain.value = .18;
     src.connect(bp).connect(noiseGain).connect(audio.destination); src.start();
-    noiseGain.gain.setTargetAtTime(.025, audio.currentTime + 1.4, .4);
+    noiseGain.gain.setTargetAtTime(.01, audio.currentTime + 1.4, .4);
     return () => { noiseGain.gain.setTargetAtTime(0, audio.currentTime, .2); setTimeout(() => src.stop(), 800); };
   }catch(e){ return () => {}; }
 }
-function say(text){
+// enregistrements « poste à lampes » (voix de synthèse vieillie : bande étroite, souffle, crépitements)
+const CLIPS = SCRIPT.map((_, i) => "audio/radio-londres-" + i + ".mp3");
+function playClip(i, text){
   return new Promise(res => {
     $("sub").textContent = text;
+    const a = new Audio(CLIPS[i]);
+    let done = false; const end = () => { if(!done){ done = true; setTimeout(res, 450); } };
+    a.onended = end;
+    a.onerror = () => { if(!done){ done = true; speak(text).then(res); } };
+    a.play().catch(() => { if(!done){ done = true; speak(text).then(res); } });
+  });
+}
+// secours si les enregistrements ne se chargent pas : voix de l'appareil
+function speak(text){
+  return new Promise(res => {
     const fallback = () => setTimeout(res, 900 + text.length*55);
     if(!("speechSynthesis" in window)) return fallback();
     const u = new SpeechSynthesisUtterance(text);
@@ -406,7 +418,7 @@ function say(text){
     const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith("fr")); if(v) u.voice = v;
     let done = false; const end = () => { if(!done){ done = true; setTimeout(res, 650); } };
     u.onend = end; u.onerror = end;
-    setTimeout(end, 2500 + text.length*110); // garde-fou si la synthèse ne répond pas
+    setTimeout(end, 2500 + text.length*110);
     speechSynthesis.speak(u);
   });
 }
@@ -418,10 +430,9 @@ async function broadcast(){
   $("sub").textContent = "Krrrsshh…";
   const stop = startNoise();
   await new Promise(r => setTimeout(r, 1700));
-  for(const l of SCRIPT){
-    const text = typeof l === "string" ? l : l.m;
-    await say(text);
-    if(typeof l !== "string" && !l.alb) {} // les messages sont dits une fois
+  for(let i = 0; i < SCRIPT.length; i++){
+    const l = SCRIPT[i];
+    await playClip(i, typeof l === "string" ? l : l.m);
   }
   stop(); playing = false;
   $("sub").textContent = "…";
@@ -430,7 +441,7 @@ async function broadcast(){
 function showHeard(){
   const list = $("heardList"); list.innerHTML = "";
   SCRIPT.filter(l => typeof l !== "string").forEach(l => {
-    const b = document.createElement("button"); b.textContent = l.m;
+    const b = document.createElement("button"); b.textContent = l.alb ? TEXTS[2] : l.m;
     b.onclick = () => {
       if(l.alb){ b.classList.add("good"); markFound(2); }
       else if(!found[2]){ b.classList.remove("bad"); void b.offsetWidth; b.classList.add("bad"); $("m2").textContent = "Ce n'est pas celui-là. Relis bien la carte d'Alberte."; }
