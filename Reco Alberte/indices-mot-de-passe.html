@@ -134,7 +134,8 @@
           <div class="dial"><div class="names"><span>Paris</span><span>Vichy</span><span>Stuttgart</span><b>Londres</b></div><div class="needle" id="needle"></div></div>
           <div class="knobs"><span class="brand">Radiola</span><button class="knob pulse" id="knob" aria-label="Tourner le bouton"></button></div>
         </div>
-        <div class="sub" id="sub">…</div>
+        <button class="smallbtn" id="subBtn" aria-pressed="false">💬 Afficher le texte (malentendants)</button>
+        <div class="sub hidden" id="sub">…</div>
       </div>
       <div>
         <div class="keycard"><div class="k">Carte glissée sous la porte</div>« Ce soir, écoutez Radio Londres. Mon message passera <b>juste après celui du facteur</b>. Il vous dira comment commence mon code, et ce qui vient ensuite. »<div class="sig">Alberte</div></div>
@@ -440,7 +441,7 @@ async function broadcast(){
 }
 function showHeard(){
   const list = $("heardList"); list.innerHTML = "";
-  SCRIPT.filter(l => typeof l !== "string").forEach(l => {
+  SCRIPT.filter(l => typeof l !== "string").sort(() => Math.random() - .5).forEach(l => { // mélangés : il faut avoir écouté l'ordre
     const b = document.createElement("button"); b.textContent = l.alb ? TEXTS[2] : l.m;
     b.onclick = () => {
       if(l.alb){ b.classList.add("good"); markFound(2); }
@@ -451,6 +452,11 @@ function showHeard(){
   $("heard").classList.remove("hidden");
 }
 $("knob").onclick = broadcast;
+$("subBtn").onclick = () => {
+  const on = $("sub").classList.toggle("hidden") === false;
+  $("subBtn").setAttribute("aria-pressed", on);
+  $("subBtn").textContent = on ? "💬 Masquer le texte" : "💬 Afficher le texte (malentendants)";
+};
 $("again").onclick = broadcast;
 
 /* --- reprise --- */
