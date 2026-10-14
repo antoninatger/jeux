@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDV résistant</title>
+<style>
+  :root{--ink:#2b2118;--paper:#f3e9d2;--muted:#76664f;--accent:#9a3b22;--bg:#161210;--panel:#201914;--edge:#3d3024;--soft:#d8c7a6;--gold:#ffd166;--good:#4fbf7d;--bad:#e5734d}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--paper);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
+  .wrap{max-width:960px;margin:0 auto;padding:16px 16px 56px}
+  h1{font-size:21px;margin:0 0 10px;letter-spacing:.5px}
+  h2{font-size:17px;margin:0 0 6px}
+  .hidden{display:none!important}
+  .consigne{background:var(--paper);color:var(--ink);border-radius:6px;padding:14px 16px;font:italic 17px/1.5 Georgia,serif;box-shadow:0 6px 16px rgba(0,0,0,.5);transform:rotate(-.5deg);margin-bottom:16px}
+  .consigne b{font-style:normal;letter-spacing:1px}
+
+  /* ---------- le bureau ---------- */
+  .desk{border-radius:16px;padding:18px;margin-bottom:16px;
+    background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 40%),repeating-linear-gradient(92deg,#4a3322 0 14px,#523826 14px 22px,#45301f 22px 40px);
+    box-shadow:inset 0 0 40px rgba(0,0,0,.55)}
+  .desk .kick{font:700 11px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#f0d9b0;margin-bottom:10px}
+  .objs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:700px){.objs{grid-template-columns:repeat(2,1fr)}}
+  .obj{position:relative;border:none;cursor:pointer;border-radius:8px;padding:12px 10px 10px;min-height:128px;color:var(--ink);text-align:center;
+    background:var(--paper);box-shadow:0 8px 14px rgba(0,0,0,.5);transition:transform .15s;font:600 13px system-ui,sans-serif}
+  .obj:hover{transform:translateY(-3px) rotate(0deg)!important}
+  .obj .ic{font-size:40px;display:block;margin-bottom:6px}
+  .obj small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+  .obj.o1{background:#1b1b1f;color:#e9e9ee;transform:rotate(-2deg)} .obj.o1 small{color:#9a9aa6}
+  .obj.o2{transform:rotate(1.5deg);background:radial-gradient(ellipse at 40% 30%,#f4ead1,#e3d0a6)}
+  .obj.o3{transform:rotate(-1deg);background:#efe4c8}
+  .obj.o4{transform:rotate(2deg);background:#e9dcc0 url(plan-lyon-1942.jpg) 52% 30%/320% auto}
+  .obj.o4 span.l{background:rgba(243,233,210,.92);border-radius:6px;padding:3px 8px;display:inline-block;margin-top:56px}
+  .badge{position:absolute;top:-7px;right:-7px;background:#c0261b;color:#fff;border-radius:12px;font:700 11px system-ui,sans-serif;padding:3px 7px}
+
+  /* ---------- fenêtres de documents ---------- */
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(8,6,5,.82);display:flex;align-items:center;justify-content:center;padding:16px}
+  .sheet{position:relative;max-width:900px;width:100%;max-height:92vh;overflow:auto;border-radius:12px}
+  .close{position:sticky;top:0;float:right;z-index:3;background:var(--paper);color:var(--ink);border:none;border-radius:20px;padding:7px 14px;font:700 13px system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.4)}
+
+  /* téléphone et messages vocaux */
+  .phone{max-width:380px;margin:0 auto;background:#0b141a;border-radius:28px;border:8px solid #222;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+  .ph-head{background:#1f2c33;padding:12px 14px;display:flex;align-items:center;gap:10px;font:14px system-ui,sans-serif;color:#e9edef}
+  .ph-head .av{width:36px;height:36px;border-radius:50%;background:#3b4a54;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .ph-head small{display:block;color:#8696a0;font-size:12px}
+  .ph-body{padding:14px 10px 18px;display:flex;flex-direction:column;gap:12px;background:#0b141a}
+  .day-sep{align-self:center;background:#1f2c33;color:#8696a0;font:12px system-ui,sans-serif;padding:4px 10px;border-radius:8px}
+  .vm{background:#202c33;border-radius:12px;padding:8px 10px 6px;max-width:92%;color:#e9edef;font:13px system-ui,sans-serif}
+  .vm.me{align-self:flex-end;background:#005c4b}
+  .vm .who{font-weight:700;font-size:12.5px;margin-bottom:4px}
+  .vm .bar{display:flex;align-items:center;gap:8px}
+  .vm button.play{width:36px;height:36px;border-radius:50%;border:none;background:#00a884;color:#fff;font-size:15px;cursor:pointer;flex-shrink:0}
+  .wave{flex:1;display:flex;align-items:center;gap:2px;height:30px;cursor:pointer}
+  .wave i{flex:1;background:#8696a0;border-radius:2px;min-width:2px}
+  .wave i.on{background:#53bdeb}
+  .vm .meta{display:flex;justify-content:space-between;color:#8696a0;font-size:11px;margin-top:3px}
+  .vm .tr{background:none;border:none;color:#53bdeb;font:12px system-ui,sans-serif;cursor:pointer;padding:0}
+  .vm .txt{margin-top:6px;font-size:13px;line-height:1.45;color:#d1d7db;border-top:1px solid rgba(255,255,255,.1);padding-top:6px}
+
+  /* relevé */
+  .torn{background:radial-gradient(ellipse at 40% 30%,#f4ead1,#e3d0a6);padding:22px 12px;color:var(--ink);overflow-x:auto;
+    clip-path:polygon(0 5%,4% 0,12% 4%,22% 1%,35% 5%,48% 0,60% 4%,73% 1%,86% 5%,100% 2%,99% 40%,100% 96%,88% 100%,74% 95%,60% 100%,46% 96%,30% 100%,16% 95%,3% 100%,1% 60%)}
+  table.conso{border-collapse:collapse;font:13px system-ui,sans-serif;min-width:680px;margin:6px auto}
+  .conso th,.conso td{border:1px solid #6b5a42;padding:5px 7px;text-align:left;white-space:nowrap}
+  .conso thead th{cursor:pointer}
+  .conso thead th:hover{background:rgba(255,209,102,.35)}
+  .conso .col{background:rgba(255,209,102,.45)}
+  .conso td{cursor:pointer}
+  .conso td.hl{background:#ffd166;font-weight:700}
+  .tip{font:12.5px/1.5 system-ui,sans-serif;color:var(--muted);text-align:center;margin:6px 0 0}
+  .histo{margin-top:12px;border-left:3px solid var(--accent);background:#2a211a;border-radius:0 10px 10px 0;padding:10px 14px;font:13.5px/1.55 system-ui,sans-serif;color:var(--soft)}
+  .histo b{color:var(--paper)}
+
+  /* carnet */
+  .carnet{max-width:360px;margin:0 auto;background:#f7f0de;color:var(--ink);border-radius:6px;padding:32px 24px 22px;position:relative;
+    background-image:repeating-linear-gradient(transparent 0 31px,#d9c9a6 31px 32px)}
+  .carnet::before{content:"";position:absolute;left:14px;right:14px;top:8px;height:12px;background:radial-gradient(circle,#3a2d20 3px,transparent 4px) 0 0/24px 12px repeat-x}
+  .carnet h3{font:italic 25px "Segoe Script","Brush Script MT",Georgia,cursive;text-align:center;margin:4px 0 8px}
+  .carnet table{width:100%;border-collapse:collapse;font:16px/32px "Segoe Script","Brush Script MT",Georgia,cursive}
+  .carnet th{text-align:left;font:700 14px/32px system-ui,sans-serif;border-bottom:1.5px solid var(--ink)}
+  .carnet tr.hl td{background:rgba(255,209,102,.6)}
+  .carnet td{cursor:pointer}
+
+  /* plan en grand */
+  .bigmap{overflow:auto;max-height:80vh;border-radius:8px;background:#000}
+  .bigmap img{display:block;width:1857px;max-width:none}
+
+  /* ---------- l'enquête ---------- */
+  .sec{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:14px;margin-bottom:14px}
+  .sec p.help{font:14px/1.5 system-ui,sans-serif;color:var(--soft);margin:0 0 10px}
+  .sec p.help b{color:#fff}
+  .step-ok::after{content:" ✓";color:var(--good)}
+  .days{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+  @media(max-width:560px){.days{grid-template-columns:repeat(4,1fr)}}
+  .day{background:var(--paper);color:var(--ink);border:2px solid transparent;border-radius:8px;padding:8px 0;cursor:pointer;text-align:center;font:600 15px system-ui,sans-serif}
+  .day small{display:block;font-weight:400;font-size:10px;color:var(--muted)}
+  .day.on{border-color:var(--gold);background:#ffe9a8}
+  .day:disabled{cursor:default}
+  .btn{background:var(--gold);color:#1c1510;border:none;border-radius:22px;padding:10px 20px;font:700 14px system-ui,sans-serif;cursor:pointer;margin-top:12px}
+  .btn.ghost{background:none;border:1px solid #4a3a2a;color:var(--soft);font-weight:600}
+  .lnk{background:none;border:none;color:var(--gold);font:600 13px system-ui,sans-serif;cursor:pointer;text-decoration:underline;padding:0}
+  .fb{font:600 14px/1.45 system-ui,sans-serif;min-height:20px;margin-top:10px}
+  .fb.ko{color:var(--bad)} .fb.ok{color:var(--good)}
+  .rows{display:grid;gap:8px}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:15px system-ui,sans-serif}
+  .row label{min-width:150px;color:var(--soft)}
+  @media(max-width:560px){.row label{min-width:0;width:100%}}
+  select,input[type=text]{background:#0f0c0a;color:var(--paper);border:1px solid #4a3a2a;border-radius:10px;padding:8px 10px;font:15px system-ui,sans-serif;min-width:200px}
+
+  /* carte de l'enquête */
+  .tokens{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;min-height:40px}
+  .token{background:var(--paper);color:var(--ink);border-radius:20px;padding:7px 12px 7px 9px;font:600 13px system-ui,sans-serif;cursor:grab;touch-action:none;user-select:none;box-shadow:0 3px 8px rgba(0,0,0,.4)}
+  .token::before{content:"📍 "}
+  .token.ghost{position:fixed;z-index:60;pointer-events:none;opacity:.95;cursor:grabbing}
+  .token.used{display:none}
+  .mapbox{overflow-x:auto;border-radius:8px;box-shadow:0 6px 14px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch}
+  .map{position:relative;min-width:680px}
+  .map svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+  .pin circle.p{fill:var(--gold);stroke:#1c1510;stroke-width:3}
+  .pin .lab{font:700 15px system-ui,sans-serif;fill:#fff;stroke:#1c1510;stroke-width:4px;paint-order:stroke}
+  .pin{cursor:crosshair}
+  .trait{stroke:#1a3d8f;stroke-width:4;stroke-linecap:round}
+  .trait.temp{stroke-dasharray:8 6;opacity:.8}
+  .cross{fill:none;stroke:var(--gold);stroke-width:3;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{r:9}50%{r:17}}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  .alerte{background:#0b141a;border-radius:16px;padding:16px;max-width:420px;margin:0 auto;font:14px system-ui,sans-serif}
+  .alerte .bub{background:#005c4b;color:#e9edef;border-radius:12px;padding:10px 12px;margin-left:auto;max-width:90%;line-height:1.45}
+  .alerte .st{color:#8696a0;font-size:12px;text-align:right;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📂 Étape 2 · RDV résistant</h1>
+  <div class="consigne">« Regardez tous les documents qui s'appellent <b>Étape 2</b>. Une règle : le prochain lieu de résistance aura lieu au croisement de 4 <b>ANCIENS</b> lieux de résistance. À vous de trouver lesquels ! »</div>
+
+  <!-- ===== Le bureau ===== -->
+  <section class="desk">
+    <div class="kick">Sur le bureau d'Alberte · cliquez pour consulter</div>
+    <div class="objs">
+      <button class="obj o1" data-m="mVocaux"><span class="badge" id="vmBadge">3</span><span class="ic">📱</span>Messages vocaux<small>Réseau · 3 messages</small></button>
+      <button class="obj o2" data-m="mConso"><span class="ic">⚡</span>Relevé électrique<small>12 au 19 nov. 1942</small></button>
+      <button class="obj o3" data-m="mCarnet"><span class="ic">📒</span>Carnet de notes<small>noms de code</small></button>
+      <button class="obj o4" data-m="mPlan"><span class="l">🗺️ Plan de Lyon</span></button>
+    </div>
+  </section>
+
+  <!-- ===== Fenêtres ===== -->
+  <div class="modal hidden" id="mVocaux"><div class="sheet"><button class="close">Fermer ✕</button>
+    <div class="phone">
+      <div class="ph-head"><div class="av">🕊️</div><div>Réseau<small>Castor, Hirondelle, Merle, Rossignol</small></div></div>
+      <div class="ph-body" id="vmList"><div class="day-sep">19 novembre 1942</div></div>
+    </div>
+  </div></div>
+
+  <div class="modal hidden" id="mConso"><div class="sheet"><button class="close">Fermer ✕</button>
+    <div class="torn"><table class="conso" id="consoTable"></table>
+      <p class="tip">Cliquez sur une date pour surligner sa colonne, ou sur une case pour la marquer au surligneur.</p></div>
+    <div class="histo"><b>Pourquoi ce relevé ?</b> Un poste émetteur clandestin consomme du courant. Pour repérer les radios de la Résistance, les services allemands écoutaient les émissions avec des voitures de radiogoniométrie, et allaient parfois jusqu'à couper l'électricité quartier par quartier : quand l'émission s'arrêtait, ils savaient où chercher. Une simple consommation électrique peut trahir quelqu'un.</div>
+  </div></div>
+
+  <div class="modal hidden" id="mCarnet"><div class="sheet"><button class="close">Fermer ✕</button>
+    <div class="carnet"><h3>Carnet de notes</h3><table id="carnetTable"></table></div>
+  </div></div>
+
+  <div class="modal hidden" id="mPlan"><div class="sheet"><button class="close">Fermer ✕</button>
+    <div class="bigmap"><img src="plan-lyon-1942.jpg" alt="Plan général de Lyon"></div>
+  </div></div>
+
+  <!-- ===== 1. Dates ===== -->
+  <section class="sec" id="s1">
+    <h2 id="h1">1. Les quatre dates</h2>
+    <p class="help">Pour trouver mon point de rendez-vous le 20 novembre 1942, il faut d'abord trouver mes rendez-vous durant quatre autres dates. Écoutez les <button class="lnk" data-m="mVocaux">messages vocaux</button> du réseau, puis choisissez les quatre dates.</p>
+    <div class="days" id="days"></div>
+    <button class="btn" id="v1">Vérifier les dates</button>
+    <div class="fb" id="f1"></div>
+  </section>
+
+  <!-- ===== 2. Lieux ===== -->
+  <section class="sec hidden" id="s2">
+    <h2 id="h2">2. Les quatre anciens lieux</h2>
+    <p class="help">Où étais-je ces jours-là ? Le <button class="lnk" data-m="mConso">relevé électrique</button> trahit mes passages.</p>
+    <div class="rows" id="rows"></div>
+    <button class="btn" id="v2">Vérifier les lieux</button>
+    <div class="fb" id="f2"></div>
+  </section>
+
+  <!-- ===== 3. Carte ===== -->
+  <section class="sec hidden" id="s3">
+    <h2 id="h3">3. Sur le plan de Lyon</h2>
+    <p class="help" id="help3"><b>Faites glisser chaque épingle</b> sur le plan, à l'endroit où le quartier est écrit.</p>
+    <div class="tokens" id="tokens"></div>
+    <div class="mapbox"><div class="map"><svg id="svg" viewBox="600 30 860 400" role="img" aria-label="Plan de Lyon"></svg></div></div>
+    <div class="tools"><button class="btn ghost" id="erase">Effacer les traits</button></div>
+    <div class="row hidden" id="crossQ" style="margin-top:12px"><label>Au croisement, mon lieu de rendez-vous du 20 novembre :</label><select id="lieu20"></select></div>
+    <button class="btn hidden" id="v3">Vérifier le lieu</button>
+    <div class="fb" id="f3"></div>
+  </section>
+
+  <!-- ===== 4. Résistant ===== -->
+  <section class="sec hidden" id="s4">
+    <h2 id="h4">4. Le résistant à prévenir</h2>
+    <p class="help">Qui dois-je rencontrer aux Brotteaux ? Le <button class="lnk" data-m="mCarnet">carnet de notes</button> le dit, sous son nom de code.</p>
+    <div class="row"><label>Le 20 novembre, je dois rencontrer :</label><input type="text" id="code" autocomplete="off" placeholder="nom de code"></div>
+    <button class="btn" id="v4">Envoyer l'alerte</button>
+    <div class="fb" id="f4"></div>
+  </section>
+
+  <section class="hidden" id="fin">
+    <div class="alerte">
+      <div class="bub">🕊️ <b>Colombe</b>, c'est Rossignol. Il faut qu'on se voie le 20 novembre aux Brotteaux. Fais très attention en venant, c'est urgent.</div>
+      <div class="st">Envoyé ✓✓</div>
+    </div>
+    <p class="help" style="text-align:center;font:14px system-ui,sans-serif;color:var(--soft)">Bravo ! Vous avez trouvé le lieu du rendez-vous et prévenu Colombe à temps.</p>
+    <div style="text-align:center"><button class="btn ghost" id="restart">Recommencer l'enquête</button></div>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LIEUX = ["Croix-Rousse","La Ferrandière","La Guillotière","Les Brotteaux","Fourvière","Perrache","Monplaisir","Les Charpennes"];
+const CODES = ["Hibou","Mésange","Pie","Colombe","Castor","Rossignol","Blaireau","Hirondelle"];
+const JOURS = [12,13,14,15,16,17,18,19];
+const CONSO = {12:[0,50],13:[2,45],14:[4,38],15:[3,35],16:[5,47],17:[6,51],18:[1,38],19:[7,42]};   // jour → [lieu, Wh]
+const POS = {0:[907,122],1:[1257,315],4:[842,244],7:[1260,170]};   // où le quartier est écrit sur le plan (pixels de l'image)
+const TOL = 60;
+const SOL = { dates:[12,14,18,19], lieu20:3, code:"colombe" };
+const VOCAUX = [
+  { who:"Castor", t:"Hirondelle, Merle, c'est Castor. Rossignol a eu quatre rendez-vous avant celui du 20 novembre. Il y a un jour d'écart entre le premier et le deuxième. Et les deux derniers se sont suivis : deux jours de suite.", h:"21:04" },
+  { who:"Hirondelle", t:"Bien reçu, Castor. De mon côté, j'ai remarqué une chose : parmi ces quatre dates, il y a trois jours pairs, et un seul jour impair.", h:"21:11" },
+  { who:"Merle", t:"Ici Merle. Je peux vous aider : le tout premier rendez-vous, c'était le 12 novembre. Et le dernier, le 19 novembre. Surtout, effacez ces messages après les avoir écoutés !", h:"21:20" }
+];
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z]/g,"");
+
+/* ---------- sauvegarde ---------- */
+const KEY = "selfdata-rdv20-v2";
+let st = { step:1, dates:[], lieux:{}, pins:[], traits:[], heard:[] };
+try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.step) st = Object.assign(st, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+function fb(id, t, ok){ $(id).textContent = t; $(id).className = "fb " + (ok ? "ok" : "ko"); }
+
+/* ---------- fenêtres ---------- */
+document.querySelectorAll("[data-m]").forEach(b => b.addEventListener("click", () => $(b.dataset.m).classList.remove("hidden")));
+document.querySelectorAll(".modal").forEach(m => {
+  m.addEventListener("click", e => { if(e.target === m || e.target.classList.contains("close")) closeModal(m); });
+});
+function closeModal(m){ m.classList.add("hidden"); if(cur){ cur.pause(); } }
+document.addEventListener("keydown", e => { if(e.key === "Escape") document.querySelectorAll(".modal").forEach(m => { if(!m.classList.contains("hidden")) closeModal(m); }); });
+
+/* ---------- messages vocaux ---------- */
+let cur = null, curUi = null;
+VOCAUX.forEach((v,i) => {
+  const d = document.createElement("div"); d.className = "vm";
+  const bars = Array.from({length:34}, (_,k) => '<i style="height:' + (20 + Math.round(70*Math.abs(Math.sin(k*1.7+i)*Math.cos(k*.45)))) + '%"></i>').join("");
+  d.innerHTML = '<div class="who" style="color:' + ["#53bdeb","#ff9fd2","#f6c36b"][i] + '">' + v.who + '</div>' +
+    '<div class="bar"><button class="play" aria-label="Écouter le message de ' + v.who + '">▶</button><div class="wave">' + bars + '</div></div>' +
+    '<div class="meta"><button class="tr">Afficher le texte</button><span><span class="dur">0:00</span> · ' + v.h + '</span></div><div class="txt hidden">« ' + v.t + ' »</div>';
+  $("vmList").appendChild(d);
+  const a = new Audio("audio/vocal-etape2-" + (i+1) + ".mp3"); a.preload = "metadata";
+  const play = d.querySelector(".play"), waves = [...d.querySelectorAll(".wave i")], dur = d.querySelector(".dur");
+  const fmt = s => Math.floor(s/60) + ":" + String(Math.floor(s%60)).padStart(2,"0");
+  a.addEventListener("loadedmetadata", () => dur.textContent = fmt(a.duration));
+  a.addEventListener("timeupdate", () => { const p = a.currentTime / (a.duration || 1); waves.forEach((w,k) => w.classList.toggle("on", k/waves.length < p)); dur.textContent = fmt(a.currentTime); });
+  a.addEventListener("ended", () => { play.textContent = "▶"; heard(i); });
+  a.addEventListener("pause", () => play.textContent = "▶");
+  a.addEventListener("play", () => play.textContent = "❚❚");
+  play.onclick = () => { if(cur && cur !== a) cur.pause(); cur = a; if(a.paused) a.play().catch(()=>{}); else a.pause(); };
+  d.querySelector(".wave").onclick = e => { const r = e.currentTarget.getBoundingClientRect(); if(a.duration){ a.currentTime = (e.clientX - r.left)/r.width * a.duration; } };
+  d.querySelector(".tr").onclick = e => { const t = d.querySelector(".txt"); t.classList.toggle("hidden"); e.target.textContent = t.classList.contains("hidden") ? "Afficher le texte" : "Masquer le texte"; heard(i); };
+});
+function heard(i){ if(!st.heard.includes(i)){ st.heard.push(i); save(); } const n = 3 - st.heard.length; $("vmBadge").textContent = n; $("vmBadge").classList.toggle("hidden", n <= 0); }
+heard(-1); st.heard = st.heard.filter(i => i >= 0); heard(-2); st.heard = st.heard.filter(i => i >= 0);
+
+/* ---------- relevé et carnet ---------- */
+$("consoTable").innerHTML = "<thead><tr><th></th>" + JOURS.map((j,k) => '<th data-c="' + (k+1) + '">' + j + " nov 1942</th>").join("") + "</tr></thead><tbody>" +
+  LIEUX.map((l,i) => "<tr><th>" + l + "</th>" + JOURS.map(j => CONSO[j][0] === i ? "<td>" + CONSO[j][1] + " Wh</td>" : "<td>0</td>").join("") + "</tr>").join("") + "</tbody>";
+$("consoTable").querySelectorAll("thead th[data-c]").forEach(th => th.onclick = () => {
+  const c = +th.dataset.c, on = !th.classList.contains("col");
+  $("consoTable").querySelectorAll("tr").forEach(tr => { const cell = tr.children[c]; if(cell) cell.classList.toggle("col", on); });
+});
+$("consoTable").querySelectorAll("tbody td").forEach(td => td.onclick = () => td.classList.toggle("hl"));
+$("carnetTable").innerHTML = "<tr><th>Nom de code</th><th>Lieu de rencontre</th></tr>" + LIEUX.map((l,i) => "<tr><td>" + CODES[i] + "</td><td>" + l + "</td></tr>").join("");
+$("carnetTable").querySelectorAll("tr").forEach((tr,i) => { if(i) tr.onclick = () => tr.classList.toggle("hl"); });
+
+/* ---------- 1. dates ---------- */
+const NOMS_J = {12:"jeu.",13:"ven.",14:"sam.",15:"dim.",16:"lun.",17:"mar.",18:"mer.",19:"jeu."};
+$("days").innerHTML = JOURS.map(j => '<button class="day" data-j="' + j + '">' + j + '<small>' + NOMS_J[j] + ' nov.</small></button>').join("");
+function drawDays(){ document.querySelectorAll(".day").forEach(b => b.classList.toggle("on", st.dates.includes(+b.dataset.j))); }
+document.querySelectorAll(".day").forEach(b => b.onclick = () => {
+  if(st.step > 1) return;
+  const j = +b.dataset.j;
+  if(st.dates.includes(j)) st.dates = st.dates.filter(x => x !== j);
+  else if(st.dates.length < 4) st.dates.push(j);
+  else return fb("f1", "Quatre dates seulement ! Retirez-en une avant d'en choisir une autre.");
+  st.dates.sort((a,b) => a-b); $("f1").textContent = ""; drawDays(); save();
+});
+$("v1").onclick = () => {
+  const d = st.dates;
+  if(d.length !== 4) return fb("f1", "Il faut choisir exactement quatre dates.");
+  if(d[0] !== 12 || d[3] !== 19) return fb("f1", "Réécoutez Merle : il donne la première et la dernière date.");
+  if(d[1] - d[0] !== 2) return fb("f1", "Réécoutez Castor : un seul jour d'écart entre la première et la deuxième date.");
+  if(d[3] - d[2] !== 1) return fb("f1", "Réécoutez Castor : les deux dernières dates se suivent.");
+  if(d.filter(x => x % 2 === 0).length !== 3) return fb("f1", "Réécoutez Hirondelle : trois jours pairs, un seul impair.");
+  st.step = 2; save(); render(); fb("f1", "Ce sont les bonnes dates : 12, 14, 18 et 19 novembre.", true);
+};
+
+/* ---------- 2. lieux ---------- */
+function drawRows(){
+  $("rows").innerHTML = SOL.dates.map(j => '<div class="row"><label>Le ' + j + ' novembre, mon lieu de rendez-vous était :</label><select data-j="' + j + '"><option value="">…</option>' +
+    LIEUX.map((l,i) => '<option value="' + i + '"' + (st.lieux[j] !== undefined && st.lieux[j] !== "" && +st.lieux[j] === i ? " selected" : "") + '>' + l + '</option>').join("") + '</select></div>').join("");
+  $("rows").querySelectorAll("select").forEach(s => s.onchange = () => { st.lieux[s.dataset.j] = s.value; save(); });
+}
+$("v2").onclick = () => {
+  const faux = SOL.dates.filter(j => st.lieux[j] === undefined || st.lieux[j] === "" || +st.lieux[j] !== CONSO[j][0]);
+  if(faux.length) return fb("f2", (faux.length > 1 ? faux.length + " lieux ne sont pas encore bons." : "Un lieu n'est pas encore bon.") + " Dans le relevé, cherchez où il y a eu du courant ce jour-là.");
+  st.step = 3; save(); render(); fb("f2", "Les quatre lieux sont les bons. À vous de les placer sur le plan !", true);
+};
+
+/* ---------- 3. carte : épingles à placer, traits à tracer ---------- */
+const svg = $("svg"), NS = "http://www.w3.org/2000/svg";
+let drag = null;   // trait en cours : {from, x, y}
+function toImg(e){ const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+function inter(a,b,c,d){
+  const r = [b[0]-a[0], b[1]-a[1]], s = [d[0]-c[0], d[1]-c[1]], den = r[0]*s[1] - r[1]*s[0];
+  if(Math.abs(den) < 1e-9) return null;
+  const t = ((c[0]-a[0])*s[1] - (c[1]-a[1])*s[0]) / den, u = ((c[0]-a[0])*r[1] - (c[1]-a[1])*r[0]) / den;
+  return (t > .02 && t < .98 && u > .02 && u < .98) ? [a[0]+t*r[0], a[1]+t*r[1]] : null;
+}
+function crossing(){
+  for(let i=0;i<st.traits.length;i++) for(let k=i+1;k<st.traits.length;k++){
+    const [a,b] = st.traits[i], [c,d] = st.traits[k], x = inter(POS[a],POS[b],POS[c],POS[d]); if(x) return x;
+  }
+  return null;
+}
+function line(p, q, cls){ const l = document.createElementNS(NS,"line"); l.setAttribute("class","trait " + (cls||"")); l.setAttribute("x1",p[0]); l.setAttribute("y1",p[1]); l.setAttribute("x2",q[0]); l.setAttribute("y2",q[1]); svg.appendChild(l); }
+function drawMap(){
+  svg.innerHTML = '<image href="plan-lyon-1942.jpg" x="0" y="0" width="1857" height="691"/>';
+  st.traits.forEach(([p,q]) => line(POS[p], POS[q]));
+  if(drag) line(POS[drag.from], [drag.x, drag.y], "temp");
+  const x = crossing();
+  if(x){ const c = document.createElementNS(NS,"circle"); c.setAttribute("class","cross"); c.setAttribute("cx",x[0]); c.setAttribute("cy",x[1]); c.setAttribute("r",12); svg.appendChild(c); }
+  st.pins.forEach(k => {
+    const g = document.createElementNS(NS,"g"); g.setAttribute("class","pin"); g.dataset.k = k;
+    g.innerHTML = '<circle cx="' + POS[k][0] + '" cy="' + POS[k][1] + '" r="30" fill="transparent"/><circle class="p" cx="' + POS[k][0] + '" cy="' + POS[k][1] + '" r="10"/>';
+    svg.appendChild(g);
+  });
+  const allPins = st.pins.length === 4;
+  $("help3").innerHTML = allPins ? "<b>Tracez des traits</b> : appuyez sur une épingle et glissez jusqu'à une autre (ou cliquez sur l'une puis sur l'autre). Trouvez les deux traits qui se croisent."
+                                 : "<b>Faites glisser chaque épingle</b> sur le plan, à l'endroit où le quartier est écrit.";
+  $("erase").classList.toggle("hidden", !allPins || st.step > 3);
+  const show = !!x && st.step === 3;
+  $("crossQ").classList.toggle("hidden", !show); $("v3").classList.toggle("hidden", !show);
+  if(st.step === 3 && allPins) fb("f3", x ? "Deux traits se croisent ! Quel quartier est écrit à cet endroit ?" : (st.traits.length >= 2 ? "Ces traits ne se croisent pas. Essayez d'autres paires d'épingles." : ""), !!x);
+}
+function drawTokens(){
+  $("tokens").innerHTML = st.step === 3 ? SOL.dates.map(j => CONSO[j][0]).filter(k => !st.pins.includes(k)).map(k => '<span class="token" data-k="' + k + '">' + LIEUX[k] + '</span>').join("") : "";
+  $("tokens").querySelectorAll(".token").forEach(t => t.addEventListener("pointerdown", grabToken));
+}
+// glisser une épingle depuis la réserve jusqu'au plan
+function grabToken(e){
+  e.preventDefault();
+  const tok = e.currentTarget, k = +tok.dataset.k, ghost = tok.cloneNode(true);
+  ghost.classList.add("ghost"); document.body.appendChild(ghost); tok.style.visibility = "hidden";
+  const move = ev => { ghost.style.left = (ev.clientX - 20) + "px"; ghost.style.top = (ev.clientY - 18) + "px"; };
+  move(e);
+  const up = ev => {
+    window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+    ghost.remove(); tok.style.visibility = "";
+    const r = svg.getBoundingClientRect();
+    if(ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) return;
+    const p = toImg(ev), dist = Math.hypot(p.x - POS[k][0], p.y - POS[k][1]);
+    if(dist <= TOL){ st.pins.push(k); save(); drawTokens(); drawMap(); fb("f3", LIEUX[k] + " est bien épinglé." + (st.pins.length < 4 ? "" : " Toutes les épingles sont placées !"), true); if(st.pins.length === 4) setTimeout(() => drawMap(), 900); }
+    else fb("f3", LIEUX[k] + " n'est pas là. Cherchez son nom écrit sur le plan.");
+  };
+  window.addEventListener("pointermove", move); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+}
+// tracer un trait d'une épingle à l'autre
+let clickFrom = null;
+function pinAt(e){ const g = e.target.closest && e.target.closest(".pin"); return g ? +g.dataset.k : null; }
+function nearestPin(p){ let best = null, bd = 40; st.pins.forEach(k => { const d = Math.hypot(p.x - POS[k][0], p.y - POS[k][1]); if(d < bd){ bd = d; best = k; } }); return best; }
+function addTrait(a, b){ if(a === b) return; const t = [Math.min(a,b), Math.max(a,b)]; if(!st.traits.some(x => x[0] === t[0] && x[1] === t[1])){ st.traits.push(t); save(); } }
+svg.addEventListener("pointerdown", e => {
+  if(st.step !== 3 || st.pins.length < 4) return;
+  const k = pinAt(e); if(k === null) return;
+  e.preventDefault(); svg.setPointerCapture(e.pointerId);
+  const p = toImg(e); drag = { from:k, x:p.x, y:p.y, moved:false }; drawMap();
+});
+svg.addEventListener("pointermove", e => { if(!drag) return; const p = toImg(e); if(Math.hypot(p.x - POS[drag.from][0], p.y - POS[drag.from][1]) > 12) drag.moved = true; drag.x = p.x; drag.y = p.y; drawMap(); });
+svg.addEventListener("pointerup", e => {
+  if(!drag) return;
+  const from = drag.from, moved = drag.moved; drag = null;
+  const to = nearestPin(toImg(e));
+  if(moved){ if(to !== null && to !== from) addTrait(from, to); clickFrom = null; }
+  else if(clickFrom === null){ clickFrom = from; fb("f3", "Épingle " + LIEUX[from] + " choisie : cliquez sur une autre épingle.", true); }
+  else { addTrait(clickFrom, from); clickFrom = null; }
+  drawMap();
+});
+$("erase").onclick = () => { st.traits = []; clickFrom = null; save(); drawMap(); };
+$("lieu20").innerHTML = '<option value="">…</option>' + LIEUX.map((l,i) => '<option value="' + i + '">' + l + '</option>').join("");
+$("v3").onclick = () => {
+  if($("lieu20").value === "" || +$("lieu20").value !== SOL.lieu20) return fb("f3", "Regardez bien le nom écrit sur le plan, juste au croisement des deux traits.");
+  st.step = 4; save(); render(); fb("f3", "Le rendez-vous du 20 novembre aura lieu aux Brotteaux.", true);
+};
+
+/* ---------- 4. résistant ---------- */
+$("v4").onclick = () => {
+  const c = norm($("code").value);
+  if(!c) return fb("f4", "Écrivez le nom de code du résistant à prévenir.");
+  if(c !== SOL.code) return fb("f4", CODES.map(norm).includes(c) ? "Ce résistant n'a pas rendez-vous aux Brotteaux. Relisez le carnet." : "Ce nom de code n'est pas dans le carnet.");
+  st.step = 5; save(); render();
+};
+$("restart").onclick = () => { if(!confirm("Tout recommencer ?")) return; try{ localStorage.removeItem(KEY); }catch(e){} location.reload(); };
+
+/* ---------- affichage selon l'étape ---------- */
+function render(){
+  [1,2,3,4].forEach(n => { $("s"+n).classList.toggle("hidden", st.step < n); $("h"+n).classList.toggle("step-ok", st.step > n); });
+  $("v1").classList.toggle("hidden", st.step > 1); document.querySelectorAll(".day").forEach(b => b.disabled = st.step > 1);
+  $("v2").classList.toggle("hidden", st.step > 2); $("rows").querySelectorAll("select").forEach(s => s.disabled = st.step > 2);
+  if(st.step > 3){ $("lieu20").value = SOL.lieu20; $("lieu20").disabled = true; }
+  $("v4").classList.toggle("hidden", st.step > 4);
+  if(st.step > 4){ $("code").value = "Colombe"; $("code").disabled = true; }
+  $("fin").classList.toggle("hidden", st.step < 5);
+  drawTokens(); drawMap();
+  if(st.step === 5) setTimeout(() => $("fin").scrollIntoView({behavior:"smooth", block:"center"}), 100);
+}
+drawDays(); drawRows(); render();
+</script>
+</body>
+</html>
