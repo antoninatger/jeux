@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le rendez-vous du 20 novembre</title>
+<style>
+  :root{--ink:#2b2118;--paper:#f3e9d2;--muted:#76664f;--line:#c9b48e;--accent:#9a3b22;--ok:#2f7a4b;--bg:#161210;--panel:#201914;--edge:#3d3024;--soft:#d8c7a6}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--paper);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
+  .wrap{max-width:900px;margin:0 auto;padding:16px 16px 48px}
+  h1{font-size:21px;margin:0 0 10px;letter-spacing:.5px}
+  h2{font-size:17px;margin:0 0 8px}
+  .consigne{background:var(--paper);color:var(--ink);border-radius:6px;padding:14px 16px;font:italic 17px/1.5 Georgia,serif;box-shadow:0 6px 16px rgba(0,0,0,.5);transform:rotate(-.6deg);margin-bottom:18px}
+  .consigne b{font-style:normal;letter-spacing:1px}
+  .sec{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:14px;margin-bottom:14px}
+  .sec > p.help{font:14px/1.5 system-ui,sans-serif;color:var(--soft);margin:0 0 10px}
+  .hidden{display:none!important}
+  .kick{font:700 11px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#e0a07a;margin-bottom:6px}
+
+  /* documents */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .tab{background:#241c16;border:1px solid #4a3a2a;color:var(--soft);border-radius:20px;padding:8px 13px;cursor:pointer;font:600 13px system-ui,sans-serif}
+  .tab.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .doc{color:var(--ink)}
+  .cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .clue{background:#fbf6ea;border-radius:4px;padding:14px 16px;box-shadow:0 5px 12px rgba(0,0,0,.45);font:italic 17px/1.5 "Segoe Script","Brush Script MT",Georgia,cursive}
+  .clue:nth-child(2){transform:rotate(1deg)} .clue:nth-child(1){transform:rotate(-1deg)}
+  .clue b{display:block;font:700 15px Georgia,serif;font-style:normal;margin-bottom:4px;text-align:center}
+  .torn{background:radial-gradient(ellipse at 40% 30%,#f4ead1,#e5d4ad);padding:16px 10px;border-radius:3px;box-shadow:0 6px 14px rgba(0,0,0,.5);overflow-x:auto;
+    clip-path:polygon(0 6%,4% 0,12% 4%,22% 1%,35% 5%,48% 0,60% 4%,73% 1%,86% 5%,100% 2%,99% 40%,100% 96%,88% 100%,74% 95%,60% 100%,46% 96%,30% 100%,16% 95%,3% 100%,1% 60%)}
+  table.conso{border-collapse:collapse;font:13px system-ui,sans-serif;min-width:640px;margin:8px auto}
+  .conso th,.conso td{border:1px solid #6b5a42;padding:4px 7px;text-align:left;white-space:nowrap}
+  .conso th{font-weight:600;background:rgba(255,255,255,.25)}
+  .conso td.v{font-weight:700}
+  .carnet{max-width:340px;margin:0 auto;background:#f7f0de;border-radius:6px;padding:30px 24px 22px;box-shadow:0 6px 14px rgba(0,0,0,.5);position:relative;
+    background-image:repeating-linear-gradient(transparent 0 29px,#d9c9a6 29px 30px)}
+  .carnet::before{content:"";position:absolute;left:14px;right:14px;top:8px;height:12px;background:radial-gradient(circle,#3a2d20 3px,transparent 4px) 0 0/24px 12px repeat-x}
+  .carnet h3{font:italic 24px "Segoe Script","Brush Script MT",Georgia,cursive;text-align:center;margin:4px 0 10px}
+  .carnet table{width:100%;border-collapse:collapse;font:15px/30px Calibri,system-ui,sans-serif}
+  .carnet th{text-align:left;border-bottom:1.5px solid var(--ink)}
+  .mapbox{overflow-x:auto;border-radius:6px;box-shadow:0 6px 14px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch}
+  .map{position:relative;min-width:900px}
+  .map img{display:block;width:100%;height:auto}
+  .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .map.zoom{min-width:640px}
+  .map.zoom svg{position:static;display:block;height:auto}
+  .small{font:12.5px/1.5 system-ui,sans-serif;color:var(--soft);margin-top:8px}
+
+  /* fiche */
+  .days{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+  .day{background:#f3e9d2;color:var(--ink);border:2px solid transparent;border-radius:8px;padding:8px 0;cursor:pointer;text-align:center;font:600 15px system-ui,sans-serif}
+  .day small{display:block;font-weight:400;font-size:10px;color:var(--muted)}
+  .day.on{border-color:#ffd166;background:#ffe9a8}
+  .day:disabled{cursor:default;opacity:.8}
+  .btn{background:#ffd166;color:#1c1510;border:none;border-radius:22px;padding:10px 20px;font:700 14px system-ui,sans-serif;cursor:pointer;margin-top:12px}
+  .btn.ghost{background:none;border:1px solid #4a3a2a;color:var(--soft);font-weight:600}
+  .fb{font:600 14px system-ui,sans-serif;min-height:20px;margin-top:10px}
+  .fb.ko{color:#e5734d} .fb.ok{color:#4fbf7d}
+  .rows{display:grid;gap:8px}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:15px system-ui,sans-serif}
+  .row label{min-width:150px;color:var(--soft)}
+  select,input[type=text]{background:#0f0c0a;color:var(--paper);border:1px solid #4a3a2a;border-radius:10px;padding:8px 10px;font:15px system-ui,sans-serif;min-width:200px}
+  input[type=text]{text-transform:uppercase;letter-spacing:3px;min-width:110px;width:110px;text-align:center}
+  .done-sec{opacity:.95}
+  .step-ok::after{content:" ✓";color:#4fbf7d}
+  .pin{cursor:pointer}
+  .pin circle.p{fill:#ffd166;stroke:#1c1510;stroke-width:3}
+  .pin.sel circle.p{fill:#fff;stroke:#c0261b;stroke-width:5}
+  .pin circle.p{r:10}
+  .pin text{font:700 26px system-ui,sans-serif;fill:#fff;stroke:#1c1510;stroke-width:6px;paint-order:stroke}
+  .trait{stroke:#1a3d8f;stroke-width:5;stroke-linecap:round}
+  .cross{fill:none;stroke:#ffd166;stroke-width:3;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{r:9}50%{r:17}}
+  .tele{background:var(--paper);color:var(--ink);border-radius:6px;padding:18px;font:16px/1.6 "Courier New",monospace;box-shadow:0 6px 16px rgba(0,0,0,.5);text-align:center}
+  .tele b{font-size:19px}
+  .histo{margin-top:12px;border-left:3px solid var(--accent);background:#2a211a;border-radius:0 10px 10px 0;padding:10px 14px;font:13.5px/1.55 system-ui,sans-serif;color:var(--soft)}
+  .histo b{color:var(--paper)}
+  @media(max-width:560px){ .days{grid-template-columns:repeat(4,1fr)} .row label{min-width:0;width:100%} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📂 Étape 2 · Le rendez-vous du 20 novembre</h1>
+  <div class="consigne">« Regardez tous les documents qui s'appellent <b>Étape 2</b>. Une règle : le prochain lieu de résistance aura lieu au croisement de 4 <b>ANCIENS</b> lieux de résistance. À vous de trouver lesquels ! »</div>
+
+  <!-- ===== Documents ===== -->
+  <section class="sec">
+    <div class="kick">Les documents de l'étape 2</div>
+    <div class="tabs" id="docTabs">
+      <button class="tab on" data-d="dIndices">Les 3 indices</button>
+      <button class="tab" data-d="dConso">Relevé électrique</button>
+      <button class="tab" data-d="dCarnet">Carnet de notes</button>
+      <button class="tab" data-d="dPlan">Plan de Lyon</button>
+    </div>
+    <div class="doc" id="dIndices">
+      <div class="cards">
+        <div class="clue"><b>Indice 1</b>Il y a un jour d'écart entre la date 1 et la date 2. Les dates 3 et 4 sont consécutives.</div>
+        <div class="clue"><b>Indice 2</b>Parmi les dates, il y a 3 jours pairs, et un jour impair.</div>
+        <div class="clue"><b>Indice 3</b>La première date est le 12 novembre. La dernière date est le 19 novembre.</div>
+      </div>
+    </div>
+    <div class="doc hidden" id="dConso">
+      <div class="torn"><table class="conso" id="consoTable"></table></div>
+      <div class="histo"><b>Pourquoi ce relevé ?</b> Un poste émetteur clandestin consomme du courant. Pour repérer les radios de la Résistance, les services allemands écoutaient les émissions avec des voitures de radiogoniométrie, et allaient parfois jusqu'à couper l'électricité quartier par quartier : quand l'émission s'arrêtait, ils savaient où chercher. Une simple consommation électrique peut trahir quelqu'un.</div>
+    </div>
+    <div class="doc hidden" id="dCarnet">
+      <div class="carnet"><h3>Carnet de notes</h3><table id="carnetTable"></table></div>
+    </div>
+    <div class="doc hidden" id="dPlan">
+      <div class="mapbox"><div class="map"><img src="plan-lyon-1942.jpg" alt="Plan général de Lyon"></div></div>
+      <p class="small">Plan général de Lyon. Sur téléphone, faites glisser le plan sur le côté.</p>
+    </div>
+  </section>
+
+  <!-- ===== 1. Dates ===== -->
+  <section class="sec" id="s1">
+    <h2 id="h1">1. Les quatre dates</h2>
+    <p class="help">Pour trouver mon point de rendez-vous le 20 novembre 1942, il faut d'abord trouver mes rendez-vous durant quatre autres dates. Choisissez-les avec les 3 indices.</p>
+    <div class="days" id="days"></div>
+    <button class="btn" id="v1">Vérifier les dates</button>
+    <div class="fb" id="f1"></div>
+  </section>
+
+  <!-- ===== 2. Lieux ===== -->
+  <section class="sec hidden" id="s2">
+    <h2 id="h2">2. Les quatre anciens lieux</h2>
+    <p class="help">Où étais-je ces jours-là ? Le relevé électrique vous trahira mes passages.</p>
+    <div class="rows" id="rows"></div>
+    <button class="btn" id="v2">Vérifier les lieux</button>
+    <div class="fb" id="f2"></div>
+  </section>
+
+  <!-- ===== 3. Plan ===== -->
+  <section class="sec hidden" id="s3">
+    <h2 id="h3">3. Relier les points</h2>
+    <p class="help">Les quatre lieux sont épinglés sur le plan. <b>Cliquez sur un point puis sur un autre</b> pour tracer un trait. Trouvez les deux traits qui se croisent.</p>
+    <div class="mapbox"><div class="map zoom" id="map"><svg id="svg" viewBox="600 30 860 400" role="img" aria-label="Plan de Lyon avec les quatre lieux"></svg></div></div>
+    <button class="btn ghost" id="erase">Effacer les traits</button>
+    <div class="row hidden" id="crossQ" style="margin-top:12px"><label>Au croisement, mon lieu de rendez-vous pour le 20 novembre :</label><select id="lieu20"></select></div>
+    <button class="btn hidden" id="v3">Vérifier le lieu</button>
+    <div class="fb" id="f3"></div>
+  </section>
+
+  <!-- ===== 4. Personne ===== -->
+  <section class="sec hidden" id="s4">
+    <h2 id="h4">4. La personne à prévenir</h2>
+    <div class="rows">
+      <div class="row"><label>Les initiales de la personne à rencontrer ce jour-là sont :</label><input type="text" id="ini" maxlength="4" autocomplete="off"></div>
+      <div class="row"><label>Le 20 novembre, je dois donc rencontrer :</label><select id="qui"></select></div>
+    </div>
+    <button class="btn" id="v4">Vérifier</button>
+    <div class="fb" id="f4"></div>
+  </section>
+
+  <section class="hidden" id="fin">
+    <div class="tele">TÉLÉGRAMME · SELF DATA<br><br><b>RENDEZ-VOUS 20 NOVEMBRE · LES BROTTEAUX</b><br>PERSONNE À RENCONTRER : <b>CAMILLE MARICOT</b><br><br>IL FAUT LA PRÉVENIR IMMÉDIATEMENT !<br><br>— ALBERTE</div>
+    <button class="btn ghost" id="restart">Recommencer l'enquête</button>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LIEUX = ["Croix-Rousse","La Ferrandière","La Guillotière","Les Brotteaux","Fourvière","Perrache","Monplaisir","Les Charpennes"];
+const INI = ["DB","HV","OB","CM","GD","AB","ARP","MS"];
+const JOURS = [12,13,14,15,16,17,18,19];
+// relevé : jour → [lieu, consommation]
+const CONSO = {12:[0,50],13:[2,45],14:[4,38],15:[3,35],16:[5,47],17:[6,51],18:[1,38],19:[7,42]};
+const RESEAU = ["Ali Boubakour","Alberte Bourde","André Roger Perceveaux","Camille Maricot","Daniel Brillaux","Francisque Cercy","Georges Durand","Hélène Varnatons","Maria Sokolowska","Odette Borgis"];
+// position des quartiers sur le plan (pixels de l'image)
+const POS = {0:[907,122],1:[1257,315],4:[840,240],7:[1258,170]};
+const SOL = { dates:[12,14,18,19], lieu20:3, ini:"CM", qui:"Camille Maricot" };
+
+/* ---------- documents ---------- */
+document.querySelectorAll("#docTabs .tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll("#docTabs .tab").forEach(x => x.classList.toggle("on", x === t));
+  ["dIndices","dConso","dCarnet","dPlan"].forEach(d => $(d).classList.toggle("hidden", d !== t.dataset.d));
+});
+$("consoTable").innerHTML = "<tr><th></th>" + JOURS.map(j => "<th>" + j + " nov 1942</th>").join("") + "</tr>" +
+  LIEUX.map((l,i) => "<tr><th>" + l + "</th>" + JOURS.map(j => CONSO[j][0] === i ? '<td class="v">' + CONSO[j][1] + " Wh</td>" : "<td>0</td>").join("") + "</tr>").join("");
+$("carnetTable").innerHTML = "<tr><th>Initiales</th><th>Lieu de rencontre</th></tr>" + LIEUX.map((l,i) => "<tr><td>" + INI[i] + "</td><td>" + l + "</td></tr>").join("");
+
+/* ---------- sauvegarde ---------- */
+const KEY = "selfdata-rdv20-v1";
+let st = { step:1, dates:[], lieux:{}, traits:[] };
+try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.step) st = Object.assign(st, s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+function fb(id, t, ok){ $(id).textContent = t; $(id).className = "fb " + (ok ? "ok" : "ko"); }
+
+/* ---------- 1. dates ---------- */
+const NOMS_J = {12:"jeu.",13:"ven.",14:"sam.",15:"dim.",16:"lun.",17:"mar.",18:"mer.",19:"jeu."};
+$("days").innerHTML = JOURS.map(j => '<button class="day" data-j="' + j + '">' + j + '<small>' + NOMS_J[j] + ' nov.</small></button>').join("");
+function drawDays(){ document.querySelectorAll(".day").forEach(b => b.classList.toggle("on", st.dates.includes(+b.dataset.j))); }
+document.querySelectorAll(".day").forEach(b => b.onclick = () => {
+  if(st.step > 1) return;
+  const j = +b.dataset.j;
+  if(st.dates.includes(j)) st.dates = st.dates.filter(x => x !== j);
+  else if(st.dates.length < 4) st.dates.push(j);
+  else { fb("f1", "Quatre dates seulement ! Retirez-en une avant d'en choisir une autre."); return; }
+  st.dates.sort((a,b) => a-b); $("f1").textContent = ""; drawDays(); save();
+});
+$("v1").onclick = () => {
+  const d = st.dates;
+  if(d.length !== 4) return fb("f1", "Il faut choisir exactement quatre dates.");
+  if(d[0] !== 12 || d[3] !== 19) return fb("f1", "Relisez l'indice 3 : la première et la dernière date sont données.");
+  if(d[1] - d[0] !== 2) return fb("f1", "Relisez l'indice 1 : un seul jour sépare la date 1 de la date 2.");
+  if(d[3] - d[2] !== 1) return fb("f1", "Relisez l'indice 1 : les dates 3 et 4 se suivent.");
+  if(d.filter(x => x % 2 === 0).length !== 3) return fb("f1", "Relisez l'indice 2 : trois jours pairs, un seul impair.");
+  st.step = 2; save(); render(); fb("f1", "Les quatre dates sont les bonnes : 12, 14, 18 et 19 novembre.", true);
+};
+
+/* ---------- 2. lieux ---------- */
+function drawRows(){
+  $("rows").innerHTML = SOL.dates.map(j => '<div class="row"><label>Le ' + j + ' novembre, mon lieu de rendez-vous était :</label><select data-j="' + j + '"><option value="">…</option>' +
+    LIEUX.map((l,i) => '<option value="' + i + '"' + (+st.lieux[j] === i && st.lieux[j] !== "" && st.lieux[j] !== undefined ? " selected" : "") + '>' + l + '</option>').join("") + '</select></div>').join("");
+  $("rows").querySelectorAll("select").forEach(s => s.onchange = () => { st.lieux[s.dataset.j] = s.value; save(); });
+}
+$("v2").onclick = () => {
+  const faux = SOL.dates.filter(j => st.lieux[j] === undefined || st.lieux[j] === "" || +st.lieux[j] !== CONSO[j][0]);
+  if(faux.length) return fb("f2", faux.length + " lieu" + (faux.length > 1 ? "x ne sont" : " n'est") + " pas encore bon" + (faux.length > 1 ? "s" : "") + ". Cherchez qui a consommé du courant ce jour-là dans le relevé.");
+  st.step = 3; save(); render(); fb("f2", "Les quatre lieux sont les bons. Ils sont maintenant épinglés sur le plan.", true);
+};
+
+/* ---------- 3. plan ---------- */
+let sel = null;
+const svg = $("svg"), NS = "http://www.w3.org/2000/svg";
+function inter(a,b,c,d){ // intersection des segments [a,b] et [c,d], ou null
+  const r = [b[0]-a[0], b[1]-a[1]], s = [d[0]-c[0], d[1]-c[1]], den = r[0]*s[1] - r[1]*s[0];
+  if(Math.abs(den) < 1e-9) return null;
+  const t = ((c[0]-a[0])*s[1] - (c[1]-a[1])*s[0]) / den, u = ((c[0]-a[0])*r[1] - (c[1]-a[1])*r[0]) / den;
+  return (t > .02 && t < .98 && u > .02 && u < .98) ? [a[0]+t*r[0], a[1]+t*r[1]] : null;
+}
+function drawMap(){
+  svg.innerHTML = '<image href="plan-lyon-1942.jpg" x="0" y="0" width="1857" height="691"/>';
+  st.traits.forEach(([p,q]) => { const l = document.createElementNS(NS,"line"); l.setAttribute("class","trait");
+    l.setAttribute("x1",POS[p][0]); l.setAttribute("y1",POS[p][1]); l.setAttribute("x2",POS[q][0]); l.setAttribute("y2",POS[q][1]); svg.appendChild(l); });
+  let cross = null;
+  for(let i=0;i<st.traits.length;i++) for(let k=i+1;k<st.traits.length;k++){
+    const [a,b] = st.traits[i], [c,d] = st.traits[k];
+    const x = inter(POS[a],POS[b],POS[c],POS[d]); if(x) cross = x;
+  }
+  if(cross){ const c = document.createElementNS(NS,"circle"); c.setAttribute("class","cross"); c.setAttribute("cx",cross[0]); c.setAttribute("cy",cross[1]); c.setAttribute("r",18); svg.appendChild(c); }
+  Object.keys(POS).forEach(k => {
+    const g = document.createElementNS(NS,"g"); g.setAttribute("class","pin" + (sel === +k ? " sel" : ""));
+    g.innerHTML = '<circle class="p" cx="' + POS[k][0] + '" cy="' + POS[k][1] + '" r="13"/><circle cx="' + POS[k][0] + '" cy="' + POS[k][1] + '" r="34" fill="transparent"/>';
+    g.addEventListener("click", () => clickPin(+k));
+    svg.appendChild(g);
+  });
+  const show = !!cross && st.step === 3;
+  $("crossQ").classList.toggle("hidden", !show); $("v3").classList.toggle("hidden", !show);
+  if(st.step === 3) fb("f3", cross ? "Deux traits se croisent ! Quel quartier se trouve à cet endroit ?" : (st.traits.length >= 2 ? "Ces traits ne se croisent pas. Essayez d'autres paires de points." : ""), !!cross);
+}
+function clickPin(k){
+  if(st.step !== 3) return;
+  if(sel === null){ sel = k; }
+  else if(sel === k){ sel = null; }
+  else {
+    const t = [Math.min(sel,k), Math.max(sel,k)];
+    if(!st.traits.some(x => x[0] === t[0] && x[1] === t[1])) st.traits.push(t);
+    sel = null; save();
+  }
+  drawMap();
+}
+$("erase").onclick = () => { if(st.step !== 3) return; st.traits = []; sel = null; save(); drawMap(); };
+$("lieu20").innerHTML = '<option value="">…</option>' + LIEUX.map((l,i) => '<option value="' + i + '">' + l + '</option>').join("");
+$("v3").onclick = () => {
+  if(+$("lieu20").value !== SOL.lieu20 || $("lieu20").value === "") return fb("f3", "Regardez bien le nom écrit sur le plan, juste au croisement des deux traits.");
+  st.step = 4; save(); render(); fb("f3", "Le rendez-vous du 20 novembre aura lieu aux Brotteaux.", true);
+};
+
+/* ---------- 4. personne ---------- */
+$("qui").innerHTML = '<option value="">…</option>' + RESEAU.map(n => '<option>' + n + '</option>').join("");
+$("v4").onclick = () => {
+  const ini = $("ini").value.toUpperCase().replace(/[^A-Z]/g,"");
+  if(ini !== SOL.ini) return fb("f4", "Ce ne sont pas les bonnes initiales. Qui ai-je l'habitude de retrouver aux Brotteaux ? Le carnet de notes le dit.");
+  if($("qui").value !== SOL.qui) return fb("f4", "Les initiales sont bonnes. Qui, dans le réseau, a ces initiales-là ?");
+  st.step = 5; save(); render();
+};
+$("restart").onclick = () => { if(!confirm("Tout recommencer ?")) return; st = { step:1, dates:[], lieux:{}, traits:[] }; save(); location.reload(); };
+
+/* ---------- affichage selon l'étape ---------- */
+function render(){
+  [1,2,3,4].forEach(n => { $("s"+n).classList.toggle("hidden", st.step < n); $("h"+n).classList.toggle("step-ok", st.step > n); });
+  $("v1").classList.toggle("hidden", st.step > 1); document.querySelectorAll(".day").forEach(b => b.disabled = st.step > 1);
+  $("v2").classList.toggle("hidden", st.step > 2); $("rows").querySelectorAll("select").forEach(s => s.disabled = st.step > 2);
+  $("erase").classList.toggle("hidden", st.step > 3);
+  if(st.step > 3){ $("lieu20").value = SOL.lieu20; $("lieu20").disabled = true; }
+  $("v4").classList.toggle("hidden", st.step > 4);
+  if(st.step > 4){ $("ini").value = SOL.ini; $("qui").value = SOL.qui; $("ini").disabled = $("qui").disabled = true; }
+  $("fin").classList.toggle("hidden", st.step < 5);
+  if(st.step === 5) $("fin").scrollIntoView({behavior:"smooth", block:"center"});
+}
+drawDays(); drawRows(); drawMap(); render();
+if(st.step >= 3 && st.step < 5) drawMap();
+</script>
+</body>
+</html>
