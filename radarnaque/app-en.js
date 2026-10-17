@@ -10,6 +10,9 @@
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
 
+  // direct link to one or more cards: ?carte=sms-colis or ?carte=sms-colis,appel-banque
+  var cartesLien = null;
+
   /* clue-spotting phase (after the decision) */
   var REP = (typeof REPERES !== 'undefined') ? REPERES : {};
   var reperesActifs = [], foundBon = 0, currentChoix = null;
@@ -94,15 +97,19 @@
      ===================================================================== */
   function demarrer(){
     fermerGlossaire();
-    // BALANCED draw: as many scams as reliable messages where possible
-    var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
-    var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
-    var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
-    var moitie = Math.floor(total/2);
-    var nbFiables  = Math.min(moitie, fiables.length);
-    var nbArnaques = Math.min(total - nbFiables, arnaques.length);
-    nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
-    deck = shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
+    if (cartesLien){
+      deck = cartesLien.slice();
+    } else {
+      // BALANCED draw: as many scams as reliable messages where possible
+      var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
+      var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
+      var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
+      var moitie = Math.floor(total/2);
+      var nbFiables  = Math.min(moitie, fiables.length);
+      var nbArnaques = Math.min(total - nbFiables, arnaques.length);
+      nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
+      deck = shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
+    }
     idx = 0; score = 0;
     hud.style.display = 'flex';
     var mb = el('menu-btn'); if (mb) mb.style.display = '';
@@ -752,7 +759,9 @@
         '<button class="btn-gloss" id="fin-avis" style="margin-top:10px">💬 Give feedback</button>' +
         '<p class="footer-note">Talk about it with people around you: talking about it is already a way to protect yourself.</p>' +
       '</div>';
-    el('rejouer').onclick = demarrer;
+    var rj = el('rejouer');
+    if (cartesLien) rj.innerHTML = 'Play a full game&nbsp;🔄';
+    rj.onclick = function(){ cartesLien = null; demarrer(); };
     var fa = el('fin-avis'); if (fa) fa.onclick = openFeedback;
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -910,6 +919,7 @@
     // “back to menu” button (visible only during the game)
     var mb = el('menu-btn');
     if (mb) mb.onclick = function(){
+      cartesLien = null;
       if (hud && hud.style.display !== 'none'){
         showModalMsg('Go back to the menu? The current game will be lost.', { confirm:true, onConfirm:ecranAccueil });
       } else {
@@ -943,7 +953,15 @@
       }
     });
 
-    ecranAccueil();
+    var ids = null;
+    try { ids = new URLSearchParams(location.search).get('carte'); } catch(e){}
+    if (ids){
+      cartesLien = ids.split(',').map(function(id){
+        return SCENARIOS.filter(function(c){ return c.id === id.trim(); })[0];
+      }).filter(Boolean);
+      if (!cartesLien.length) cartesLien = null;
+    }
+    if (cartesLien) demarrer(); else ecranAccueil();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
