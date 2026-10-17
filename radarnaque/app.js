@@ -10,6 +10,9 @@
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
 
+  // lien direct vers une ou plusieurs cartes : ?carte=sms-colis ou ?carte=sms-colis,appel-banque
+  var cartesLien = null;
+
   /* phase de repérage des indices (après la décision) */
   var REP = (typeof REPERES !== 'undefined') ? REPERES : {};
   var reperesActifs = [], foundBon = 0, currentChoix = null;
@@ -94,15 +97,19 @@
      ===================================================================== */
   function demarrer(){
     fermerGlossaire();
-    // tirage ÉQUILIBRÉ : autant d'arnaques que de messages fiables (au possible)
-    var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
-    var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
-    var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
-    var moitie = Math.floor(total/2);
-    var nbFiables  = Math.min(moitie, fiables.length);
-    var nbArnaques = Math.min(total - nbFiables, arnaques.length);
-    nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
-    deck = shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
+    if (cartesLien){
+      deck = cartesLien.slice();
+    } else {
+      // tirage ÉQUILIBRÉ : autant d'arnaques que de messages fiables (au possible)
+      var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
+      var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
+      var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
+      var moitie = Math.floor(total/2);
+      var nbFiables  = Math.min(moitie, fiables.length);
+      var nbArnaques = Math.min(total - nbFiables, arnaques.length);
+      nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
+      deck = shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
+    }
     idx = 0; score = 0;
     hud.style.display = 'flex';
     var mb = el('menu-btn'); if (mb) mb.style.display = '';
@@ -754,7 +761,9 @@
         '<button class="btn-gloss" id="fin-avis" style="margin-top:10px">💬 Donner mon avis</button>' +
         '<p class="footer-note">Parlez-en autour de vous&nbsp;: en parler, c’est déjà se protéger.</p>' +
       '</div>';
-    el('rejouer').onclick = demarrer;
+    var rj = el('rejouer');
+    if (cartesLien) rj.innerHTML = 'Jouer une partie complète&nbsp;🔄';
+    rj.onclick = function(){ cartesLien = null; demarrer(); };
     var fa = el('fin-avis'); if (fa) fa.onclick = openFeedback;
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -912,6 +921,7 @@
     // bouton « retour au menu » (visible seulement pendant le jeu)
     var mb = el('menu-btn');
     if (mb) mb.onclick = function(){
+      cartesLien = null;
       if (hud && hud.style.display !== 'none'){
         showModalMsg('Revenir au menu ? La partie en cours sera perdue.', { confirm:true, onConfirm:ecranAccueil });
       } else {
@@ -945,7 +955,15 @@
       }
     });
 
-    ecranAccueil();
+    var ids = null;
+    try { ids = new URLSearchParams(location.search).get('carte'); } catch(e){}
+    if (ids){
+      cartesLien = ids.split(',').map(function(id){
+        return SCENARIOS.filter(function(c){ return c.id === id.trim(); })[0];
+      }).filter(Boolean);
+      if (!cartesLien.length) cartesLien = null;
+    }
+    if (cartesLien) demarrer(); else ecranAccueil();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
