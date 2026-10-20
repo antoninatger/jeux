@@ -46,6 +46,17 @@ const QUESTIONS = [
   {text:"Art classes are more important than PE classes.",answer:"opinion",cat:"🎨",exp:"💬 OPINION! Some pupils love sport just as much as drawing. It is a question of values!"},
   {text:"Night is more beautiful than day.",answer:"opinion",cat:"🌙",exp:"💬 OPINION! Some people love the sun, others love the stars. It is a personal opinion!"},
   {text:"Amusement parks are the most fun place in the world.",answer:"opinion",cat:"🎡",exp:"💬 OPINION! Some people prefer the beach, the mountains or museums. It is subjective!"},
+  // FACTS AND OPINIONS — batch 3 (20 October 2026)
+  {text:"A week has seven days.",answer:"fait",cat:"📅",exp:"📋 FACT! It is the same for everyone: you can check it on any calendar!"},
+  {text:"Bees make honey.",answer:"fait",cat:"🐝",exp:"📋 FACT! Beekeepers see it every day: bees turn the nectar of flowers into honey."},
+  {text:"The Earth goes around the Sun.",answer:"fait",cat:"🌍",exp:"📋 FACT! Astronomers have proved it: the Earth travels around the Sun in about a year."},
+  {text:"Penguins cannot fly.",answer:"fait",cat:"🐧",exp:"📋 FACT! Their wings are for swimming, not flying. Scientists have observed it!"},
+  {text:"The Pacific is the largest ocean on Earth.",answer:"fait",cat:"🌊",exp:"📋 FACT! Geographers have measured it: it covers about a third of the planet's surface."},
+  {text:"Blue is the most beautiful colour.",answer:"opinion",cat:"💙",exp:"💬 OPINION! Some people prefer red, green or yellow. The most beautiful colour depends on each person's taste!"},
+  {text:"Strawberries are better than bananas.",answer:"opinion",cat:"🍓",exp:"💬 OPINION! It is a matter of taste: some people love bananas!"},
+  {text:"Sunday is the best day of the week.",answer:"opinion",cat:"🛋️",exp:"💬 OPINION! Some people prefer Saturday, or even Wednesday. It is a personal view!"},
+  {text:"Board games are more fun than video games.",answer:"opinion",cat:"🎲",exp:"💬 OPINION! Some people love video games, others love board games. It is subjective!"},
+  {text:"The seaside is nicer than the mountains.",answer:"opinion",cat:"🏖️",exp:"💬 OPINION! Mountain lovers would not agree! It is a matter of preference."},
 ];
 
 const QUESTIONS_TO_WIN = 10;
@@ -161,11 +172,14 @@ document.addEventListener('keydown', e=>{
 
   // Modal navigation with arrows + confirm with Enter/Space
   if(state==='question'){
-    if(e.code==='ArrowLeft' || e.code==='ArrowRight'){
+    // e.repeat : une flèche (ou Espace) encore tenue pour piloter le vaisseau quand la
+    // question s'ouvre se répète toute seule. Sans ce garde, elle entourait un choix
+    // avant que l'élève ait rien fait, voire répondait à sa place.
+    if((e.code==='ArrowLeft' || e.code==='ArrowRight') && !e.repeat){
       e.preventDefault();
       toggleModalSelection();
     }
-    if((e.code==='Enter' || e.code==='Space') && !answered){
+    if((e.code==='Enter' || e.code==='Space') && !answered && !e.repeat){
       e.preventDefault();
       const sel = document.querySelector('.ans-btn.kb-focus');
       if(sel) answer(sel.id === 'btn-fait' ? 'fait' : 'opinion');
@@ -185,19 +199,22 @@ document.addEventListener('keyup', e=>{
 
 /* Toggle keyboard focus between FACT and OPINION buttons */
 let kbSelected = 'fait'; // default selection
+let kbFocusActive = false; // n'affiche le cadre qu'après une première flèche
 function initModalKeyboard(){
   kbSelected = 'fait';
+  kbFocusActive = false;
   applyModalFocus();
 }
 function applyModalFocus(){
   const bF = document.getElementById('btn-fait');
   const bO = document.getElementById('btn-op');
   if(!bF || !bO) return;
-  bF.classList.toggle('kb-focus', kbSelected === 'fait');
-  bO.classList.toggle('kb-focus', kbSelected === 'opinion');
+  bF.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'fait');
+  bO.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'opinion');
 }
 function toggleModalSelection(){
   if(answered) return;
+  kbFocusActive = true;
   kbSelected = kbSelected === 'fait' ? 'opinion' : 'fait';
   applyModalFocus();
 }

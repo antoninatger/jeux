@@ -46,6 +46,17 @@ const QUESTIONS = [
   {text:"Les cours d'art sont plus importants que les cours de sport.",answer:"opinion",cat:"🎨",exp:"💬 OPINION ! Certains élèves adorent le sport autant que le dessin. C'est une question de valeurs !"},
   {text:"La nuit est plus belle que le jour.",answer:"opinion",cat:"🌙",exp:"💬 OPINION ! Certains adorent le soleil, d'autres les étoiles. C'est un avis personnel !"},
   {text:"Les parcs d'attractions sont l'endroit le plus amusant du monde.",answer:"opinion",cat:"🎡",exp:"💬 OPINION ! Certains préfèrent la plage, la montagne ou les musées. C'est subjectif !"},
+  // FAITS ET OPINIONS — lot 3 (20 octobre 2026)
+  {text:"Une semaine compte sept jours.",answer:"fait",cat:"📅",exp:"📋 FAIT ! C'est la même chose pour tout le monde : on peut le vérifier sur n'importe quel calendrier !"},
+  {text:"Les abeilles fabriquent du miel.",answer:"fait",cat:"🐝",exp:"📋 FAIT ! Les apiculteurs l'observent tous les jours : les abeilles transforment le nectar des fleurs en miel."},
+  {text:"La Terre tourne autour du Soleil.",answer:"fait",cat:"🌍",exp:"📋 FAIT ! Les astronomes l'ont prouvé : la Terre fait le tour du Soleil en un an environ."},
+  {text:"Les manchots ne savent pas voler.",answer:"fait",cat:"🐧",exp:"📋 FAIT ! Leurs ailes leur servent à nager, pas à voler. Les scientifiques l'ont observé !"},
+  {text:"L'océan Pacifique est le plus grand océan de la Terre.",answer:"fait",cat:"🌊",exp:"📋 FAIT ! Les géographes l'ont mesuré : il couvre environ un tiers de la surface de la planète."},
+  {text:"Le bleu est la plus belle couleur.",answer:"opinion",cat:"💙",exp:"💬 OPINION ! Certains préfèrent le rouge, le vert ou le jaune. La plus belle couleur dépend des goûts de chacun !"},
+  {text:"Les fraises sont meilleures que les bananes.",answer:"opinion",cat:"🍓",exp:"💬 OPINION ! C'est une question de goût : certains adorent les bananes !"},
+  {text:"Le dimanche est le meilleur jour de la semaine.",answer:"opinion",cat:"🛋️",exp:"💬 OPINION ! Certains préfèrent le samedi, ou même le mercredi. C'est un avis personnel !"},
+  {text:"Les jeux de société sont plus amusants que les jeux vidéo.",answer:"opinion",cat:"🎲",exp:"💬 OPINION ! Certains adorent les jeux vidéo, d'autres les jeux de plateau. C'est subjectif !"},
+  {text:"La mer est plus agréable que la montagne.",answer:"opinion",cat:"🏖️",exp:"💬 OPINION ! Les amoureux de la montagne ne seraient pas d'accord ! C'est une question de préférence."},
 ];
 
 const QUESTIONS_TO_WIN = 10;
@@ -161,11 +172,14 @@ document.addEventListener('keydown', e=>{
 
   // Modal navigation with arrows + confirm with Enter/Space
   if(state==='question'){
-    if(e.code==='ArrowLeft' || e.code==='ArrowRight'){
+    // e.repeat : une flèche (ou Espace) encore tenue pour piloter le vaisseau quand la
+    // question s'ouvre se répète toute seule. Sans ce garde, elle entourait un choix
+    // avant que l'élève ait rien fait, voire répondait à sa place.
+    if((e.code==='ArrowLeft' || e.code==='ArrowRight') && !e.repeat){
       e.preventDefault();
       toggleModalSelection();
     }
-    if((e.code==='Enter' || e.code==='Space') && !answered){
+    if((e.code==='Enter' || e.code==='Space') && !answered && !e.repeat){
       e.preventDefault();
       const sel = document.querySelector('.ans-btn.kb-focus');
       if(sel) answer(sel.id === 'btn-fait' ? 'fait' : 'opinion');
@@ -185,19 +199,22 @@ document.addEventListener('keyup', e=>{
 
 /* Toggle keyboard focus between FAIT and OPINION buttons */
 let kbSelected = 'fait'; // default selection
+let kbFocusActive = false; // n'affiche le cadre qu'après une première flèche
 function initModalKeyboard(){
   kbSelected = 'fait';
+  kbFocusActive = false;
   applyModalFocus();
 }
 function applyModalFocus(){
   const bF = document.getElementById('btn-fait');
   const bO = document.getElementById('btn-op');
   if(!bF || !bO) return;
-  bF.classList.toggle('kb-focus', kbSelected === 'fait');
-  bO.classList.toggle('kb-focus', kbSelected === 'opinion');
+  bF.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'fait');
+  bO.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'opinion');
 }
 function toggleModalSelection(){
   if(answered) return;
+  kbFocusActive = true;
   kbSelected = kbSelected === 'fait' ? 'opinion' : 'fait';
   applyModalFocus();
 }
