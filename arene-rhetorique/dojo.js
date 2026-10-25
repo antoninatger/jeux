@@ -1,0 +1,752 @@
+/* =========================================================================
+   Dojo de l'Arène rhétorique — LOGIQUE
+   Une seule fois pour les deux langues : le contenu vient de DOJO, chargé
+   juste avant (dojo-data.js ou dojo-data-en.js), et les textes d'interface
+   des dictionnaires I18N de dojo.html.
+
+   La progression est gardée dans localStorage, clé « arene.dojo ». L'arène
+   (app.js / app-en.js) la relit pour proposer les techniques débloquées.
+   ========================================================================= */
+(function () {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  function t(cle, vars) {
+    let s = I18N.t(cle);
+    if (vars) Object.keys(vars).forEach(k => { s = s.split('{' + k + '}').join(vars[k]); });
+    return s;
+  }
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function el(tag, cls, texte) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texte != null) e.textContent = texte;
+    return e;
+  }
+  function bouton(cls, texte) { const b = el('button', cls, texte); b.type = 'button'; return b; }
+  function soph(id) { return DOJO.sophismes[id]; }
+
+  // ─── Progression ───
+  const CLE = 'arene.dojo';
+  const EPREUVES = ['feuilles', 'oeil', 'clochettes', 'contre'];
+  const TECHNIQUES = { feuilles: 'regard', oeil: 'seconde', clochettes: 'clochettes', contre: 'contre' };
+  function neuve() { return { v: 1, accueil: false, type: null, epreuves: {}, examen: false, rouleau: {}, calme: false, piques: 0 }; }
+  function charger() {
+    try { const p = JSON.parse(localStorage.getItem(CLE)); if (p && p.v === 1) return Object.assign(neuve(), p); } catch (e) {}
+    return neuve();
+  }
+  function sauver() { try { localStorage.setItem(CLE, JSON.stringify(P)); } catch (e) { /* sans stockage, le dojo se joue quand même */ } }
+  let P = charger();
+
+  const mouvementReduit = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function calme() { return P.calme || mouvementReduit; }
+  function nbReussies() { return EPREUVES.filter(e => P.epreuves[e]).length; }
+  function rang() { return P.examen ? t('rang5') : t('rang' + nbReussies()); }
+  function demasque(id) { P.rouleau[id] = (P.rouleau[id] || 0) + 1; sauver(); }
+
+  // ─── Écrans ───
+  const ECRANS = ['intro', 'scene', 'carte', 'epreuve', 'rouleau', 'fin'];
+  function montrer(nom, cible) {
+    ECRANS.forEach(k => { $('ecran-' + k).hidden = (k !== nom); });
+    window.scrollTo(0, 0);
+    const c = cible || $('ecran-' + nom).querySelector('h2');
+    if (c) { if (!c.matches('button, a')) c.tabIndex = -1; c.focus({ preventScroll: true }); }
+  }
+  function annoncer(texte) {
+    const a = $('annonce');
+    a.textContent = '';
+    setTimeout(() => { a.textContent = texte; }, 40);
+  }
+
+  // ─── Effets manga ───
+  let tmCutin = null;
+  function cutin(sur, titre) {
+    const c = $('cutin');
+    $('cutin-sur').textContent = sur;
+    $('cutin-titre').textContent = titre;
+    c.classList.remove('joue');
+    void c.offsetWidth;            // relance l'animation
+    c.classList.add('joue');
+    clearTimeout(tmCutin);
+    tmCutin = setTimeout(() => c.classList.remove('joue'), 1500);
+  }
+  function sfx(parent, texte, rouge) {
+    const s = el('span', 'sfx' + (rouge ? ' sfx--rouge' : ''), texte);
+    s.setAttribute('aria-hidden', 'true');
+    s.style.setProperty('--rot', (Math.random() * 18 - 9).toFixed(1) + 'deg');
+    parent.appendChild(s);
+    setTimeout(() => s.remove(), 950);
+  }
+
+  // ─── Les scènes : une suite de planches, avec ou sans choix ───
+  const PERSOS = {
+    sensei:      () => ({ emoji: DOJO.sensei.emoji, nom: DOJO.sensei.nom }),
+    rival:       () => ({ emoji: DOJO.rival.emoji, nom: DOJO.rival.nom }),
+    narrateur:   () => ({ emoji: '📜', nom: t('narrateur') }),
+    examinateur: () => ({ emoji: '❔', nom: t('examinateur') })
+  };
+  function scene(planches, fin) {
+    let i = 0;
+    const suite = $('scene-suite');
+    montrer('scene', $('scene-h'));
+    function afficher() {
+      const p = planches[i];
+      const qui = PERSOS[p.qui]();
+      $('scene-case').className = 'case case--trame scene-case scene--' + p.qui;
+      $('scene-perso').textContent = qui.emoji;
+      $('scene-nom').textContent = qui.nom;
+      $('scene-texte').textContent = p.texte;
+      $('scene-reponse').hidden = true;
+      const zone = $('scene-choix');
+      zone.textContent = '';
+      suite.hidden = !!p.choix;
+      annoncer(qui.nom + ' : ' + p.texte);
+      if (p.choix) {
+        p.choix.forEach(c => {
+          const b = bouton('choix', c.t);
+          b.dataset.ok = c.ok ? '1' : '0';
+          b.addEventListener('click', () => choisir(p, c, b));
+          zone.appendChild(b);
+        });
+        zone.firstChild.focus();
+      } else {
+        suite.focus();
+      }
+    }
+    function choisir(p, c, b) {
+      const rep = $('scene-reponse');
+      rep.hidden = false;
+      rep.className = 'reponse ' + (c.ok ? 'ok' : 'ko');
+      rep.textContent = c.r || '';
+      annoncer(c.r || '');
+      if (c.ok || p.uneChance) {
+        [...$('scene-choix').children].forEach(x => {
+          x.disabled = true;
+          if (x.dataset.ok === '1') x.classList.add('juste');
+          else if (x === b) x.classList.add('faux');
+        });
+        if (c.ok) sfx($('scene-case'), p.sfxOk || '!!'); else sfx($('scene-case'), t('sfxHaha'), true);
+        if (p.apres) p.apres(c.ok);
+        suite.hidden = false;
+        suite.focus();
+      } else {
+        b.disabled = true;
+        b.classList.add('faux');
+        sfx($('scene-case'), t('sfxOups'), true);
+      }
+    }
+    suite.onclick = () => { i++; if (i < planches.length) afficher(); else fin(); };
+    afficher();
+  }
+
+  // ─── L'écran d'épreuve : en-tête, retour au joueur, bouton suivant ───
+  function entete(cle, consigne) {
+    $('ep-titre').textContent = t(cle + 'Titre');
+    $('ep-ref').textContent = t(cle + 'Ref');
+    $('ep-consigne').innerHTML = consigne || t(cle + 'Consigne');
+    $('ep-progres').textContent = '';
+    $('ep-score').textContent = '';
+  }
+  function compteurs(i, n, score) {
+    $('ep-progres').textContent = t('progres', { i: i, n: n });
+    $('ep-score').textContent = score != null ? t('scoreEp', { s: score }) : '';
+  }
+  function retour(ok, titre, texte) {
+    const r = $('ep-retour');
+    r.hidden = false;
+    r.className = 'case retour ' + (ok === true ? 'ok' : ok === false ? 'ko' : '');
+    $('ep-retour-titre').textContent = titre;
+    $('ep-retour-texte').textContent = texte || '';
+    annoncer(titre + ' ' + (texte || ''));
+  }
+  function cacherRetour() { $('ep-retour').hidden = true; }
+  let jetonSuivant = 0;
+  function suivant(label, fn, autoMs) {
+    const b = $('ep-suivant');
+    const jeton = ++jetonSuivant;
+    b.hidden = false;
+    b.textContent = label;
+    b.onclick = () => { if (jeton !== jetonSuivant) return; jetonSuivant++; b.hidden = true; fn(); };
+    b.focus({ preventScroll: true });
+    b.scrollIntoView({ behavior: mouvementReduit ? 'auto' : 'smooth', block: 'nearest' });
+    if (autoMs) setTimeout(() => { if (jeton === jetonSuivant) b.onclick(); }, autoMs);
+  }
+
+  // ═════════════════════════════════════════════════════════════════════
+  //  Les manches — chacune appelle fini(points entre 0 et 1, item joué)
+  // ═════════════════════════════════════════════════════════════════════
+
+  // ─── Les Feuilles qui tombent ───
+  let duree = 8;                      // secondes de chute, raccourcies à chaque feuille
+  let clavierActif = null;
+  function mancheFeuille(item, fini, opts) {
+    opts = opts || {};
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const terrain = el('div', 'terrain');
+    const f = el('div', 'feuille');
+    const ic = el('span', 'feuille__icone', '🍃'); ic.setAttribute('aria-hidden', 'true');
+    f.append(ic, el('p', null, item.t));
+    terrain.appendChild(f);
+    const actions = el('div', 'feuille-actions');
+    const bT = bouton('btn-manga', t('trancher'));
+    const bL = bouton('btn-manga btn-manga--clair', t('laisser'));
+    actions.append(bT, bL);
+    const touches = el('p', 'touches'); touches.innerHTML = t('touches');
+    aire.append(terrain, actions, touches);
+
+    const statique = calme() || opts.statique;
+    let fait = false;
+    if (statique) f.classList.add('posee');
+    else {
+      f.style.animationDuration = duree + 's';
+      f.classList.add('tombe');
+      f.addEventListener('animationend', () => decider(false, true));
+    }
+    annoncer(item.t);
+
+    function clavier(e) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const k = e.key.toLowerCase();
+      if (k === 't') { e.preventDefault(); decider(true); }
+      else if (k === 'l' || k === 'arrowdown') { e.preventDefault(); decider(false); }
+    }
+    if (clavierActif) document.removeEventListener('keydown', clavierActif);
+    clavierActif = clavier;
+    document.addEventListener('keydown', clavier);
+    bT.addEventListener('click', () => decider(true));
+    bL.addEventListener('click', () => decider(false));
+    bT.focus({ preventScroll: true });
+
+    function decider(tranche, tombee) {
+      if (fait) return;
+      fait = true;
+      document.removeEventListener('keydown', clavier);
+      clavierActif = null;
+      f.style.animationPlayState = 'paused';
+      bT.disabled = bL.disabled = true;
+      const ok = (tranche === !!item.piege);
+      if (tranche) { f.classList.add('tranchee'); sfx(terrain, t('sfxClac')); }
+      let titre;
+      if (ok && item.piege) {
+        demasque(item.piege);
+        cutin(t('techDemasquee'), soph(item.piege).tech);
+        titre = t('feuilleOkPiege', { l: soph(item.piege).l });
+      } else if (ok) {
+        titre = t('feuilleOkSain');
+      } else if (item.piege) {
+        titre = t(tombee ? 'feuilleTombee' : 'feuilleRatePiege', { l: soph(item.piege).l });
+      } else {
+        titre = t('feuilleRateSain');
+      }
+      retour(ok, titre, item.e);
+      duree = Math.max(4.5, duree - 0.3);
+      const joue = { id: item.id, titre: item.t, reussi: ok, explication: item.e };
+      // Réussite en mode rapide : on enchaîne tout seul, le rythme fait partie du jeu.
+      // Erreur : on attend le joueur, c'est le moment où il apprend.
+      suivant(t('suivant'), () => fini(ok ? 1 : 0, joue), (ok && !statique) ? 2600 : 0);
+    }
+  }
+
+  // ─── L'Œil du sensei ───
+  function mancheOeil(item, fini) {
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const p = el('p', 'phrase-oeil');
+    const morceaux = item.t.split('|').map(s => s.trim()).filter(Boolean);
+    const boutons = morceaux.map((m, k) => {
+      const cible = m.indexOf('[[') >= 0;
+      const b = bouton('morceau', m.replace('[[', '').replace(']]', ''));
+      b.dataset.cible = cible ? '1' : '0';
+      b.addEventListener('click', () => clic(b));
+      p.appendChild(b);
+      if (k < morceaux.length - 1) p.appendChild(document.createTextNode(' '));
+      return b;
+    });
+    aire.appendChild(p);
+    boutons[0].focus({ preventScroll: true });
+    let essais = 0;
+    const s = soph(item.a);
+    function fin(points) {
+      boutons.forEach(b => { b.disabled = true; });
+      const joue = { id: item.id, titre: boutons.map(b => b.textContent).join(' '), reussi: points > 0, explication: item.e };
+      suivant(t('suivant'), () => fini(points, joue));
+    }
+    function clic(b) {
+      if (b.dataset.cible === '1') {
+        boutons.forEach(x => { if (x.dataset.cible === '1') x.classList.add('trouve'); });
+        demasque(item.a);
+        sfx(aire, t('sfxClac'));
+        cutin(t('techDemasquee'), s.tech);
+        retour(true, t('oeilOk', { tech: s.tech, l: s.l }), item.e);
+        fin(essais === 0 ? 1 : 0.5);
+      } else {
+        essais++;
+        b.classList.add('barre');
+        b.disabled = true;
+        if (essais === 1) {
+          retour(null, t('oeilIndice'), t('oeilIndiceTxt', { signes: s.signes }));
+          const prochain = boutons.find(x => !x.disabled);
+          if (prochain) prochain.focus({ preventScroll: true });
+        } else {
+          boutons.forEach(x => { if (x.dataset.cible === '1') x.classList.add('revele'); });
+          sfx(aire, t('sfxOups'), true);
+          retour(false, t('oeilRate', { tech: s.tech, l: s.l }), item.e);
+          fin(0);
+        }
+      }
+    }
+  }
+
+  // ─── Le Test des clochettes ───
+  function mancheCloche(item, fini) {
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const tete = el('div', 'case case--trame');
+    tete.appendChild(el('p', 'sujet', t('clocheSujet', { sujet: item.sujet })));
+    const cloches = el('div', 'cloches');
+    cloches.setAttribute('aria-hidden', 'true');
+    const c1 = el('span', 'cloche', '🔔'), c2 = el('span', 'cloche', '🔔');
+    cloches.append(c1, c2);
+    tete.appendChild(cloches);
+    let chrono = null, barre = null, restant = 75;
+    if (!calme()) {
+      chrono = el('div', 'chrono'); barre = el('div', 'chrono__barre'); barre.style.width = '100%';
+      chrono.appendChild(barre); chrono.setAttribute('aria-hidden', 'true');
+      tete.appendChild(chrono);
+    }
+    const liste = el('div', 'discours');
+    const erreursEl = el('p', 'erreurs', t('erreurs', { n: 0 }));
+    tete.append(liste, erreursEl);
+    aire.appendChild(tete);
+
+    let prises = 0, erreurs = 0, termine = false;
+    const boutons = item.phrases.map(ph => {
+      const b = bouton('phrase-cloche', ph.t);
+      b.addEventListener('click', () => clic(b, ph));
+      liste.appendChild(b);
+      return b;
+    });
+    boutons[0].focus({ preventScroll: true });
+    annoncer(t('clocheSujet', { sujet: item.sujet }));
+
+    let tm = null;
+    if (chrono) {
+      tm = setInterval(() => {
+        restant--;
+        barre.style.width = (restant / 75 * 100) + '%';
+        if (restant <= 0) terminer();
+      }, 1000);
+    }
+    function note(b, html) { const n = el('span', 'note'); n.innerHTML = html; b.appendChild(n); }
+    function clic(b, ph) {
+      if (termine) return;
+      b.disabled = true;
+      if (ph.piege) {
+        prises++;
+        b.classList.add('prise');
+        (prises === 1 ? c1 : c2).classList.add('prise');
+        const s = soph(ph.piege);
+        note(b, '<b>' + s.tech + '</b> (' + s.l + ') — ' + ph.e);
+        demasque(ph.piege);
+        sfx(tete, t('sfxDing'));
+        annoncer(t('clochePrise', { tech: s.tech, l: s.l }) + ' ' + ph.e);
+        if (prises === 2) terminer();
+      } else {
+        erreurs++;
+        b.classList.add('faux');
+        note(b, t('clocheSaine'));
+        erreursEl.textContent = t('erreurs', { n: erreurs });
+        sfx(tete, t('sfxHaha'), true);
+        annoncer(t('clocheSaine'));
+        if (erreurs >= 3) terminer();
+      }
+    }
+    function terminer() {
+      if (termine) return;
+      termine = true;
+      clearInterval(tm);
+      item.phrases.forEach((ph, k) => {
+        const b = boutons[k];
+        b.disabled = true;
+        if (ph.piege && !b.classList.contains('prise')) {
+          b.classList.add('manquee');
+          const s = soph(ph.piege);
+          note(b, '<b>' + t('clocheManquee', { tech: s.tech, l: s.l }) + '</b> ' + ph.e);
+        }
+      });
+      const titre = prises === 2 ? t('clochesToutes') : prises === 1 ? t('clochesUne') : t('clochesAucune');
+      const expl = item.phrases.filter(ph => ph.piege).map(ph => ph.e).join(' ');
+      retour(prises === 2 ? true : prises === 0 ? false : null, titre, expl);
+      const joue = { id: item.id, titre: item.sujet, reussi: prises === 2, explication: expl };
+      suivant(t('suivant'), () => fini(prises / 2, joue));
+    }
+  }
+
+  // ─── Le Contre ───
+  function mancheContre(item, fini) {
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const s = soph(item.a);
+    const cadre = el('div', 'case case--trame');
+    cadre.appendChild(el('span', 'badge-tech', t('contreTech', { tech: s.tech })));
+    cadre.appendChild(el('p', 'bulle', item.t));
+    const zone = el('div', 'choix-liste');
+    const choix = shuffle(item.choix.slice());
+    const boutons = choix.map(c => {
+      const b = bouton('choix', c.t);
+      b.addEventListener('click', () => choisir(c, b));
+      zone.appendChild(b);
+      return b;
+    });
+    cadre.appendChild(zone);
+    aire.appendChild(cadre);
+    annoncer(item.t);
+    boutons[0].focus({ preventScroll: true });
+    function choisir(c, b) {
+      boutons.forEach((x, k) => { x.disabled = true; if (choix[k].k === 'bonne') x.classList.add('juste'); });
+      const ok = c.k === 'bonne';
+      if (!ok) b.classList.add('faux');
+      if (ok) { sfx(cadre, t('sfxContre')); retour(true, t('contreOk'), item.e); }
+      else if (c.k === 'sophisme') { sfx(cadre, t('sfxBonk'), true); retour(false, t('contreBonk', { l: soph(c.s).l }), item.e); }
+      else { sfx(cadre, t('sfxOups'), true); retour(false, t('contreCede'), item.e); }
+      const joue = { id: item.id, titre: item.t, reussi: ok, explication: item.e };
+      suivant(t('suivant'), () => fini(ok ? 1 : 0, joue));
+    }
+  }
+
+  // ═════════════════════════════════════════════════════════════════════
+  //  Les épreuves : un paquet de manches, un seuil, une technique
+  // ═════════════════════════════════════════════════════════════════════
+  const EP = {
+    feuilles: {
+      paquet: () => shuffle(shuffle(DOJO.feuilles.filter(f => f.piege)).slice(0, 8)
+                     .concat(shuffle(DOJO.feuilles.filter(f => !f.piege)).slice(0, 4))),
+      manche: mancheFeuille, seuil: 9
+    },
+    oeil:       { paquet: () => shuffle(DOJO.oeil.slice()).slice(0, 6), manche: mancheOeil, seuil: 4 },
+    clochettes: { paquet: () => shuffle(DOJO.clochettes.filter(c => !c.examen)).slice(0, 2), manche: mancheCloche, seuil: 1.5, unite: 2 },
+    contre:     { paquet: () => shuffle(DOJO.ripostes.filter(r => !r.examen)).slice(0, 5), manche: mancheContre, seuil: 4 }
+  };
+
+  function lancerEpreuve(nom) {
+    const def = EP[nom];
+    const paquet = def.paquet();
+    const unite = def.unite || 1;             // clochettes : on compte en cloches
+    let i = 0, score = 0;
+    duree = 8;
+    ColFin.protegerSortie(true);
+    entete(nom);
+    cacherRetour();
+    montrer('epreuve');
+    const total = paquet.length * unite;
+    function jouer() {
+      cacherRetour();
+      compteurs(i + 1, paquet.length, score * unite);
+      def.manche(paquet[i], pts => {
+        score += pts;
+        i++;
+        if (i < paquet.length) jouer();
+        else resultat(nom, score * unite, total, def.seuil * unite);
+      });
+    }
+    jouer();
+  }
+
+  function resultat(nom, score, total, seuil) {
+    ColFin.protegerSortie(false);
+    const reussi = score >= seuil;
+    const nouvelle = reussi && !P.epreuves[nom];
+    if (reussi) { P.epreuves[nom] = true; sauver(); }
+    cacherRetour();
+    $('ep-progres').textContent = '';
+    $('ep-score').textContent = '';
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const c = el('div', 'case resultat');
+    const h = el('h3', 'titre-case', reussi ? t('epReussie') : t('epRatee'));
+    c.appendChild(h);
+    c.appendChild(el('p', 'resultat__score', String(score).replace('.', ',') + ' / ' + total));
+    c.appendChild(el('p', 'comp', t('epScore', { s: String(score).replace('.', ','), t: total, seuil: String(seuil).replace('.', ',') })));
+    c.appendChild(el('p', 'bulle', (reussi ? t('senseiBravo') : t('senseiEncore'))));
+    if (reussi) {
+      const tech = TECHNIQUES[nom];
+      const bloc = el('div', 'tech-acquise');
+      bloc.appendChild(el('span', 'tech-acquise__label', t('nouvelleTech')));
+      bloc.appendChild(el('strong', null, t('tech_' + tech)));
+      bloc.appendChild(el('span', null, t('techDesc_' + tech)));
+      c.appendChild(bloc);
+      if (nouvelle) cutin(t('techAcquiseCut'), t('tech_' + tech));
+    }
+    aire.appendChild(c);
+    annoncer(h.textContent + ' ' + score + ' / ' + total);
+    h.tabIndex = -1;
+    h.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+    const actions = el('div', 'actions');
+    const bRe = bouton('btn-manga btn-manga--clair', t('reessayer'));
+    bRe.addEventListener('click', () => lancerEpreuve(nom));
+    const bSuite = bouton('btn-manga', t('continuer'));
+    bSuite.addEventListener('click', () => (reussi ? pique(carte) : carte()));
+    actions.append(bSuite, bRe);
+    aire.appendChild(actions);
+  }
+
+  // Sophisuke surgit entre deux épreuves, avec une pique à démasquer.
+  function pique(apres) {
+    const p = DOJO.piques[P.piques % DOJO.piques.length];
+    P.piques++; sauver();
+    const ids = shuffle([p.a].concat(p.opts));
+    const s = soph(p.a);
+    scene([
+      { qui: 'rival', texte: p.t },
+      { qui: 'narrateur', texte: t('piqueQuestion'), uneChance: true,
+        choix: ids.map(id => ({ t: soph(id).tech + ' — ' + soph(id).l, ok: id === p.a,
+                                r: id === p.a ? t('piqueOk', { tech: s.tech, l: s.l }) : t('piqueKo', { tech: s.tech, l: s.l }) })),
+        apres: ok => { if (ok) demasque(p.a); } }
+    ], apres);
+  }
+
+  // ─── Prologue : l'arrivée et la Divination de l'eau ───
+  function accueil() {
+    const a = DOJO.accueil;
+    scene([
+      { qui: 'narrateur', texte: a.retard },
+      { qui: 'sensei', texte: a.excuse },
+      { qui: 'sensei', texte: a.defi, choix: shuffle(a.choix.slice()), sfxOk: '!!' },
+      { qui: 'rival', texte: a.rival }
+    ], () => { P.accueil = true; sauver(); divination(); });
+  }
+
+  function divination() {
+    const items = shuffle(DOJO.divination.slice());
+    const points = { coeur: 0, troupeau: 0, detective: 0, forteresse: 0 };
+    const reponses = [];
+    let i = 0;
+    entete('div');
+    cacherRetour();
+    montrer('epreuve');
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const bol = el('div', 'bol'); bol.setAttribute('aria-hidden', 'true');
+    const eau = el('div', 'eau'); const feuille = el('span', 'bol__feuille', '🍃');
+    bol.append(eau, feuille);
+    const zone = el('div');
+    aire.append(bol, zone);
+    function poser() {
+      compteurs(i + 1, items.length);
+      zone.textContent = '';
+      const it = items[i];
+      zone.appendChild(el('p', 'bulle', it.t));
+      const btns = el('div', 'div-boutons');
+      [['oui', 'divOui'], ['bof', 'divBof'], ['non', 'divNon']].forEach(([v, cle]) => {
+        const b = bouton('btn-manga btn-manga--clair', t(cle));
+        b.addEventListener('click', () => noter(it, v));
+        btns.appendChild(b);
+      });
+      zone.appendChild(btns);
+      annoncer(it.t);
+      btns.firstChild.focus({ preventScroll: true });
+    }
+    function noter(it, v) {
+      reponses.push({ it: it, v: v });
+      if (it.f === 'sain') points.forteresse += v === 'non' ? 2 : v === 'bof' ? 1 : 0;
+      else points[it.f] += v === 'oui' ? 2 : v === 'bof' ? 1 : 0;
+      feuille.style.transform = 'translateX(-50%) rotate(' + (Math.random() * 60 - 30) + 'deg)';
+      i++;
+      if (i < items.length) poser(); else reveler();
+    }
+    function reveler() {
+      // Le type le plus marqué l'emporte ; sous 3 points, l'eau reste calme.
+      let type = 'calme', max = 2;
+      ['coeur', 'troupeau', 'detective', 'forteresse'].forEach(k => { if (points[k] > max) { max = points[k]; type = k; } });
+      P.type = type; sauver();
+      const ty = DOJO.types[type];
+      eau.className = 'eau eau--' + type;
+      $('ep-progres').textContent = '';
+      zone.textContent = '';
+      const titre = el('h3', 'type-nom', ty.nom);
+      zone.append(el('p', 'bulle', ty.eau), titre, el('p', 'consigne', ty.desc));
+      zone.appendChild(el('p', 'retour__titre', t('divRetenir')));
+      const ul = el('ul', 'liste-verdicts');
+      reponses.forEach(r => {
+        const li = el('li', r.it.f === 'sain' ? 'sain' : 'piege', r.it.t);
+        li.appendChild(el('small', null, (r.it.f === 'sain' ? t('divVerdictSain') : t('divVerdictPiege')) + ' — ' + r.it.e));
+        ul.appendChild(li);
+      });
+      zone.appendChild(ul);
+      cutin(t('divResultat'), ty.nom);
+      annoncer(ty.nom + '. ' + ty.eau + ' ' + ty.desc);
+      titre.tabIndex = -1;
+      titre.focus({ preventScroll: true });
+      suivant(t('continuer'), carte);
+    }
+    poser();
+  }
+
+  // ─── La carte du dojo ───
+  function carte() {
+    ColFin.protegerSortie(false);
+    $('carte-rang').textContent = rang();
+    $('carte-type').textContent = P.type ? t('tonType', { nom: DOJO.types[P.type].nom }) : '';
+    const ids = Object.keys(DOJO.sophismes);
+    $('btn-rouleau').textContent = t('rouleauBtn', { n: ids.filter(id => P.rouleau[id]).length, t: ids.length });
+
+    const grille = $('carte-grille');
+    grille.textContent = '';
+    EPREUVES.forEach((nom, k) => {
+      const fait = !!P.epreuves[nom];
+      const c = el('div', 'case');
+      const num = el('span', 'num', String(k + 1)); num.setAttribute('aria-hidden', 'true');
+      c.append(num, el('span', 'ref', t(nom + 'Ref')), el('h3', 'titre-case', t(nom + 'Titre')), el('p', 'comp', t(nom + 'Comp')));
+      c.appendChild(el('p', 'statut' + (fait ? ' fait' : ''), fait ? t('techAcquise', { tech: t('tech_' + TECHNIQUES[nom]) }) : t('aFaire')));
+      const b = bouton('btn-manga' + (fait ? ' btn-manga--clair' : ''), fait ? t('rejouer') : t('commencer'));
+      b.addEventListener('click', () => lancerEpreuve(nom));
+      c.appendChild(b);
+      grille.appendChild(c);
+    });
+
+    const reste = EPREUVES.length - nbReussies();
+    const bEx = $('btn-examen');
+    bEx.disabled = reste > 0;
+    bEx.textContent = P.examen ? t('repasserExamen') : t('passerExamen');
+    $('carte-examen-txt').textContent = reste > 0 ? t('examenVerrou', { n: reste }) : P.examen ? t('examenFait') : t('examenPret');
+
+    const ul = $('carte-techs');
+    ul.textContent = '';
+    EPREUVES.forEach(nom => {
+      const tech = TECHNIQUES[nom];
+      const li = el('li', P.epreuves[nom] ? 'acquise' : '');
+      li.textContent = P.epreuves[nom] ? t('tech_' + tech) : t('techVerrou', { tech: t('tech_' + tech), ep: t(nom + 'Titre') });
+      li.appendChild(el('span', null, t('techDesc_' + tech)));
+      ul.appendChild(li);
+    });
+
+    const cb = $('mode-calme');
+    cb.checked = calme();
+    cb.disabled = mouvementReduit;
+    if (mouvementReduit) cb.nextElementSibling.textContent = t('modeCalmeForce');
+    montrer('carte');
+  }
+
+  // ─── Le Rouleau Interdit ───
+  function rouleau() {
+    const g = $('rouleau-grille');
+    g.textContent = '';
+    Object.keys(DOJO.sophismes).forEach(id => {
+      const s = soph(id);
+      const n = P.rouleau[id] || 0;
+      const c = el('article', 'carte-tech' + (n ? '' : ' verrou'));
+      if (n) {
+        c.append(el('h3', null, s.tech), el('p', 'soph', s.l));
+        const sg = el('p'); sg.append(el('b', null, t('rouleauSignes') + ' '), document.createTextNode(s.signes));
+        const pa = el('p'); pa.append(el('b', null, t('rouleauParade') + ' '), document.createTextNode(s.parade));
+        c.append(sg, pa, el('p', 'compte', t('rouleauCompte', { n: n })));
+      } else {
+        const h = el('h3', null, '？'); h.setAttribute('aria-hidden', 'true');
+        c.append(h, el('p', null, t('rouleauVerrou')));
+      }
+      g.appendChild(c);
+    });
+    montrer('rouleau');
+  }
+
+  // ─── L'examen de la Porte ───
+  function lancerExamen() {
+    const ex = DOJO.examen;
+    scene([{ qui: 'rival', texte: ex.intro }], () => {
+      const pieges = shuffle(DOJO.feuilles.filter(f => f.piege)).slice(0, 2);
+      const sain = shuffle(DOJO.feuilles.filter(f => !f.piege)).slice(0, 1);
+      const manches = shuffle(pieges.concat(sain)).map(it => [mancheFeuille, it, { statique: true }])
+        .concat([[mancheOeil, shuffle(DOJO.oeil.slice())[0]]])
+        .concat([[mancheCloche, DOJO.clochettes.find(c => c.examen)]])
+        .concat([[mancheContre, DOJO.ripostes.find(r => r.examen)]]);
+      const joue = [];
+      let i = 0, score = 0;
+      ColFin.protegerSortie(true);
+      entete('examen', t('examenConsigne'));
+      $('ep-titre').textContent = t('examenTitre');
+      $('ep-ref').textContent = t('examenRef');
+      montrer('epreuve');
+      function jouer() {
+        cacherRetour();
+        compteurs(i + 1, manches.length, String(score).replace('.', ','));
+        const [fn, item, opts] = manches[i];
+        fn(item, (pts, j) => {
+          score += pts;
+          joue.push(j);
+          i++;
+          if (i < manches.length) jouer();
+          else if (score >= 4) dixiemeQuestion(joue);
+          else finExamen(false, joue);
+        }, opts);
+      }
+      jouer();
+    });
+  }
+
+  function dixiemeQuestion(joue) {
+    const ex = DOJO.examen;
+    scene([
+      { qui: 'narrateur', texte: ex.examinateur },
+      { qui: 'examinateur', texte: ex.q10, sfxOk: t('sfxClac'),
+        choix: ex.choix.map((c, k) => ({ t: c.t, ok: c.ok, r: c.ok ? ex.revelation : (k === 0 ? ex.rateAbandon : ex.rateRepond) })),
+        apres: ok => {
+          if (!ok) return;
+          P.examen = true; sauver();
+          demasque('dilemme'); demasque('pente');
+          cutin(t('examenOkCut'), t('examenSur'));
+        } }
+    ], () => ellipse(ex.apres, () => finExamen(true, joue)));
+  }
+
+  // L'écran noir « quelques heures plus tard… » : clin d'œil aux ellipses de manga.
+  function ellipse(texte, apres) {
+    const e = $('ellipse');
+    e.textContent = texte;
+    e.appendChild(el('span', 'sr-only', ' ' + t('clicPourContinuer')));
+    e.hidden = false;
+    annoncer(texte);
+    let parti = false;
+    function partir() {
+      if (parti) return;
+      parti = true;
+      e.hidden = true;
+      document.removeEventListener('keydown', partir);
+      e.removeEventListener('click', partir);
+      apres();
+    }
+    setTimeout(() => { document.addEventListener('keydown', partir); e.addEventListener('click', partir); }, 400);
+    setTimeout(partir, 2600);
+  }
+
+  function finExamen(reussi, joue) {
+    montrer('fin');
+    ColFin.rendre({
+      cible: $('fin-recap'),
+      jeu: 'arene-dojo',
+      titre: reussi ? '👁️ ' + t('finTitreOk') : '😼 ' + t('examenRate'),
+      message: reussi ? t('finMsgOk') : t('examenRateMsg'),
+      items: joue,
+      onRejouer: () => lancerExamen(),
+      onRecommencer: () => lancerExamen()
+    });
+  }
+
+  // ─── Branchements ───
+  $('btn-entrer').addEventListener('click', () => (P.accueil ? carte() : accueil()));
+  $('btn-rouleau').addEventListener('click', rouleau);
+  $('rouleau-retour').addEventListener('click', carte);
+  $('btn-examen').addEventListener('click', lancerExamen);
+  $('fin-dojo').addEventListener('click', carte);
+  $('mode-calme').addEventListener('change', e => { P.calme = e.target.checked; sauver(); });
+  $('btn-effacer').addEventListener('click', () => {
+    ColModale.confirmer({ titre: t('effacerTitre'), texte: t('effacerTexte'), ok: t('effacerOui'), annuler: t('effacerNon') })
+      .then(oui => {
+        if (!oui) return;
+        try { localStorage.removeItem(CLE); } catch (e) {}
+        P = neuve();
+        montrer('intro', $('btn-entrer'));
+      });
+  });
+})();

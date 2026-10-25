@@ -96,6 +96,18 @@ main{display:flex;flex-direction:column;align-items:center;}
 #turn-progress{text-align:center;font-size:var(--fs-100);font-weight:800;color:var(--mu);letter-spacing:.5px;margin-bottom:8px;}
 #retry-btn{display:none;margin-bottom:10px;}
 
+/* Le dojo (dojo.html) : le bouton d'accès et les techniques qu'il débloque */
+.intro-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
+.dojo-etat{margin-top:14px;color:var(--mu);font-weight:700;font-size:var(--fs-200);line-height:1.5;}
+#techs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 10px;}
+#techs[hidden]{display:none;}
+.tech-btn{background:var(--card);border:2px dashed rgba(228,180,120,.6);border-radius:13px;padding:8px 12px;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--tx);font-size:var(--fs-200);font-weight:800;text-align:left;line-height:1.25;}
+.tech-btn .asub{display:block;font-size:var(--fs-100);font-weight:600;color:var(--mu);}
+.tech-btn:hover:not(:disabled){border-style:solid;transform:translateY(-1px);}
+.tech-btn:disabled{opacity:.45;cursor:default;}
+.tech-btn.active{opacity:1;border-style:solid;border-color:#e4b478;box-shadow:0 0 0 2px rgba(228,180,120,.45);}
+
 /* interstitial + end */
 .screen{display:none;max-width:560px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:30px;}
 .screen h2{font-family:'Alfa Slab One',serif;font-size:1.6rem;color:var(--acc);margin-bottom:10px;}
@@ -121,7 +133,11 @@ main{display:flex;flex-direction:column;align-items:center;}
     <p style="margin-top:10px;" data-i18n-html="brief2">🎯 À chaque réplique, identifie le <b>ressort rhétorique</b> ou le <b>sophisme</b> utilisé. Bonne réponse : ton adversaire perd des points de conviction. Mauvaise réponse : c'est toi qui en perds !</p>
     <p style="margin-top:10px;" data-i18n-html="brief3">👑 Bats les 5 adversaires pour devenir <b>Maître de l'Arène</b>.</p>
   </div>
-  <button class="bigbtn" onclick="startMatch(0)" data-i18n="enter">⚔️ Entrer dans l'arène</button>
+  <div class="intro-btns">
+    <button class="bigbtn" onclick="startMatch(0)" data-i18n="enter">⚔️ Entrer dans l'arène</button>
+    <a class="bigbtn gold" href="dojo.html" data-i18n="dojo">🥋 S'entraîner au dojo</a>
+  </div>
+  <p class="dojo-etat" id="dojo-etat"></p>
 </div>
 
 <div id="battle">
@@ -145,6 +161,7 @@ main{display:flex;flex-direction:column;align-items:center;}
       <div class="hptxt" id="hp-foe-txt"></div>
     </div>
   </div>
+  <div id="techs" hidden></div>
   <div class="bubble">
     <span class="btag" id="foe-tag"></span>
     <p class="btxt" id="btxt"></p>
@@ -185,7 +202,7 @@ I18N.register({
     brief1: `🏟️ Bienvenue dans l'arène ! Cinq adversaires vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b> !`,
     brief2: `🎯 À chaque réplique, identifie le <b>ressort rhétorique</b> ou le <b>sophisme</b> utilisé. Bonne réponse : ton adversaire perd des points de conviction. Mauvaise réponse : c'est toi qui en perds !`,
     brief3: `👑 Bats les 5 adversaires pour devenir <b>Maître de l'Arène</b>.`,
-    enter: "⚔️ Entrer dans l'arène", you: "Toi", replay: "🔄 Rejouer",
+    enter: "⚔️ Entrer dans l'arène", dojo: "🥋 S'entraîner au dojo", you: "Toi", replay: "🔄 Rejouer",
     hpYouLabel: "Ta conviction restante", hpFoeLabel: "Conviction restante de l'adversaire"
   },
   en: {
@@ -196,7 +213,7 @@ I18N.register({
     brief1: `🏟️ Welcome to the arena! Five opponents will try to <b>convince you by any means</b>: appeals to ethics (<b>ethos</b>), emotion (<b>pathos</b>) and logic (<b>logos</b>)… and plenty of <b>fallacious arguments</b>!`,
     brief2: `🎯 For each line, identify the <b>rhetorical device</b> or the <b>fallacy</b> used. Right answer: your opponent loses conviction points. Wrong answer: you lose them!`,
     brief3: `👑 Beat all 5 opponents to become <b>Master of the Arena</b>.`,
-    enter: "⚔️ Enter the arena", you: "You", replay: "🔄 Play again",
+    enter: "⚔️ Enter the arena", dojo: "🥋 Train at the dojo", you: "You", replay: "🔄 Play again",
     hpYouLabel: "Your remaining conviction", hpFoeLabel: "Opponent's remaining conviction"
   }
 });

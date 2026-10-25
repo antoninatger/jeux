@@ -144,7 +144,19 @@ let joue=[];
 let revision=null;
 function foeActuel(){ return revision || FOES[foeIdx]; }
 function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
-const YOUMAX=6;
+// ─── Techniques du dojo (dojo.html) ───
+// Chaque épreuve réussie au dojo débloque une technique, relue ici dans la
+// progression du dojo (localStorage « arene.dojo »). Les trois actives servent
+// une fois par combat ; les Clochettes donnent +1 point de conviction maximum.
+const DOJO_P=(()=>{ try{ return JSON.parse(localStorage.getItem("arene.dojo"))||{}; }catch(e){ return {}; } })();
+const DOJO_EP=DOJO_P.epreuves||{};
+const TECHS=[
+  {id:"regard",  ep:"feuilles", l:"👁️ Regard perçant", s:"retire des mauvaises réponses"},
+  {id:"seconde", ep:"oeil",     l:"🌀 Seconde vue", s:"ta prochaine erreur ne coûte rien"},
+  {id:"contre",  ep:"contre",   l:"⚡ Contre-attaque", s:"2 dégâts… ou 2 points perdus"},
+].filter(x=>DOJO_EP[x.ep]);
+let techUsed={}, techActive={}, ligneEnCours=null;
+const YOUMAX=6+(DOJO_EP.clochettes?1:0);
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
@@ -153,6 +165,7 @@ function startMatch(i, foeRevision){
   revision=foeRevision||null;
   const foe=foeActuel();
   foeHP=foe.hp;
+  techUsed={};
   if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; }
   ColFin.protegerSortie(true);
   $("end").style.display="none";
@@ -194,6 +207,7 @@ function updateHP(){
 function renderTurn(){
   const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
+  ligneEnCours=line; techActive={};
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
@@ -220,10 +234,22 @@ function renderTurn(){
     b.onclick=()=>answer(line,c.id,b);
     ansDiv.appendChild(b);
   });
+  renderTechs();
 }
 
 function answer(line,id,btn){
   const ok=id===line.a;
+  // Seconde vue : l'erreur ne compte pas, la même réplique reste à jouer.
+  if(!ok && techActive.seconde){
+    techActive.seconde=false;
+    btn.disabled=true; btn.classList.add("bad");
+    const r=$("riposte"); r.className="ko"; r.style.display="block";
+    $("rip-title").textContent="🌀 Seconde vue ! Ton erreur ne compte pas : choisis encore.";
+    $("rip-expl").innerHTML="";
+    renderTechs();
+    return;
+  }
+  const dmg=techActive.contre?2:1;
   joue.push({id:line.t, titre:line.t, reussi:ok, explication:texteBrut(line.e)});
   totalCount++;
   if(ok){ correctCount++; matchCorrect++; }
@@ -232,17 +258,20 @@ function answer(line,id,btn){
   const goodLabel=(line.type==="epl"?EPL:FALLACIES).find(o=>o.id===line.a).l;
   all.forEach(b=>{ if(b.dataset.id===line.a){b.classList.remove("dim");b.classList.add("good");} });
   if(ok){
-    foeHP--;
+    foeHP=Math.max(0,foeHP-dmg);
     $("f-foe").classList.add("shake");
     setTimeout(()=>$("f-foe").classList.remove("shake"),450);
     $("rip-title").textContent="✔ Touché ! Tu as démasqué la technique.";
   } else {
     btn.classList.remove("dim");btn.classList.add("bad");
-    youHP--;
+    youHP=Math.max(0,youHP-dmg);
     $("f-you").classList.add("shake");
     setTimeout(()=>$("f-you").classList.remove("shake"),450);
     $("rip-title").textContent="✘ Aïe ! C'était : "+goodLabel;
   }
+  if(dmg===2) $("rip-title").textContent=(ok?"⚡ Contre-attaque ! Deux points de dégâts. ":"⚡ Contre-attaque ratée : tu perds deux points. ")+$("rip-title").textContent;
+  techActive={};
+  renderTechs(true);
   updateHP();
   const rip=$("riposte");
   rip.className=ok?"ok":"ko"; rip.style.display="block";
@@ -319,3 +348,44 @@ function lose(){
   rb.textContent="🔁 Retenter "+foeActuel().name;
   rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx, revision); };
 }
+
+// Les boutons de techniques, sous les barres de conviction.
+function renderTechs(fini){
+  const box=$("techs"); if(!box) return;
+  box.innerHTML="";
+  box.hidden=!TECHS.length;
+  TECHS.forEach(x=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="tech-btn"+(techActive[x.id]?" active":"");
+    const sous=techUsed[x.id]?(techActive[x.id]?"activée : réponds !":"déjà utilisée"):x.s;
+    b.innerHTML=`${x.l}<span class="asub">${sous}</span>`;
+    b.disabled=!!fini || !!techUsed[x.id];
+    b.setAttribute("aria-pressed", techActive[x.id]?"true":"false");
+    b.onclick=()=>useTech(x.id);
+    box.appendChild(b);
+  });
+}
+
+function useTech(id){
+  techUsed[id]=true;
+  if(id==="regard"){
+    // Retire des mauvaises réponses jusqu'à n'en laisser que deux en jeu.
+    const enJeu=[...document.querySelectorAll(".abtn:not(:disabled)")];
+    const fausses=shuffle(enJeu.filter(b=>b.dataset.id!==ligneEnCours.a));
+    fausses.slice(0,Math.max(0,enJeu.length-2)).forEach(b=>{b.disabled=true;b.classList.add("dim");});
+  } else techActive[id]=true;
+  renderTechs();
+  const premier=document.querySelector(".abtn:not(:disabled)"); if(premier) premier.focus();
+}
+
+// Accueil : ce que le dojo a déjà appris au joueur, et l'avatar de qui a passé l'examen.
+(function(){
+  const etat=$("dojo-etat");
+  if(etat){
+    const noms=TECHS.map(x=>x.l.replace(/^\S+\s/,""));
+    if(DOJO_EP.clochettes) noms.push("🔔 Clochettes (+1 conviction)".replace(/^\S+\s/,""));
+    etat.textContent=noms.length?"🥋 Techniques du dojo prêtes pour l'arène : "+noms.join(", ")+".":"🥋 Nouveau : passe d'abord par le dojo pour t'entraîner et gagner des techniques utilisables ici.";
+  }
+  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥷"; a.title="avatar ninja : examen du dojo réussi"; } }
+})();
