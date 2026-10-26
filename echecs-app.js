@@ -492,9 +492,11 @@ function _onOpeningComplete() {
     : `✓ Terminé — ${_exoErrors} erreur${_exoErrors > 1 ? 's' : ''}.`;
   _showExoFeedback('correct', msg);
 
-  _sessionSuccesses++;
+  if (_exoErrors === 0) {
+    _sessionSuccesses++;
+    _markOpeningDone(_exoOpening.id);
+  }
   _updateSessionScore();
-  _markOpeningDone(_exoOpening.id);
 }
 
 // ─── 7.6 Indice ───────────────────────────────────────────────────────────────
@@ -515,6 +517,7 @@ function _showSolution() {
   _deselectSquare();
   setHighlights({ [expected.from]: 'highlight-last', [expected.to]: 'highlight-last' });
   _showExoFeedback('info', `Solution : ${expected.san}`);
+  _exoErrors++;
 
   setTimeout(() => {
     if (!_exoActive) return;

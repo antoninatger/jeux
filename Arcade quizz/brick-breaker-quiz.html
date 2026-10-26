@@ -3,21 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brick Breaker Quiz</title>
+<title data-i18n="pageTitle">Brick Breaker Quiz</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
-    intro: `🧱 Une question s'affiche en haut — les réponses sont des briques.<br><strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br>⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>⚠️ La balle qui tombe = −1 vie<br><br>← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    pageTitle: "Brick Breaker Quiz", colRetour: "Retour à l'arcade",
+    hudScore: "SCORE", hudLives: "VIES",
+    consigne: "🧱 CASSE LES FAUSSES RÉPONSES !",
+    controlsHint: "← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou souris",
+    intro: `🧱 Une question s'affiche en haut — les réponses sont des briques.<br><strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br><span class="mob-hide">⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>⚠️ La balle qui tombe = −1 vie<br><br></span>← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>TOUTES<br>CASSÉES !", loseTitle: "GAME<br>OVER",
-    winMsg: "Tu as détruit toutes les fausses réponses !", loseMsg: "Continue à développer ton esprit critique !"
+    winMsg: "Tu as détruit toutes les fausses réponses !", loseMsg: "Continue à développer ton esprit critique !",
+    hitGold: "❌ Brique DORÉE touchée ! −1 vie", ballLost: "💥 La balle est tombée ! −1 vie",
+    allBroken: "✅ Toutes les fausses réponses détruites !",
+    firstHint: "🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P ou ECHAP pour continuer",
+    launchHint: "ESPACE ou CLIC pour lancer", ptsLabel: "pts"
   },
   en: {
-    intro: `🧱 A question appears at the top — the answers are bricks.<br><strong style="color:#ffaa00">Break all the FALSE answers!</strong><br>⚠️ Read the bricks — hitting the <strong style="color:#ffcc00">correct answer</strong> costs a life!<br>⚠️ A falling ball = −1 life<br><br>← → or <strong style="color:#00ffcc">Mouse</strong> for the paddle &nbsp;|&nbsp; <strong style="color:#00ffcc">SPACE</strong> to launch &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    pageTitle: "Brick Breaker Quiz", colRetour: "Back to the arcade",
+    hudScore: "SCORE", hudLives: "LIVES",
+    consigne: "🧱 BREAK THE FALSE ANSWERS!",
+    controlsHint: "← → or MOUSE to move &nbsp;|&nbsp; SPACE to launch &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Break the FALSE bricks",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or mouse",
+    intro: `🧱 A question appears at the top — the answers are bricks.<br><strong style="color:#ffaa00">Break all the FALSE answers!</strong><br><span class="mob-hide">⚠️ Read the bricks — hitting the <strong style="color:#ffcc00">correct answer</strong> costs a life!<br>⚠️ A falling ball = −1 life<br><br></span>← → or <strong style="color:#00ffcc">Mouse</strong> for the paddle &nbsp;|&nbsp; <strong style="color:#00ffcc">SPACE</strong> to launch &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>ALL<br>BROKEN!", loseTitle: "GAME<br>OVER",
-    winMsg: "You destroyed all the false answers!", loseMsg: "Keep developing your critical thinking!"
+    winMsg: "You destroyed all the false answers!", loseMsg: "Keep developing your critical thinking!",
+    hitGold: "❌ You hit the GOLDEN brick! −1 life", ballLost: "💥 The ball fell! −1 life",
+    allBroken: "✅ All the false answers destroyed!",
+    firstHint: "🧱 Destroy all the FALSE answers — the correct one must stay!",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P or ESC to continue",
+    launchHint: "SPACE or CLICK to launch", ptsLabel: "pts"
   }
 });
 </script>
@@ -27,14 +50,30 @@ I18N.register({
 </script>
 <script>if(typeof QCMStore!=='undefined'){var _s=QCMStore.getSessionQuestions();if(_s&&_s.length)window.DEFAULT_QCM=_s;}</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@600;700;800&display=swap');
+  /* Identité arcade sur le socle (chantier 05). */
+  :root {
+    --bg:#050010;
+    --surface:#0b0b26;
+    --txt:#e8f0ff;
+    --txt-secondaire:#99a3c4;  /* 8,3:1 sur --bg */
+    --acc:#00ffcc;
+    --acc-txt:#001510;
+    --font-texte:'Nunito',sans-serif;
+    --font-titre:'Orbitron',sans-serif;
+  }
+  .col-entete__titre{color:#00ffcc;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 0 16px rgba(0,255,204,.45)}
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background:#050010;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     min-height:100vh; overflow-x:hidden;
     font-family:'Orbitron', sans-serif;
   }
+  /* L'en-tête unifié reste en haut ; le bloc de jeu se centre par marges
+     auto dans l'espace restant (l'ancien justify-content:center posait
+     l'en-tête au milieu de la page). */
+  #ui{margin-top:auto}
+  #speed-row{margin-bottom:auto}
 
   #ui {
     max-width:660px; width:100%; display:flex; justify-content:space-between; align-items:center;
@@ -42,14 +81,14 @@ I18N.register({
     text-shadow:0 0 10px #00ffcc;
   }
   #ui span { font-size:1.125rem; font-weight:700; }
+  /* La consigne clignotait en permanence, à côté d'un jeu déjà animé — une
+     brique qui tombe, une balle qui rebondit, des particules. Deux mouvements
+     qui se disputent le regard, et le second ne dit rien de nouveau une fois
+     lu. Elle est fixe, avec le halo qui était son point haut. */
   .consigne {
     font-family:'Nunito',sans-serif; font-size:.9375rem; font-weight:800;
     color:#ffaa00; letter-spacing:.05em;
-    animation:consigne-pulse 1.6s ease-in-out infinite;
-  }
-  @keyframes consigne-pulse {
-    0%,100% { text-shadow:0 0 8px rgba(255,170,0,.5); opacity:.85; }
-    50%     { text-shadow:0 0 22px rgba(255,170,0,1), 0 0 44px rgba(255,170,0,.45); opacity:1; }
+    text-shadow:0 0 12px rgba(255,170,0,.7);
   }
   #menu-btn-bottom {
     display:inline-block; margin-left:8px; padding:4px 14px; border-radius:6px;
@@ -65,6 +104,10 @@ I18N.register({
     width:min(660px,100%);
   }
   canvas { display:block; width:100%; height:auto; background:#00040f; cursor:none; }
+  /* E2 : à la fin de la partie, l'overlay quitte le canvas et prend sa place dans le
+     flux : le récapitulatif a la hauteur qu'il lui faut au lieu de défiler dans le cadre. */
+  #canvas-wrap.fin canvas, #canvas-wrap.fin #feedback, #canvas-wrap.fin #question-banner { display:none; }
+  #canvas-wrap.fin #overlay { position:relative; inset:auto; min-height:520px; }
 
   #question-banner {
     position:absolute; top:0; left:0; right:0;
@@ -88,9 +131,15 @@ I18N.register({
 
   #overlay {
     position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     background:rgba(0,4,15,0.93); color:#00ffcc; text-align:center; gap:14px;
+    overflow-y:auto; padding:14px 0;
   }
+  /* Centrage sûr : centré quand ça tient, défilable depuis le haut sinon —
+     en 320/390 px le bouton JOUER débordait du cadre et devenait
+     inatteignable (§9.3). */
+  #overlay > :first-child{margin-top:auto}
+  #overlay > :last-child{margin-bottom:auto}
   #overlay h1 {
     font-size:2rem; font-weight:900; letter-spacing:.15em;
     text-shadow:0 0 30px #00ffcc, 0 0 60px #00ffcc; line-height:1.15;
@@ -98,6 +147,16 @@ I18N.register({
   #overlay .sub {
     font-family:'Nunito',sans-serif; font-size:1rem;
     color:#ccc; line-height:1.9; max-width:500px; padding:0 16px;
+  }
+  /* Intro raccourcie en mobile : le cadre du canvas ne fait que ~300 px de
+     haut à 390 px de large, JOUER doit rester visible sans défiler (§9.3). */
+  @media (max-width:480px){
+    #overlay{gap:8px; padding:8px 0}
+    #overlay h1{font-size:1.4rem}
+    #overlay .sub{font-size:0.8125rem; line-height:1.5}
+    #overlay .sub .mob-hide{display:none}
+    #overlay .col-meta{display:none}
+    #overlay button{padding:9px 30px; font-size:0.8125rem}
   }
   #overlay button {
     padding:12px 44px; background:transparent;
@@ -130,7 +189,8 @@ I18N.register({
     font-family:'Nunito',sans-serif; font-size:0.8125rem; color:#99a3c4; letter-spacing:.04em;
   }
   #speed-row {
-    display:flex; align-items:center; justify-content:center; gap:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px 10px;
+    flex-wrap:wrap; padding:0 8px; max-width:100%;
     margin-top:10px; font-family:'Nunito',sans-serif; font-size:0.875rem;
     color:#00ffcc; letter-spacing:.04em;
   }
@@ -150,19 +210,18 @@ I18N.register({
   #mute-btn:hover { border-color:#00ffcc; color:#00ffcc; }
 
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 
+<!-- Le titre vit dans l'en-tête unifié : le HUD garde score, consigne et vies
+     sous lui, en flux — plus rien ne se recouvre en 390 px (§9.3). -->
 <div id="ui">
-  <div>SCORE<br><span id="score-display">0</span></div>
-  <div style="text-align:center">BRICK BREAKER QUIZ<br>
-    <span class="consigne">🧱 CASSE LES FAUSSES RÉPONSES !</span>
+  <div><span data-i18n="hudScore">SCORE</span><br><span id="score-display">0</span></div>
+  <div style="text-align:center">
+    <span class="consigne" data-i18n="consigne">🧱 CASSE LES FAUSSES RÉPONSES !</span>
   </div>
-  <div style="text-align:right">VIES<br><span id="lives-display">❤️❤️❤️</span></div>
+  <div style="text-align:right"><span data-i18n="hudLives">VIES</span><br><span id="lives-display">❤️❤️❤️</span></div>
 </div>
 
 <div id="canvas-wrap">
@@ -180,18 +239,23 @@ I18N.register({
     <div class="sub" data-i18n-html="intro">
       🧱 Une question s'affiche en haut — les réponses sont des briques.<br>
       <strong style="color:#ffaa00">Casse toutes les FAUSSES réponses !</strong><br>
-      ⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>
-      ⚠️ La balle qui tombe = −1 vie<br><br>
+      <span class="mob-hide">⚠️ Lis les briques — toucher la <strong style="color:#ffcc00">bonne réponse</strong> coûte une vie !<br>
+      ⚠️ La balle qui tombe = −1 vie<br><br></span>
       ← → ou <strong style="color:#00ffcc">Souris</strong> pour la raquette &nbsp;|&nbsp; <strong style="color:#00ffcc">ESPACE</strong> pour lancer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+    <ul class="col-meta">
+      <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
+      <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
+      <li>⌨️ <span data-i18n="metaCommandes">Clavier ou souris</span></li>
+    </ul>
+    <div class="col-actions" style="flex-direction:column;align-items:center">
       <button onclick="startDefaultGame()" data-i18n="play">JOUER ▶</button>
       <button class="btn-custom" onclick="location.href='index.html'" data-i18n="menu">← MENU &amp; QUESTIONS</button>
     </div>
   </div>
 </div>
 
-<div id="controls">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
+<div id="controls"><span data-i18n-html="controlsHint">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE lancer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Casse les FAUSSES briques</span> <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
 <div id="speed-row">
   🔡
   <input type="range" id="font-slider" min="10" max="20" value="14" step="1">
@@ -221,6 +285,16 @@ fontSlider.addEventListener('input', () => {
 });
 
 let activeQCM = DEFAULT_QCM;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est réussie quand ses fausses briques sont cassées sans avoir touché la bonne.
+let joue = [], qNotee = false;
+function titreBrut(html) { const d = document.createElement('div'); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, ' '); return d.textContent; } // les clés de titre contiennent des <br>
+function noterQuestion() {
+  if (!currentQ || qNotee) return;
+  qNotee = true;
+  joue.push({ id: currentQ.q, titre: currentQ.q, reussi: !correctPenalized, explication: currentQ.expl || '' });
+}
 
 // ── CANVAS ───────────────────────────────────────────────────
 const canvas = document.getElementById('game');
@@ -228,8 +302,11 @@ const ctx    = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
 // ── CONSTANTS ────────────────────────────────────────────────
-const BANNER_H    = 80;   // question banner height (bounce ceiling)
-const BRICK_TOP   = 100;  // y of first row of bricks
+// Hauteur du bandeau et plafond des briques : mesurés sur le bandeau réel à
+// chaque question (pas devinés) — sinon la 1re rangée se cache sous le
+// bandeau dès qu'il passe sur deux lignes, notamment à 390 px (§F3).
+let BANNER_H      = 80;
+let BRICK_TOP     = 100;
 const BRICK_H     = 55;
 const BRICK_GAP_X = 9;
 const BRICK_GAP_Y = 9;
@@ -247,6 +324,7 @@ let paused = false;
 let qIndex, currentQ, questionActive, feedbackTimer;
 let bricks, particles, stars;
 let ballLaunched;
+let correctPenalized; // la bonne brique ne coûte une vie qu'une fois par question
 
 const paddle = { x: W/2, w: PADDLE_W0, y: PADDLE_Y, h: PADDLE_H };
 const ball   = { x: W/2, y: PADDLE_Y - BALL_R - 2, vx: 0, vy: 0, r: BALL_R, spd: BALL_SPD };
@@ -286,13 +364,43 @@ function shuffleColors() {
   return c;
 }
 
+// Chantier 04 : mélange l'ordre des OPTIONS, pas seulement leurs couleurs.
+// Sans ça, toutes les questions ayant answer:0 mettent la bonne réponse
+// dans la première brique — le joueur gagne sans lire.
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i=a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function withShuffledOptions(list) {
+  return list.map(q => {
+    const idx = shuffleArr(Array.from({length:q.options.length}, (_,i) => i));
+    return { ...q, options: idx.map(i => q.options[i]), answer: idx.indexOf(q.answer) };
+  });
+}
+
+// Hauteur réelle du bandeau de question, mesurée en coordonnées canvas.
+function getBannerCanvasH() {
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.height) return 80;
+  const scale = H / rect.height;
+  const bannerRect = document.getElementById('question-banner').getBoundingClientRect();
+  return Math.max(60, Math.round(bannerRect.height * scale));
+}
+
 // ── BRICKS ───────────────────────────────────────────────────
 function spawnBricks() {
   bricks = [];
   const q = activeQCM[qIndex];
   const N = q.options.length;
   const margin = 18;
-  const cols   = N <= 3 ? N : 2;
+  // Au-delà de 90 caractères, une brique pleine largeur au lieu de partager
+  // la ligne : le texte n'a de place pour tenir sur 3 lignes qu'à cette largeur.
+  const hasLong = q.options.some(t => t.length > 90);
+  const cols   = hasLong ? 1 : (N <= 3 ? N : 2);
   const avail  = W - 2*margin;
   const bw     = (avail - (cols-1)*BRICK_GAP_X) / cols;
   const colors = shuffleColors();
@@ -334,7 +442,7 @@ function drawBrick(b) {
   const fs = b.text.length > 28 ? Math.max(11, brickFontSize - 2) : brickFontSize;
   ctx.font = `700 ${fs}px Nunito, sans-serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  wrapText(ctx, b.text, b.x+b.w/2, b.y+b.h/2, b.w-22, fs + 4);
+  wrapText(ctx, b.text, b.x+b.w/2, b.y+b.h/2, b.w-22, fs + 4, 3);
 }
 
 // ── BALL ─────────────────────────────────────────────────────
@@ -390,12 +498,20 @@ function checkBrickCollisions() {
 
     if (b.isCorrect) {
       b.flash = 20;
-      lives--;
-      updateUI();
-      playSound(110, 0.45, 'sawtooth');
-      showFeedback('❌ Brique DORÉE touchée ! −1 vie', 'ko');
-      ballLaunched = false;
-      if (lives <= 0) setTimeout(() => endGame(false), 600);
+      // F3 : la bonne brique reste sur le plateau, mais ne coûte une vie
+      // qu'une fois par question — la retoucher par adresse n'est pas une
+      // nouvelle erreur de compréhension.
+      if (!correctPenalized) {
+        correctPenalized = true;
+        lives--;
+        updateUI();
+        playSound(110, 0.45, 'sawtooth');
+        // Chantier 04 : c'est LE moment pédagogique — le joueur vient de détruire
+        // la bonne réponse, on lui dit pourquoi c'était la bonne.
+        feedbackKO(I18N.t('hitGold'));
+        ballLaunched = false;
+        if (lives <= 0) setTimeout(() => endGame(false), 2600);
+      }
     } else {
       b.hitting = true;
       b.flash = 14;
@@ -412,12 +528,14 @@ function checkAllWrongGone() {
   if (!questionActive) return;
   if (bricks.some(b => !b.isCorrect && !b.dead)) return;
   questionActive = false;
+  noterQuestion();
   score += 100; updateUI();
   playSound(660, 0.35, 'sine');
   const correct = bricks.find(b => b.isCorrect);
   if (correct) spawnParticles(correct.x+correct.w/2, correct.y+correct.h/2, '#ffcc00', 32);
-  showFeedback(currentQ.expl || '✅ Toutes les fausses réponses détruites !', 'ok');
-  setTimeout(() => { qIndex++; loadQuestion(); }, 1700);
+  // Chantier 04 : 1,7 s ne suffit pas à lire une explication.
+  showFeedback(currentQ.expl || I18N.t('allBroken'), 'ok', currentQ.expl ? 4200 : 2000);
+  setTimeout(() => { qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1700);
 }
 
 // ── STARS / UI ───────────────────────────────────────────────
@@ -433,11 +551,18 @@ function updateUI() {
   document.getElementById('lives-display').textContent = h[Math.max(0,lives)] || '💀';
 }
 
-function showFeedback(msg, type) {
+// Chantier 04 : durée réglable — une explication a besoin de plus de 2,8 s pour être lue.
+function showFeedback(msg, type, ms) {
   const el = document.getElementById('feedback');
   el.textContent = msg; el.className = 'show '+type;
   clearTimeout(feedbackTimer);
-  feedbackTimer = setTimeout(() => el.className='', 2800);
+  feedbackTimer = setTimeout(() => el.className='', ms || 2800);
+}
+
+// Message d'erreur + l'explication pédagogique de la question en cours.
+function feedbackKO(msg) {
+  const expl = currentQ && currentQ.expl;
+  showFeedback(expl ? msg + ' — ' + expl : msg, 'ko', expl ? 6000 : 2800);
 }
 
 // ── QUESTION ─────────────────────────────────────────────────
@@ -448,17 +573,25 @@ function loadQuestion() {
   document.getElementById('q-num').textContent   = qIndex+1;
   document.getElementById('q-total').textContent = activeQCM.length;
   document.getElementById('question-banner').classList.add('visible');
+  // Bandeau mesuré après avoir posé le texte de la question (sa hauteur
+  // dépend du nombre de lignes), pas devinée à 80/100 px fixes (§F3).
+  BANNER_H  = getBannerCanvasH();
+  BRICK_TOP = BANNER_H + 20;
+  correctPenalized = false;
+  qNotee = false;
   spawnBricks();
   resetBall();
   questionActive = true;
-  if (qIndex === 0) showFeedback('🧱 Détruis toutes les FAUSSES réponses — la bonne doit rester !', 'ok');
+  if (qIndex === 0) showFeedback(I18N.t('firstHint'), 'ok');
 }
 
 // ── START / END ───────────────────────────────────────────────
-function startDefaultGame() {
-  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
-  if (typeof QCMStore !== 'undefined') {
-    var _p = QCMStore.getSessionQuestions();
+function startDefaultGame(pool) {
+  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub) — E2 : les jamais
+  // vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs ».
+  if (Array.isArray(pool)) window.DEFAULT_QCM = pool;
+  else if (typeof QCMStore !== 'undefined') {
+    var _p = QCMStore.getSessionQuestions(QCMStore.cleMemoire());
     if (_p && _p.length) window.DEFAULT_QCM = _p;
   }
   activeQCM = DEFAULT_QCM;
@@ -467,6 +600,10 @@ function startDefaultGame() {
 
 function startGame() {
   document.getElementById('overlay').style.display = 'none';
+  document.getElementById('canvas-wrap').classList.remove('fin');
+  joue = [];
+  ColFin.protegerSortie(true);
+  activeQCM = withShuffledOptions(activeQCM);
   score=0; lives=3; qIndex=0; particles=[]; ballLaunched=false; paused=false;
   paddle.x=W/2; paddle.w=PADDLE_W0; ball.spd=BALL_SPD;
   makeStars(); updateUI(); gameRunning=true;
@@ -478,16 +615,22 @@ function startGame() {
 function endGame(win) {
   gameRunning = false;
   document.getElementById('question-banner').classList.remove('visible');
+  // E2 : sur une défaite, la question en cours est ratée (c'est la bonne brique qui a été touchée).
+  if (!win) noterQuestion();
   const ov = document.getElementById('overlay');
   ov.style.display = 'flex';
-  ov.innerHTML = `
-    <h1 style="color:${win?'#00ffcc':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
-    <div class="sub">${I18N.t('finalScore')} <strong style="color:#00ffcc">${score}</strong><br>
-    ${win?I18N.t('winMsg'):I18N.t('loseMsg')}</div>
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-      <button onclick="startDefaultGame()">${I18N.t('replay')}</button>
-      <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menu')}</button>
-    </div>`;
+  document.getElementById('canvas-wrap').classList.add('fin');
+  // E2 : titre, score « bonnes / jouées », message, questions ratées avec leur explication et
+  // boutons (rejouer mes erreurs, rejouer, retour au hub) sont rendus par ColFin.
+  ov.innerHTML = '<div class="col-fin" id="ecran-fin"></div>';
+  ColFin.rendre({
+    cible: ov.firstElementChild, jeu: (typeof QCMStore !== 'undefined') ? QCMStore.cleMemoire() : 'arcade',
+    titre: titreBrut(win ? I18N.t('winTitle') : I18N.t('loseTitle')),
+    message: I18N.t('finalScore') + ' ' + score + ' — ' + (win ? I18N.t('winMsg') : I18N.t('loseMsg')),
+    score: joue.filter(j => j.reussi).length, total: joue.length, items: joue,
+    onRejouer: rates => startDefaultGame(activeQCM.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startDefaultGame()
+  });
 }
 
 // ── PARTICLES / SOUND ─────────────────────────────────────────
@@ -513,13 +656,19 @@ function playSound(freq, dur, type='sine', vol=0.15) {
 }
 
 // ── HELPERS ──────────────────────────────────────────────────
-function wrapText(ctx, text, cx, cy, maxW, lineH) {
+function wrapText(ctx, text, cx, cy, maxW, lineH, maxLines) {
   const words = text.split(' '); let line = '', lines = [];
   for (const w of words) {
     const t = line ? line + ' ' + w : w;
     if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t;
   }
   if (line) lines.push(line);
+  if (maxLines && lines.length > maxLines) {
+    lines = lines.slice(0, maxLines);
+    let last = lines[maxLines - 1];
+    while (last.length > 1 && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1);
+    lines[maxLines - 1] = last.trimEnd() + '…';
+  }
   const sy = cy - (lines.length - 1) * lineH / 2;
   lines.forEach((l, i) => ctx.fillText(l, cx, sy + i * lineH));
 }
@@ -554,9 +703,9 @@ function gameLoop() {
   if (paused) {
     ctx.font='700 20px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.9)';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('⏸ PAUSE', W/2, H/2);
+    ctx.fillText(I18N.t('pauseLabel'), W/2, H/2);
     ctx.font='400 13px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.6)';
-    ctx.fillText('P ou ECHAP pour continuer', W/2, H/2+32);
+    ctx.fillText(I18N.t('pauseHint'), W/2, H/2+32);
     return;
   }
 
@@ -594,8 +743,11 @@ function gameLoop() {
     if (ball.y - ball.r > H+10) {
       lives--; updateUI();
       playSound(150,.5,'sawtooth');
-      showFeedback('💥 La balle est tombée ! −1 vie', 'ko');
-      if (lives <= 0) { setTimeout(()=>endGame(false),600); return; }
+      // Chantier 04 : la balle perdue est un raté d'adresse, pas de compréhension —
+      // on ne divulgue pas la réponse tant que la question continue. En revanche,
+      // si c'est la dernière vie, c'est la dernière occasion d'expliquer.
+      if (lives <= 0) { feedbackKO(I18N.t('ballLost')); setTimeout(()=>endGame(false),2600); return; }
+      showFeedback(I18N.t('ballLost'), 'ko');
       ballLaunched = false;
     }
 
@@ -624,16 +776,17 @@ function gameLoop() {
     ctx.font='600 13px Orbitron,sans-serif';
     ctx.fillStyle='rgba(0,255,204,0.55)';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('ESPACE ou CLIC pour lancer', W/2, paddle.y-22);
+    ctx.fillText(I18N.t('launchHint'), W/2, paddle.y-22);
   }
 
   // HUD
   ctx.font='600 13px Orbitron'; ctx.fillStyle='rgba(0,255,204,0.45)';
   ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score} pts`, W-10, H-8);
+  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score} ${I18N.t('ptsLabel')}`, W-10, H-8);
 }
 
 
 </script>
+  <script src="../retours.js" defer></script>
 </body>
 </html>

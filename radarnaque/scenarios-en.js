@@ -29,13 +29,13 @@ const SCENARIOS = [
     "deAdresse": "ne-pas-repondre@chronopost.fr",
     "objet": "Security alert: new password request",
     "date": "Today, 09:14",
-    "corps": "Hi, antoninatger:<br><br>We received a request to set a new password for your account from a device or location you do not usually use. Was this you?<br><br>Confirm your identity within 24 hours to avoid your account being suspended.",
+    "corps": "Hi, antoninatger:<br><br>We received a request to set a new password for your account from a device or location you do not usually Using. Was this you?<br><br>Confirm your identity within 24 hours to avoid your account being suspended.",
     "bouton": "Yes, it was me — confirm",
     "verdict": "arnaque",
     "categorie": "Email phishing — fake account security alert",
     "indices": [
       "The sender says “Microsoft” but the email address ends in @chronopost.fr: it does not match.",
-      "Awkward wording and language mistakes.",
+      "Awkward wording and language mistakes (“you do not usually Using”).",
       "Fear and urgency: “account suspended” and “within 24 hours”.",
       { "risque": "The button leads to a fake page that steals your login and password." }
     ],
@@ -91,7 +91,7 @@ const SCENARIOS = [
     "canal": "chat",
     "plateforme": "Messenger",
     "contact": "Brad Pitt (Official) ✔",
-    "avatar": "img/celebrite-roses.jpg",
+    "avatar": "",
     "messages": [
       {
         "from": "eux",
@@ -112,7 +112,7 @@ const SCENARIOS = [
       "A celebrity privately messaging you and falling in love within a few messages: impossible.",
       "Enforced secrecy isolates the victim.",
       { "risque": "The request for money always arrives — often in untraceable gift cards." },
-      "A photo proves nothing: it may be real, stolen, or AI-generated."
+      "A profile photo proves nothing: it can be copied from the internet or built with an AI in seconds."
     ],
     "reflexe": "Whenever an online “love interest” asks for money, it is a scam. No exception.",
     "explication": "Victims have lost tens of thousands of euros to fake celebrities. Scammers build affection over time, then invent an emergency requiring money."
@@ -317,7 +317,7 @@ const SCENARIOS = [
       { "risque": "They push you to place money on a platform they choose: the displayed gains are fake." }
     ],
     "reflexe": "A stranger who wrote “by mistake” and then talks about money or investments: cut it short.",
-    "explication": "This is “pig butchering”: the scammer builds trust, then pushes the victim into a fake crypto/trading platform. Withdrawal becomes impossible."
+    "explication": "This is “pig butchering”: the scammer builds trust, then pushes the victim into a fake crypto/trading platform. Withdrawal becomes impossible. The pattern is documented: the US FTC puts 2024 losses from scams that begin with a simple text message at $470 million, five times the 2020 figure."
   },
   {
     "id": "email-airbnb-horsplateforme",
@@ -376,7 +376,7 @@ const SCENARIOS = [
     "verdict": "arnaque",
     "categorie": "Fake online shop — fictitious clearance sale",
     "indices": [
-      "Unknown, odd domain name (“velo-discount-shop.top”): no link to a real brand.",
+      "The domain ends in “.top”, a few-euro extension that established shops do not use, and “velo-discount-shop” matches no existing retailer: that name can be checked by searching it.",
       "Huge, unbelievable discount: an electric bike at €149 instead of €899.",
       "Fake urgency and scarcity: “closing for good”, “very limited stock”.",
       { "risque": "After payment, the item never arrives, or your bank details are stolen and reused." }
@@ -468,6 +468,28 @@ const SCENARIOS = [
     "explication": "Same recipe as the fake solar-panel aid, just a summer edition: whenever a heatwave or cold snap makes the news, these lead-generation sites flood inboxes with promises of exceptional aid. The form unlocks no aid at all: it exists to resell your details to renovation companies who will call you back to sell an overpriced installation. Real government aid is never requested by clicking an unsolicited e-mail."
   },
   {
+    "id": "email-ameli-regularisation",
+    "canal": "email",
+    "entete": "E-mail in the colours of the French national health insurance",
+    "de": "InfoSante",
+    "deAdresse": "theintersection@foundryco.com",
+    "objet": "Adjustment of your healthcare costs",
+    "date": "Thu, 03/09, 16:52",
+    "corps": "<div style=\"background:#0053b3;color:#fff;text-align:center;padding:16px 10px;border-radius:4px\"><span style=\"font-size:1.6em;font-weight:bold;letter-spacing:.2em\">ameli</span><br><span style=\"font-size:.85em\">National Health Insurance</span></div><br><div style=\"text-align:right;color:#777\">2 September 2026</div><b>Subject: adjustment of your healthcare costs</b><br><br>Dear Sir or Madam,<br><br>Your health insurance fund has adjusted your healthcare expenses. The amount of <b>€18.90</b> has been paid into your account by bank transfer.<br><br><div style=\"background:#eef3fb;padding:12px;border-radius:4px\"><b>Amount adjusted:</b> €18.90<br><b>Payment method:</b> bank transfer<br><b>Expected within:</b> 2 to 3 working days</div>",
+    "bouton": "Go to my account",
+    "verdict": "arnaque",
+    "categorie": "Impersonation of a public body (health insurance) — fake refund",
+    "indices": [
+      "The display name says “InfoSante”, but the real address is theintersection@foundryco.com: nothing to do with the official health insurance site. Name ≠ address.",
+      "“Dear Sir or Madam”: your health insurance fund knows exactly who you are and uses your name.",
+      "The blue “ameli” banner can be copied in seconds: a neat layout proves nothing.",
+      "A small, very believable amount (€18.90): it raises no suspicion and simply makes you want to “check”.",
+      { "risque": "The button leads to a fake health insurance page asking for your social security number, your password and then your bank details." }
+    ],
+    "reflexe": "A refund announced by e-mail is never checked from the e-mail's button: open the official site or app yourself.",
+    "explication": "Fake e-mails usually scare you; this one pleases you — the same scam in reverse. By announcing money already paid, it lowers your guard: you click to “see the details” and land on a copy of the official site. Remember that a real refund is automatic, paid to the account the health insurance fund already has on file, and visible in your online account without anyone needing to e-mail you."
+  },
+  {
     "id": "sms-banque-ok",
     "canal": "sms",
     "entete": "SMS from your bank",
@@ -489,6 +511,7 @@ const SCENARIOS = [
   {
     "id": "notif-connexion-ok",
     "canal": "notif",
+    "entete": "Notification that appeared in the evening, when you had not switched on any computer",
     "app": "Google Account",
     "appIcon": "🔐",
     "fond": "info",
@@ -499,11 +522,11 @@ const SCENARIOS = [
     "indices": [
       "No urgent link or button to click.",
       "You are invited to act from the official app, not through a message link.",
-      "“If this was you, no action is needed”: informative tone.",
+      "The message covers both cases (it was you / it was not you) instead of frightening you.",
       "No password or bank details requested."
     ],
     "reflexe": "A real notification sends you to the official app/site that you open yourself — not an urgent link.",
-    "explication": "Real sign-in alerts exist and are useful. The reflex stays the same: open the app yourself to check."
+    "explication": "The context here is worrying: nobody in your home touched a computer that evening. That does not make the notification fake — it is in fact exactly what it is for. A message can be both true and alarming. So the question is never “does this frighten me?”, but “what is it asking me to do?”. This one asks nothing: open the Google app yourself, Security section, and change your password from there."
   },
   {
     "id": "chat-ami-ok",
@@ -689,10 +712,10 @@ const SCENARIOS = [
     "canal": "chat",
     "plateforme": "Dating app",
     "contact": "Philip M. 😊",
-    "avatar": "img/visage-ia-homme.jpg",
+    "avatar": "",
     "messages": [
-      { "from": "eux", "texte": "Hi! I liked your profile right away 😊" },
-      { "from": "eux", "texte": "I’m an engineer, currently working on an offshore oil platform. We’ve been talking for 3 weeks, and I feel like I’ve known you forever." },
+      { "from": "eux", "dateSep": "3 weeks ago", "texte": "Hi! I liked your profile right away 😊" },
+      { "from": "eux", "dateSep": "Today", "texte": "I’m an engineer, currently working on an offshore oil platform. We’ve been talking for 3 weeks, and I feel like I’ve known you forever." },
       { "from": "eux", "texte": "I have a problem getting home: customs is asking me for €400 in fees that I don’t have on me here. Could you lend it to me? I’ll pay you back as soon as I’m back, I promise ❤️" }
     ],
     "verdict": "arnaque",
@@ -701,17 +724,17 @@ const SCENARIOS = [
       "A relationship that becomes intense within just a few weeks, without ever meeting in person.",
       "A job that conveniently explains being far away and hard to reach (offshore platform, mission abroad…): a very classic excuse.",
       { "risque": "The request for money always arrives — here in the form of “customs fees”." },
-      "The profile looks perfectly ordinary, not a celebrity: a believable photo proves nothing, it can be AI-generated."
+      "The profile looks perfectly ordinary, not a celebrity: that is exactly what makes it work. A believable profile photo can be built in seconds today."
     ],
     "reflexe": "As soon as an online match asks for money, even a small amount “to pay back quickly”, it’s a scam. No exception.",
-    "explication": "Unlike the fake “Brad Pitt”, this kind of profile doesn’t try to impress with celebrity status, but with ordinariness and closeness built up message by message. The AI-generated photo is undetectable to the naked eye: it’s the behaviour (money requested) that should raise the alarm, not the appearance."
+    "explication": "Unlike the fake “Brad Pitt”, this kind of profile doesn’t try to impress with celebrity status, but with ordinariness and closeness built up message by message. The photos on these profiles are often AI-generated and undetectable to the naked eye: it’s the behaviour (the money requested) that should raise the alarm, never the appearance."
   },
   {
     "id": "chat-fausse-vendeuse-acompte",
     "canal": "chat",
     "plateforme": "Classifieds site (WhatsApp contact)",
     "contact": "Camille D.",
-    "avatar": "img/visage-ia-femme.jpg",
+    "avatar": "",
     "messages": [
       { "from": "eux", "texte": "Hello! Yes, the item is still available 😊" },
       { "from": "eux", "texte": "As I have a lot of messages, I’m asking for a €30 deposit by direct bank transfer to hold the listing, outside the classifieds app (it avoids the platform’s fees)." },
@@ -727,6 +750,348 @@ const SCENARIOS = [
     ],
     "reflexe": "On a classifieds platform, payment should always go through the site’s secure system. Never a “deposit” by direct transfer.",
     "explication": "This is the exact opposite of the “secure classifieds sale” scenario: here, as soon as you’re pushed outside the protected system, you lose every guarantee. The excuse (“avoid the fees”) is almost always a sign of a scam."
+  },
+  {
+    "id": "popup-faux-captcha",
+    "canal": "notif",
+    "entete": "Window that appeared while browsing a website you use regularly",
+    "app": "Security check",
+    "appIcon": "☁️",
+    "fond": "info",
+    "titre": "Human verification — confirm you are not a robot",
+    "texte": "Follow these 3 steps on your keyboard: 1) press the Windows key + R — 2) press Ctrl + V — 3) press Enter. This check is required to access the page. Ray ID: b2f705a9136c2f36",
+    "verdict": "arnaque",
+    "categorie": "Fake CAPTCHA (“ClickFix”) — a command pasted without your knowledge",
+    "indices": [
+      "An “I am not a robot” check is done by ticking a box, never by typing keys.",
+      "You are made to open a window of the computer itself (Windows + R): no website ever needs that.",
+      "“Ctrl + V” pastes text you never copied: the page slipped it into your clipboard without telling you.",
+      {
+        "risque": "That text is a command disguised as a verification code. It installs a stealer that sends passwords, cookies and banking access to the scammer."
+      }
+    ],
+    "reflexe": "No anti-robot check ever asks you to press keys or open a window of your computer. If one does: close the tab and paste nothing.",
+    "explication": "This page often appears on a perfectly normal website that has been hacked: the address is right, the design is a flawless copy, there is no typo and no urgency. That is why the only reliable clue is not how it looks, but what it asks you to do. On a Mac the same scam asks you to open the “Terminal” (Cmd+Space) instead of Windows + R. If you have already pasted and pressed Enter: disconnect from the internet and get help changing your passwords from another device."
+  },
+
+  /* Chantier 04 (§4.9) — 14 cas fiables ajoutés pour rééquilibrer le corpus
+     (23 arnaques / 23 fiables). Voir le commentaire détaillé dans scenarios.js. */
+
+  {
+    "id": "email-impots-ok",
+    "canal": "email",
+    "entete": "Email received after your online tax return",
+    "de": "impots.gouv.fr",
+    "deAdresse": "ne-pas-repondre@dgfip.finances.gouv.fr",
+    "objet": "Your 2026 tax notice is available",
+    "date": "Mon 03/08, 07:12",
+    "corps": "Hello,<br><br>Your income tax notice can be viewed in your personal area on impots.gouv.fr, under “My documents”.<br><br>No action is required if you pay monthly.<br><br>The French public finances directorate",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — a document has been made available",
+    "indices": [
+      "Address at @dgfip.finances.gouv.fr: a genuine government domain (.gouv.fr).",
+      "No payment link, no promised refund, no bank details requested.",
+      "You are pointed to YOUR own account area, which you open yourself.",
+      "No threat and no hard deadline."
+    ],
+    "reflexe": "The tax office asks you to check your account area; it never sends a link to “claim a refund”.",
+    "explication": "Compare it with the fake tax-refund SMS elsewhere in this game: this one promises nothing, rushes no one and asks for no bank details. The habit stays the same — type impots.gouv.fr yourself rather than clicking."
+  },
+
+  {
+    "id": "sms-livraison-ok",
+    "canal": "sms",
+    "entete": "SMS received on the day you are expecting an order",
+    "expediteur": "Colissimo",
+    "messages": [
+      "Your parcel 6A21847755841 will be delivered today between 2pm and 4pm. Tracking available in the La Poste app or on laposte.fr using your parcel number."
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — delivery information",
+    "indices": [
+      "You really are expecting this parcel: the message matches your actual life.",
+      "No clickable link and no “€2 fee” to pay.",
+      "You are pointed to the official app or website, which you open yourself.",
+      "The displayed name (“Colissimo”) proves nothing, anyone can write it: what matters is that nothing is asked of you."
+    ],
+    "reflexe": "A real carrier informs you. It never asks for a small card payment to “release” a parcel.",
+    "explication": "This is the honest twin of the booby-trapped parcel SMS. Three details separate them: no link, no payment, and you genuinely were expecting this parcel. A parcel you never ordered always stays suspicious."
+  },
+
+  {
+    "id": "appel-banque-fraude-ok",
+    "canal": "appel",
+    "afficheur": "CIC — fraud team",
+    "numero": "call received during the day",
+    "transcript": [
+      {
+        "qui": "lui",
+        "texte": "Hello, CIC payment monitoring. A €780 purchase in Spain was blocked on your card. Do you recognise it?"
+      },
+      {
+        "qui": "vous",
+        "texte": "No, not at all."
+      },
+      {
+        "qui": "lui",
+        "texte": "We declined it and your card is suspended. I will not ask you for any code: go to a branch or call the number on the back of your card to order a new one."
+      }
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — fraud alert with no sensitive request",
+    "indices": [
+      "You are asked for no code, no password, and to approve nothing in the app.",
+      "You are not asked to “move your money to a safe account”.",
+      "The payment has already been blocked: nothing needs doing urgently.",
+      "You are pointed to the branch or the number on the back of your card."
+    ],
+    "reflexe": "A real bank blocks first and informs afterwards. It never makes you act during the call.",
+    "explication": "A displayed number proves nothing (spoofing). What separates this call from the fake adviser is that it asks for NOTHING. If in any doubt: hang up and call the number on the back of your card yourself — a real adviser will never take offence."
+  },
+
+  {
+    "id": "notif-ameli-ok",
+    "canal": "notif",
+    "entete": "Notification received the day after an “ameli” text message you found suspicious",
+    "app": "ameli",
+    "appIcon": "🩺",
+    "fond": "info",
+    "titre": "A new reimbursement is available",
+    "texte": "Details of your latest reimbursements can be viewed under “My payments” in the app.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — notification from the ameli app",
+    "indices": [
+      "The notification comes from the official app installed on your phone.",
+      "No amount to “claim” and no bank details requested.",
+      "No external link: everything happens inside the app.",
+      "No threat to suspend your entitlements."
+    ],
+    "reflexe": "The health service pays into the account it already holds. It never asks for bank details by text or email.",
+    "explication": "Getting a fake ameli text the day before does not turn this notification into a trap: the two have nothing to do with each other. The fake text promised a refund and asked for your bank details; this notification asks for nothing and leads nowhere, it points you to the app you installed yourself. Distrusting the context is the wrong habit: read the message, not the moment it arrives."
+  },
+
+  {
+    "id": "email-commande-ok",
+    "canal": "email",
+    "entete": "Email received ten minutes after your purchase",
+    "de": "Nature & Découvertes",
+    "deAdresse": "commandes@natureetdecouvertes.com",
+    "objet": "Your order no. 4471902 is confirmed",
+    "date": "Today, 16:42",
+    "corps": "Hello Mrs Renard,<br><br>Thank you for your order of 14 August: 1 wind chime, €39.90.<br><br>Delivery expected within 3 to 5 working days to the address saved in your account. Tracking will appear in your customer area.<br><br>Have a good day,<br>Customer service",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — order confirmation",
+    "indices": [
+      "You have just placed this order: amount, item and date all match.",
+      "Sender address consistent with the retailer.",
+      "You are addressed by name, not with a generic “Dear customer”.",
+      "No extra payment, no code, no urgency."
+    ],
+    "reflexe": "An order confirmation summarises; it never asks you to pay again or to “confirm” your card details.",
+    "explication": "The usual trap is a fake “payment problem” arriving after a real purchase, exploiting the fact that you are expecting an email. Here everything matches and nothing is requested: it is legitimate."
+  },
+
+  {
+    "id": "sms-pharmacie-ok",
+    "canal": "sms",
+    "entete": "SMS from your local pharmacy",
+    "expediteur": "PharmacieCentrale",
+    "messages": [
+      "Hello, the medicine you ordered on Tuesday has arrived. You can collect it during opening hours, Monday to Saturday 9am-7.30pm. See you soon!"
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — collection at the pharmacy",
+    "indices": [
+      "The message matches something you set in motion yourself.",
+      "No link, no attachment, no online payment.",
+      "No personal or medical data is requested in return.",
+      "You are invited to call in, with no urgency at all."
+    ],
+    "reflexe": "A health professional informs you; they never ask you to pay or identify yourself through a link sent by text.",
+    "explication": "Not everything is a scam, and suspecting everything eventually costs you your peace of mind. Here: a real order, no link, no payment. Nothing to flag."
+  },
+
+  {
+    "id": "chat-petitfils-ok",
+    "canal": "chat",
+    "messages": [
+      {
+        "from": "eux",
+        "texte": "Hi Grandma! I got my results, I'm in at Rennes university 🎉"
+      },
+      {
+        "from": "eux",
+        "texte": "I'll come round on Sunday and tell you all about it, will you make me your gratin? 😋"
+      }
+    ],
+    "plateforme": "WhatsApp",
+    "contact": "Théo (grandson)",
+    "avatar": "",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — news from a relative",
+    "indices": [
+      "The message arrives in the usual conversation, not from a new number.",
+      "No request for money, transfers or codes.",
+      "The content is personal and can be checked with the family.",
+      "No link, no urgency, no announced change of number."
+    ],
+    "reflexe": "The fake-relative scam almost always starts with “I've changed my number”. Nothing like that here.",
+    "explication": "This is the direct counter-example to the fake relative in this game: same affectionate tone, but the usual number and no request for money. The one signal that really matters stays the same — as soon as urgent money comes up, call the person on their old number."
+  },
+
+  {
+    "id": "email-mutuelle-ok",
+    "canal": "email",
+    "entete": "Monthly email from your health insurer",
+    "de": "Harmonie Mutuelle",
+    "deAdresse": "info@harmonie-mutuelle.fr",
+    "objet": "Your July benefits statement",
+    "date": "Fri 01/08, 06:05",
+    "corps": "Hello,<br><br>Your benefits statement is available in your member area.<br><br>You need to do nothing: reimbursements are paid automatically into your usual account.<br><br>Your adviser can be reached on the number shown on your insurance card.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — monthly statement",
+    "indices": [
+      "Sender address consistent with the organisation.",
+      "“You need to do nothing”: nobody is rushing you.",
+      "You are pointed to the number on YOUR card, not one given in the email.",
+      "No bank details, no login, no attachment to open."
+    ],
+    "reflexe": "An organisation that already pays you money already has your bank details: if it asks for them again, something is wrong.",
+    "explication": "The form looks a lot like phishing, and that is exactly what makes the exercise useful. The differences are real: nothing is requested, nothing is urgent, and the callback channel is one you already hold."
+  },
+
+  {
+    "id": "notif-maj-appli-ok",
+    "canal": "notif",
+    "app": "Play Store",
+    "appIcon": "⚙️",
+    "fond": "info",
+    "titre": "3 apps have been updated",
+    "texte": "Ma Banque, Météo France and Ameli were updated automatically. No action is required.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — automatic update",
+    "indices": [
+      "The notification comes from the phone's app store.",
+      "“No action is required”: nothing to click, nothing to install yourself.",
+      "No virus alert, no account to unblock, no number to call.",
+      "No payment or subscription offered."
+    ],
+    "reflexe": "Real updates come through the app store, never through a pop-up shouting about a virus.",
+    "explication": "Set this against the fake tech support in this game, with its alarming alert and a number to call. A real update is quiet, already done, and asks for nothing."
+  },
+
+  {
+    "id": "email-abonnement-ok",
+    "canal": "email",
+    "entete": "Email received before the annual payment",
+    "de": "Le Monde",
+    "deAdresse": "abonnements@lemonde.fr",
+    "objet": "Your subscription renews on 12 September",
+    "date": "Thu 13/08, 10:20",
+    "corps": "Hello,<br><br>Your digital subscription will renew on 12 September for 12 months at €99.<br><br>You can change or cancel your subscription at any time from your account, under “My subscription”.<br><br>No action is needed if you wish to continue.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — renewal information",
+    "indices": [
+      "You are warned in advance: a month's notice, not 24 hours.",
+      "No “update your card” button and no payment form.",
+      "You are reminded you can cancel, from the account you open yourself.",
+      "Sender address consistent with the newspaper."
+    ],
+    "reflexe": "A real renewal notice warns you in advance and never needs your card details.",
+    "explication": "The fake Prime Video email in this game announces a “payment failure” and pushes you to re-enter your card urgently. That is exactly the difference to remember: advance information versus payment urgency."
+  },
+
+  {
+    "id": "appel-mairie-ok",
+    "canal": "appel",
+    "afficheur": "Saint-Aubin town hall",
+    "numero": "02 96 41 12 08",
+    "transcript": [
+      {
+        "qui": "lui",
+        "texte": "Hello, this is the town hall's older residents service. We are holding the end-of-year lunch on 14 December. Would you like to come?"
+      },
+      {
+        "qui": "vous",
+        "texte": "Gladly! Is there anything to pay?"
+      },
+      {
+        "qui": "lui",
+        "texte": "It is offered by the council. You will get an invitation by post, with a slip to return to us. Nothing to pay and nothing to sign today."
+      }
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — council invitation",
+    "indices": [
+      "No bank details and no social security number requested.",
+      "A written confirmation by post is announced: you stay in control.",
+      "Nothing to sign and nothing to pay during the call.",
+      "No pressure, no “only two places left, decide now”."
+    ],
+    "reflexe": "A public service always confirms in writing. You can safely say “I'll call you back” and look up the town hall number yourself.",
+    "explication": "Aggressive doorstep selling aimed at older people often imitates public services, but it demands an immediate decision, a signature or a deposit. None of that here. You can still ring the town hall switchboard to confirm — it costs nothing and is always reasonable."
+  },
+
+  {
+    "id": "sms-rdv-ok",
+    "canal": "sms",
+    "entete": "SMS received the day before an appointment you booked",
+    "expediteur": "Doctolib",
+    "messages": [
+      "Reminder: appointment with Dr Nguyen (cardiology) tomorrow 15/08 at 10:30, 4 rue des Lilas. To cancel, sign in to your Doctolib account."
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — appointment reminder",
+    "indices": [
+      "The appointment exists: you booked it yourself.",
+      "Practitioner, date, time and address are precise and checkable.",
+      "No payment, no deposit, no card “confirmation”.",
+      "To cancel you are sent to your account, not to a link in the message."
+    ],
+    "reflexe": "An appointment reminder costs nothing. The moment you are asked to pay to “confirm”, it is a scam.",
+    "explication": "Fake medical reminders demanding “administrative fees” by card do exist. The detail that settles it: a real reminder simply informs you and sends you to your own account."
+  },
+
+  {
+    "id": "email-syndic-ok",
+    "canal": "email",
+    "entete": "Email from your building's managing agent",
+    "de": "Cabinet Berthier — managing agent",
+    "deAdresse": "copropriete@cabinet-berthier.fr",
+    "objet": "Notice of the owners' meeting on 22 September",
+    "date": "Wed 12/08, 14:55",
+    "corps": "Dear owner,<br><br>Attached you will find the notice for the owners' meeting of 22 September, together with the agenda and the quotes received for refurbishing the entrance hall.<br><br>The same file will also reach you by registered post, as the law requires.<br><br>Kind regards,<br>Cabinet Berthier",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — owners' meeting notice",
+    "indices": [
+      "The same document also arrives by registered post: you will be able to cross-check.",
+      "No payment requested in this message, no bank details to “update”.",
+      "Identified sender, matching your known managing agent.",
+      "No urgency: the meeting is more than a month away."
+    ],
+    "reflexe": "An expected attachment from a known sender is normal. An unexpected attachment demanding payment never is.",
+    "explication": "The classic scam here is “bank detail change fraud”: a fake agent announces a new account for service charges. The reassuring signal in this message: it asks for no payment, and the registered letter lets you check everything."
+  },
+
+  {
+    "id": "email-facture-energie-ok",
+    "canal": "email",
+    "entete": "Email from your electricity supplier, with an amount three times higher than usual",
+    "de": "EDF",
+    "deAdresse": "contact@edf.fr",
+    "objet": "Your August bill is available",
+    "date": "Mon 11/08, 05:40",
+    "corps": "Hello,<br><br>Your August bill comes to €214.60. It can be viewed in your EDF customer area.<br><br>This amount includes the annual reconciliation of your consumption: your monthly payments of €61.20 were lower than the electricity you actually used this year.<br><br>It will be debited on the 20th of the month from the usual account, as in previous months. You need do nothing.",
+    "verdict": "fiable",
+    "categorie": "Legitimate message — a bill has been made available",
+    "indices": [
+      "The amount is a shock, but the message itself explains where it comes from (the annual reconciliation) instead of rushing you.",
+      "Debited from the account already on file: no new bank details announced.",
+      "No payment link, no threat of disconnection, no hard deadline.",
+      "“You need do nothing”: the message informs, it does not demand."
+    ],
+    "reflexe": "An amount that makes you jump is not a sign of a scam. Look at what you are being asked to do: here, nothing — and everything can be checked from your customer area.",
+    "explication": "A worrying message is not necessarily a fake message: a real bill can perfectly well bring bad news. Fake energy emails always add two things this one does not have: an immediate payment link and a threat of disconnection within 24 or 48 hours. The habit does not change — never open the link in an email, open your customer area yourself and compare the amount."
   }
 ];
 
@@ -879,6 +1244,24 @@ const GLOSSAIRE = [
       "fausse boutique en ligne"
     ],
     "def": "A fake sales website, often with extreme discounts and artificial urgency (“clearance”, “limited stock”), that takes payment without ever delivering, or steals bank details."
+  },
+  {
+    "key": "clickfix",
+    "terme": "Fake CAPTCHA (“ClickFix”)",
+    "aliases": [
+      "clickfix",
+      "fake captcha"
+    ],
+    "def": "A fake “I am not a robot” page that, instead of a box to tick, asks you to press keys (Windows + R, or the Terminal on a Mac) to paste a “verification code”. That code is in fact a command that installs a stealer. Absolute rule: an anti-robot check never asks you to open a window of your computer."
+  },
+  {
+    "key": "presse-papiers",
+    "terme": "Clipboard",
+    "aliases": [
+      "clipboard",
+      "presse-papiers"
+    ],
+    "def": "The invisible memory where everything you copy lands, and where everything you paste comes from (Ctrl + V). A web page can drop text into it without warning you: what you paste is therefore not necessarily what you think you copied."
   }
 ];
 
@@ -901,6 +1284,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the pressure phrase.",
       "note": "False urgency pushes you to click."
+    },
+    {
+      "texte": "3e095272b3fe4c7996b",
+      "bon": false,
+      "type": "leurre",
+      "note": "Impressive, but it is set dressing: a string of characters meant to look “official”."
     }
   ],
   "email-motdepasse": [
@@ -921,6 +1310,12 @@ const REPERES = {
       "bon": true,
       "aide": "Look for the threat.",
       "note": "Fear is used to make you click."
+    },
+    {
+      "texte": "do not usually Using",
+      "bon": true,
+      "aide": "Does a major company write without mistakes? Look for a word form or capital letter that sounds wrong.",
+      "note": "Odd wording and wrong verb form (“usually Using”): a real service does not write like this."
     },
     {
       "texte": "antoninatger",
@@ -947,6 +1342,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is there an unexpected attachment?",
       "note": "Unknown attachment: do not open."
+    },
+    {
+      "texte": "-PLeaSe.ConfIrM Receipt!!-",
+      "bon": true,
+      "aide": "Does the layout of this message look normal to you?",
+      "note": "Broken formatting (capitals, dashes) used to slip past spam filters."
     }
   ],
   "email-panneaux": [
@@ -967,6 +1368,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is the date coherent?",
       "note": "Already expired date."
+    },
+    {
+      "texte": "will not be able to handle every request",
+      "bon": true,
+      "aide": "Look for what suggests you must hurry before there is nothing left.",
+      "note": "Artificial scarcity, to create urgency."
     }
   ],
   "chat-celebrite": [
@@ -987,6 +1394,12 @@ const REPERES = {
       "bon": true,
       "aide": "Look for secrecy.",
       "note": "Secrecy isolates the victim."
+    },
+    {
+      "texte": "You are the only one who truly understands me",
+      "bon": false,
+      "type": "leurre",
+      "note": "Touching… and calculated: flattery is there to win your trust."
     }
   ],
   "appel-banque": [
@@ -1007,6 +1420,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is a bank allowed to ask for an SMS code?",
       "note": "A bank never asks you to dictate a code."
+    },
+    {
+      "texte": "confirm your app password",
+      "bon": true,
+      "aide": "Would a real adviser ask you for your password?",
+      "note": "A real adviser never asks for your password."
     }
   ],
   "chat-faux-proche": [
@@ -1027,6 +1446,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the money request.",
       "note": "Urgent money request: verify by calling."
+    },
+    {
+      "texte": "can’t access my banking app",
+      "bon": true,
+      "aide": "Why can this person not pay the bill themselves?",
+      "note": "An excuse to justify not paying themselves."
     }
   ],
   "image-deepfake": [
@@ -1041,6 +1466,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the emotional hook.",
       "note": "Sensational wording."
+    },
+    {
+      "texte": "Shared 48,000 times",
+      "bon": false,
+      "type": "neutre",
+      "note": "The number of shares proves nothing: fakes spread very fast."
     }
   ],
   "sms-ameli": [
@@ -1061,6 +1492,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is this the real ameli.fr website?",
       "note": "Misleading link."
+    },
+    {
+      "texte": "AMELI-INFO",
+      "bon": false,
+      "type": "neutre",
+      "note": "The sender name on a text message or an email is free text: anyone can sign “AMELI-INFO”. It proves nothing — neither that a message is fake, nor that it is genuine."
     }
   ],
   "popup-support": [
@@ -1081,6 +1518,12 @@ const REPERES = {
       "bon": true,
       "aide": "Would antivirus ask you to call?",
       "note": "Real antivirus alerts do not ask you to call a number."
+    },
+    {
+      "texte": "banking data are at risk",
+      "bon": false,
+      "type": "neutre",
+      "note": "A genuine security alert says the same thing: this sentence does not tell the real from the fake. What gives it away here is the number to call."
     }
   ],
   "chat-emploi": [
@@ -1101,6 +1544,12 @@ const REPERES = {
       "bon": true,
       "aide": "Are you asked to pay to work?",
       "note": "Paying to work is an absolute red flag."
+    },
+    {
+      "texte": "no experience required",
+      "bon": false,
+      "type": "leurre",
+      "note": "It is written to put you at ease, and that is exactly its job here."
     }
   ],
   "sms-colis-photo-ia": [
@@ -1127,6 +1576,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is this the official carrier site?",
       "note": "Trapped link."
+    },
+    {
+      "texte": "sorting centre",
+      "bon": false,
+      "type": "leurre",
+      "note": "“Sorting centre” sounds very official… but it is only set dressing added under the fake photo."
     }
   ],
   "chat-faux-numero-invest": [
@@ -1134,7 +1589,7 @@ const REPERES = {
       "texte": "wrong number",
       "bon": true,
       "aide": "Was the message really meant for you?",
-      "note": "Wrong-number pretext."
+      "note": "This message was not meant for you, and yet the conversation carries on. That is what you can check here: a genuine wrong number stops at the apology."
     },
     {
       "texte": "nice chatting",
@@ -1153,6 +1608,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the money request.",
       "note": "They push you to invest money."
+    },
+    {
+      "texte": "between Paris and Singapore",
+      "bon": false,
+      "type": "leurre",
+      "note": "These snippets of life feel real… but they are invented to sound serious."
     }
   ],
   "email-airbnb-horsplateforme": [
@@ -1185,6 +1646,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the phrase that pressures you with time so you don't stop to think.",
       "note": "Urgency tone: “hurry”, “I cannot hold the dates” — they want you to pay before you think."
+    },
+    {
+      "texte": "Thank you for your interest",
+      "bon": false,
+      "type": "neutre",
+      "note": "A polite formula: pleasant, but this is not where the trap is."
     }
   ],
   "email-prenom-detourne": [
@@ -1198,12 +1665,13 @@ const REPERES = {
       "texte": "0259509226",
       "bon": true,
       "aide": "What are they trying to get you to do? Spot the number to call: that is where the trap is.",
-      "note": "The real trap: calling this number reaches a fake “anti-fraud service” that will help you “secure” your money by transferring it to the crooks."
+      "note": "The message supplies the number to call itself. Nothing you can see tells you who would answer: a phone number cannot be checked. You always call back through a channel you looked up yourself."
     },
     {
       "texte": "no-reply@welcometothejungle.com",
       "bon": false,
-      "note": "Here the address is genuine: the email really does come from the site. The sender is not the problem — the injected text in place of your first name is."
+      "type": "neutre",
+      "note": "The address really is the real site’s, correctly spelled: this email does come from Welcome to the Jungle. So the sender is not what is wrong here."
     }
   ],
   "sms-banque-ok": [
@@ -1221,29 +1689,41 @@ const REPERES = {
     },
     {
       "texte": "CIC",
-      "bon": true,
-      "aide": "Do you recognise the sender? If CIC really is YOUR bank, that is a small reassuring sign.",
-      "note": "A weak but real clue: if CIC is your bank, recognising the sender is somewhat reassuring. Still, a sender name can be spoofed — never rely on it alone."
+      "bon": false,
+      "type": "neutre",
+      "note": "The sender name on a text message or an email is free text: anyone can sign “CIC”. Recognising your own bank therefore proves nothing — what makes this message reliable is that it asks for no code and no click."
+    },
+    {
+      "texte": "€54.90 at FNAC",
+      "bon": false,
+      "type": "neutre",
+      "note": "That is just the purchase detail: neither a good nor a bad sign in itself."
     }
   ],
   "notif-connexion-ok": [
     {
       "texte": "Google Account",
       "bon": true,
-      "aide": "Where does the notification come from?",
-      "note": "Official app notification."
+      "aide": "Where does the notification come from? Find what shows it comes from the official app.",
+      "note": "The notification is pushed by the Google app installed on this phone: its origin can be checked, unlike the sender name on a text message or an email, which is free text."
     },
     {
       "texte": "no action is needed",
       "bon": true,
-      "aide": "Find the calm tone.",
-      "note": "No pressure."
+      "aide": "Find the sentence showing there is nothing urgent to do.",
+      "note": "Informative tone, no threat: you are given time to check instead of being rushed."
     },
     {
       "texte": "Google app, Security section",
       "bon": true,
-      "aide": "Find the official-app instruction.",
-      "note": "It points to the official app, not a link."
+      "aide": "Find what points you to the official app rather than to a link to click.",
+      "note": "You are sent to the app you open yourself, not to a link: you keep control."
+    },
+    {
+      "texte": "New sign-in on Windows",
+      "bon": false,
+      "type": "neutre",
+      "note": "This sentence is frightening, and rightly so: it describes a real risk. But an alarming sentence is neither proof of a scam nor proof of the opposite. What settles it is what you are asked to do — here, nothing urgent."
     }
   ],
   "chat-ami-ok": [
@@ -1278,26 +1758,32 @@ const REPERES = {
       "bon": true,
       "aide": "Find the normal technical detail.",
       "note": "Normal one-time code detail."
+    },
+    {
+      "texte": "483 920",
+      "bon": false,
+      "type": "neutre",
+      "note": "The code itself is not a clue: what matters is never to pass it on."
     }
   ],
   "notif-virement-ok": [
     {
       "texte": "My Bank",
       "bon": true,
-      "aide": "Where does the notification come from?",
-      "note": "Banking app notification."
+      "aide": "Where does this notification come from? Find what shows it comes from your banking app.",
+      "note": "Remember this difference, it holds for the whole game. A notification is PUSHED by an app you installed yourself: nobody else can send one in its place, so its origin can be trusted. The sender name on a text message or an email, on the other hand, is simply text the sender chooses: anyone can sign “CIC”, “TAX-OFFICE” or “ameli”. A displayed name never proves anything; an app notification does."
     },
     {
       "texte": "Balance available in your app",
       "bon": true,
-      "aide": "Does it use a link?",
-      "note": "It points to the app without urgent action."
+      "aide": "Find what points you to the app, with no link and no urgency.",
+      "note": "You are sent to the app, with no link and no urgent action: you go and check, at your own pace."
     },
     {
       "texte": "Paul Durand",
-      "bon": true,
-      "aide": "Do you recognise who sent the transfer? A name you know is rather reassuring.",
-      "note": "If you really do know a Paul Durand, recognising the sender is a good sign. Still, a name alone proves nothing — it is the whole picture (the app, no request) that reassures."
+      "bon": false,
+      "type": "neutre",
+      "note": "The sender's name is only a line of text copied along with the transfer: the bank did not verify it for you. Knowing him proves nothing, and not knowing him proves nothing either. What is reassuring here is where the notification comes from and the fact that nothing is asked of you."
     }
   ],
   "email-newsletter-ok": [
@@ -1312,6 +1798,12 @@ const REPERES = {
       "bon": true,
       "aide": "Find the unsubscribe option.",
       "note": "Clear unsubscribe option."
+    },
+    {
+      "texte": "Thank you for your loyalty",
+      "bon": false,
+      "type": "neutre",
+      "note": "A polite formula: pleasant, but not a clue."
     }
   ],
   "chat-famille-ok": [
@@ -1359,7 +1851,7 @@ const REPERES = {
       "texte": "contact@velo-discount-shop.top",
       "bon": true,
       "aide": "Look at the sender address: does it match a real known brand?",
-      "note": "Unknown, odd domain name, with no link to a real brand."
+      "note": "The domain ends in “.top”: a few-euro extension that established shops do not use. And “velo-discount-shop” matches no existing retailer — search that name and you will find no shop behind it."
     },
     {
       "texte": "€149 instead of €899",
@@ -1376,6 +1868,7 @@ const REPERES = {
     {
       "texte": "100% secure payment",
       "bon": false,
+      "type": "leurre",
       "note": "A fake shop can easily write “secure payment” too: the claim alone proves nothing."
     }
   ],
@@ -1401,6 +1894,7 @@ const REPERES = {
     {
       "texte": "Payment failed",
       "bon": false,
+      "type": "neutre",
       "note": "A real service can write this too one day: it is the address and the link that give the scam away, not this phrase alone."
     }
   ],
@@ -1426,6 +1920,7 @@ const REPERES = {
     {
       "texte": "€200",
       "bon": false,
+      "type": "neutre",
       "note": "The item’s price itself is not a clue: the scam plays out around it."
     }
   ],
@@ -1433,7 +1928,8 @@ const REPERES = {
     {
       "texte": "TAX-OFFICE",
       "bon": false,
-      "note": "A sender name is easy to fake: it proves nothing on its own."
+      "type": "neutre",
+      "note": "The sender name on a text message or an email is free text: anyone can sign “TAX-OFFICE”. It proves nothing — neither that a message is fake, nor that it is genuine."
     },
     {
       "texte": "https://tax-refund-online-portal.com",
@@ -1470,6 +1966,7 @@ const REPERES = {
     {
       "texte": "subject to conditions",
       "bon": false,
+      "type": "leurre",
       "note": "A vague, reassuring phrase… but one you’ll also find in real ads: it proves nothing on its own."
     }
   ],
@@ -1489,6 +1986,7 @@ const REPERES = {
     {
       "texte": "See you Saturday",
       "bon": false,
+      "type": "neutre",
       "note": "A polite closing line: nice, but not where the important information is."
     }
   ],
@@ -1508,6 +2006,7 @@ const REPERES = {
     {
       "texte": "Shared 62,000 times",
       "bon": false,
+      "type": "neutre",
       "note": "The number of shares proves nothing: fake content can spread just as fast, or faster, than real news."
     }
   ],
@@ -1533,6 +2032,7 @@ const REPERES = {
     {
       "texte": "I liked your profile right away",
       "bon": false,
+      "type": "neutre",
       "note": "A generic opening compliment: pleasant, but not a clue on its own."
     }
   ],
@@ -1558,7 +2058,430 @@ const REPERES = {
     {
       "texte": "still available",
       "bon": false,
+      "type": "neutre",
       "note": "A generic seller reply: pleasant, but not a clue on its own."
+    }
+  ],
+  "email-ameli-regularisation": [
+    {
+      "texte": "theintersection@foundryco.com",
+      "bon": true,
+      "aide": "The message has the colours of the health insurance fund… but look at the sender's full address: does it have anything to do with the official site?",
+      "note": "A company address with no link whatsoever to the health insurance fund: the banner is copied, the address gives the scammer away."
+    },
+    {
+      "texte": "Dear Sir or Madam",
+      "bon": true,
+      "aide": "How are you addressed? Does your health insurance fund know who you are?",
+      "note": "Your health insurance fund uses your name: this catch-all greeting means a mass mailing."
+    },
+    {
+      "texte": "Go to my account",
+      "bon": true,
+      "aide": "What are you invited to do, when the money has supposedly already been paid? Where does this button lead?",
+      "note": "The button leads to a fake health insurance page that steals your login details, then your bank details."
+    },
+    {
+      "texte": "bank transfer",
+      "bon": false,
+      "type": "leurre",
+      "note": "That really is how the health insurance fund pays refunds: this line is true and gives nothing away. The trap is elsewhere."
+    }
+  ],
+  "popup-faux-captcha": [
+    {
+      "texte": "Windows key + R",
+      "bon": true,
+      "aide": "What exactly are you being asked to do? Does a website ever need to open a window of your computer?",
+      "note": "No website needs you to open a window of the computer. That is the real alarm signal."
+    },
+    {
+      "texte": "Ctrl + V",
+      "bon": true,
+      "aide": "“Paste”… but what did you copy? Find the step that makes you paste something.",
+      "note": "You are made to paste text you never copied: the page put it in your clipboard without telling you."
+    },
+    {
+      "texte": "press Enter",
+      "bon": true,
+      "aide": "Find the gesture that sets everything off, the one there is no coming back from.",
+      "note": "That last gesture is what runs the command. As long as you have not pressed Enter, nothing has happened."
+    },
+    {
+      "texte": "required to access the page",
+      "bon": true,
+      "aide": "Find what makes you believe you have no choice.",
+      "note": "You are made to believe there is no alternative. There always is one: close the tab."
+    },
+    {
+      "texte": "b2f705a9136c2f36",
+      "bon": false,
+      "type": "leurre",
+      "note": "A genuine anti-robot check does display an identifier like this. It is not what gives the scam away — what you are asked to do is."
+    }
+  ],
+  "email-impots-ok": [
+    {
+      "texte": "ne-pas-repondre@dgfip.finances.gouv.fr",
+      "bon": true,
+      "aide": "The displayed name proves nothing: look at the full address just below. What does it end with?",
+      "note": "The address ends in .gouv.fr, a domain only the French state can use. It is the full address that can be checked, never the name displayed above it."
+    },
+    {
+      "texte": "can be viewed in your personal area",
+      "bon": true,
+      "aide": "Where are you sent to read this document: to a link in the message, or to an area you open yourself?",
+      "note": "You are sent to your own account area, which you open yourself by typing the address. No link to click in the message: you keep control."
+    },
+    {
+      "texte": "No action is required if you pay monthly",
+      "bon": true,
+      "aide": "Find what tells you there is nothing to do, neither now nor later.",
+      "note": "Nothing is asked of you and no deadline is imposed. A scam needs you to do something: this one asks for nothing."
+    },
+    {
+      "texte": "My documents",
+      "bon": false,
+      "type": "neutre",
+      "note": "The exact name of a section looks serious, but it can be copied from the real website in two minutes. A fake email quotes the right sections too: this detail is not what makes the message reliable."
+    }
+  ],
+  "sms-livraison-ok": [
+    {
+      "texte": "Tracking available in the La Poste app",
+      "bon": true,
+      "aide": "How are you invited to track the parcel: through a link, or through something you open yourself?",
+      "note": "You are sent to the official app you open yourself. The booby-trapped parcel text always contains a link: that is the difference that counts."
+    },
+    {
+      "texte": "using your parcel number",
+      "bon": true,
+      "aide": "What do you need in order to check: something you already have, or something you must hand over?",
+      "note": "You are asked to check using information you already hold. At no point are your details or your card requested."
+    },
+    {
+      "texte": "will be delivered today between 2pm and 4pm",
+      "bon": true,
+      "aide": "What is this message really doing: telling you something, or asking you for something?",
+      "note": "The message announces a delivery slot and stops there. A real carrier informs you; it never demands two euros of “fees” to release a parcel."
+    },
+    {
+      "texte": "Colissimo",
+      "bon": false,
+      "type": "neutre",
+      "note": "The sender name on a text message or an email is free text: anyone can sign “Colissimo”. It proves nothing — neither that a message is fake, nor that it is genuine."
+    }
+  ],
+  "appel-banque-fraude-ok": [
+    {
+      "texte": "I will not ask you for any code",
+      "bon": true,
+      "aide": "What are you asked to say or to do during the call? Find the sentence that answers that.",
+      "note": "This is the sentence that settles it. A fake adviser needs a code, a password or an approval in the app: without that, he has nothing."
+    },
+    {
+      "texte": "call the number on the back of your card",
+      "bon": true,
+      "aide": "Which number are you pointed to: one given during the call, or one you already have?",
+      "note": "You are sent to a number you already hold, on your own card. A scammer cannot send you there: he would lose control."
+    },
+    {
+      "texte": "was blocked on your card",
+      "bon": true,
+      "aide": "Is the payment still in progress, or already dealt with? Find what tells you there is nothing urgent to do.",
+      "note": "The purchase has already been blocked: there is no urgency left, so no reason to rush. A real bank blocks first and informs afterwards."
+    },
+    {
+      "texte": "CIC — fraud team",
+      "bon": false,
+      "type": "neutre",
+      "note": "The name and number shown during a call can be faked (“spoofing”): they prove neither that it is your bank nor the opposite. What makes this call reliable is that nothing is asked of you."
+    }
+  ],
+  "notif-ameli-ok": [
+    {
+      "texte": "ameli",
+      "bon": true,
+      "aide": "Where does this notification come from: an app installed on your phone, or a message somebody sent?",
+      "note": "This notification is pushed by the ameli app you installed yourself: nobody else can send one in its place. That is the whole difference with a text signed “AMELI-INFO”, whose name is free text."
+    },
+    {
+      "texte": "under “My payments” in the app",
+      "bon": true,
+      "aide": "Where are you taken to see the detail: outside, or inside the app?",
+      "note": "Everything happens inside the app, with no link to anywhere else. The fake ameli text exists only to push you out towards a fake page."
+    },
+    {
+      "texte": "Details of your latest reimbursements",
+      "bon": true,
+      "aide": "What are you asked to hand over in exchange for this information?",
+      "note": "Nothing is asked of you: no bank details, no social security number, no login. A notification that informs without asking for anything is of no use to a scammer."
+    },
+    {
+      "texte": "A new reimbursement is available",
+      "bon": false,
+      "type": "neutre",
+      "note": "“A reimbursement available” is exactly the bait of the fake ameli text. The sentence is the same: what differs is that here nothing is asked of you to get it."
+    }
+  ],
+  "email-commande-ok": [
+    {
+      "texte": "commandes@natureetdecouvertes.com",
+      "bon": true,
+      "aide": "The displayed name proves nothing: look at the full address. Does it really match the retailer?",
+      "note": "The full address matches the shop where you bought. That is what can be checked — the name displayed above it is free text."
+    },
+    {
+      "texte": "Hello Mrs Renard",
+      "bon": true,
+      "aide": "How are you addressed: by your name, or with a form of words that fits anybody?",
+      "note": "You are named correctly, because the shop knows you. A mass mailing writes “Dear customer”: it has no idea who it is talking to."
+    },
+    {
+      "texte": "to the address saved in your account",
+      "bon": true,
+      "aide": "Are you asked again for something you have already given?",
+      "note": "Nothing is asked again: no address, no card, no login. The fake “payment problem” that arrives after a real purchase always demands you re-enter your card."
+    },
+    {
+      "texte": "no. 4471902",
+      "bon": false,
+      "type": "neutre",
+      "note": "An order number looks serious, but it can be invented in three seconds. What makes this message reliable is that the order exists and nothing is asked of you."
+    }
+  ],
+  "sms-pharmacie-ok": [
+    {
+      "texte": "the medicine you ordered on Tuesday",
+      "bon": true,
+      "aide": "Does this message refer to something you set in motion yourself?",
+      "note": "The message answers something you did yourself, on Tuesday. A scam, by contrast, lands on an event you never set off."
+    },
+    {
+      "texte": "You can collect it during opening hours",
+      "bon": true,
+      "aide": "What are you invited to do: click, pay, or call in?",
+      "note": "You are invited to call in at the shop, in person. There is nothing to click, nothing to pay online, nothing to confirm."
+    },
+    {
+      "texte": "Monday to Saturday 9am-7.30pm",
+      "bon": true,
+      "aide": "Can the content of this message be checked without giving anything away?",
+      "note": "Practical information, checkable simply by walking past the pharmacy. The message holds no link, no attachment and no question: there is nothing in it to steal."
+    },
+    {
+      "texte": "PharmacieCentrale",
+      "bon": false,
+      "type": "neutre",
+      "note": "The sender name on a text message or an email is free text: anyone can sign “PharmacieCentrale”. It proves nothing — neither that a message is fake, nor that it is genuine."
+    }
+  ],
+  "chat-petitfils-ok": [
+    {
+      "texte": "Théo (grandson)",
+      "bon": true,
+      "aide": "Where does this name come from: did the sender write it, or did you save this contact yourself?",
+      "note": "This name was not written by the sender: you saved this contact in your own phone, and the message arrives in the usual conversation. A stranger would show up as a number."
+    },
+    {
+      "texte": "I'm in at Rennes university",
+      "bon": true,
+      "aide": "Can this content be checked with somebody other than the person writing?",
+      "note": "A precise fact, which anyone in the family can confirm. The fake relative stays vague and cuts the conversation short as soon as you try to check."
+    },
+    {
+      "texte": "will you make me your gratin?",
+      "bon": true,
+      "aide": "What is this message about: money, or your shared life?",
+      "note": "The conversation carries on a story you have shared for years. No request for money, no code, no link: nothing to do."
+    },
+    {
+      "texte": "Hi Grandma!",
+      "bon": false,
+      "type": "neutre",
+      "note": "A scammer also opens with “Hi Grandma”. The affectionate greeting proves nothing: what is reassuring here is the number already saved and the absence of any request."
+    }
+  ],
+  "email-mutuelle-ok": [
+    {
+      "texte": "info@harmonie-mutuelle.fr",
+      "bon": true,
+      "aide": "Look at the full sender address: does the domain, after the @ sign, match the organisation?",
+      "note": "The domain after the @ sign matches the insurer, and it cannot be invented the way a displayed name can. It is the only part of the header that can be checked."
+    },
+    {
+      "texte": "on the number shown on your insurance card",
+      "bon": true,
+      "aide": "Which number are you given to call back: one written in the email, or one you already have?",
+      "note": "You are sent to the number printed on YOUR card, not to a number given in the message. That is precisely what a scammer cannot afford."
+    },
+    {
+      "texte": "paid automatically into your usual account",
+      "bon": true,
+      "aide": "Are your bank details requested? Find what shows they are not.",
+      "note": "No bank details are asked for, because the insurer already has yours: it has been paying you for years. An organisation that asks for your bank details again by email is a fake."
+    },
+    {
+      "texte": "Harmonie Mutuelle",
+      "bon": false,
+      "type": "neutre",
+      "note": "The displayed name is free text: a fake message can display “Harmonie Mutuelle” just as easily as a real one. It is the full address, just below it, that can be checked."
+    }
+  ],
+  "notif-maj-appli-ok": [
+    {
+      "texte": "Play Store",
+      "bon": true,
+      "aide": "Where does this notification come from: an app on the phone, or a window that appeared while browsing?",
+      "note": "This notification is pushed by the phone's app store, which handles updates itself. The fake virus alert, by contrast, appears in the browser, on a web page."
+    },
+    {
+      "texte": "No action is required",
+      "bon": true,
+      "aide": "What are you asked to install, to click or to call?",
+      "note": "Nothing to click, nothing to install, no number to call. Fake tech support lives only on the action it wrings out of you."
+    },
+    {
+      "texte": "were updated automatically",
+      "bon": true,
+      "aide": "Is this still to be done, or already done?",
+      "note": "It is already done: the message states a fact, it does not demand anything. A real update is quiet and never puts you on the spot."
+    },
+    {
+      "texte": "Ma Banque",
+      "bon": false,
+      "type": "neutre",
+      "note": "Seeing the names of your real apps is reassuring, but this notification comes from the app store, not from them. A name quoted in a text proves nothing: what counts is where the notification comes from."
+    }
+  ],
+  "email-abonnement-ok": [
+    {
+      "texte": "abonnements@lemonde.fr",
+      "bon": true,
+      "aide": "Look at the full address: is the domain, after the @ sign, really the newspaper's?",
+      "note": "The domain after the @ sign is that of the newspaper you subscribe to. It is the checkable part of the header, unlike the displayed name."
+    },
+    {
+      "texte": "change or cancel your subscription at any time from your account",
+      "bon": true,
+      "aide": "Are you left a choice? Find what hands control back to you.",
+      "note": "You are reminded that you can leave, from the account you open yourself. A scam never hands control back: it locks you in."
+    },
+    {
+      "texte": "No action is needed if you wish to continue",
+      "bon": true,
+      "aide": "Is there a payment button, a card to re-enter, a hard deadline?",
+      "note": "No payment button, no card to re-enter, and a month's notice. The fake renewal notice announces a payment failure and demands the card right now."
+    },
+    {
+      "texte": "at €99",
+      "bon": false,
+      "type": "neutre",
+      "note": "The amount jumps out, and that is exactly what fake payment notices play on. A figure proves nothing: what counts is that you are asked for no card and no click."
+    }
+  ],
+  "appel-mairie-ok": [
+    {
+      "texte": "You will get an invitation by post",
+      "bon": true,
+      "aide": "Will this call remain just words, or will you have a trace of it?",
+      "note": "A written confirmation is announced: you will be able to read it all again calmly. A scammer needs everything settled during the call, leaving no trace."
+    },
+    {
+      "texte": "Nothing to pay and nothing to sign today",
+      "bon": true,
+      "aide": "What are you asked to decide right now?",
+      "note": "No immediate decision is wrung out of you. Aggressive doorstep selling lives on the signature obtained before you have had time to think."
+    },
+    {
+      "texte": "It is offered by the council",
+      "bon": true,
+      "aide": "Is money involved? Find the answer to your own question.",
+      "note": "Your question about money gets a straight answer: there is none. No bank details are requested, at any point."
+    },
+    {
+      "texte": "02 96 41 12 08",
+      "bon": false,
+      "type": "neutre",
+      "note": "A local number, looking like your council's, proves nothing: caller ID can be faked (“spoofing”). What makes this call reliable is that you are asked for no money and no signature."
+    }
+  ],
+  "sms-rdv-ok": [
+    {
+      "texte": "To cancel, sign in to your Doctolib account",
+      "bon": true,
+      "aide": "How are you invited to cancel: through a link in the message, or through your account?",
+      "note": "You are sent to your own account, which you open yourself. There is no link in the message: you are the one who goes and looks."
+    },
+    {
+      "texte": "Dr Nguyen (cardiology)",
+      "bon": true,
+      "aide": "Does the appointment announced match something you did yourself?",
+      "note": "The practitioner is named, and you are the one who booked. A fake reminder stays vague on the essentials, because it knows nothing about you."
+    },
+    {
+      "texte": "tomorrow 15/08 at 10:30, 4 rue des Lilas",
+      "bon": true,
+      "aide": "Can this information be checked without giving anything away?",
+      "note": "Date, time and address are precise and match your own diary. Above all, nothing is asked in return: no payment, no card “confirmation”."
+    },
+    {
+      "texte": "Doctolib",
+      "bon": false,
+      "type": "neutre",
+      "note": "The sender name on a text message or an email is free text: anyone can sign “Doctolib”. It proves nothing — neither that a message is fake, nor that it is genuine."
+    }
+  ],
+  "email-syndic-ok": [
+    {
+      "texte": "The same file will also reach you by registered post",
+      "bon": true,
+      "aide": "Is this message the only way to get this document? Find the second channel.",
+      "note": "The same file also arrives by post: you will be able to cross-check the two. A scammer carefully avoids any second channel, because he does not control it."
+    },
+    {
+      "texte": "copropriete@cabinet-berthier.fr",
+      "bon": true,
+      "aide": "Look at the full address: does the domain match the managing agent you know?",
+      "note": "The domain after the @ sign is your managing agent's, the one printed on your service charge statements. It is the checkable part of the header."
+    },
+    {
+      "texte": "the quotes received for refurbishing the entrance hall",
+      "bon": true,
+      "aide": "Does the content match something real in your building?",
+      "note": "The message refers to a file genuinely under way in your building, which your neighbours know about too. A fake agent invents a generic reason."
+    },
+    {
+      "texte": "Attached you will find",
+      "bon": false,
+      "type": "neutre",
+      "note": "An attachment is frightening, and rightly so: it is the favourite vehicle for viruses. But this one is expected, it comes from a known sender, and its content also arrives by post. It is not the attachment that decides, it is whether it was expected or not."
+    }
+  ],
+  "email-facture-energie-ok": [
+    {
+      "texte": "contact@edf.fr",
+      "bon": true,
+      "aide": "Look at the full sender address: is the domain the supplier's?",
+      "note": "The domain after the @ sign is the supplier's, and it cannot be invented the way a displayed name can. It is the part of the header you can check."
+    },
+    {
+      "texte": "This amount includes the annual reconciliation of your consumption",
+      "bon": true,
+      "aide": "Does the message explain where the figure comes from, or does it just alarm you?",
+      "note": "The message explains where the figure comes from, with the calculation. A fake email never does that: it needs you to panic, not to understand."
+    },
+    {
+      "texte": "from the usual account",
+      "bon": true,
+      "aide": "Are you told about a change of bank account? Find the answer.",
+      "note": "No new account is announced: the payment is taken as in previous months. That is exactly where bank-detail-change fraud operates, and there is no trace of it here."
+    },
+    {
+      "texte": "€214.60",
+      "bon": false,
+      "type": "neutre",
+      "note": "That is the figure that jumps out, and the one you look at first. But a high amount is neither proof of a scam nor proof of the opposite: what counts is that you are asked for no link, no card and no new bank details."
     }
   ]
 };

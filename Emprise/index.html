@@ -1,15 +1,27 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="clair">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title data-i18n="pageTitle">Signaux — jeu de sensibilisation aux mécanismes d'emprise</title>
+  <link rel="stylesheet" href="../fonts/fonts.css" />
+  <link rel="stylesheet" href="../collection.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body data-col-titre-cle="colTitre">
   <div class="sample-watermark" data-i18n="watermark">FICTION — conversation fictive pour sensibiliser aux mécanismes de contrôle dans le couple</div>
 
-  <a href="#" id="resourcesLink" class="resources-persistent-link" data-i18n="needHelp">Besoin d'aide ?</a>
+  <!-- Chantier 05, tranche 2 : ce lien était flottant en haut à gauche et
+       recouvrait le bandeau « FICTION » en 390 px. Il rejoint l'emplacement
+       extra de l'en-tête unifié, où il gagne sa cible de 44 px. Sur un jeu qui
+       traite des violences dans le couple, c'est le lien qui ne doit ni gêner
+       ni être gêné. -->
+  <a href="#" id="resourcesLink" class="resources-persistent-link"
+     data-col-entete-extra data-col-extra-fort
+     data-i18n-aria-label="needHelp" aria-label="Besoin d'aide ?">
+    <span aria-hidden="true">🆘</span>
+    <span class="col-entete__label" data-i18n="needHelp">Besoin d'aide ?</span>
+  </a>
 
   <!-- Avertissement initial -->
   <div id="warningModal" class="modal-overlay">
@@ -22,14 +34,6 @@
         <button id="startNormalBtn" class="btn-primary" data-i18n="startNormal">Commencer</button>
         <button id="startFreeReadBtn" class="btn-secondary" data-i18n="startFreeRead">Lecture libre (sans les questions)</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal ressources -->
-  <div id="resourcesModal" class="modal-overlay" style="display:none">
-    <div class="modal-box">
-      <button id="resourcesModalClose" class="modal-close">✕</button>
-      <div id="resourcesModalContent"></div>
     </div>
   </div>
 
@@ -62,12 +66,14 @@
     <div id="recapScreen" class="recap-screen" style="display:none"></div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="../vendor/html2canvas.min.js"></script>
   <script src="../i18n.js"></script>
+  <script src="../collection.js"></script>
   <script>
   I18N.register({
     fr: {
       pageTitle: "Signaux — jeu de sensibilisation aux mécanismes d'emprise",
+      colTitre: "Signaux",
       watermark: "FICTION — conversation fictive pour sensibiliser aux mécanismes de contrôle dans le couple",
       needHelp: "Besoin d'aide ?",
       warningTitle: "Avant de commencer",
@@ -84,6 +90,7 @@
     },
     en: {
       pageTitle: "Warning Signs — a game raising awareness about coercive control",
+      colTitre: "Warning Signs",
       watermark: "FICTION — a fictional conversation to raise awareness about coercive control in relationships",
       needHelp: "Need help?",
       warningTitle: "Before you start",
@@ -102,5 +109,6 @@
   document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
   document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
   </script>
+  <script src="../retours.js" defer></script>
 </body>
 </html>

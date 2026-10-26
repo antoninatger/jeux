@@ -9,10 +9,15 @@
   var CARTES_PAR_PARTIE = 14;   // nombre de cartes jouées par partie (équilibré)
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
+  /* E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+     Chaque carte a un id stable dans scenarios.js : c'est lui que ColFin mémorise. */
+  var JEU = 'radarnaque';
+  var joue = [];
+  function texteBrut(html){ var d = document.createElement('div'); d.innerHTML = html; return d.textContent; }
 
   /* phase de repérage des indices (après la décision) */
   var REP = (typeof REPERES !== 'undefined') ? REPERES : {};
-  var reperesActifs = [], foundBon = 0, currentChoix = null;
+  var reperesActifs = [], currentChoix = null;
   /* coup de pouce à deux niveaux : 1 = indice écrit, 2 = on montre l'emplacement */
   var hintIdx = -1, hintStep = 0;
 
@@ -92,18 +97,26 @@
   /* =====================================================================
      DÉMARRAGE D'UNE PARTIE
      ===================================================================== */
-  function demarrer(){
+  function demarrer(sousDeck){
+    // appelé aussi comme gestionnaire de clic : l'événement n'est pas un paquet
+    sousDeck = Array.isArray(sousDeck) ? sousDeck : null;
     fermerGlossaire();
     // tirage ÉQUILIBRÉ : autant d'arnaques que de messages fiables (au possible)
     var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
     var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
+    // E2 : dans chaque moitié, les cartes jamais vues passent d'abord (mémoire ColFin)
+    arnaques = ColFin.nonVusDabord(JEU, arnaques);
+    fiables  = ColFin.nonVusDabord(JEU, fiables);
     var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
     var moitie = Math.floor(total/2);
     var nbFiables  = Math.min(moitie, fiables.length);
     var nbArnaques = Math.min(total - nbFiables, arnaques.length);
     nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
-    deck = shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
+    // E2 : « rejouer mes erreurs » impose les seules cartes ratées
+    deck = sousDeck ? shuffle(sousDeck) : shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
     idx = 0; score = 0;
+    joue = [];
+    ColFin.protegerSortie(true);
     hud.style.display = 'flex';
     var mb = el('menu-btn'); if (mb) mb.style.display = '';
     montrerCarte();
@@ -125,7 +138,8 @@
     majHud();
     var c = deck[idx];
     reperesActifs = c.reperes || REP[c.id] || [];
-    foundBon = 0;
+    // les repères sont des objets partagés entre parties : on efface le jugement précédent
+    reperesActifs.forEach(function(r){ delete r._juge; delete r._choix; delete r._why; });
     app.innerHTML =
       '<div class="panel">' +
         '<div class="entete">' + esc(c.entete || contexteParDefaut(c)) + '</div>' +
@@ -255,10 +269,14 @@
     }
     if (c.canal === 'chat'){
       return c.messages.map(function(m){
+        // dateSep : séparateur de date facultatif, posé au-dessus du message.
+        // Sert à montrer qu'on lit l'EXTRAIT d'un échange long, pas une conversation
+        // qui tiendrait en trois bulles.
+        var sep = m.dateSep ? '<div class="datesep"><span>' + esc(m.dateSep) + '</span></div>' : '';
         if (m.voix){
-          return '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
+          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
         }
-        return '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
+        return sep + '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
       });
     }
     if (c.canal === 'appel'){
@@ -305,6 +323,8 @@
     currentChoix = choix;
     var c = deck[idx];
     var bon = (choix === c.verdict);
+    joue.push({ id: c.id, titre: c.categorie || c.entete || contexteParDefaut(c), reussi: bon,
+                explication: (c.reflexe ? c.reflexe + ' ' : '') + (c.explication || '') });
     if (bon) score++;
 
     var ba = el('b-arnaque'), bf = el('b-fiable');
@@ -316,36 +336,91 @@
     montrerCorrection(bon);
   }
 
+  /* --- Nature d'un repère et réponse attendue du joueur ---------------------
+     Trois natures : 'indice' (le détail est un vrai signe), 'leurre' (posé là par
+     l'escroc pour rassurer) et 'neutre' (un détail sans valeur probante, que
+     personne n'a placé là pour tromper). Le champ « bon » reste accepté comme
+     synonyme : bon:true = indice, bon:false = leurre par défaut. */
+  function typeRepere(r){
+    if (r && r.type) return r.type;
+    return (r && r.bon) ? 'indice' : 'leurre';
+  }
+  function attenduPour(r, estArnaque){
+    return typeRepere(r) === 'indice' ? (estArnaque ? 'louche' : 'rassurant') : 'neutre';
+  }
+
+  /* --- Où en est l'enquête ---------------------------------------------------
+     On distingue ce qui est REPÉRÉ de ce qui RESTE à trouver : un indice mal
+     jugé reste trouvé, sinon le compteur réclame éternellement un indice qui
+     n'existe plus. */
+  function statsReperes(){
+    var estArnaque = deck[idx] && deck[idx].verdict === 'arnaque';
+    var st = { total:0, reperes:0, mal:0, restants:0 };
+    reperesActifs.forEach(function(r){
+      if (typeRepere(r) !== 'indice') return;
+      st.total++;
+      if (!r._juge) return;
+      st.reperes++;
+      if (r._choix !== attenduPour(r, estArnaque)) st.mal++;
+    });
+    st.restants = st.total - st.reperes;
+    return st;
+  }
+
   /* ---------- 1) Phase d'ENQUÊTE : repérer les indices AVANT de décider ---------- */
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
-    var totalBon = reperesActifs.filter(function(r){ return r.bon; }).length;
     el('lower').innerHTML =
       '<div class="spot-consigne"><b>Étape 1 — Enquêtez.</b> Cliquez, dans le message, sur les <b>éléments qui vous interpellent</b> 👆<small>À chaque clic, <b>c’est vous qui jugez</b> : placez le curseur (louche / rien de spécial / rassurant) et, si vous voulez, dites pourquoi. On vous répond ensuite. Rien n’est surligné&nbsp;: à vous de fouiller.</small></div>' +
-      '<div class="spot-compteur" id="spot-compteur" data-total="' + totalBon + '" aria-live="polite">Indices trouvés&nbsp;: <b>0</b> / ' + totalBon + '</div>' +
+      '<div class="spot-compteur" id="spot-compteur" aria-live="polite"></div>' +
       '<div class="spot-actions">' +
         '<button class="hint-btn" id="coup-pouce">💡 Coup de pouce</button>' +
       '</div>' +
       '<div class="hint-box" id="hint-box" hidden></div>' +
-      '<button class="next" id="go-decide">J’ai enquêté, je décide ▶</button>';
+      '<div id="zone-decision"></div>';
     el('coup-pouce').onclick = coupDePouce;
-    el('go-decide').onclick = phaseDecision;
     majCompteur();
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
   /* ---------- 2) Phase de DÉCISION : après l'enquête, on tranche ---------- */
-  function phaseDecision(){
-    hidePop();
-    el('lower').innerHTML =
-      '<div class="consigne"><b>Étape 2 — Votre verdict.</b> D’après les indices, que faites-vous de ce message&nbsp;?<small>On s’en méfie, ou on peut lui faire confiance&nbsp;?</small></div>' +
+  function blocDecision(consigne){
+    return '<div class="consigne">' + consigne + '</div>' +
       '<div class="decide">' +
         '<button class="btn-arnaque" id="b-arnaque" aria-pressed="false"><span class="em">🚨</span>Se méfier<small>C’est une arnaque</small></button>' +
         '<button class="btn-fiable" id="b-fiable" aria-pressed="false"><span class="em">✅</span>Faire confiance<small>C’est fiable</small></button>' +
-      '</div>' +
-      '<button class="hint-btn" id="retour-enquete" style="margin-top:10px">↩ Revenir à l’enquête</button>';
+      '</div>';
+  }
+  function brancherDecision(){
     el('b-arnaque').onclick = function(){ repondre('arnaque'); };
     el('b-fiable').onclick  = function(){ repondre('fiable'); };
+  }
+
+  /* Tant qu'il reste un indice à trouver, un bouton mène à la décision. Dès que
+     tout est repéré, les deux verdicts sont là, directement cliquables : l'enquête
+     est finie, on n'impose pas un écran de plus. */
+  function majZoneDecision(){
+    var z = el('zone-decision'); if (!z) return;
+    var etat = statsReperes().restants > 0 ? 'attente' : 'pret';
+    if (z.getAttribute('data-etat') === etat) return;
+    z.setAttribute('data-etat', etat);
+    if (etat === 'attente'){
+      z.innerHTML = '<button class="next" id="go-decide">J’ai enquêté, je décide ▶</button>';
+      el('go-decide').onclick = phaseDecision;
+    } else {
+      var cp = el('coup-pouce');
+      if (cp){ cp.disabled = true; cp.textContent = '💡 Tout est repéré ✓'; hideAide(); }
+      z.innerHTML = blocDecision('<b>Étape 2 — Votre verdict.</b> Vous avez repéré tous les indices. Que faites-vous de ce message&nbsp;?<small>On s’en méfie, ou on peut lui faire confiance&nbsp;?</small>');
+      brancherDecision();
+    }
+  }
+
+  function phaseDecision(){
+    hidePop();
+    el('lower').innerHTML =
+      blocDecision('<b>Étape 2 — Votre verdict.</b> D’après les indices, que faites-vous de ce message&nbsp;?<small>On s’en méfie, ou on peut lui faire confiance&nbsp;?</small>') +
+      '<button class="hint-btn" id="retour-enquete" style="margin-top:10px">↩ Revenir à l’enquête</button>';
+    brancherDecision();
     var rb = el('retour-enquete'); if (rb) rb.onclick = entrerSpotting;
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -402,17 +477,23 @@
   /* --- Analyse du « pourquoi » libre : on compare aux mots-clés de l'indice --- */
   var STOP = (' le la les un une des de du au aux et ou mais donc car ni que qui quoi dont en dans sur sous pour par avec sans vers chez ne pas plus moins tres est sont etre ete cet cette ces ceci cela ce se sa son ses leur leurs mon mes ton tes votre vos notre nos il elle ils elles on nous vous suis lui comme tout tous toute toutes bien mal ici oui non peut fait faire vraie vrai vraiment jamais toujours quand alors aussi meme deja rien nest cest sil quil pourquoi vraie votre votre').split(' ');
   function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' '); }
+  // { norm, texte } : la forme normalisée sert à comparer, « texte » garde l'accentuation d'origine pour l'affichage
   function motsClesIndice(r){
-    var src = norm((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
+    var brut = ((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
     var out = [];
-    src.forEach(function(w){ if (w.length >= 4 && STOP.indexOf(w) < 0 && out.indexOf(w) < 0) out.push(w); });
+    brut.forEach(function(w){
+      var propre = w.replace(/^[^a-zA-ZÀ-ÖØ-öø-ÿ]+|[^a-zA-ZÀ-ÖØ-öø-ÿ]+$/g, '');
+      var wn = norm(propre);
+      if (wn.length >= 4 && STOP.indexOf(wn) < 0 && !out.some(function(o){ return o.norm === wn; }))
+        out.push({ norm: wn, texte: propre });
+    });
     return out;
   }
   function analyserPourquoi(why, r){
     var w = norm(why);
     if (!w.replace(/\s/g,'')) return { ecrit:false, trouves:[] };
     var trouves = [];
-    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k) >= 0) trouves.push(k); });
+    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k.norm) >= 0) trouves.push(k.texte); });
     return { ecrit:true, trouves:trouves };
   }
 
@@ -427,91 +508,108 @@
     ouvrirSonde(i, span);
   }
 
-  /* --- Le joueur juge lui-même : curseur de confiance + « pourquoi » facultatif --- */
+  /* --- Le joueur juge lui-même : curseur de confiance + « pourquoi » facultatif ---
+     ColModale (collection.js) porte le piège de focus, Échap et le retour du focus
+     à l'élément d'origine : la sonde n'a plus à réécrire ces trois choses. */
   function ouvrirSonde(i, span){
     span.classList.remove('hint-flash');
-    var pop = ensurePop();
-    pop.className = 'spot-pop sonde';
-    pop.innerHTML =
-      '<button class="x" type="button" aria-label="Fermer">✕</button>' +
-      '<div class="sonde-q">Ce détail, vous le sentez comment&nbsp;?</div>' +
+
+    var contenu = document.createElement('div');
+    contenu.className = 'sonde-corps';
+    contenu.innerHTML =
       '<div class="curseur" role="radiogroup" aria-label="Votre ressenti">' +
         '<button type="button" class="cr" data-v="louche" role="radio" aria-checked="false"><span class="e">🚩</span><small>Louche</small></button>' +
         '<button type="button" class="cr" data-v="neutre" role="radio" aria-checked="false"><span class="e">😐</span><small>Rien de spécial</small></button>' +
         '<button type="button" class="cr" data-v="rassurant" role="radio" aria-checked="false"><span class="e">✅</span><small>Rassurant</small></button>' +
       '</div>' +
-      '<textarea class="sonde-why" rows="2" placeholder="Pourquoi ? (facultatif)"></textarea>' +
-      '<button type="button" class="sonde-ok" disabled>Valider mon analyse</button>' +
-      '<span class="arrow"></span>';
+      '<textarea class="sonde-why" rows="2" placeholder="Pourquoi ? (facultatif)"></textarea>';
+
     var choix = null;
-    var okBtn = pop.querySelector('.sonde-ok');
-    var crs = pop.querySelectorAll('.cr');
-    crs.forEach(function(b){
-      b.onclick = function(ev){
-        ev.stopPropagation();
+    var valider = null; // renseigné juste après l'appel à ColModale.ouvrir, le bouton existe déjà (Promise exécutée en synchrone)
+    contenu.querySelectorAll('.cr').forEach(function(b){
+      b.onclick = function(){
         choix = b.getAttribute('data-v');
-        crs.forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
+        contenu.querySelectorAll('.cr').forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
         b.classList.add('sel'); b.setAttribute('aria-checked','true');
-        okBtn.disabled = false;
+        if (valider) valider.disabled = false;
       };
     });
-    pop.querySelector('.sonde-why').onclick = function(ev){ ev.stopPropagation(); };
-    pop.querySelector('.x').onclick = function(ev){ ev.stopPropagation(); hidePop(); };
-    okBtn.onclick = function(ev){
-      ev.stopPropagation();
-      if (!choix) return;
-      validerSonde(i, span, choix, (pop.querySelector('.sonde-why').value || ''));
-    };
-    positionPop(pop, span, null);
+
+    var promesse = ColModale.ouvrir({
+      titre: 'Ce détail, vous le sentez comment ?',
+      contenu: contenu,
+      classe: 'sonde',
+      actions: [
+        { id: 'annuler', libelle: 'Annuler' },
+        { id: 'valider', libelle: 'Valider mon analyse', principal: true }
+      ]
+    });
+    valider = document.querySelector('dialog.col-modale.sonde .col-btn:not(.col-btn--fantome)');
+    if (valider) valider.disabled = true;
+
+    promesse.then(function(id){
+      if (id === 'valider' && choix) validerSonde(i, span, choix, (contenu.querySelector('.sonde-why').value || ''));
+    });
   }
 
   function validerSonde(i, span, choix, why){
     var r = reperesActifs[i];
-    if (r.bon){
+    if (typeRepere(r) === 'indice'){
       if (!span.classList.contains('trouve')){
         span.classList.add('trouve');
-        foundBon++; majCompteur();
-        // l'indice est trouvé : le coup de pouce repart de zéro sur le suivant
+        // l'indice est repéré : le coup de pouce repart de zéro sur le suivant
         hintIdx = -1; hintStep = 0; hideAide(); resetHintBtn();
       }
     } else {
       span.classList.add('decoy');
     }
-    r._choix = choix; r._why = why;
+    r._choix = choix; r._why = why; r._juge = true;
+    majCompteur();
     afficherResultatRepere(i, span, choix, why);
   }
 
-  /* --- Retour pédagogique après le jugement du joueur --- */
+  /* --- Retour pédagogique après le jugement du joueur ---
+     Le vert et le rouge jugent le CHOIX DU JOUEUR, jamais la nature du détail :
+     on dit d’abord s’il a eu raison, ensuite seulement ce qu’était ce détail. */
   function afficherResultatRepere(i, span, choix, why){
     var r = reperesActifs[i];
     var estArnaque = deck[idx].verdict === 'arnaque';
-    var attendu = !r.bon ? 'neutre' : (estArnaque ? 'louche' : 'rassurant');
-    var corps;
+    var type = typeRepere(r);
+    var attendu = attenduPour(r, estArnaque);
+    var juste = (choix === attendu);
+    var tete, nature, defaut, corps;
 
-    if (r.bon){
-      var sens = estArnaque ? '🚩 Signe suspect — ' : '✅ Signe rassurant — ';
-      var tete;
-      if (choix === attendu)       tete = '🎯 Bien vu, et bien situé&nbsp;! ';
-      else if (choix === 'neutre') tete = 'En réalité, ce détail compte&nbsp;: ';
-      else                         tete = 'Bon repérage, mais plutôt dans l’autre sens&nbsp;: ';
-      corps = tete + sens + gl(r.note || '');
+    if (type === 'indice'){
+      nature = estArnaque ? '🚩 C’était un signe suspect — ' : '✅ C’était un signe rassurant — ';
+      defaut = 'Ce détail compte dans la lecture du message.';
+      if (juste)                   tete = '🎯 Vous avez eu raison, et vous avez bien situé le détail. ';
+      else if (choix === 'neutre') tete = '❌ Vous êtes passé à côté&nbsp;: ce détail compte. ';
+      else                         tete = '❌ Bon repérage, mais dans l’autre sens. ';
+    } else if (type === 'leurre'){
+      nature = '🅾️ C’était une fausse piste, posée là pour vous rassurer — ';
+      defaut = 'Ce détail attire l’œil, mais ce n’est pas là qu’est le vrai signe.';
+      if (juste)                      tete = '🎯 Vous avez eu raison&nbsp;: ce détail ne prouve rien. ';
+      else if (choix === 'rassurant') tete = '❌ C’est exactement l’effet recherché. ';
+      else                            tete = '❌ Ce n’est pas ce détail qui trahit le message. ';
     } else {
-      var teteD = (choix === 'neutre')
-        ? '👍 Exact&nbsp;: ce détail n’est pas un vrai signe. '
-        : '🅾️ Fausse piste — ';
-      corps = teteD + gl(r.note || 'Ce détail attire l’œil, mais ce n’est pas là qu’est le vrai signe.');
+      nature = '😐 C’était un détail neutre — ';
+      defaut = 'Il ne prouve rien, ni dans un sens ni dans l’autre.';
+      if (juste)                   tete = '🎯 Vous avez eu raison&nbsp;: ce détail ne prouve rien. ';
+      else if (choix === 'louche') tete = '❌ Méfiance de trop&nbsp;: ce détail n’accuse personne. ';
+      else                         tete = '❌ À ne pas prendre pour une garantie. ';
     }
+    corps = tete + nature + gl(r.note || defaut);
 
     // retour sur le « pourquoi » facultatif (jamais pénalisant)
     var a = analyserPourquoi(why, r);
     if (a.ecrit){
-      if (r.bon && a.trouves.length)
+      if (type === 'indice' && a.trouves.length)
         corps += '<span class="sonde-fb ok">💬 Exactement&nbsp;: vous avez pointé « ' + esc(a.trouves[0]) + ' », le cœur du problème.</span>';
       else
         corps += '<span class="sonde-fb">💬 Bravo d’avoir mis des mots dessus&nbsp;: verbaliser est déjà le bon réflexe.</span>';
     }
 
-    showResultPop(span, (r.bon ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
+    showResultPop(span, (juste ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
   }
 
   // clic « à côté » (pas sur un indice) : petit retour rassurant à l'endroit cliqué.
@@ -524,7 +622,16 @@
 
   function majCompteur(){
     var cmp = el('spot-compteur');
-    if (cmp) cmp.innerHTML = 'Indices repérés&nbsp;: <b>' + foundBon + '</b> / ' + cmp.getAttribute('data-total');
+    if (cmp){
+      var st = statsReperes();
+      cmp.innerHTML =
+        'Indices repérés&nbsp;: <b>' + st.reperes + '</b> / ' + st.total + ' · ' +
+        (st.restants
+          ? 'il en reste <b>' + st.restants + '</b> à trouver'
+          : '<b>vous les avez tous trouvés</b> ✓') +
+        (st.mal ? '<small>Dont <b>' + st.mal + '</b> que vous avez mal jugé.</small>' : '');
+    }
+    majZoneDecision();
   }
 
   /* ---------- Coup de pouce à deux niveaux ----------
@@ -656,7 +763,7 @@
       root.classList.remove('mode-spot');
       root.classList.add('mode-corrige');
       reperesActifs.forEach(function(r, i){
-        if (!r.bon) return;
+        if (typeRepere(r) !== 'indice') return;
         var span = root.querySelector('.repere[data-i="' + i + '"]');
         if (span && !span.classList.contains('trouve')) span.classList.add('manque');
       });
@@ -679,9 +786,10 @@
         : 'En réalité, ce message était fiable — pas besoin de s’alarmer ici.';
     }
 
-    var totalBon = reperesActifs.filter(function(r){ return r.bon; }).length;
-    var recap = totalBon
-      ? '<div class="spot-recap">Vous avez repéré <b>' + foundBon + '</b> indice(s) sur ' + totalBon +
+    var st = statsReperes();
+    var recap = st.total
+      ? '<div class="spot-recap">Vous avez repéré <b>' + st.reperes + '</b> indice(s) sur ' + st.total +
+        (st.mal ? ', dont <b>' + st.mal + '</b> mal jugé' + (st.mal > 1 ? 's' : '') : '') +
         '. Les éléments <span class="lg-manque">encadrés</span> dans le message sont ceux à retenir.</div>'
       : '';
 
@@ -728,9 +836,7 @@
 
     app.innerHTML =
       '<div class="panel hero">' +
-        '<div class="gauge">' + jauge + '</div>' +
-        '<div class="result-score">Score&nbsp;: <span class="n">' + score + '</span> / ' + total + '</div>' +
-        '<p class="lead">' + msg + '</p>' +
+        '<div class="col-fin" id="ecran-fin"></div>' +
         '<div class="reflexes-carte">' +
           '<h3>🛡️ Les 6 réflexes à garder en tête</h3>' +
           '<ul>' +
@@ -750,11 +856,17 @@
           '<div class="r"><b>cybermalveillance.gouv.fr</b><span>Aide et démarches si vous avez été piégé.</span></div>' +
           '<div class="r"><b>signal-arnaques.com</b><span>Vérifier un numéro, un site ou un message douteux.</span></div>' +
         '</div>' +
-        '<button class="btn-start" id="rejouer" style="margin-top:22px">Rejouer&nbsp;🔄</button>' +
         '<button class="btn-gloss" id="fin-avis" style="margin-top:10px">💬 Donner mon avis</button>' +
         '<p class="footer-note">Parlez-en autour de vous&nbsp;: en parler, c’est déjà se protéger.</p>' +
       '</div>';
-    el('rejouer').onclick = demarrer;
+    /* E2 : jauge, score, message, cartes ratées avec leur réflexe et boutons sont rendus
+       par ColFin. Pas de lien de retour : la page n'en a jamais eu. */
+    ColFin.rendre({
+      cible: el('ecran-fin'), jeu: JEU, message: jauge + ' ' + texteBrut(msg),
+      score: score, total: total, items: joue, retour: false,
+      onRejouer: function(rates){ demarrer(SCENARIOS.filter(function(c){ return rates.some(function(r){ return r.id === c.id; }); })); },
+      onRecommencer: function(){ demarrer(); }
+    });
     var fa = el('fin-avis'); if (fa) fa.onclick = openFeedback;
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -873,16 +985,22 @@
     var name=(n&&n.value||'').trim(), email=(e&&e.value||'').trim(), msg=(m&&m.value||'').trim();
     if(!msg){ showModalMsg('Écrivez un petit message avant d’envoyer 🙂'); return; }
     var btn=el('fb-send'); if(btn){ btn.disabled=true; btn.textContent='⏳ Envoi…'; }
+    /* Web3Forms pose « email » en Reply-To du message qu'il expédie. Y mettre
+       « non renseigné » quand le champ est vide fabrique un en-tête invalide,
+       et les filtres anti-spam — Outlook et Hotmail en tête — classent le
+       message : l'API répond « success », l'avis n'arrive jamais. Le champ
+       n'est pas obligatoire, on ne l'envoie que s'il est vraiment rempli. */
+    var envoi = {
+      access_key:'ef1fe549-c616-4a27-a6c2-97f06caa913d',
+      subject:'Avis Radar’naque' + (name ? ' — ' + name : ''),
+      name: name || 'Anonyme',
+      message: msg
+    };
+    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) envoi.email = email;
     fetch('https://api.web3forms.com/submit', {
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body: JSON.stringify({
-        access_key:'ef1fe549-c616-4a27-a6c2-97f06caa913d',
-        subject:'Avis Radar’naque' + (name ? ' — ' + name : ''),
-        name: name || 'Anonyme',
-        email: email || 'non renseigné',
-        message: msg
-      })
+      body: JSON.stringify(envoi)
     }).then(function(r){ return r.json(); }).then(function(d){
       if(d && d.success){ if(n)n.value=''; if(e)e.value=''; if(m)m.value=''; closeFeedback(); showModalMsg('Merci beaucoup pour votre retour ! 🙏'); }
       else { showModalMsg('Oups, l’envoi a échoué. Réessayez, ou écrivez à contact@antoninatger.com'); }
@@ -907,6 +1025,13 @@
     if (saved){
       var match = document.querySelector('.textsize button[data-t="'+saved+'"]');
       setTaille(saved, match);
+    }
+    // taille imposée par le lien (?taille=1.4), sans la mémoriser : fenêtre de jeu dans une diapo projetée
+    var tLien = null;
+    try { tLien = new URLSearchParams(location.search).get('taille'); } catch(e){}
+    if (tLien && /^[0-9.]+$/.test(tLien)){
+      document.documentElement.style.setProperty('--taille', tLien);
+      for (var j=0;j<tb.length;j++) tb[j].classList.toggle('on', tb[j].getAttribute('data-t') === tLien);
     }
 
     // bouton « retour au menu » (visible seulement pendant le jeu)
@@ -945,6 +1070,14 @@
       }
     });
 
+    // lien direct depuis une diapo : index.html?carte=id1,id2 lance ces cartes
+    var ids = null;
+    try { ids = new URLSearchParams(location.search).get('carte'); } catch(e){}
+    if (ids){
+      var voulues = ids.split(',').map(function(x){ return x.trim(); });
+      var paquet = SCENARIOS.filter(function(c){ return voulues.indexOf(c.id) !== -1; });
+      if (paquet.length){ demarrer(paquet); return; }
+    }
     ecranAccueil();
   }
 

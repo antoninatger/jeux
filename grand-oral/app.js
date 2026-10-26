@@ -154,20 +154,38 @@ const MISSIONS = [
 
 const REGS=["ethos","pathos","logos"];
 let mi=0, sel={ethos:-1,pathos:-1,logos:-1}, order={}, stars=0;
+// Chantier 04 : les missions passaient toujours dans le même ordre. DECK est le
+// tirage mélangé de la partie en cours ; c'est lui qu'on indexe, pas MISSIONS.
+let DECK=[];
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les missions n'ont pas d'identifiant : leur objectif (goal) en tient lieu d'une partie à l'autre.
+// Une mission est « réussie » quand l'auditoire est convaincu (2 ou 3 étoiles).
+const JEU="grand-oral";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startGame(){
+function startGame(sousDeck){
+  // E2 : toutes les missions sont jouées à chaque partie ; « rejouer mes erreurs » impose un paquet réduit
+  DECK=shuffle(sousDeck || [...MISSIONS]);
   mi=0; stars=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  $("hud-stars").textContent="⭐ 0"; // la partie repart sans recharger la page
   $("intro").style.display="none";
   $("hud").style.display="flex";
   $("game").style.display="block";
-  $("qtot").textContent=MISSIONS.length;
+  $("qtot").textContent=DECK.length;
   renderMission();
 }
 
 function renderMission(){
-  const M=MISSIONS[mi];
+  const M=DECK[mi];
+  clearDelivery();
+  deliveryPending=false;
+  $("skipbtn").style.display="none";
   sel={ethos:-1,pathos:-1,logos:-1};
   $("qnum").textContent=mi+1;
   $("mtxt").textContent=M.goal;
@@ -189,9 +207,13 @@ function renderMission(){
       const b=document.createElement("button");
       b.className="opt";
       b.textContent=o.t;
+      b.setAttribute("aria-pressed","false");
       b.onclick=()=>{
         sel[reg]=oi;
-        wrap.querySelectorAll(".opt").forEach(x=>x.classList.toggle("sel",x===b));
+        wrap.querySelectorAll(".opt").forEach(x=>{
+          x.classList.toggle("sel",x===b);
+          x.setAttribute("aria-pressed",x===b?"true":"false");
+        });
         checkReady();
       };
       wrap.appendChild(b);
@@ -208,34 +230,81 @@ function checkReady(){
   btn.textContent=ready?"🎙️ Prononcer le discours !":"🎙️ Choisis un argument par registre";
 }
 
+// ── Chantier 04 : restitution interruptible ──────────────────────────────
+// La séquence durait ~4,2 s sans aucun moyen de passer, cinq fois par partie.
+// Un clic, Entrée ou Espace la termine ; prefers-reduced-motion la saute.
+let deliveryTimers=[], deliveryPending=false;
+
+function clearDelivery(){ deliveryTimers.forEach(clearTimeout); deliveryTimers=[]; }
+
+function prefersReducedMotion(){
+  return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches);
+}
+
+function showStep(s){
+  const o=DECK[mi][REGS[s]][sel[REGS[s]]];
+  const step=$("step"+s);
+  step.classList.remove("p0","p1","p2");
+  step.classList.add("p"+o.pts);
+  step.querySelector(".dsaid").textContent=o.t;
+  step.querySelector(".dreact").innerHTML=o.fb;
+  step.style.display="block";
+  return o.pts;
+}
+
+function setConviction(total){
+  const pct=Math.round(total/6*100);
+  $("conv-fill").style.width=pct+"%";
+  $("conv-val").textContent=pct+" %";
+}
+
+function skipDelivery(){
+  if(!deliveryPending) return;
+  clearDelivery();
+  deliveryPending=false;
+  $("skipbtn").style.display="none";
+  let total=0;
+  for(let s=0;s<3;s++) total+=showStep(s);
+  setConviction(total);
+  verdict(total);
+}
+
 function speak(){
-  const M=MISSIONS[mi];
   $("builder").style.display="none";
   $("delivery").style.display="block";
+  clearDelivery();
+  deliveryPending=true;
+  // Sans animation, on va droit au verdict : il n'y a rien à attendre.
+  if(prefersReducedMotion()){ skipDelivery(); return; }
+  $("skipbtn").style.display="block";
   let total=0;
   REGS.forEach((reg,s)=>{
-    const o=M[reg][sel[reg]];
-    setTimeout(()=>{
-      const step=$("step"+s);
-      step.classList.remove("p0","p1","p2");
-      step.classList.add("p"+o.pts);
-      step.querySelector(".dsaid").textContent=o.t;
-      step.querySelector(".dreact").innerHTML=o.fb;
-      step.style.display="block";
-      total+=o.pts;
-      const pct=Math.round(total/6*100);
-      $("conv-fill").style.width=pct+"%";
-      $("conv-val").textContent=pct+" %";
-      step.scrollIntoView({behavior:"smooth",block:"center"});
-      if(s===2) setTimeout(()=>verdict(total),900);
-    },500+s*1400);
+    deliveryTimers.push(setTimeout(()=>{
+      total+=showStep(s);
+      setConviction(total);
+      $("step"+s).scrollIntoView({behavior:"smooth",block:"center"});
+      if(s===2) deliveryTimers.push(setTimeout(()=>{
+        deliveryPending=false;
+        $("skipbtn").style.display="none";
+        verdict(total);
+      },900));
+    },500+s*1400));
   });
 }
 
+// Entrée / Espace passent aussi la restitution, au clavier seul.
+document.addEventListener("keydown",e=>{
+  if(!deliveryPending) return;
+  if(e.key==="Enter"||e.key===" "||e.code==="Space"){ e.preventDefault(); skipDelivery(); }
+});
+
 function verdict(total){
-  const M=MISSIONS[mi];
+  const M=DECK[mi];
   const got = total>=6?3 : total>=4?2 : total>=2?1 : 0;
   stars+=got;
+  // E2 : la leçon de la mission, précédée des réactions aux arguments qui n'ont pas porté
+  joue.push({id:M.goal, titre:M.goal, reussi:got>=2,
+    explication:texteBrut(REGS.filter(r=>M[r][sel[r]].pts<2).map(r=>M[r][sel[r]].fb).join(" ")+" "+M.lesson)});
   $("hud-stars").textContent="⭐ "+stars;
   let t;
   if(got===3) t="🎉 Ovation debout ! L'auditoire est conquis.";
@@ -244,15 +313,18 @@ function verdict(total){
   else t="🍅 Fiasco total. On t'a presque jeté des tomates.";
   $("v-title").textContent=t;
   $("v-stars").textContent="⭐".repeat(got)+"☆".repeat(3-got);
+  // Chantier 04 : le joueur recevait 0 à 3 ⭐ sans savoir pourquoi.
+  $("v-scale").textContent=I18N.t("scaleGot")+" "+total+"/6 — "+I18N.t("scale");
   $("v-lesson").innerHTML=M.lesson;
   $("verdict").style.display="block";
-  $("nextbtn").textContent = mi===MISSIONS.length-1 ? "Voir mon bilan ➜" : "Mission suivante ➜";
+  $("nextbtn").textContent = mi===DECK.length-1 ? "Voir mon bilan ➜" : "Mission suivante ➜";
   $("nextbtn").style.display="block";
   $("verdict").scrollIntoView({behavior:"smooth",block:"center"});
+  $("nextbtn").focus();
 }
 
 function nextMission(){
-  if(mi===MISSIONS.length-1){ endGame(); return; }
+  if(mi===DECK.length-1){ endGame(); return; }
   mi++; renderMission();
 }
 
@@ -260,13 +332,17 @@ function endGame(){
   $("game").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  const max=MISSIONS.length*3;
-  $("end-score").textContent="⭐ "+stars+" / "+max;
+  const max=DECK.length*3;
   let title,msg;
   if(stars>=max-2){title="🏆 Orateur d'exception !";msg="Tu maîtrises l'art le plus fin de la rhétorique : <b>l'adaptation à l'auditoire</b>. Ethos, pathos, logos… tu sais lequel dégainer, et surtout comment le formuler pour CE public-là.";}
   else if(stars>=Math.round(max*0.55)){title="🎙️ Bon orateur !";msg="Tes discours portent ! Garde le réflexe clé : avant de parler, demande-toi <b>« qu'est-ce qui compte pour EUX ? »</b> — leurs valeurs, leurs craintes, leurs fiertés.";}
   else{title="📢 Orateur en herbe";msg="La rhétorique se <b>pratique</b> plus qu'elle ne s'apprend ! Relis les réactions de l'auditoire : un argument vrai mais mal ciblé convainc moins qu'un argument adapté.";}
   msg+="<br><br>💡 Et souviens-toi : connaître ces techniques sert à <b>convaincre honnêtement</b>… et à repérer quand on les utilise sur toi.";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, étoiles, message, missions manquées et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: texteBrut(msg),
+    score: stars, total: max, items: joue,
+    onRejouer: rates => startGame(MISSIONS.filter(M => rates.some(r => r.id===M.goal))),
+    onRecommencer: () => startGame()
+  });
 }

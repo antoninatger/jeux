@@ -46,6 +46,17 @@ const QUESTIONS = [
   {text:"Les cours d'art sont plus importants que les cours de sport.",answer:"opinion",cat:"🎨",exp:"💬 OPINION ! Certains élèves adorent le sport autant que le dessin. C'est une question de valeurs !"},
   {text:"La nuit est plus belle que le jour.",answer:"opinion",cat:"🌙",exp:"💬 OPINION ! Certains adorent le soleil, d'autres les étoiles. C'est un avis personnel !"},
   {text:"Les parcs d'attractions sont l'endroit le plus amusant du monde.",answer:"opinion",cat:"🎡",exp:"💬 OPINION ! Certains préfèrent la plage, la montagne ou les musées. C'est subjectif !"},
+  // FAITS ET OPINIONS — lot 3 (20 octobre 2026)
+  {text:"Une semaine compte sept jours.",answer:"fait",cat:"📅",exp:"📋 FAIT ! C'est la même chose pour tout le monde : on peut le vérifier sur n'importe quel calendrier !"},
+  {text:"Les abeilles fabriquent du miel.",answer:"fait",cat:"🐝",exp:"📋 FAIT ! Les apiculteurs l'observent tous les jours : les abeilles transforment le nectar des fleurs en miel."},
+  {text:"La Terre tourne autour du Soleil.",answer:"fait",cat:"🌍",exp:"📋 FAIT ! Les astronomes l'ont prouvé : la Terre fait le tour du Soleil en un an environ."},
+  {text:"Les manchots ne savent pas voler.",answer:"fait",cat:"🐧",exp:"📋 FAIT ! Leurs ailes leur servent à nager, pas à voler. Les scientifiques l'ont observé !"},
+  {text:"L'océan Pacifique est le plus grand océan de la Terre.",answer:"fait",cat:"🌊",exp:"📋 FAIT ! Les géographes l'ont mesuré : il couvre environ un tiers de la surface de la planète."},
+  {text:"Le bleu est la plus belle couleur.",answer:"opinion",cat:"💙",exp:"💬 OPINION ! Certains préfèrent le rouge, le vert ou le jaune. La plus belle couleur dépend des goûts de chacun !"},
+  {text:"Les fraises sont meilleures que les bananes.",answer:"opinion",cat:"🍓",exp:"💬 OPINION ! C'est une question de goût : certains adorent les bananes !"},
+  {text:"Le dimanche est le meilleur jour de la semaine.",answer:"opinion",cat:"🛋️",exp:"💬 OPINION ! Certains préfèrent le samedi, ou même le mercredi. C'est un avis personnel !"},
+  {text:"Les jeux de société sont plus amusants que les jeux vidéo.",answer:"opinion",cat:"🎲",exp:"💬 OPINION ! Certains adorent les jeux vidéo, d'autres les jeux de plateau. C'est subjectif !"},
+  {text:"La mer est plus agréable que la montagne.",answer:"opinion",cat:"🏖️",exp:"💬 OPINION ! Les amoureux de la montagne ne seraient pas d'accord ! C'est une question de préférence."},
 ];
 
 const QUESTIONS_TO_WIN = 10;
@@ -84,6 +95,21 @@ const WORLD_HEIGHT = 3000;
 let activeAsteroid = null;
 let lastAsteroidSpawn = 0;
 let qPool = [];
+// E2 : ce que la mission a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur texte en tient lieu (c'est déjà la clé de
+// la mémoire propre du jeu, planetConnaissance_usedQ, qui reste maîtresse du tirage).
+const JEU = 'planete-connaissance';
+let joue = [];
+function texteBrut(html){ const d=document.createElement('div'); d.innerHTML=String(html).replace(/<br\s*\/?>/gi,' '); return d.textContent; }
+function finDePartie(cibleId, titre, message){
+  ColFin.rendre({
+    cible: document.getElementById(cibleId), jeu: JEU, titre: titre, message: message,
+    score: joue.filter(j=>j.reussi).length, total: joue.length, items: joue,
+    retour: 'index.html', // la page est à la racine : le repli « ../index.html » du composant ne convient pas
+    onRejouer: rates => restartGame(rates.map(r=>r.id)),
+    onRecommencer: () => restartGame()
+  });
+}
 let usedQuestions = new Set();
 let destroyedCount = 0;
 let asteroidSpeed = 1; // multiplier 1–5, default 2
@@ -161,14 +187,23 @@ document.addEventListener('keydown', e=>{
 
   // Modal navigation with arrows + confirm with Enter/Space
   if(state==='question'){
-    if(e.code==='ArrowLeft' || e.code==='ArrowRight'){
+    // e.repeat : une flèche (ou Espace) encore tenue pour piloter le vaisseau quand la
+    // question s'ouvre se répète toute seule. Sans ce garde, elle entourait un choix
+    // avant que l'élève ait rien fait, voire répondait à sa place.
+    if((e.code==='ArrowLeft' || e.code==='ArrowRight') && !e.repeat){
       e.preventDefault();
       toggleModalSelection();
     }
-    if((e.code==='Enter' || e.code==='Space') && !answered){
-      e.preventDefault();
-      const sel = document.querySelector('.ans-btn.kb-focus');
-      if(sel) answer(sel.id === 'btn-fait' ? 'fait' : 'opinion');
+    if((e.code==='Enter' || e.code==='Space') && !answered && !e.repeat){
+      const active = document.activeElement;
+      if(!(active && active.classList && active.classList.contains('ans-btn'))){
+        // Pas de bouton réellement focalisé (sélection au clavier par flèches) :
+        // on répond selon le cadre kb-focus. Si un bouton a le vrai focus (Tab),
+        // on laisse le navigateur déclencher son clic natif — même id, forcément.
+        e.preventDefault();
+        const sel = document.querySelector('.ans-btn.kb-focus');
+        if(sel) answer(sel.id === 'btn-fait' ? 'fait' : 'opinion');
+      }
     }
     if((e.code==='Enter' || e.code==='Space') && answered){
       e.preventDefault();
@@ -185,19 +220,22 @@ document.addEventListener('keyup', e=>{
 
 /* Toggle keyboard focus between FAIT and OPINION buttons */
 let kbSelected = 'fait'; // default selection
+let kbFocusActive = false; // n'affiche le cadre qu'après une première flèche
 function initModalKeyboard(){
   kbSelected = 'fait';
+  kbFocusActive = false;
   applyModalFocus();
 }
 function applyModalFocus(){
   const bF = document.getElementById('btn-fait');
   const bO = document.getElementById('btn-op');
   if(!bF || !bO) return;
-  bF.classList.toggle('kb-focus', kbSelected === 'fait');
-  bO.classList.toggle('kb-focus', kbSelected === 'opinion');
+  bF.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'fait');
+  bO.classList.toggle('kb-focus', kbFocusActive && kbSelected === 'opinion');
 }
 function toggleModalSelection(){
   if(answered) return;
+  kbFocusActive = true;
   kbSelected = kbSelected === 'fait' ? 'opinion' : 'fait';
   applyModalFocus();
 }
@@ -306,8 +344,6 @@ function destroyAsteroid(ast){
       s:4+Math.random()*10, life:1, rot:0, rotV:(Math.random()-.5)*.4
     });
   }
-  score += 100;
-  destroyedCount++;
   updateHUD();
 }
 
@@ -694,6 +730,7 @@ function update(t, dt){
 /* ═══════════════════════════════════════════════════
    HIT SHIP
 ═══════════════════════════════════════════════════ */
+let pendingGameOver = false;
 function hitShip(){
   lives--;
   ship.invincible = 90;
@@ -702,7 +739,9 @@ function hitShip(){
   updateHUD();
   spawnParticles(ship.x*W, ship.y*H, '#ff4466', 14);
   addReplacementQuestion(); // ensure there's always a question to replace the missed one
-  if(lives<=0) triggerGameOver();
+  // Ne pas fermer la modale tout de suite : l'explication doit rester lisible
+  // jusqu'au clic sur « Continuer » (closeQuestion() déclenche alors le game over).
+  if(lives<=0) pendingGameOver = true;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -737,6 +776,7 @@ function answer(chosen){
   answered=true;
   const q=activeAsteroid.q;
   const ok=chosen===q.answer;
+  joue.push({id:q.text, titre:q.text, reussi:ok, explication:q.exp});
   document.getElementById('btn-fait').disabled=true;
   document.getElementById('btn-op').disabled=true;
   const chosenBtn=document.getElementById(chosen==='fait'?'btn-fait':'btn-op');
@@ -745,6 +785,8 @@ function answer(chosen){
     chosenBtn.classList.add('correct-sel');
     showQFeedback(true,q.exp);
     flashScreen('rgba(0,255,136,.18)');
+    score += 100;
+    destroyedCount++;
     destroyAsteroid(activeAsteroid);
     spawnParticles(activeAsteroid.x*W,activeAsteroid.y*H,'#00ff88',22);
     questionAnsweredCorrectly=true;
@@ -767,6 +809,7 @@ function showQFeedback(ok,txt){
 
 function closeQuestion(){
   document.getElementById('q-modal').classList.remove('show');
+  if(pendingGameOver){ pendingGameOver=false; triggerGameOver(); return; }
   if(lives>0) state='playing';
 }
 
@@ -828,11 +871,10 @@ function updateLanding(dt){
   // landing done — show win screen
   if(t >= 1){
     state = 'win';
-    document.getElementById('win-score').textContent = score + ' pts';
     const stars = lives===3?'⭐⭐⭐':lives===2?'⭐⭐':'⭐';
-    document.getElementById('win-stars').textContent = stars;
     setTimeout(()=>{
       document.getElementById('win-screen').style.display='flex';
+      finDePartie('fin-win', I18N.t('winTitle'), texteBrut(I18N.t('winDesc1'))+' '+score+' pts '+stars+' — '+I18N.t('winDesc2'));
       launchConfetti();
     }, 500);
   }
@@ -903,21 +945,28 @@ function triggerGameOver(){
       color:colors[i%colors.length],s:4+Math.random()*12,life:1,rot:0,rotV:(Math.random()-.5)*.4});
   }
   flashScreen('rgba(255,100,0,.5)');
-  setTimeout(()=>{ document.getElementById('over-screen').style.display='flex'; }, 1400);
+  setTimeout(()=>{
+    document.getElementById('over-screen').style.display='flex';
+    finDePartie('fin-over', I18N.t('overTitle'), score+' pts — '+texteBrut(I18N.t('overDesc')));
+  }, 1400);
 }
 
-function restartGame(){
+function restartGame(prioritaires){
   document.getElementById('intro-screen').style.display='none';
   document.getElementById('win-screen').style.display='none';
   document.getElementById('over-screen').style.display='none';
-  startGame();
+  startGame(prioritaires);
 }
 
 /* ═══════════════════════════════════════════════════
    START
 ═══════════════════════════════════════════════════ */
-function startGame(){
+function startGame(prioritaires){
+  // appelée aussi depuis un onclick : l'événement n'est pas une liste de questions
+  prioritaires = Array.isArray(prioritaires) ? prioritaires : null;
   score=0;lives=3;qIndex=0;destroyedCount=0;answered=false;
+  joue=[];
+  ColFin.protegerSortie(true);
   scrollY=0;planet.landed=false;planet.landAnim=0;planet._drawR=90;planet._drawX=0.5;planet._drawY=H*0.12;planet.landDustParts=[];
   lastAsteroidSpawn=performance.now()+2000;
   asteroids.length=0; lasers.length=0; activeAsteroid=null;
@@ -934,7 +983,13 @@ function startGame(){
     persistentUsed = new Set();
     available = [...QUESTIONS];
   }
-  const shuffled = [...available].sort(()=>Math.random()-.5);
+  let shuffled = [...available].sort(()=>Math.random()-.5);
+  // E2 : « rejouer mes erreurs » — les questions ratées passent en tête ; la mission garde ses
+  // règles (13 questions, 10 astéroïdes à détruire), le reste du paquet complète.
+  if(prioritaires){
+    const prio = QUESTIONS.filter(q => prioritaires.includes(q.text));
+    shuffled = prio.concat([...QUESTIONS].filter(q => !prioritaires.includes(q.text)).sort(()=>Math.random()-.5));
+  }
   qPool = shuffled.slice(0, 13);
   usedQuestions = new Set(qPool.map(q=>q.text));
   // La sauvegarde se fait question par question dans openQuestion()

@@ -3,16 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fake News Defender</title>
+<title data-i18n="pageTitle">Fake News Defender</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@600;700;800&display=swap');
+  /* Identité arcade sur le socle (chantier 05). */
+  :root {
+    --bg:#050010;
+    --surface:#0b0b26;
+    --txt:#e8f0ff;
+    --txt-secondaire:#99a3c4;  /* 8,3:1 sur --bg */
+    --acc:#00ffcc;
+    --acc-txt:#001510;
+    --font-texte:'Nunito',sans-serif;
+    --font-titre:'Orbitron',sans-serif;
+  }
+  .col-entete__titre{color:#00ffcc;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 0 16px rgba(0,255,204,.45)}
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background:#050010;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     min-height:100vh; overflow-x:hidden;
     font-family:'Orbitron', sans-serif;
   }
+  /* L'en-tête unifié reste en haut ; le bloc de jeu se centre par marges
+     auto dans l'espace restant (l'ancien justify-content:center posait
+     l'en-tête au milieu de la page). */
+  #ui{margin-top:auto}
+  #speed-row{margin-bottom:auto}
 
   #ui {
     max-width:660px; width:100%; display:flex; justify-content:space-between; align-items:center;
@@ -28,6 +46,10 @@
     width:min(660px,100%);
   }
   canvas { display:block; width:100%; height:auto; }
+  /* E2 : à la fin de la partie, l'overlay quitte le canvas et prend sa place dans le
+     flux : le récapitulatif a la hauteur qu'il lui faut au lieu de défiler dans le cadre. */
+  #canvas-wrap.fin canvas, #canvas-wrap.fin #feedback, #canvas-wrap.fin #question-banner { display:none; }
+  #canvas-wrap.fin #overlay { position:relative; inset:auto; min-height:520px; }
 
   /* Question banner */
   #question-banner {
@@ -52,10 +74,14 @@
   #overlay {
     position:absolute; inset:0;
     display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
+    align-items:center; justify-content:flex-start;
     background:rgba(0,4,15,0.92); color:#00ffcc;
     text-align:center; gap:14px;
+    overflow-y:auto; padding:14px 0;
   }
+  /* Centrage sûr : centré quand ça tient, défilable depuis le haut sinon (§9.3). */
+  #overlay > :first-child{margin-top:auto}
+  #overlay > :last-child{margin-bottom:auto}
   #overlay h1 {
     font-size:2.2rem; font-weight:900; letter-spacing:.15em;
     text-shadow:0 0 30px #00ffcc, 0 0 60px #00ffcc; line-height:1.1;
@@ -63,6 +89,16 @@
   #overlay .sub {
     font-family:'Nunito', sans-serif; font-size:1rem;
     color:#ccc; line-height:1.9; max-width:500px; padding:0 16px;
+  }
+  /* Intro raccourcie en mobile : le cadre du canvas ne fait que ~300 px de
+     haut à 390 px de large, JOUER doit rester visible sans défiler (§9.3). */
+  @media (max-width:480px){
+    #overlay{gap:8px; padding:8px 0}
+    #overlay h1{font-size:1.4rem}
+    #overlay .sub{font-size:0.8125rem; line-height:1.5}
+    #overlay .sub .mob-hide{display:none}
+    #overlay .col-meta{display:none}
+    #overlay button{padding:9px 30px; font-size:0.8125rem}
   }
   #overlay button {
     padding:12px 44px; background:transparent;
@@ -120,7 +156,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px 10px;
+    flex-wrap: wrap;
+    padding: 0 8px;
+    max-width: 100%;
     margin-top: 10px;
     font-family: 'Nunito', sans-serif;
     font-size: 0.875rem;
@@ -142,19 +181,18 @@
   }
 
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 
+<!-- Le titre vit dans l'en-tête unifié : le HUD garde score, consigne et vies
+     sous lui, en flux — plus rien ne se recouvre en 390 px (§9.3). -->
 <div id="ui">
-  <div>SCORE<br><span id="score-display">0</span></div>
-  <div style="text-align:center">FAKE NEWS DEFENDER<br>
-    <span style="font-family:'Nunito',sans-serif;font-size:.8125rem;font-weight:800;color:#ff4466;letter-spacing:.05em">DÉTRUIRE LES FAUSSES RÉPONSES !</span>
+  <div><span data-i18n="hudScore">SCORE</span><br><span id="score-display">0</span></div>
+  <div style="text-align:center">
+    <span style="font-family:'Nunito',sans-serif;font-size:.8125rem;font-weight:800;color:#ff4466;letter-spacing:.05em" data-i18n="consigne">DÉTRUIRE LES FAUSSES RÉPONSES !</span>
   </div>
-  <div style="text-align:right">VIES<br><span id="lives-display">❤️❤️❤️</span></div>
+  <div style="text-align:right"><span data-i18n="hudLives">VIES</span><br><span id="lives-display">❤️❤️❤️</span></div>
 </div>
 
 <div id="canvas-wrap">
@@ -173,41 +211,68 @@
       🎯 Une question s'affiche en haut.<br>
       Des réponses tombent du ciel.<br>
       <strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>
-      ⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>
-      ⚠️ Laisse la bonne réponse passer — elle ne doit pas s'échapper !<br><br>
+      <span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>
+      ⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>
+      ✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>
       ← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+    <ul class="col-meta">
+      <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
+      <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
+      <li>⌨️ <span data-i18n="metaCommandes">Clavier ou souris</span></li>
+    </ul>
+    <div class="col-actions" style="flex-direction:column;align-items:center">
       <button onclick="startDefaultGame()" data-i18n="play">JOUER ▶</button>
       <button class="btn-custom" onclick="location.href='index.html'" data-i18n="menu">← MENU &amp; QUESTIONS</button>
     </div>
   </div>
 </div>
 
-<div id="controls">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE ou CLIC tirer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Détruis les FAUSSES réponses <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
+<div id="controls"><span data-i18n-html="controlsHint">← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE ou CLIC tirer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Détruis les FAUSSES réponses</span> <a id="menu-btn-bottom" href="index.html">← MENU</a></div>
 <div id="speed-row">
   🐢
-  <input type="range" id="speed-slider" min="1" max="5" value="3" step="1">
+  <input type="range" id="speed-slider" min="1" max="5" value="2" step="1">
   🚀
-  <span id="speed-label">NORMALE</span>
+  <span id="speed-label">LENTE</span>
   &nbsp;&nbsp;
   <button id="mute-btn" onclick="toggleMute()">🔊</button>
 </div>
 
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
-    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br>⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Laisse la bonne réponse passer — elle ne doit pas s'échapper !<br><br>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    pageTitle: "Fake News Defender", colRetour: "Retour à l'arcade",
+    hudScore: "SCORE", hudLives: "VIES",
+    consigne: "DÉTRUIRE LES FAUSSES RÉPONSES !",
+    controlsHint: "← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE ou CLIC tirer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Détruis les FAUSSES réponses",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou souris",
+    speedVerySlow: "TRÈS LENTE", speedSlow: "LENTE", speedNormal: "NORMALE", speedFast: "RAPIDE", speedTurbo: "TURBO",
+    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br><span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>MISSION ACCOMPLIE !", loseTitle: "GAME OVER",
-    winMsg: "Tu es un vrai chasseur de Fake News !", loseMsg: "Continue à développer ton esprit critique !"
+    winMsg: "Tu es un vrai chasseur de Fake News !", loseMsg: "Continue à développer ton esprit critique !",
+    shotGood: "❌ Tu as tiré sur la BONNE réponse ! -1 vie",
+    wrongEscaped: "💨 Une fausse réponse s'est échappée",
+    goodPassed: "✅ Bonne réponse laissée passer",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P ou ECHAP pour continuer", ptsLabel: "pts"
   },
   en: {
-    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br>⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Let the correct answer pass — it must not escape!<br><br>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    pageTitle: "Fake News Defender", colRetour: "Back to the arcade",
+    hudScore: "SCORE", hudLives: "LIVES",
+    consigne: "DESTROY THE FALSE ANSWERS!",
+    controlsHint: "← → or MOUSE to move &nbsp;|&nbsp; SPACE or CLICK to shoot &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Destroy the FALSE answers",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or mouse",
+    speedVerySlow: "VERY SLOW", speedSlow: "SLOW", speedNormal: "NORMAL", speedFast: "FAST", speedTurbo: "TURBO",
+    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br><span class="mob-hide">⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Don't let a FALSE answer reach the bottom — you'll lose a life!<br>✅ The correct answer, though, can safely pass through.<br><br></span>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>MISSION ACCOMPLISHED!", loseTitle: "GAME OVER",
-    winMsg: "You're a real fake-news hunter!", loseMsg: "Keep developing your critical thinking!"
+    winMsg: "You're a real fake-news hunter!", loseMsg: "Keep developing your critical thinking!",
+    shotGood: "❌ You shot the CORRECT answer! -1 life",
+    wrongEscaped: "💨 A false answer escaped",
+    goodPassed: "✅ Correct answer let through",
+    pauseLabel: "⏸ PAUSE", pauseHint: "P or ESC to continue", ptsLabel: "pts"
   }
 });
 </script>
@@ -226,13 +291,13 @@ function toggleMute() {
 
 // ── SPEED CONTROL ────────────────────────────────────────────
 const SPEED_LEVELS = [
-  { label: 'TRÈS LENTE', mult: 0.35 },
-  { label: 'LENTE',      mult: 0.6  },
-  { label: 'NORMALE',    mult: 1.0  },
-  { label: 'RAPIDE',     mult: 1.7  },
-  { label: 'TURBO',      mult: 2.8  },
+  { label: I18N.t('speedVerySlow'), mult: 0.35 },
+  { label: I18N.t('speedSlow'),     mult: 0.6  },
+  { label: I18N.t('speedNormal'),   mult: 1.0  },
+  { label: I18N.t('speedFast'),     mult: 1.7  },
+  { label: I18N.t('speedTurbo'),    mult: 2.8  },
 ];
-let speedMult = SPEED_LEVELS[2].mult;
+let speedMult = SPEED_LEVELS[1].mult; // LENTE par défaut (décision V6)
 
 const speedSlider = document.getElementById('speed-slider');
 const speedLabelEl = document.getElementById('speed-label');
@@ -245,6 +310,16 @@ speedLabelEl.textContent = SPEED_LEVELS[+speedSlider.value - 1].label;
 
 // ── ACTIVE QCM (used during game) ────────────────────────────
 let activeQCM = DEFAULT_QCM;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est ratée dès qu'elle coûte une vie (bonne réponse abattue, fausse échappée).
+let joue = [], qNotee = false, erreurQ = false;
+function noterQuestion() {
+  if (!currentQ || qNotee) return;
+  qNotee = true;
+  joue.push({ id: currentQ.q, titre: currentQ.q, reussi: !erreurQ, explication: currentQ.expl || '' });
+}
+function titreBrut(html) { const d = document.createElement('div'); d.innerHTML = String(html).replace(/<br\s*\/?>/gi, ' '); return d.textContent; } // les clés de titre contiennent des <br>
 
 // ── GAME STATE ───────────────────────────────────────────────
 const canvas = document.getElementById('game');
@@ -311,11 +386,30 @@ function shuffleColors() {
   return c;
 }
 
+// Chantier 04 : mélange l'ordre des OPTIONS, pas seulement leurs couleurs.
+// Sans ça, toutes les questions ayant answer:0 font tomber la bonne réponse
+// dans la même colonne — le joueur gagne sans lire.
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function withShuffledOptions(list) {
+  return list.map(q => {
+    const idx = shuffleArr(Array.from({length:q.options.length}, (_,i) => i));
+    return { ...q, options: idx.map(i => q.options[i]), answer: idx.indexOf(q.answer) };
+  });
+}
+
 function spawnAnswers() {
   answers = [];
   const q = activeQCM[qIndex];
   const cols = q.options.length;
   const colors = shuffleColors();
+  const bannerH = getBannerCanvasH();
 
   // Blocs adaptés au texte : la largeur suit le texte, et si c'est long
   // le bloc GRANDIT en hauteur (2-3 lignes) au lieu de rétrécir.
@@ -347,7 +441,7 @@ function spawnAnswers() {
     answers.push({
       text,
       x,
-      y: -60 - i*90,
+      y: -bannerH - i*90,
       w: blocks[i].w, h: blocks[i].h,
       isCorrect: i === q.answer,
       speed: 0.55 + Math.random()*0.2,
@@ -423,11 +517,32 @@ function playSound(freq,dur,type='sine',vol=0.15) {
 }
 
 // ── FEEDBACK ─────────────────────────────────────────────────
-function showFeedback(msg, type) {
+// Chantier 04 : durée réglable — une explication a besoin de plus de 2,8 s pour être lue.
+function showFeedback(msg, type, ms) {
   const el=document.getElementById('feedback');
   el.textContent=msg; el.className='show '+type;
   clearTimeout(feedbackTimer);
-  feedbackTimer=setTimeout(()=>{ el.className=''; }, 2800);
+  feedbackTimer=setTimeout(()=>{ el.className=''; }, ms || 2800);
+}
+
+// Message d'erreur + l'explication pédagogique de la question en cours.
+// Renvoie la durée d'affichage choisie : la chute doit rester gelée le temps
+// que le message reste lisible (chantier F2), pas une durée devinée à part.
+function feedbackKO(msg) {
+  const expl = currentQ && currentQ.expl;
+  const duration = expl ? 6000 : 2800;
+  showFeedback(expl ? msg + ' — ' + expl : msg, 'ko', duration);
+  return duration;
+}
+
+// Hauteur réelle du bandeau de question, mesurée en coordonnées canvas
+// (et non devinée) : sert à faire apparaître les réponses sous le bandeau.
+function getBannerCanvasH() {
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.height) return 90;
+  const scale = H / rect.height;
+  const bannerRect = document.getElementById('question-banner').getBoundingClientRect();
+  return Math.max(60, Math.round(bannerRect.height * scale));
 }
 
 // ── CHECK ALL WRONG ANSWERS GONE ─────────────────────────────
@@ -435,12 +550,14 @@ function checkAllWrongGone() {
   if (!questionActive) return;
   const wrongAlive = answers.filter(a => !a.isCorrect && !a.dead);
   if (wrongAlive.length === 0) {
+    noterQuestion();
     score += 100;
     updateUI();
     playSound(660, .3, 'sine');
-    showFeedback(currentQ.expl, 'ok');
+    // Chantier 04 : 900 ms ne suffisent pas à lire une explication.
+    showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
     const correct = answers.find(a => a.isCorrect);
-    setTimeout(() => { if (correct) correct.dead = true; nextQuestion(); }, 900);
+    setTimeout(() => { if (correct) correct.dead = true; nextQuestion(); }, currentQ.expl ? 3000 : 900);
   }
 }
 
@@ -448,6 +565,7 @@ function checkAllWrongGone() {
 function loadQuestion() {
   if (qIndex >= activeQCM.length) { endGame(true); return; }
   currentQ = activeQCM[qIndex];
+  qNotee = false; erreurQ = false;
   document.getElementById('question-text').textContent = currentQ.q;
   document.getElementById('q-num').textContent = qIndex+1;
   document.getElementById('q-total').textContent = activeQCM.length;
@@ -486,10 +604,12 @@ function updateUI() {
 }
 
 // ── START ────────────────────────────────────────────────────
-function startDefaultGame() {
-  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub)
-  if (typeof QCMStore !== 'undefined') {
-    var _p = QCMStore.getSessionQuestions();
+function startDefaultGame(pool) {
+  // Nouveau tirage de questions à chaque partie (5/10/30 selon le hub) — E2 : les jamais
+  // vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs ».
+  if (Array.isArray(pool)) window.DEFAULT_QCM = pool;
+  else if (typeof QCMStore !== 'undefined') {
+    var _p = QCMStore.getSessionQuestions(QCMStore.cleMemoire());
     if (_p && _p.length) window.DEFAULT_QCM = _p;
   }
   activeQCM = DEFAULT_QCM;
@@ -498,6 +618,10 @@ function startDefaultGame() {
 
 function startGame() {
   document.getElementById('overlay').style.display='none';
+  document.getElementById('canvas-wrap').classList.remove('fin');
+  joue = [];
+  ColFin.protegerSortie(true);
+  activeQCM = withShuffledOptions(activeQCM);
   score=0; lives=3; qIndex=0; bullets=[]; answers=[]; particles=[];
   plane.x=W/2; shootCooldown=0; feedbackTimer=null; paused=false;
   makeStars(); updateUI();
@@ -511,18 +635,22 @@ function startGame() {
 function endGame(win) {
   gameRunning=false;
   document.getElementById('question-banner').style.display='none';
+  // E2 : sur une défaite, la question en cours est ratée (elle vient de coûter la dernière vie).
+  if (!win) noterQuestion();
   const ov=document.getElementById('overlay');
   ov.style.display='flex';
-  ov.innerHTML=`
-    <h1 style="color:${win?'#00ffcc':'#ff4466'}">${win?I18N.t('winTitle'):I18N.t('loseTitle')}</h1>
-    <div class="sub">${I18N.t('finalScore')} <strong style="color:#00ffcc">${score}</strong><br>
-    ${win?I18N.t('winMsg'):I18N.t('loseMsg')}
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-      <button onclick="startDefaultGame()">${I18N.t('replay')}</button>
-      <button class="btn-custom" onclick="location.href='index.html'">${I18N.t('menu')}</button>
-    </div>
-  `;
+  document.getElementById('canvas-wrap').classList.add('fin');
+  // E2 : titre, score « bonnes / jouées », message, questions ratées avec leur explication et
+  // boutons (rejouer mes erreurs, rejouer, retour au hub) sont rendus par ColFin.
+  ov.innerHTML = '<div class="col-fin" id="ecran-fin"></div>';
+  ColFin.rendre({
+    cible: ov.firstElementChild, jeu: (typeof QCMStore !== 'undefined') ? QCMStore.cleMemoire() : 'arcade',
+    titre: titreBrut(win ? I18N.t('winTitle') : I18N.t('loseTitle')),
+    message: I18N.t('finalScore') + ' ' + score + ' — ' + (win ? I18N.t('winMsg') : I18N.t('loseMsg')),
+    score: joue.filter(j => j.reussi).length, total: joue.length, items: joue,
+    onRejouer: rates => startDefaultGame(activeQCM.filter(q => rates.some(r => r.id === q.q))),
+    onRecommencer: () => startDefaultGame()
+  });
 }
 
 // ── MAIN LOOP ────────────────────────────────────────────────
@@ -545,9 +673,9 @@ function gameLoop() {
   if(paused) {
     ctx.font='700 20px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.9)';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('⏸ PAUSE', W/2, H/2);
+    ctx.fillText(I18N.t('pauseLabel'), W/2, H/2);
     ctx.font='400 13px Orbitron,sans-serif'; ctx.fillStyle='rgba(0,255,204,.6)';
-    ctx.fillText('P ou ECHAP pour continuer', W/2, H/2+32);
+    ctx.fillText(I18N.t('pauseHint'), W/2, H/2+32);
     return;
   }
 
@@ -581,10 +709,16 @@ function gameLoop() {
             setTimeout(()=>{ a.dead=true; checkAllWrongGone(); }, 400);
           } else {
             lives--;
+            erreurQ = true;
             updateUI();
             playSound(150,.3,'sawtooth');
-            showFeedback('❌ Tu as tiré sur la BONNE réponse ! -1 vie','ko');
-            if(lives<=0){ setTimeout(()=>endGame(false),600); return; }
+            // Chantier 04 : c'est LE moment pédagogique — le joueur vient d'abattre
+            // la bonne réponse, on lui dit pourquoi c'était la bonne.
+            // F2 : geler la chute des autres blocs pendant que ça se lit.
+            questionActive = false;
+            const d = feedbackKO(I18N.t('shotGood'));
+            if(lives<=0){ setTimeout(()=>endGame(false), d); return; }
+            setTimeout(() => { questionActive = true; }, d);
           }
         }
       });
@@ -604,23 +738,32 @@ function gameLoop() {
         a.dead=true;
         if(!a.isCorrect) {
           lives--;
+          erreurQ = true;
           updateUI();
           playSound(150,.4,'sawtooth');
-          showFeedback('💨 Une fausse réponse s\'est échappée ! -1 vie','ko');
-          if(lives<=0){ setTimeout(()=>endGame(false),600); return; }
-          // Si toutes les mauvaises réponses sont parties (tirées ou échappées), avancer sans bonus
-          if(questionActive && answers.filter(a=>!a.isCorrect&&!a.dead).length===0){
-            questionActive=false;
-            setTimeout(()=>{ qIndex++; loadQuestion(); }, 1200);
-          }
-        } else {
-          lives--;
-          updateUI();
-          playSound(150,.4,'sawtooth');
-          showFeedback('💨 La bonne réponse s\'est échappée ! -1 vie','ko');
-          if(lives<=0){ setTimeout(()=>endGame(false),600); return; }
-          nextQuestion();
+          // F2 : nommer la réponse échappée, geler la chute pendant la lecture,
+          // et ne clore la question que si c'était la dernière fausse réponse.
+          questionActive = false;
+          const expl = currentQ && currentQ.expl;
+          const base = `${I18N.t('wrongEscaped')} : « ${a.text} »`;
+          const msg = expl ? `${base} — ${expl}` : base;
+          const d = expl ? 6000 : 2800;
+          showFeedback(msg, 'ko', d);
+          if(lives<=0){ setTimeout(()=>endGame(false), d); return; }
+          setTimeout(() => {
+            const stillWrong = answers.filter(a=>!a.isCorrect&&!a.dead).length > 0;
+            questionActive = true;
+            if (!stillWrong) {
+              // Toutes les fausses réponses sont parties (tirées ou échappées) : avancer sans bonus.
+              questionActive = false;
+              noterQuestion();
+              showFeedback(currentQ.expl || I18N.t('goodPassed'), 'ok', currentQ.expl ? 4200 : 2000);
+              setTimeout(()=>{ qIndex++; loadQuestion(); }, currentQ.expl ? 4200 : 1200);
+            }
+          }, d);
         }
+        // La bonne réponse qui sort par le bas ne clôt plus la question : elle peut
+        // passer sans risque, et il peut rester des fausses réponses à traiter (F2).
       }
       drawAnswer(a);
     });
@@ -641,8 +784,9 @@ function gameLoop() {
   ctx.font='600 13px Orbitron';
   ctx.fillStyle='rgba(0,255,204,0.45)';
   ctx.textAlign='right'; ctx.textBaseline='bottom';
-  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score}pts`, W-10, H-8);
+  ctx.fillText(`Q${qIndex+1}/${activeQCM.length} — ${score}${I18N.t('ptsLabel')}`, W-10, H-8);
 }
 </script>
+  <script src="../retours.js" defer></script>
 </body>
 </html>

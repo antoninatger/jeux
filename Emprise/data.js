@@ -11,6 +11,24 @@ const RESOURCES = [
     value: "3919"
   },
   {
+    name: "3114 — Prévention du suicide",
+    desc: "Numéro national de prévention du suicide, gratuit, 7j/7, 24h/24 ; des infirmiers et des psychologues formés y répondent, aux personnes en détresse comme à l'entourage de quelqu'un qui inquiète.",
+    type: "tel",
+    value: "3114"
+  },
+  {
+    name: "119 — Enfance en danger",
+    desc: "Le service national de l'enfance en danger, gratuit, 7j/7, 24h/24, par téléphone ou par tchat : il répond aux mineurs comme aux adultes inquiets pour l'un d'eux.",
+    type: "tel",
+    value: "119"
+  },
+  {
+    name: "114 — Urgences par SMS",
+    desc: "Le numéro d'urgence joignable par SMS, tchat ou visio, quand on ne peut pas parler à voix haute ; il transmet au 15, au 17 et au 18.",
+    type: "tel",
+    value: "114"
+  },
+  {
     name: "Arrêtons les violences (site officiel)",
     desc: "Informations, tchat en ligne et annuaire des structures d'aide partout en France.",
     type: "url",
@@ -27,6 +45,12 @@ const RESOURCES = [
     desc: "En cas de danger immédiat, contacter la police / gendarmerie ou le numéro d'urgence européen.",
     type: "tel",
     value: "17"
+  },
+  {
+    name: "Le Violentomètre",
+    desc: "Une réglette graduée qui situe des comportements précis dans une relation, du vert « Profite » au rouge « Protège-toi, demande de l'aide ».",
+    type: "url",
+    value: "https://www.centre-hubertine-auclert.fr/egalitheque/publication/le-violentometre"
   }
 ];
 
@@ -181,7 +205,7 @@ const CHECKPOINTS = {
     clusters: [
       { label: "isolement direct", terms: ["isole", "isolement", "coupe de ses amis", "eloigne de clea", "ecarte clea", "separe de clea", "couper de clea"] },
       { label: "dénigrement de l'entourage", terms: ["denigre clea", "rabaisse clea", "critique clea", "dit du mal de clea", "discredite clea", "n'est pas une bonne personne"] },
-      { label: "accusation de jalousie projetée", terms: ["clea", "jalous", "accuse", "rejette la faute", "fait passer"] },
+      { label: "accusation de jalousie projetée", terms: ["accuse clea de jalousie", "l'accuse d'etre jalouse", "dit que clea est jalouse", "fait passer clea pour jalouse", "rejette la faute sur clea"] },
       { label: "se pose en seul soutien", terms: ["seul soutien", "le seul", "personne d'autre", "seule personne en qui elle a confiance", "seul repere"] }
     ],
     misreadings: [
@@ -207,7 +231,7 @@ const CHECKPOINTS = {
       { label: "dévalorisation directe", terms: ["devalorise", "denigre son physique", "critique son physique", "rabaisse son apparence", "critique ce qu'elle porte", "critique son corps"] },
       { label: "compliment empoisonné / critique déguisée", terms: ["compliment empoisonne", "fausse compliment", "critique deguisee", "sous couvert de compliment", "critique cachee dans un compliment"] },
       { label: "contrôle de l'apparence", terms: ["controle ce qu'elle porte", "choisit ses vetements", "lui dit quoi porter", "impose son gout", "decide de son look", "lui dit quoi mettre"] },
-      { label: "sape la confiance en soi", terms: ["fait grossir", "pas assez exigeante", "sape sa confiance", "confiance en elle", "estime de soi"] }
+      { label: "sape la confiance en soi", terms: ["pas assez exigeante", "sape sa confiance", "confiance en elle", "estime de soi"] }
     ],
     misreadings: [
       { terms: ["il donne juste son avis", "c'est normal de donner son avis sur les vetements", "il la trouve belle c'est un compliment", "chacun a ses gouts", "il essaie juste de l'aider a se sentir bien"],
@@ -231,8 +255,8 @@ const CHECKPOINTS = {
     clusters: [
       { label: "cycle tension-réconciliation", terms: ["cycle", "tension puis reconciliation", "explosion puis excuse", "alterne colere et amour", "passe de la colere a l'amour", "crise puis"] },
       { label: "contrôle / possessivité", terms: ["controle qui elle voit", "veut savoir avec qui", "exige qu'elle reponde", "controle ses sorties", "exige de savoir ou elle est", "avec qui elle traine"] },
-      { label: "excuse par l'amour", terms: ["excuse sa colere", "par amour", "parce qu'il l'aime", "justifie la crise", "tient a elle"] },
-      { label: "crise disproportionnée", terms: ["crise", "colere demesuree", "explose", "pete un cable", "peter un cable", "panique"] }
+      { label: "excuse par l'amour", terms: ["excuse sa colere", "parce qu'il l'aime", "justifie la crise"] },
+      { label: "crise disproportionnée", terms: ["colere demesuree", "explose", "pete un cable", "peter un cable"] }
     ],
     misreadings: [
       { terms: ["il s'inquiete c'est normal", "elle aurait du repondre", "c'est comprehensible qu'il s'inquiete", "elle a eu tort de pas repondre", "c'est de sa faute si elle a pas repondu"],
@@ -257,7 +281,7 @@ const CHECKPOINTS = {
       { label: "isolement géographique direct", terms: ["isolement geographique", "coupe de son entourage", "eloigne de sa famille", "eloigne de ses amis", "deracine", "coupe de tout", "loin de tout"] },
       { label: "décision unilatérale / fait accompli", terms: ["decide sans elle", "fait accompli", "decision unilaterale", "deja tout decide", "sans lui demander son avis", "impose le demenagement", "sans la consulter"] },
       { label: "romantisation de l'isolement", terms: ["romantise l'isolement", "enrobe l'isolement", "juste nous deux", "juste eux deux", "presente ca comme un reve"] },
-      { label: "déménagement imposé", terms: ["demenagement", "demenage", "demenager"] }
+      { label: "déménagement imposé", terms: ["demenagement impose", "elle doit tout quitter pour le suivre", "il decide seul du demenagement"] }
     ],
     misreadings: [
       { terms: ["c'est romantique", "c'est un beau projet", "c'est juste une opportunite", "c'est normal de vouloir avancer ensemble", "plein de couples demenagent comme ca"],

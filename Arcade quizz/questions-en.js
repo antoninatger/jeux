@@ -3,13 +3,13 @@ var DEFAULT_QCM = [
     q: "What is fake news?",
     options: ["False information", "True information", "A proven fact", "A personal opinion"],
     answer: 0,
-    expl: "Fake news, it is A information false!"
+    expl: "Fake news is information that is false."
   },
   {
     q: "How can you check information?",
     options: ["Check the source", "Share it immediately", "Trust social media", "Believe it if it seems nice"],
     answer: 0,
-    expl: "it must always check The source before de share."
+    expl: "Always check the source before sharing."
   },
   {
     q: "What is a FACT?",
@@ -25,68 +25,68 @@ var DEFAULT_QCM = [
   },
   {
     q: "What are pareidolias?",
-    options: ["Some illusions creees by The brain", "Some facts scientists prouves", "Some vrais visages caches", "A type de Fake News verified"],
+    options: ["Illusions created by the brain", "Proven scientific facts", "Real hidden faces", "A type of verified fake news"],
     answer: 0,
-    expl: "The pareidolies are Some illusions creees by our brain."
+    expl: "Pareidolias are illusions created by our brain."
   },
   {
     q: "What is the INTUITIVE system?",
     options: ["A fast thinking system that can make mistakes", "Slow and very rational", "Always reliable", "Uses a lot of energy"],
     answer: 0,
-    expl: "The systeme intuitif is fast mais can nous induire en error."
+    expl: "The intuitive system is fast, but it can lead us into error."
   },
   {
     q: "What is the ANALYTICAL system?",
     options: ["A slow but more rational system", "Works very quickly", "Often makes mistakes", "Uses little energy"],
     answer: 0,
-    expl: "The systeme analytique is slow mais plus reliable et rationnel."
+    expl: "The analytical system is slow, but more reliable and more rational."
   },
   {
     q: "What is a COGNITIVE BIAS?",
     options: ["A distortion in how information is processed", "True information", "A scientific fact", "A checking method"],
     answer: 0,
-    expl: "A bias cognitive is A distorsion in The facon dont on traite the information."
+    expl: "A cognitive bias is a distortion in the way we process information."
   },
   {
     q: "Example of a FACT?",
-    options: ["Apples are fruit", "The rap is meilleur that The rock", "The gâteaux are delicieux", "It is mon sportif prefere"],
+    options: ["Apples are fruit", "Rap is better than rock", "Cakes are delicious", "He is my favourite athlete"],
     answer: 0,
-    expl: "\"Apples are fruit\" is A fact verifiable et universel."
+    expl: "\"Apples are fruit\" is a verifiable, universal fact."
   },
   {
     q: "What should you do when faced with online information?",
     options: ["Check the context", "Share it without checking", "Trust the likes", "Believe it if it is spectacular"],
     answer: 0,
-    expl: "it must always check The context before de believe ou share."
+    expl: "Always check the context before believing or sharing."
   },
   {
     q: "What is confirmation bias?",
     options: ["Believing information that confirms our ideas", "Checking all information", "Accepting being wrong", "Looking for contrary evidence"],
     answer: 0,
-    expl: "confirmation bias nous pousse to believe ce who conforte our opinions."
+    expl: "Confirmation bias pushes us to believe whatever supports our existing opinions."
   },
   {
     q: "If information seems too good to be true…",
     options: ["It is probably false", "It must be true", "It should be shared quickly", "It is always reliable"],
     answer: 0,
-    expl: "Si it is trop beau for etre true, it must check!"
+    expl: "If it seems too good to be true, check it!"
   },
   {
     q: "What does a cow drink?",
-    options: ["De the eau", "of the lait", "of the jus", "of the cafe"],
+    options: ["Water", "Milk", "Juice", "Coffee"],
     answer: 0,
-    expl: "A vache boit de the eau, it is it who produit The lait!"
+    expl: "A cow drinks water — it is the cow that produces the milk!"
   },
   {
     q: "The Evening Star is…",
-    options: ["A planete (Venus)", "A etoile", "The Soleil", "Mars"],
+    options: ["A planet (Venus)", "A star", "The Sun", "Mars"],
     answer: 0,
-    expl: "The etoile of the Berger is en reality The planete Venus!"
+    expl: "The Evening Star is in fact the planet Venus!"
   },
   {
     q: "What attitude should you adopt toward fake news?",
-    options: ["Être modise et accepter de se tromper", "always do confiance to its instinct", "share without reflechir", "Ne never douter de soi"],
+    options: ["Be humble and accept being wrong", "Always trust your instinct", "Share without thinking", "Never doubt yourself"],
     answer: 0,
-    expl: "The humilite et the esprit critique are our meilleurs allies."
+    expl: "Humility and critical thinking are our best allies."
   },
 ];

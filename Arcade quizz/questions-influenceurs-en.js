@@ -1,6 +1,6 @@
 // Influencers — Fake News, influencers and critical thinking
 // Source: slides of "formation-fake-news-influenceurs"
-// 24 questions
+// 20 questions
 
 var QUESTIONS_INFLUENCEURS = [
 
@@ -27,18 +27,6 @@ var QUESTIONS_INFLUENCEURS = [
     ],
     answer: 2,
     expl: "Both examples are true and coexist. ZEvent 2024 passed 10 million euros in donations; France's consumer watchdog fined a trading influencer for misleading commercial practice. It is a job, not a moral category."
-  },
-  {
-    cat: "💅 Who influencers are",
-    q: "In the session, the \"easy money\" profile refers to:",
-    options: [
-      "Creators who live off community donations",
-      "Trading, crypto and NFT accounts promising quick riches",
-      "Influencers who disclose their earnings",
-      "The brands that pay their partners best"
-    ],
-    answer: 1,
-    expl: "Three profiles are distinguished: entertainment, celebrity built elsewhere, and easy money. The last one concentrates most of the scams."
   },
   {
     cat: "💅 Who influencers are",
@@ -89,13 +77,6 @@ var QUESTIONS_INFLUENCEURS = [
     answer: 0,
     expl: "\"From nothing to everything\" is remembered and passed on, where an accurate figure is forgotten. The useful question is not \"is this a good story?\" but \"what does it prove?\"."
   },
-  {
-    cat: "🤝 Why we believe them",
-    q: "Suit, luxury car, watch: in the session this is called:",
-    options: ["Pathos", "Logos", "Ethos: building credibility through image", "Storytelling"],
-    answer: 2,
-    expl: "The image of success stands in for proof, without any competence being demonstrated. A proof that proves nothing, and works very well."
-  },
 
   {
     cat: "🧠 Our biases",
@@ -138,7 +119,7 @@ var QUESTIONS_INFLUENCEURS = [
       "The victim's social isolation"
     ],
     answer: 2,
-    expl: "And the most counter-intuitive point of the session: whoever is convinced they cannot be fooled is a prime target, precisely because they are not paying attention."
+    expl: "And this is the most counter-intuitive point: whoever is convinced they cannot be fooled is a prime target, precisely because they are not paying attention."
   },
   {
     cat: "🧠 Our biases",
@@ -223,18 +204,6 @@ var QUESTIONS_INFLUENCEURS = [
 
   {
     cat: "🔍 Staying alert",
-    q: "According to the session's conclusion, the first question to ask is:",
-    options: [
-      "Is this person sincere?",
-      "How many followers do they have?",
-      "What is the interest of the person speaking: financial, symbolic or reputational?",
-      "Is this information reported elsewhere?"
-    ],
-    answer: 2,
-    expl: "It accuses no one: everyone has interests, including when telling the truth. Spotting an interest does not prove a claim false, it shows where to look more closely."
-  },
-  {
-    cat: "🔍 Staying alert",
     q: "A \"reputational\" interest is:",
     options: [
       "An undisclosed paid partnership",
@@ -244,18 +213,6 @@ var QUESTIONS_INFLUENCEURS = [
     ],
     answer: 1,
     expl: "Often stronger than the financial interest, and far more discreet: it leaves no accounting trace and nothing to declare."
-  },
-  {
-    cat: "🔍 Staying alert",
-    q: "\"Influencers are not your friends.\" What does this mean?",
-    options: [
-      "That you should not follow them",
-      "That they are dishonest",
-      "That they can be very likeable and still be people paid to sell you a dream life",
-      "That they should always be distrusted"
-    ],
-    answer: 2,
-    expl: "The session insists: you can enjoy their content. The point is not to cut yourself off, it is not to mistake a one-way relationship for a friendship."
   },
   {
     cat: "🔍 Staying alert",

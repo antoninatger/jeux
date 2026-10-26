@@ -1,3 +1,24 @@
+/* Jetons du socle (chantier 05) : la palette du jeu, exprimée dans les rôles
+   que collection.css attend. --txt-secondaire est le rôle contraint : #8a8a8a
+   donne 4,6:1 sur le fond des panneaux (#16213e) et 4,9:1 sur --bg, contre
+   2,8:1 pour l'ancien #666 relevé au §8.4 du brief.
+
+   Le jeton avait été créé mais neuf déclarations gardaient une couleur en
+   dur : trois #666 (2,8:1) et cinq #888 (4,48:1, sous le seuil). Elles
+   passent toutes par le rôle, ce qui rend la correction suivante gratuite. */
+:root {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --bordure: #0f3460;
+  --txt: #e0e0e0;
+  --txt-secondaire: #8a8a8a;
+  --acc: #4a90d9;
+  --acc-txt: #0a1020;
+  --focus: #e2b96f;
+  --font-texte: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --font-titre: var(--font-texte);
+}
+
 /* ===== RESET & BASE ===== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -94,10 +115,16 @@ main {
 }
 
 /* Coordonnées */
+/* Les 32 reperes a-h / 1-8 etaient a 11,2 px. Choix explicite : on les monte
+   au plancher de 12,8 px SANS reduire les cases, parce que la mesure montre
+   que la place existe deja — .coords-h fait 448 px pour 8 reperes, soit 56 px
+   chacun (352 px / 44 px sous 520 px), et la gouttiere verticale fait 18 px
+   pour un chiffre qui en demande 8. Aucune exception a declarer dans
+   collection.css : la densite invoquee n est pas averee ici. */
 .coords {
   display: flex;
-  color: #888;
-  font-size: 0.7rem;
+  color: var(--txt-secondaire);
+  font-size: var(--fs-100);
   font-weight: 600;
   user-select: none;
 }
@@ -149,6 +176,20 @@ main {
 
 .square.light { background: #f0d9b5; }
 .square.dark  { background: #b58863; }
+
+/* 2.2bis Accès clavier (chantier 02, bloquant « le mode Exercice exige la souris »)
+   Les rangées portent le sens ARIA (role="row") sans toucher au dessin :
+   `display: contents` laisse les 64 cases enfants directs de la grille. */
+.board-rank { display: contents; }
+
+/* Les cases se touchent : l'anneau de focus du socle, posé à +2 px, mordrait sur
+   les voisines. On le rentre à l'intérieur de la case — même couleur, même
+   épaisseur, aucune exception au socle ailleurs. */
+#board .square:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: 0;
+}
 
 /* 11.1 Hover sur les cases (mode exercice uniquement) */
 #board.interactive-mode .square:hover {
@@ -314,9 +355,9 @@ main {
 
 /* En-tête cliquable de catégorie */
 .opening-category h4 {
-  font-size: 0.75rem;
+  font-size: var(--fs-100);
   text-transform: uppercase;
-  color: #888;
+  color: var(--txt-secondaire);
   letter-spacing: 0.06em;
   cursor: pointer;
   padding: 0.45rem 0.2rem;
@@ -332,7 +373,7 @@ main {
 /* Flèche accordéon */
 .opening-category h4::after {
   content: '▸';
-  font-size: 0.65rem;
+  font-size: var(--fs-100);
   color: #555;
   transition: transform 0.2s ease;
 }
@@ -410,8 +451,8 @@ main {
 }
 
 #cours-progress {
-  font-size: 0.78rem;
-  color: #888;
+  font-size: var(--fs-100);
+  color: var(--txt-secondaire);
   margin-bottom: 0.35rem;
 }
 
@@ -462,7 +503,7 @@ main {
 
 #exo-submode legend {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--txt-secondaire);
   padding: 0 0.4rem;
 }
 
@@ -504,8 +545,8 @@ main {
 #exo-progress {
   display: flex;
   gap: 1rem;
-  font-size: 0.78rem;
-  color: #888;
+  font-size: var(--fs-100);
+  color: var(--txt-secondaire);
   margin-bottom: 0.4rem;
 }
 
@@ -544,7 +585,7 @@ main {
   padding: 0.3rem 0.8rem;
   border: 1px solid #0f3460;
   font-size: 0.8rem;
-  color: #666;
+  color: var(--txt-secondaire);
   text-align: center;
   flex-shrink: 0;
 }
@@ -559,9 +600,9 @@ main {
 }
 
 #moves-history h4 {
-  font-size: 0.72rem;
+  font-size: var(--fs-100);
   text-transform: uppercase;
-  color: #666;
+  color: var(--txt-secondaire);
   letter-spacing: 0.05em;
   margin-bottom: 0.3rem;
 }
@@ -587,7 +628,7 @@ main {
 }
 
 .move-pair .move-num {
-  color: #666;
+  color: var(--txt-secondaire);
 }
 
 .move-pair .move-san {
@@ -688,5 +729,6 @@ header h1 { font-family: 'Nunito', sans-serif; font-weight: 800; }
 .cred-atger a:hover { text-decoration:underline; }
 .back-hub { position:fixed; top:12px; left:12px; z-index:9999; display:inline-flex; align-items:center; gap:5px; background:rgba(15,20,30,.72); border:1px solid rgba(255,255,255,.18); color:#cdd8e6; text-decoration:none; font-size:.8rem; font-weight:700; padding:7px 14px; border-radius:50px; opacity:.9; transition:opacity .2s, transform .2s; backdrop-filter:blur(4px); font-family:'Nunito',sans-serif; }
 .back-hub:hover { opacity:1; transform:translateX(-2px); }
-:where(button,a,[tabindex],input,select,textarea):focus-visible { outline:3px solid #e2b96f; outline-offset:2px; border-radius:6px; }
-@media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; } }
+/* Focus et prefers-reduced-motion viennent du socle (collection.css). La
+   copie locale ecrasait la couleur de focus par un #e2b96f en dur : on la
+   retire et on porte la teinte du jeu dans le jeton prevu pour ca. */

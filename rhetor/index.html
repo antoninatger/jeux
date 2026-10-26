@@ -5,17 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rhetor — l'arsenal du discours</title>
 <meta name="description" content="Catalogue interactif des outils rhétoriques : figures de style, sophismes et lexique de l'argumentation, avec exemples, QCM et sources vérifiées.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <style>
   :root{
+    /* Identité Rhetor sur le socle (chantier 05) : le socle impose la
+       structure, l'échelle typographique et le contraste, ces jetons portent
+       la direction artistique — parchemin, sérif à empattements francs, grenat
+       et or. */
     --bg:#F4EFE6;
-    --bg-deep:#1F1B16;
+    --txt:#211C15;
+    --txt-secondaire:#6B6252;   /* 5,2:1 sur --bg — mesuré */
+    --acc:#8C2F39;
+    --acc-txt:#FFFFFF;
+    --bordure:#DAD0BC;
+    /* Le jaune de focus du socle est pensé pour les fonds sombres de la
+       collection ; sur ce parchemin il ne contraste pas. Le rôle est
+       surchargé, la règle du socle reste la seule. */
+    --focus:#8C2F39;
+    --font-texte:'Source Serif 4',serif;
+    --font-titre:'Fraunces',serif;
+
+    /* Noms historiques de la page : conservés en alias des rôles ci-dessus
+       plutôt que réécrits partout — la feuille en compte une centaine
+       d'usages, et un renommage rendrait la revue impossible. */
     --surface:#FFFFFF;
-    --border:#DAD0BC;
-    --ink:#211C15;
-    --ink-dim:#6B6252;
-    --accent:#8C2F39;
+    --border:var(--bordure);
+    --ink:var(--txt);
+    --ink-dim:var(--txt-secondaire);
+    --accent:var(--acc);
+
+    --bg-deep:#1F1B16;
     --accent-soft:#F1DCDD;
     --gold:#C9932E;
     --gold-soft:#F7EAD2;
@@ -36,25 +56,33 @@
   .wrap{max-width:1080px;margin:0 auto;padding:20px 24px 100px;}
   a{color:inherit;}
 
-  /* ---------- collection: retour hub + a11y ---------- */
-  .back-hub{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:5px;background:rgba(31,27,22,.85);border:1px solid rgba(255,255,255,.15);color:#F4EFE6;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:7px 14px;border-radius:50px;opacity:.9;transition:opacity .2s,transform .2s;backdrop-filter:blur(4px);}
-  .back-hub:hover{opacity:1;transform:translateX(-2px);}
-  :where(button,a,[tabindex],input,select,textarea):focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;}
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important;}}
+  /* ---------- collection: en-tête du socle ----------
+     Ni pastille de retour, ni bouton FR/EN, ni bloc de focus, ni
+     prefers-reduced-motion ici : collection.css et collection.js les
+     portent une seule fois pour toute la collection. Ce qui reste, c'est
+     l'habillage de la marque dans l'emplacement « extra » de l'en-tête. */
+  .col-entete__extra > .brand{
+    font-family:var(--font-titre);font-weight:600;font-size:var(--fs-300);
+    letter-spacing:-.01em;color:var(--txt);padding:0 var(--sp-3);
+  }
+  .col-entete__extra > .brand:hover{color:var(--acc);}
 
   /* ---------- topbar ---------- */
-  .topbar{max-width:1080px;margin:0 auto;padding:54px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .topbar{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
   .brand{font-family:'Fraunces',serif;font-weight:600;font-size:22px;letter-spacing:-.01em;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;}
   .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;}
   .tabs{display:flex;gap:4px;flex-wrap:wrap;}
   .tab{
     font-family:'Fraunces',serif;font-weight:600;
-    font-size:13.5px;background:none;border:1.5px solid transparent;color:var(--ink-dim);
+    font-size:var(--fs-200);background:none;border:1.5px solid transparent;color:var(--ink-dim);
     padding:9px 15px;border-radius:20px;cursor:pointer;transition:all .15s ease;text-decoration:none;
+    /* 44 px de haut : la cible tactile que le socle impose partout
+       ailleurs. Les onglets en faisaient 38. */
+    min-height:44px;display:inline-flex;align-items:center;
   }
   .tab:hover{border-color:var(--border);}
   .tab.active{background:var(--accent);color:#fff;}
-  .rand-btn{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;background:var(--ink);color:#fff;border:none;padding:9px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;}
+  .rand-btn{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;background:var(--ink);color:#fff;border:none;padding:9px 16px;border-radius:20px;cursor:pointer;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;}
   .rand-btn:hover{background:var(--accent);}
 
   /* ---------- hero / demo ---------- */
@@ -64,7 +92,7 @@
     display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;
   }
   .eyebrow{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.16em;text-transform:uppercase;
     color:var(--gold);margin:0 0 14px;
   }
   .hero h1{
@@ -81,14 +109,14 @@
     transition:all .15s ease;line-height:1.5;
   }
   .duel-opt:hover{border-color:var(--gold);}
-  .duel-opt:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
-  .duel-opt.picked{background:var(--gold);color:#1F1B16;border-color:var(--gold);font-style:normal;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;}
-  .duel-result{font-family:'JetBrains Mono',monospace;font-size:12px;color:#C9C0B2;line-height:1.6;min-height:0;margin:2px 0 0;}
+  .duel-opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  .duel-opt.picked{background:var(--gold);color:#1F1B16;border-color:var(--gold);font-style:normal;font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);font-weight:600;}
+  .duel-result{font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:#C9C0B2;line-height:1.6;min-height:0;margin:2px 0 0;}
   .duel-result b{color:var(--gold);}
 
   /* ---------- home sections ---------- */
   .section-lab{
-    font-family:'Fraunces',serif;font-weight:600;font-size:13px;letter-spacing:.02em;
+    font-family:'Fraunces',serif;font-weight:600;font-size:var(--fs-200);letter-spacing:.02em;
     color:var(--ink);margin:0 0 14px;display:flex;align-items:center;gap:10px;
   }
   .section-lab::after{content:'';flex:1;height:1.5px;background:var(--border);}
@@ -99,12 +127,20 @@
   .btn-ghost{font-family:'Fraunces',serif;font-weight:600;font-size:14.5px;background:none;color:var(--ink);border:1.5px solid var(--border);padding:11px 20px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;}
   .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
 
-  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
-  .catcard{border-radius:10px;padding:22px 20px;color:#fff;text-decoration:none;display:block;transition:transform .15s ease;}
-  .catcard:hover{transform:translateY(-3px);}
-  .catcard h3{font-family:'Fraunces',serif;font-size:18px;margin:0 0 6px;}
-  .catcard p{font-size:12.5px;opacity:.92;line-height:1.5;margin:0 0 10px;}
-  .catcard .count{font-family:'JetBrains Mono',monospace;font-size:10.5px;opacity:.88;text-transform:uppercase;letter-spacing:.05em;}
+  /* ---------- cartes : grille du socle ----------
+     Les deux grilles de la page (catégories, catalogue) passent sur
+     .col-cartes / .col-carte, le composant de l'étape 3. Ce qui restait
+     maison — .cat-grid, .catcard, .grid, .card — dupliquait la grille,
+     le survol et la cible cliquable. Ne reste ici que ce qui porte
+     l'identité : la catégorie en pleine couleur, la fiche en carte blanche
+     à bandeau. Les deux variantes gardent leurs classes de couleur
+     (.c-figures…), qui l'emportent sur --surface par ordre de cascade. */
+  .col-carte--cat{
+    border:0;border-radius:10px;padding:22px 20px;color:#fff;gap:0;
+  }
+  .col-carte--cat .col-carte__titre{font-family:'Fraunces',serif;font-weight:600;font-size:18px;margin:0 0 6px;}
+  .col-carte--cat .col-carte__desc{font-size:var(--fs-200);color:inherit;opacity:.92;line-height:1.5;margin:0 0 10px;}
+  .col-carte--cat .count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);opacity:.88;text-transform:uppercase;letter-spacing:.05em;}
 
   /* ---------- tabs / views ---------- */
   section.view{display:none;}
@@ -113,46 +149,49 @@
   /* ---------- catalogue / grid ---------- */
   .searchbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
   .searchbar input[type="search"]{flex:1;min-width:200px;padding:11px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'Source Serif 4',serif;font-size:14.5px;background:#fff;color:var(--ink);}
-  .searchbar input[type="search"]:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
-  .searchbar select{padding:11px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;background:#fff;color:var(--ink);cursor:pointer;}
-  .result-count{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
+  .searchbar select{padding:11px 14px;border:1.5px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);background:#fff;color:var(--ink);cursor:pointer;}
+  .result-count{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px;}
-  .card{
-    position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
-    padding:0;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
-    text-decoration:none;color:var(--ink);display:block;
+  /* Le catalogue tient des cartes plus larges que les catégories : la seule
+     différence est la borne de la grille, déclarée en modificateur. */
+  .col-cartes--catalogue{grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px;}
+  .col-carte--fiche{
+    position:relative;border-width:1.5px;border-left-width:1.5px;border-color:var(--border);border-radius:8px;
+    padding:0;gap:0;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;
   }
-  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px -12px rgba(31,27,22,.25);}
-  .card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .col-carte--fiche:hover{border-color:var(--border);box-shadow:0 10px 24px -12px rgba(31,27,22,.25);}
   .swatch-top{height:54px;}
   .card-body{padding:18px 18px 20px;}
-  .card h3{font-family:'Fraunces',serif;font-weight:600;font-size:18.5px;margin:0 0 8px;}
-  .card p{font-size:14px;color:var(--ink-dim);line-height:1.5;margin:0 0 16px;font-style:italic;}
-  .card-foot{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
-  .badge-lu{position:absolute;top:10px;right:10px;background:var(--gold);color:#1F1B16;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.03em;}
+  .col-carte--fiche .col-carte__titre{font-family:'Fraunces',serif;font-weight:600;font-size:18.5px;margin:0 0 8px;}
+  .col-carte--fiche .col-carte__desc{font-size:14px;color:var(--ink-dim);line-height:1.5;margin:0 0 16px;font-style:italic;}
+  /* La catégorie et la difficulté passent de 10,5 à 12,8 px : « FIGURES DE
+     STYLE » en capitales monospace ne tient plus sur une ligne avec la
+     difficulté à côté. Le pied se replie plutôt que d'être rogné par
+     l'overflow:hidden de la carte. */
+  .card-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--sp-1) var(--sp-2);font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;}
+  .badge-lu{position:absolute;top:10px;right:10px;background:var(--gold);color:#1F1B16;font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.03em;}
 
   .c-figures{background:#C9932E;} .c-sophismes{background:#A6303D;} .c-lexique{background:#2F6F76;}
 
   .empty{text-align:center;padding:50px 20px;color:var(--ink-dim);font-size:14.5px;}
 
   /* ---------- fiche detail ---------- */
-  .fiche-back{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);text-decoration:none;margin-bottom:18px;font-weight:600;}
+  .fiche-back{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:var(--ink-dim);text-decoration:none;margin-bottom:18px;font-weight:600;}
   .fiche-back:hover{color:var(--accent);}
   .fiche{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
   .fiche-band{height:6px;}
   .fiche-inner{padding:40px clamp(20px,4vw,52px);}
   .fiche-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
-  .fiche-cat{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;text-decoration:none;display:inline-block;}
+  .fiche-cat{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;text-decoration:none;display:inline-block;}
   .fiche h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(26px,4vw,36px);margin:0 0 4px;}
   .fiche .eng{font-style:italic;color:var(--ink-dim);font-size:14px;margin:0;}
   .diff-badge{
-    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.05em;text-transform:uppercase;
     background:var(--accent-soft);color:var(--accent);padding:5px 12px;border-radius:20px;white-space:nowrap;
   }
 
   .label{
-    font-family:'Fraunces',serif;font-weight:600;font-size:13px;letter-spacing:.02em;
+    font-family:'Fraunces',serif;font-weight:600;font-size:var(--fs-200);letter-spacing:.02em;
     color:var(--ink);margin:0 0 12px;display:flex;align-items:center;gap:10px;
   }
   .label::after{content:'';flex:1;height:1.5px;background:var(--border);}
@@ -174,7 +213,7 @@
     transition:border-color .15s ease;width:100%;
   }
   .choice:hover:not(:disabled){border-color:var(--accent);}
-  .choice:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .choice:disabled{cursor:default;}
   .choice.correct{border-color:var(--good);background:var(--good-soft);}
   .choice.wrong{border-color:var(--wrong);background:var(--wrong-soft);}
   .explain{font-size:13.5px;color:var(--ink-dim);margin-top:14px;line-height:1.55;display:none;}
@@ -189,31 +228,36 @@
   .scan-ring.wrong{border-color:var(--wrong);color:var(--wrong);}
   .scan-ring.show{transform:scale(1);opacity:1;}
 
-  .qcm-score{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);margin:0 0 34px;}
+  .qcm-score{font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:var(--ink-dim);margin:0 0 34px;}
   .qcm-score b{color:var(--accent);}
 
   .sources{display:grid;gap:14px;margin-bottom:34px;}
   .source{font-size:13.5px;color:var(--ink-dim);line-height:1.55;padding-left:16px;border-left:2px solid var(--accent);}
   .source b{color:var(--ink);font-weight:600;font-family:'Fraunces',serif;}
-  .source .meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);display:block;margin-bottom:3px;}
+  .source .meta{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--accent);display:block;margin-bottom:3px;}
   .source a{color:var(--accent);}
 
   .related{display:flex;gap:8px;flex-wrap:wrap;}
-  .related a{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--accent-soft);color:var(--accent);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;transition:background .15s,color .15s;}
+  .related a{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);background:var(--accent-soft);color:var(--accent);padding:7px 13px;border-radius:20px;text-decoration:none;font-weight:600;transition:background .15s,color .15s;}
   .related a:hover{background:var(--accent);color:#fff;}
 
   /* ---------- identification libre ---------- */
   .id-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;max-width:640px;overflow:hidden;}
   .id-band{height:6px;background:var(--gold);}
   .id-inner{padding:38px clamp(20px,4vw,50px);}
-  .id-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .id-eyebrow{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .id-situation{font-size:16.5px;line-height:1.75;margin:0 0 26px;}
-  .id-row{display:flex;gap:10px;margin-bottom:6px;}
-  .id-input{flex:1;background:#FBF8F2;border:1.5px solid var(--border);color:var(--ink);padding:12px 14px;border-radius:6px;font-size:14.5px;font-family:'Source Serif 4',serif;}
-  .id-input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  /* Un <input> a une largeur intrinseque (≈ 20 caracteres) qui l'empeche de
+     se comprimer : sans `min-width:0` il poussait le bouton « Valider » hors
+     du cadre sur un ecran de 320 px. */
+  .id-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+  .id-input{flex:1;min-width:0;background:#FBF8F2;border:1.5px solid var(--border);color:var(--ink);padding:12px 14px;border-radius:6px;font-size:14.5px;font-family:'Source Serif 4',serif;}
   .id-btn{background:var(--accent);color:#fff;border:none;font-weight:600;padding:0 22px;border-radius:6px;cursor:pointer;font-size:14px;font-family:'Fraunces',serif;}
   .id-btn:hover{background:#701F28;}
-  .id-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  /* Seules surcharges de focus conservees : --focus vaut la couleur d'accent,
+     or ce bouton EST en couleur d'accent (et .duel-opt est sur le hero
+     sombre) — l'anneau du socle y disparaitrait. */
+  .id-btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
   .id-feedback{font-size:13.5px;line-height:1.55;margin-top:16px;padding:14px 16px;border-radius:6px;display:none;font-family:'Source Serif 4',serif;}
   .id-feedback.hint{display:block;background:var(--accent-soft);border:1px solid var(--accent);}
   .id-feedback.correct{display:block;background:var(--good-soft);border:1px solid var(--good);}
@@ -222,9 +266,9 @@
   .id-next{margin-top:18px;}
 
   /* ---------- quiz global ---------- */
-  .quiz-progress{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
+  .quiz-progress{font-family:'JetBrains Mono',monospace;font-size:var(--fs-200);color:var(--ink-dim);margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em;}
   .quiz-progress b{color:var(--accent);}
-  .quiz-origin{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);margin-top:10px;}
+  .quiz-origin{font-family:'JetBrains Mono',monospace;font-size:var(--fs-100);color:var(--ink-dim);margin-top:10px;}
   .quiz-end{text-align:center;padding:50px 20px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;}
   .quiz-end .score{font-family:'Fraunces',serif;font-size:52px;font-weight:700;color:var(--accent);margin:6px 0 10px;}
   .quiz-end p{color:var(--ink-dim);font-size:14.5px;max-width:420px;margin:0 auto 22px;line-height:1.55;}
@@ -240,16 +284,19 @@
   @media (max-width:640px){
     .hero{grid-template-columns:1fr;}
   }
-  @media (prefers-reduced-motion: reduce){
-    .card, .scan-ring, .catcard{transition:none;}
-  }
 </style>
 </head>
-<body>
-<a class="back-hub" href="../index.html" data-i18n="back">← Retour aux jeux</a>
+<!-- Le titre de l'en-tête est déclaré, pas déduit : l'unique <h1> de la page
+     est celui du hero, écrit par app.js dans #app et propre à la vue
+     d'accueil. Le socle l'aurait pris pour titre de page sur « / » et rien du
+     tout sur les autres routes. -->
+<body data-col-retour="../index.html" data-col-titre-cle="titreEntete">
 
 <div class="topbar">
-  <a class="brand" href="#/"><span class="dot"></span>Rhetor</a>
+  <!-- L'en-tête du socle affiche déjà le nom du catalogue : la pastille
+     ne faisait que le répéter. Elle garde son rôle, qui est le retour
+     à l'accueil du catalogue. -->
+  <a class="brand" href="#/" data-col-entete-extra><span class="dot"></span><span data-i18n="accueil">Accueil</span></a>
   <nav class="tabs" id="mainnav" data-i18n-aria-label="nav" aria-label="Navigation principale">
     <a class="tab" href="#/outils" data-i18n="tabExplore">Explorer</a>
     <a class="tab" href="#/categories" data-i18n="tabCategories">Catégories</a>
@@ -264,29 +311,257 @@
 
 <footer>
   <p><span data-i18n="by">par</span> <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
-  <p class="mono" data-i18n="footerTag">Rhetor — 10 outils recensés à ce jour, sources vérifiées une à une.</p>
+  <p class="mono" data-i18n="footerTag">Rhetor — {n} outils recensés à ce jour, sources vérifiées une à une.</p>
 </footer>
 
 <script src="../i18n.js"></script>
 <script>
 I18N.register({
   fr: {
-    back: "← Retour aux jeux", nav: "Navigation principale",
+    titreEntete: "Outils rhétoriques", nav: "Navigation principale", accueil: "Accueil",
     tabExplore: "Explorer", tabCategories: "Catégories", tabQuiz: "Quiz",
     tabIdentification: "Repère l'outil", tabAbout: "À propos",
     randomBtn: "🎲 Outil aléatoire", by: "par",
-    footerTag: "Rhetor — 10 outils recensés à ce jour, sources vérifiées une à une."
+    footerTag: "Rhetor — {n} outils recensés à ce jour, sources vérifiées une à une."
   },
   en: {
-    back: "← Back to games", nav: "Main navigation",
+    titreEntete: "Rhetorical tools", nav: "Main navigation", accueil: "Home",
     tabExplore: "Explore", tabCategories: "Categories", tabQuiz: "Quiz",
     tabIdentification: "Spot the tool", tabAbout: "About",
     randomBtn: "🎲 Random tool", by: "by",
-    footerTag: "Rhetor — 10 tools catalogued so far, sources verified one by one."
+    footerTag: "Rhetor — {n} tools catalogued so far, sources verified one by one."
   }
 });
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'data-en.js' : 'data.js') + '"><\/scr' + 'ipt>');
-document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
 </script>
+<!-- Le moteur est commun aux trois catalogues (tâche E3) : Rhetor ne déclare
+     ici que ce qui lui est propre — ses routes, ses champs, sa démonstration
+     d'accueil et son vocabulaire. -->
+<script src="../catalogue.js"></script>
+<script>
+Catalogue.demarrer({
+  jeu: 'rhetor',
+  route: 'outils',
+  cleProgression: 'rhetor-vus',
+  items: OUTILS,
+  categories: CATEGORIES,
+
+  champs: {
+    resume: 'definition_courte',
+    lies: 'outils_lies',
+    pied: (o, cap) => cap(o.difficulte),
+    recherche: o => o.nom + ' ' + o.origine + ' ' + o.definition_courte,
+    nomReponse: o => o.nom.toLowerCase()
+  },
+
+  styles: {
+    dispQuiz: 'font-size:19px;font-weight:600;margin-bottom:10px;',
+    dispIntrouvable: 'font-size:18px;font-weight:600;margin-bottom:10px;'
+  },
+
+  ficheSousTitre: o => `<p class="eng">${o.origine}</p>`,
+  ficheMeta: () => '',
+  ficheCorps: (o, m) => `
+        <p class="label">${m.labelDefinition}</p>
+        <p style="font-style:italic;color:var(--ink-dim);font-size:15px;margin:0 0 14px;max-width:640px;">${o.definition_courte}</p>
+        <p class="definition">${o.definition_longue}</p>
+  `,
+
+  /* La démonstration d'accueil : deux messages qui disent la même chose, et
+     un seul qui convainc — la forme avant le fond. */
+  hero: {
+    html: m => `
+      <div class="duel" id="selfdemo">
+        <p class="duel-q">${m.duelQuestion}</p>
+        <button class="duel-opt" data-v="a">${m.duelA}</button>
+        <button class="duel-opt" data-v="b">${m.duelB}</button>
+        <p class="duel-result" id="duel-result"></p>
+      </div>`,
+    init: m => {
+      document.querySelectorAll('.duel-opt').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.duel-opt').forEach(b => b.classList.remove('picked'));
+          btn.classList.add('picked');
+          document.getElementById('duel-result').innerHTML =
+            btn.dataset.v === 'b' ? m.duelResultatB : m.duelResultatA;
+        });
+      });
+    }
+  },
+
+  apropos: {
+    fr: `
+      <p>Rhetor est un catalogue pédagogique des outils rhétoriques : figures de style, sophismes et notions fondamentales de l'argumentation, du texte fondateur d'Aristote aux travaux modernes en logique informelle.</p>
+      <h2>Méthodologie</h2>
+      <p>Chaque fiche associe une définition, des exemples concrets issus de contextes variés, un mini-QCM et un exercice d'identification libre où il faut retrouver soi-même le nom de l'outil, sans indice visuel — un niveau d'apprentissage plus exigeant que la simple reconnaissance.</p>
+      <p>Pour chaque outil, au moins une source est citée — texte classique fondateur (Aristote, Quintilien) ou ouvrage de référence moderne — vérifiée individuellement avant publication plutôt que citée de mémoire.</p>
+      <h2>Disclaimer</h2>
+      <p>Ce site est un outil de vulgarisation, pas un traité de rhétorique. Les définitions sont simplifiées pour rester accessibles ; se référer aux sources citées pour approfondir un mécanisme.</p>
+      <h2>Progression</h2>
+      <p>Les outils consultés sont mémorisés localement dans votre navigateur (badge « vu » dans la vue Explorer) — aucune donnée n'est envoyée à un serveur.</p>
+    `,
+    en: `
+      <p>Rhetor is an educational catalogue of rhetorical tools: figures of speech, fallacies and foundational concepts of argumentation, from Aristotle's founding texts to modern work in informal logic.</p>
+      <h2>Methodology</h2>
+      <p>Each entry pairs a definition with concrete examples from varied contexts, a short quiz, and a free-recall exercise where you have to come up with the tool's name yourself, with no visual clue — a deeper level of learning than simple recognition.</p>
+      <p>For every tool, at least one source is cited — a classic founding text (Aristotle, Quintilian) or a modern reference work — verified individually before publication rather than quoted from memory.</p>
+      <h2>Disclaimer</h2>
+      <p>This site is a popularisation tool, not a treatise on rhetoric. Definitions are simplified to stay accessible; refer to the cited sources to go deeper into a mechanism.</p>
+      <h2>Progress</h2>
+      <p>Tools you've viewed are remembered locally in your browser (a "seen" badge in the Explore view) — no data is ever sent to a server.</p>
+    `
+  },
+
+  mots: {
+    fr: {
+      reglesAvant: [
+        /\bsophisme\s+(de\s+l['a]|du|de\s+la|de|d)\b/g,
+        /\bargument\s+(de\s+l['a]|du|de\s+la|de|d)\b/g,
+        /\bfigure\s+(de\s+l['a]|du|de\s+la|de|d)\b/g
+      ],
+      heroEyebrow: 'Rhetor — l\'arsenal du discours',
+      heroTitre: 'Le fond ne suffit pas.<br>La forme décide.',
+      heroLead: '{n} figures, sophismes et notions de rhétorique décryptés, expliqués et testés — en commençant par une démonstration, pas une définition.',
+      duelQuestion: 'Quel message te semble le plus convaincant pour vendre ce vélo ?',
+      duelA: 'A — « Ce vélo a un cadre léger. Il a des freins fiables. Il est vendu à un prix correct. »',
+      duelB: 'B — « Un cadre qui s\'envole. Des freins qui rassurent. Un prix qui convainc. »',
+      duelResultatB: 'Les deux messages annoncent exactement les <b>trois mêmes arguments</b> (poids, freinage, prix). Si tu as choisi B — comme la majorité des gens — tu viens de céder à l\'<b>anaphore</b> et au <b>tricolon</b> : la répétition d\'une même structure en trois temps rend un message plus fluide et plus mémorable, indépendamment de son contenu réel.',
+      duelResultatA: 'Les deux messages annoncent exactement les <b>trois mêmes arguments</b> (poids, freinage, prix). Le message B, lui, répète la même structure trois fois (<b>anaphore</b> + <b>tricolon</b>) — un procédé qui convainc la majorité des gens indépendamment du contenu. Tu y as résisté : rare, mais le même procédé t\'attend ailleurs.',
+      duJour: 'Outil du jour',
+      categories: 'Catégories',
+      uniteItems: 'outils',
+      explorerTout: 'Explorer tous les outils →',
+      tenterIdentification: 'Tenter « Repère l\'outil »',
+      explorerTitre: 'Explorer les outils',
+      rechercherPlaceholder: 'Rechercher un outil (nom, origine)…',
+      rechercheAria: 'Recherche',
+      filtreCatAria: 'Filtrer par catégorie',
+      toutesCategories: 'Toutes les catégories',
+      filtreDiffAria: 'Filtrer par difficulté',
+      toutesDifficultes: 'Toutes les difficultés',
+      difficultes: [
+        { valeur: 'facile', libelle: 'Facile' },
+        { valeur: 'intermédiaire', libelle: 'Intermédiaire' },
+        { valeur: 'avancé', libelle: 'Avancé' }
+      ],
+      aucunResultat: 'Aucun outil ne correspond à ces critères.',
+      badgeVu: 'vu',
+      toutesCategoriesTitre: 'Toutes les catégories',
+      retourExploration: '← Retour à l\'exploration',
+      niveau: 'Niveau',
+      labelDefinition: 'Définition',
+      labelExemples: 'Exemples',
+      labelTesteToi: 'Teste-toi',
+      scorePrefixe: 'Score : ',
+      labelIdentifieAutrement: 'Repère-le autrement',
+      identificationLibre: 'Identification libre · sans indice visuel',
+      placeholderReponse: 'Tape le nom de l\'outil…',
+      valider: 'Valider',
+      labelSources: 'Sources',
+      labelLies: 'Outils liés',
+      reponseCorrecte: '<b>Correct.</b> Il s\'agit bien de : {nom}.',
+      reponseIndice: 'Pas encore. Un indice : <b>{indice}</b>',
+      reponseRevelee: 'La réponse était : <b>{nom}</b>.',
+      identificationTitre: 'Repère l\'outil',
+      exerciceSansIndice: 'Exercice · sans indice visuel',
+      situationSuivante: 'Situation suivante →',
+      quizGlobal: 'Quiz global',
+      quizIntroTitre: 'Pioche aléatoire dans les {n} questions du catalogue',
+      quizIntroTexte: '10 questions tirées au hasard parmi tous les outils recensés — l\'exercice le plus proche d\'un usage réel : reconnaître un procédé sans savoir à l\'avance duquel il s\'agit.',
+      quizCommencer: 'Commencer le quiz',
+      quizResultat: 'Quiz global — résultat',
+      quizSansFaute: 'Sans faute — aucun procédé ne t\'a pris en défaut sur cette pioche.',
+      quizAvecErreurs: 'Chaque erreur pointe un outil à relire : direction sa fiche pour creuser le mécanisme.',
+      rejouer: 'Rejouer',
+      explorerFiches: 'Explorer les fiches',
+      quizProgression: 'Question {i}/{n} · Score : {s}',
+      issuDeLaFiche: 'Issu de la fiche : ',
+      questionSuivante: 'Question suivante →',
+      voirResultat: 'Voir le résultat →',
+      apropos: 'À propos',
+      pageIntrouvable: 'Page introuvable',
+      introuvableTexte: 'Cet outil n\'existe pas (encore) dans le catalogue.',
+      retourExplorationCourt: 'Retour à l\'exploration'
+    },
+    en: {
+      reglesApres: [/\s+(argument|fallacy)$/],
+      heroEyebrow: 'Rhetor — the arsenal of discourse',
+      heroTitre: "Substance isn't enough.<br>Form decides.",
+      heroLead: '{n} figures of speech, fallacies and rhetorical concepts decoded, explained and tested — starting with a demonstration, not a definition.',
+      duelQuestion: 'Which message do you find more convincing for selling this bike?',
+      duelA: 'A — "This bike has a light frame. It has reliable brakes. It\'s sold at a fair price."',
+      duelB: 'B — "A frame that flies. Brakes that reassure. A price that convinces."',
+      duelResultatB: 'Both messages state exactly the <b>same three arguments</b> (weight, braking, price). If you picked B — like most people — you just gave in to <b>anaphora</b> and the <b>rule of three</b>: repeating the same structure three times makes a message smoother and more memorable, regardless of its actual content.',
+      duelResultatA: 'Both messages state exactly the <b>same three arguments</b> (weight, braking, price). Message B repeats the same structure three times (<b>anaphora</b> + <b>rule of three</b>) — a device that convinces most people regardless of content. You resisted it: rare, but the same device is waiting elsewhere.',
+      duJour: 'Tool of the day',
+      categories: 'Categories',
+      uniteItems: 'tools',
+      explorerTout: 'Explore all tools →',
+      tenterIdentification: 'Try "Spot the tool"',
+      explorerTitre: 'Explore the tools',
+      rechercherPlaceholder: 'Search a tool (name, origin)…',
+      rechercheAria: 'Search',
+      filtreCatAria: 'Filter by category',
+      toutesCategories: 'All categories',
+      filtreDiffAria: 'Filter by difficulty',
+      toutesDifficultes: 'All difficulties',
+      difficultes: [
+        { valeur: 'easy', libelle: 'Easy' },
+        { valeur: 'intermediate', libelle: 'Intermediate' },
+        { valeur: 'advanced', libelle: 'Advanced' }
+      ],
+      aucunResultat: 'No tool matches these criteria.',
+      badgeVu: 'seen',
+      toutesCategoriesTitre: 'All categories',
+      retourExploration: '← Back to exploration',
+      niveau: 'Level',
+      labelDefinition: 'Definition',
+      labelExemples: 'Examples',
+      labelTesteToi: 'Test yourself',
+      scorePrefixe: 'Score: ',
+      labelIdentifieAutrement: 'Spot it differently',
+      identificationLibre: 'Free recall · no visual clue',
+      placeholderReponse: 'Type the name of the tool…',
+      valider: 'Submit',
+      labelSources: 'Sources',
+      labelLies: 'Related tools',
+      reponseCorrecte: '<b>Correct.</b> This is indeed: {nom}.',
+      reponseIndice: 'Not quite. A hint: <b>{indice}</b>',
+      reponseRevelee: 'The answer was: <b>{nom}</b>.',
+      identificationTitre: 'Spot the tool',
+      exerciceSansIndice: 'Exercise · no visual clue',
+      situationSuivante: 'Next situation →',
+      quizGlobal: 'Global quiz',
+      quizIntroTitre: "A random draw from the catalogue's {n} questions",
+      quizIntroTexte: '10 questions drawn at random from every tool in the catalogue — the exercise closest to real life: recognising a device without knowing beforehand which one it is.',
+      quizCommencer: 'Start the quiz',
+      quizResultat: 'Global quiz — result',
+      quizSansFaute: 'Flawless — no device caught you out on this draw.',
+      quizAvecErreurs: 'Each mistake points to a tool worth re-reading: head to its fiche to dig into the mechanism.',
+      rejouer: 'Play again',
+      explorerFiches: 'Explore the fiches',
+      quizProgression: 'Question {i}/{n} · Score: {s}',
+      issuDeLaFiche: 'From the fiche: ',
+      questionSuivante: 'Next question →',
+      voirResultat: 'See the result →',
+      apropos: 'About',
+      pageIntrouvable: 'Page not found',
+      introuvableTexte: "This tool doesn't exist (yet) in the catalogue.",
+      retourExplorationCourt: 'Back to exploration'
+    }
+  }
+});
+</script>
+<script src="../collection.js"></script>
+<script>
+/* Compteur de contenu : le pied de page reflete le nombre reel d'entrees. */
+window.addEventListener('load', function () {
+  var el = document.querySelector('[data-i18n="footerTag"]');
+  if (!el) return;
+  var n = (typeof OUTILS !== 'undefined' && OUTILS.length) || 0;
+  if (n) el.textContent = el.textContent.replace('{n}', n);
+});
+</script>
+  <script src="../retours.js" defer></script>
 </body>
 </html>

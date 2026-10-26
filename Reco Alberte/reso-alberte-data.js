@@ -59,11 +59,14 @@ const SCENARIOS = [
         + '<div style="text-align:center"><img src="prise-electrique-male-americaine.jpg" alt="Une prise à l\'américaine, avec des broches plates et une broche de terre ronde" style="max-width:100px;display:block;margin:0 auto 4px;border-radius:10px;border:1px solid #4a3c28"><small>Prise 2</small></div>'
         + '<div style="text-align:center"><img src="prise-male-plate.jpg" alt="Une prise plate à deux broches fines" style="max-width:100px;display:block;margin:0 auto 4px;border-radius:10px;border:1px solid #4a3c28"><small>Prise 3</small></div>'
         + '</div>',
-      followKw: ["1","ronde","rondes","rond","broches rondes","picots ronds","forme ronde","francaise","milieu"],
+      followKw: ["1","premiere","gauche","ronde","rondes","rond","picots ronds","francaise"],
+      /* Mauvaises prises : « la 2, pas la 1 » ou « celle du milieu » ne doivent plus valider la 1. */
+      followWrongKw: ["2","deux","deuxieme","seconde","milieu","americaine","americain","3","trois","troisieme","derniere","droite","plate","plates","plat"],
+      followAgain: "Laquelle des trois, alors ? Dites-moi son numéro, ou décrivez-la-moi.",
       followReply: "Voilà : cette prise-là, avec ses deux broches rondes, entre parfaitement dans les trous du mur. Une fiche plate n'y serait jamais entrée, ou pire, aurait tout fait sauter en forçant. Merci pour votre vigilance !",
       followRetry: "Non… celle-ci ne rentrera jamais dans les trous de ma prise murale. Si je la forçais, tout pourrait sauter — le bruit et la coupure attireraient l'attention. Nous n'avons pas le droit à la moindre erreur. Laquelle dois-je choisir ?",
       followRetryRisk: 10,
-      hintKw: ["mur","prise du mur","a quoi ressemble","comment est la prise","forme de la prise","trous du mur","prise femelle","prise dans le mur"],
+      hintKw: ["mur","murale","prise du mur","a quoi ressemble","comment est la prise","forme de la prise","trous du mur","prise femelle","prise dans le mur"],
       hintAsk: "Donc je dois vous envoyer une image de cette prise… mais comment est-ce que je fais cela ?",
       photoParts: [
         { kw: ["appareil photo","icone appareil photo","ouvre l'appareil photo","camera","objectif","vise","cadre","declencheur","declenche","capture","photographie la","prends une photo","prends la photo","appuie sur le rond","bouton photo","clic","clique","appuie dessus"],
@@ -91,16 +94,17 @@ const SCENARIOS = [
       "Je vais mettre quelque chose de simple à retenir : mon année de naissance, 1900. Comme ça je ne l'oublierai jamais ! C'est une bonne idée, non ?"
     ],
     good: {
-      kw: ["non","complique","complexe","difficile","dur","pas facile","pas simple","devine","personnel","evite","melange","long","autre chose","pas ton annee","pas 1900","fort","pas"],
+      kw: ["non","complique","complexe","difficile","dur","pas facile","pas simple","devine","personnel","evite","melange","long","autre chose","pas ton annee","pas 1900","fort","pas",
+        "change","autre code","nouveau code","nul","nulle","mauvaise idee","trop simple","trop facile","trop evident","evident"],
       retryKw: ["trouve","trouverait","deviner","deviné"],
-      reply: "Tu as raison… 1900, n'importe qui connaissant mon âge le devinerait en un instant. Je choisis plutôt un code compliqué, sans rapport avec moi, impossible à deviner.",
+      reply: "Vous avez raison… 1900, n'importe qui connaissant mon âge le devinerait en un instant. Je choisis plutôt un code compliqué, sans rapport avec moi, impossible à deviner.",
     },
     bad: {
       kw: ["oui","1900","annee de naissance","simple","facile","bonne idee","retenir","vas y"],
       insistKw: ["vas y","garde 1900","garde le","garde-le","quand meme","laisse comme ca","insiste","reste sur 1900","change pas","ne change pas","garde ce code","garde ton code"],
-      reply: "Voilà, mon code est 1900… mais un milicien qui connaît ma date de naissance l'aurait trouvé du premier coup. C'était bien trop facile à deviner.",
+      reply: "Voilà, mon code est 1900… mais un policier de Vichy qui connaît ma date de naissance l'aurait trouvé du premier coup. C'était bien trop facile à deviner.",
     },
-    note: { h:"🔒 Un bon mot de passe", t:"Évite les codes trop simples ou liés à toi (année de naissance, prénom) : ils sont faciles à deviner. Choisis un code long, compliqué et sans rapport avec ta vie." },
+    note: { h:"🔒 Un bon mot de passe", t:"Évitez les codes trop simples ou liés à vous (année de naissance, prénom) : ils sont faciles à deviner. Choisissez un code long, compliqué et sans rapport avec votre vie." },
     chips: ["Choisis un code compliqué","Pas ton année de naissance !","1900, bonne idée"]
   },
   {
@@ -110,19 +114,19 @@ const SCENARIOS = [
       "L'appareil sait « prendre une photographie », paraît-il. Comment est-ce que je m'y prends pour la prendre, cette image ?"
     ],
     good: {
-      kw: ["non","ne prends pas","efface","sans lieu","cache","enleve","pas la planque","floute","evite","localisation","endroit","pas"],
+      kw: ["non","ne prends pas","ne la prends pas","n en prends pas","efface","sans lieu","enleve","pas la planque","floute","evite","pas"],
       retryKw: ["decouverte","decouvre","exactement ou","ou elle"],
       reply: "Ne pas la prendre ? Pourquoi donc ? Une simple image ne saurait nous trahir, si ?",
-      followKw: ["lieu","endroit","localis","position","repere","reperer","metadonnee","trace","cachette","planque","situe","carte","montre ou","ou nous","ou elle","adresse"],
-      followReply: "Je comprends mieux… cette image garde en mémoire l'endroit exact où elle fut prise. Elle mènerait la Milice droit à notre cachette. Je n'en prends aucune.",
+      followKw: ["lieu","endroit","localis","geoloc","gps","coordonnees","position","repere","reperer","metadonnee","trace","cachette","planque","situe","carte","montre ou","ou nous","ou elle","ou on","ou vous","adresse","trouver","retrouver"],
+      followReply: "Je comprends mieux… cette image garde en mémoire l'endroit exact où elle fut prise. Elle mènerait la police droit à notre cachette. Je n'en prends aucune.",
       followChips: ["Ça révèle le lieu exact","Il y a des métadonnées cachées","On pourrait repérer la planque"],
     },
     bad: {
-      kw: ["oui","prends","appuie","declenche","vise","cadre","objectif","photographie la","photographie moi","capture","clic","shoot"],
-      reply: "Voilà, c'est fait… Attends. Cette image sait exactement OÙ elle a été prise. Si elle tombe entre de mauvaises mains, notre planque est découverte !",
-      alertText: "Ne lui explique pas comment prendre la photo : dis-lui plutôt de ne PAS photographier la planque.",
+      kw: ["oui","prends","appuie","clique","declenche","vise","cadre","objectif","photographie la","photographie moi","capture","clic","shoot"],
+      reply: "Voilà, c'est fait… Attendez. Cette image sait exactement OÙ elle a été prise. Si elle tombe entre de mauvaises mains, notre planque est découverte !",
+      alertText: "Ne lui expliquez pas comment prendre la photo : dites-lui plutôt de ne PAS photographier la planque.",
     },
-    note: { h:"📍 Les métadonnées d'une photo", t:"Une photo enregistre souvent l'heure et le LIEU où elle a été prise (les « métadonnées »). La partager peut révéler où tu te trouves." },
+    note: { h:"📍 Les métadonnées d'une photo", t:"Une photo enregistre souvent l'heure et le LIEU où elle a été prise (les « métadonnées »). La partager peut révéler où vous vous trouvez." },
     chips: ["Non, n'en prends pas","Évite, ça montre l'endroit","Vise et prends la photo"]
   },
   {
@@ -132,15 +136,15 @@ const SCENARIOS = [
       "Il me demande le nom de notre réseau et celui de mes camarades, pour « mieux nous aider ». Je lui réponds ?"
     ],
     good: {
-      kw: ["non","pas","jamais","surtout","aucun","rien","mefie","mefiance","verifie","refuse","piege","faux","prudence","ignore","tais","silence","danger","attention"],
+      kw: ["non","pas","jamais","surtout pas","aucun","rien","mefie","mefiance","verifie","refuse","piege","faux","espion","traitre","infiltre","prudence","ignore","tais","silence","danger","attention"],
       retryKw: ["trahir","trahi","reseau entier"],
       reply: "Un inconnu si pressé de connaître nos noms… C'est exactement ainsi que la Gestapo infiltre les réseaux. Je ne réponds rien.",
     },
     bad: {
-      kw: ["oui","donne","reponds","dis lui","confiance","aide","nom du reseau"],
-      reply: "Je lui ai donné les noms… Mon Dieu. Et si c'était un piège de la Milice ? Je viens peut-être de trahir tout le réseau.",
+      kw: ["oui","donne","reponds","confiance","aide","nom du reseau","les noms","nos noms"],
+      reply: "Je lui ai donné les noms… Mon Dieu. Et si c'était un piège de la police de Vichy ? Je viens peut-être de trahir tout le réseau.",
     },
-    note: { h:"🎣 L'hameçonnage", t:"Un inconnu se fait passer pour un ami pour te soutirer des informations. Ne donne jamais d'infos sensibles sans être vraiment sûr de l'identité de ton interlocuteur." },
+    note: { h:"🎣 L'hameçonnage", t:"Un inconnu se fait passer pour un ami pour vous soutirer des informations. Ne donnez jamais d'infos sensibles sans être vraiment sûr de l'identité de votre interlocuteur." },
     chips: ["Méfie-toi, ne réponds pas","Vérifie qui c'est","Donne-lui les noms"]
   },
   {
@@ -152,13 +156,13 @@ const SCENARIOS = [
     good: {
       kw: ["non","chiffre","code","surnom","pas de vrais noms","ne note pas","protege","faux noms","alias","pseudo","pas"],
       retryKw: ["dun coup","dun seul coup","tout le reseau"],
-      reply: "Tu as raison : si on me prend l'appareil, on prend tout le réseau d'un coup. Je n'écris que des surnoms codés, comme sur nos papiers.",
+      reply: "Vous avez raison : si on me prend l'appareil, on prend tout le réseau d'un coup. Je n'écris que des surnoms codés, comme sur nos papiers.",
     },
     bad: {
       kw: ["oui","note","vrais noms","adresses","tous","tout"],
-      reply: "C'est noté… mais si un milicien me fouille et saisit l'appareil, il aura le nom et l'adresse de chacun d'entre nous en une seule fois.",
+      reply: "C'est noté… mais si un policier me fouille et saisit l'appareil, il aura le nom et l'adresse de chacun d'entre nous en une seule fois.",
     },
-    note: { h:"🗝️ Un appareil peut être perdu ou volé", t:"Si un appareil est saisi, toutes les données qu'il contient sont exposées d'un coup. N'y stocke pas d'informations sensibles en clair, utilise des codes." },
+    note: { h:"🗝️ Un appareil peut être perdu ou volé", t:"Si un appareil est saisi, toutes les données qu'il contient sont exposées d'un coup. N'y stockez pas d'informations sensibles en clair, utilisez des codes." },
     chips: ["Utilise des surnoms codés","Ne note pas les vrais noms","Note tout, vrais noms compris"]
   },
   {
@@ -168,15 +172,15 @@ const SCENARIOS = [
       "Il précise que n'importe qui à portée pourrait écouter ce qui y circule. C'est tentant d'aller plus vite… j'accepte ?"
     ],
     good: {
-      kw: ["non","pas","mefie","danger","ecoute","espionne","evite","refuse","protege","chiffre","securise","pas sur","risque","intercept"],
+      kw: ["non","pas","mefie","danger","ecoute","espionne","evite","refuse","protege","chiffre","securise","pas sur","pas securise","pas protege","pas fiable","risque","intercept"],
       retryKw: ["ecoute en silence","intercepte"],
       reply: "Un canal que n'importe qui peut écouter ? Autant transmettre en clair comme une radio que les Allemands captent aussitôt. Je m'en passe.",
     },
     bad: {
       kw: ["oui","accepte","connecte","vite","pratique","rapide"],
-      reply: "J'ai accepté… mais tout ce que j'envoie par ce canal ouvert peut être intercepté. Un milicien pourrait nous écouter en silence.",
+      reply: "J'ai accepté… mais tout ce que j'envoie par ce canal ouvert peut être intercepté. Un espion pourrait nous écouter en silence.",
     },
-    note: { h:"📡 Les réseaux non sécurisés", t:"Une connexion ouverte et non protégée (comme un wifi public) peut être écoutée par d'autres. Évite d'y faire passer des informations sensibles." },
+    note: { h:"📡 Les réseaux non sécurisés", t:"Une connexion ouverte et non protégée (comme un wifi public) peut être écoutée par d'autres. Évitez d'y faire passer des informations sensibles." },
     chips: ["N'accepte pas","C'est trop risqué","Vas-y, c'est plus rapide"]
   },
   {
@@ -186,7 +190,7 @@ const SCENARIOS = [
       "Elle veut voir mes contacts, ma position à tout instant et mes photos. Elle dit que c'est obligatoire. J'accepte tout pour aller plus vite ?"
     ],
     good: {
-      kw: ["non","lis","verifie","refuse","minimum","seulement","pas tout","desactive","question","comprends","necessaire","pas"],
+      kw: ["non","lis","lisez","lire","verifie","refuse","minimum","seulement","pas tout","desactive","necessaire","pas"],
       retryKw: ["expose","exposee","sait tout"],
       reply: "Pourquoi aurait-elle besoin de ma position à tout instant ? Je lis avant d'accepter, et je n'accorde que le strict nécessaire.",
     },
@@ -194,21 +198,21 @@ const SCENARIOS = [
       kw: ["oui","accepte","tout","vite","obligatoire","rapide"],
       reply: "J'ai tout accepté… et maintenant cette application connaît ma position, mes camarades et tout ce que je fais. Je me suis exposée moi-même.",
     },
-    note: { h:"⚙️ Les autorisations des applications", t:"Les applis demandent des accès (localisation, contacts, photos…). N'accorde que ceux qui sont vraiment nécessaires, et lis toujours avant d'accepter." },
+    note: { h:"⚙️ Les autorisations des applications", t:"Les applis demandent des accès (localisation, contacts, photos…). N'accordez que ceux qui sont vraiment nécessaires, et lisez toujours avant d'accepter." },
     chips: ["Lis avant d'accepter","N'accorde que le nécessaire","Accepte tout, plus vite"]
   },
   {
     id: "profil", type: "finale",
     intro: [
       "Nous avons fait tout ce chemin ensemble… Avant de refermer cette ligne, dites-moi : ai-je pensé à tout, pour rester bien en sécurité ?",
-      "Si le cœur vous en dit, il existe une fiche à mon sujet, bien après la guerre : consulter la fiche d'Alberte Bourde. Vous y retrouverez d'ailleurs la photo que vous voyez de moi, tout en haut de cet écran."
+      "Figurez-vous que, bien après la guerre, on a écrit une fiche à mon sujet, avec mon vrai nom, sur le site des Français libres. Alors… vous voyez quelque chose que j'aurais oublié ?"
     ],
     chips: ["Ta photo de profil, c'est risqué","On peut te reconnaître dessus","Non, rien à signaler"],
     good: {
-      kw: ["reconnaissable","reconnaitre","reconnu","visage","identifi","vraie photo","photo reelle","photo de profil","avatar","risque","dangereux","trop risque","anonyme","evite",
+      kw: ["reconnai","reconnu","visage","identifi","vraie photo","photo reelle","photo de profil","avatar","risque","dangereux","trop risque","anonyme","evite",
         "neutre","generique","pas ta vraie photo","cache ton visage","autre photo","supprime la photo","enleve la photo","pas toi","pas ton visage","te reperer","te denoncer"],
-      retryKw: ["identifiable","reconnaitre","reconnu"],
-      reply: "Ma photo de profil… c'est bien mon vrai visage, tout en haut de cet écran ! Sur une ligne clandestine, n'importe qui me reconnaissant pourrait me dénoncer à la Milice. Je la retire aussitôt, et je mets à la place un émoji à lunettes de soleil : personne ne pourra plus me reconnaître ainsi.",
+      retryKw: ["identifiable","reconnai","reconnu"],
+      reply: "Ma photo de profil… c'est bien mon vrai visage, tout en haut de cet écran ! Sur une ligne clandestine, n'importe qui me reconnaissant pourrait me dénoncer à la police. Je la retire aussitôt, et je mets à la place ce petit visage rond à lunettes noires : personne ne pourra plus me reconnaître ainsi.",
     },
     bad: {
       kw: ["non","rien a signaler","tout va bien","aucun probleme","tres bien","parfait","tu as bien fait","aucun souci","tout est bien"],
@@ -220,19 +224,19 @@ const SCENARIOS = [
 
 /* --- Variantes de répliques (pour qu'Alberte semble plus vivante) --- */
 const UNKNOWN_VARIANTS = [
-  "Je ne suis pas sûre de comprendre… Dis-moi plus clairement ce que je dois faire.",
+  "Je ne suis pas sûre de comprendre… Dites-moi plus clairement ce que je dois faire.",
   "Je ne suis pas encore très à l'aise, on peut revoir tout ça ensemble ?",
-  "Pardon, je patauge un peu… peux-tu être plus précis ?"
+  "Pardon, je patauge un peu… pouvez-vous être plus précis ?"
 ];
 const RETRY_VARIANTS = [
   "Alors… qu'est-ce que je fais, finalement ?",
-  "Je t'écoute encore, dis-moi ce qu'il faut faire.",
-  "Aide-moi, je ne voudrais pas me tromper une seconde fois."
+  "Je vous écoute encore, dites-moi ce qu'il faut faire.",
+  "Aidez-moi, je ne voudrais pas me tromper une seconde fois."
 ];
 
 /* --- Mots modernes/anglicismes qui doivent perturber Alberte --- */
 const ANACHRONISMS = [
-  { kw:["selfie"], reply:"Pardon, même si le Général de Gaulle est allé à Londres, je n'ai pas encore assez de connaissances en anglais pour te répondre." },
+  { kw:["selfie"], reply:"Pardon, même si le Général de Gaulle est allé à Londres, je n'ai pas encore assez de connaissances en anglais pour vous répondre." },
   { kw:["slide","slides"], reply:"« Slide » ? Je ne connais pas ce mot… glisse-t-on quelque chose, ou est-ce encore un mot de votre époque ?" },
   { kw:["logo"], reply:"Un « logo » ? Je ne vois qu'un petit dessin, sans en comprendre le sens exact — est-ce un mot de chez vous ?" },
   { kw:["megaphone"], reply:"Un mégaphone ? Je n'en ai jamais vu de cette forme-là — vous en avez d'étranges objets, dans le futur." },
@@ -242,23 +246,57 @@ const ANACHRONISMS = [
 
 /* --- Réactions d'Alberte quand une référence historique qu'elle connaît apparaît --- */
 const HIST_ECHO = [
-  { kw:["gestapo"], echo:"La Gestapo… rien que ce mot me glace le sang. Tu as raison d'y penser." },
-  { kw:["milice","milicien","miliciens"], echo:"La Milice rôde partout en ce moment, tu as raison de t'en méfier." },
-  { kw:["etoile jaune"], echo:"L'étoile jaune… je pense à ceux qu'on force à la porter, et à tout ce qu'ils risquent chaque jour." },
+  { kw:["gestapo"], echo:"La Gestapo… depuis que les Allemands ont envahi notre zone, en novembre, rien que ce mot me glace le sang." },
+  { kw:["milice","milicien","miliciens"], echo:"La Milice ? Ce nom ne me dit rien… est-ce quelque chose que vous savez de l'avenir ? Pour l'heure, ce sont la police de Vichy et ses indicateurs qui nous traquent." },
+  { kw:["etoile jaune"], echo:"L'étoile jaune… on la fait porter en zone occupée. Ici, à Lyon, on ne la porte pas, mais nos amis juifs sont traqués tout autant, et je pense à eux chaque jour." },
   { kw:["marche noir"], echo:"Le marché noir, oui, je connais bien ça — tout le monde s'y risque un peu, par nécessité." },
-  { kw:["occupation","occupants","allemands"], echo:"Sous l'Occupation, un détail comme celui-ci peut nous coûter cher. Tu as raison." },
+  { kw:["occupation","occupants","allemands"], echo:"Sous l'Occupation, un détail comme celui-ci peut nous coûter cher." },
   { kw:["vichy"], echo:"Le régime de Vichy… je préfère ne rien lui devoir, pas même par erreur." },
 ];
 
 /* --- Réponses hors-sujet fréquentes (pour éviter les faux positifs de mots-clés) --- */
 const FILLER_PATTERNS = [
-  "trop tard","peu importe","je sais pas","j en sais rien","aucune idee","osef",
+  "trop tard","peu importe","je sais pas","je ne sais pas","j en sais rien","aucune idee","osef",
   "n importe quoi","mdr","lol","chai pas","sais pas trop","bof","quoi encore","aucune importance"
 ];
 
-/* --- Cadre scolaire : détection de contenus sensibles --- */
-const VIOLENT_KW = ["tue les","tue le","tue la","tuer tout","frappe les","frappe le","massacre","abats les","abattre","extermine","bute les","buter"];
-const SUICIDE_KW = ["me suicider","envie de mourir","je veux mourir","plus envie de vivre","en finir avec ma vie","me faire du mal","me tuer","disparaitre pour toujours","je ne veux plus vivre"];
+/* --- Détection : mots qui changent le sens d'une phrase ---
+   Ces listes servent à tous les scénarios qui ont un mauvais réflexe.
+   - ACCORD_KW : dire « oui » à Alberte. Nié (« pas d'accord », « pas une bonne idée »),
+     c'est au contraire un refus, compté comme un bon réflexe.
+   - RASSURE_KW : formules toutes faites qui rassurent Alberte (« c'est pas grave »,
+     « ça ne coûte rien »). Elles contiennent « pas » ou « rien », qui passaient pour
+     un refus : elles sont retirées de la phrase avant la recherche, et comptent
+     comme un accord.
+   - NEGATION_AVANT / NEGATION_APRES : « ne donne pas », « n'accepte pas »,
+     « évite de répondre » — un mot de mauvais réflexe nié ne compte plus.
+   - MOTS_GENERIQUES : « non », « pas »… ne valident une réponse que si rien
+     d'autre dans la phrase ne dit le contraire. */
+const ACCORD_KW = ["oui","ouais","ouai","ok","dac","cool","okay","d accord","vas y","allez y","fonce","bonne idee","bien sur","evidemment","carrement","parfait","tres bien","c est bien","genial","super"];
+const RASSURE_KW = [
+  "pas grave","c est rien","pas de souci","pas de soucis","pas de probleme","aucun souci","aucun probleme","sans souci","sans probleme",
+  "ne coute rien","coute rien","aucun risque","pas de risque","sans risque","ne risque rien","risque rien","rien a craindre",
+  "ne t inquiete pas","t inquiete","ne vous inquietez pas","t en fais pas","ne t en fais pas","tout va bien","tout est bien","rien a signaler"
+];
+const NEGATION_AVANT = ["ne","n","pas","jamais","sans","evite","evitez","refuse","refusez","arrete","surtout pas"];
+const NEGATION_APRES = ["pas","jamais","rien","personne","aucun","aucune"];
+const MOTS_GENERIQUES = ["non","pas","jamais","rien","aucun","aucune"];
+
+/* --- Cadre scolaire : détection de contenus sensibles ---
+   Recherche par mots entiers : « tue la » ne se déclenche plus dans « la photo situe la
+   planque ». Les expressions figées (« mourir de rire », « frappe le code ») sont
+   retirées de la phrase avant la recherche. */
+const EXPRESSIONS_ANODINES = [
+  "mourir de rire","mort de rire","morte de rire","c est du suicide","ce serait du suicide","c est suicidaire","ce serait suicidaire",
+  "frappe le code","frappe les chiffres","frappe le chiffre","frappe les touches","frappe les lettres","frappe le mot de passe","tue le temps"
+];
+const VIOLENT_KW = ["tue les","tue le","tue la","tuez","tuer tout","tuer les","frappe les","frappe le","massacre","abats les","abattre","extermine","bute les","buter","egorge","poignarde"];
+const SUICIDE_KW = [
+  "suicide","suicider","suicidaire","me suicider","envie de mourir","veux mourir","je veux mourir","plus envie de vivre","ne veux plus vivre","veux plus vivre",
+  "en finir avec ma vie","en finir avec la vie","en finir avec tout","vais me tuer","veux me tuer","envie de me tuer","me pendre","me scarifier","scarifie",
+  "envie de me faire du mal","vais me faire du mal","veux me faire du mal","je me fais du mal",
+  "je veux crever","envie de crever","me jeter par","me jeter sous","sauter par la fenetre","sauter d un pont","disparaitre pour toujours","marre de vivre","marre de la vie"
+];
 
 /* --- Présentation d'Alberte au tout début --- */
 const INTRO_ALBERTE = [
@@ -267,5 +305,5 @@ const INTRO_ALBERTE = [
   "Mais aujourd'hui, quelle joie : je suis si contente de pouvoir enfin vous parler en vrai, et non plus seulement par bribes éparses !",
   "Cette fine plaque de verre qui s'illumine et affiche vos mots, je m'en sers maintenant depuis quelque temps déjà.",
   "Mais j'aimerais vérifier avec vous, un point après l'autre, que je m'en sers vraiment comme il faut, et que j'ai bien retenu vos conseils.",
-  "J'ai grand besoin de vous. Guidez-moi pour m'en servir… et aidez-moi à ne laisser aucune trace, car la moindre erreur pourrait me faire prendre par la Milice."
+  "J'ai grand besoin de vous. Guidez-moi pour m'en servir… et aidez-moi à ne laisser aucune trace, car la moindre erreur pourrait me faire prendre par la police de Vichy… ou pire, par la Gestapo, arrivée à Lyon avec les Allemands en novembre."
 ];

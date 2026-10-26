@@ -34,17 +34,20 @@ function normalize(str) {
 function evaluateAnswer(rawText, checkpoint) {
   const text = normalize(rawText);
   if (!text) return { recognized: false, targetedFeedback: null };
-  const hitClusters = checkpoint.clusters.filter(c =>
-    c.terms.some(term => text.includes(normalize(term)))
-  );
-  if (hitClusters.length > 0) {
-    return { recognized: true, matchedClusters: hitClusters.map(c => c.label) };
-  }
+  // Les contresens sont testés en premier : une réponse qui reprend le point de vue
+  // de Lucas (« Cléa est jalouse ») ne doit jamais être validée comme signal repéré,
+  // même si elle contient par ailleurs un mot-clé d'un cluster.
   const misread = (checkpoint.misreadings || []).find(m =>
     m.terms.some(term => text.includes(normalize(term)))
   );
   if (misread) {
     return { recognized: false, targetedFeedback: misread.feedback };
+  }
+  const hitClusters = checkpoint.clusters.filter(c =>
+    c.terms.some(term => text.includes(normalize(term)))
+  );
+  if (hitClusters.length > 0) {
+    return { recognized: true, matchedClusters: hitClusters.map(c => c.label) };
   }
   return { recognized: false, targetedFeedback: null };
 }
@@ -134,6 +137,21 @@ function advance() {
 }
 
 nextBtn.addEventListener('click', advance);
+
+// Espace ou un clic dans la conversation enchaînent aussi les messages : sans
+// ça, lire 135 messages impose 135 clics précis sur un petit bouton.
+function peutEnchainer() { return nextBtn.style.display !== 'none'; }
+messagesEl.addEventListener('click', () => { if (peutEnchainer()) advance(); });
+document.addEventListener('keydown', (e) => {
+  if (e.code !== 'Space' || !peutEnchainer()) return;
+  const cible = document.activeElement;
+  const balise = cible && cible.tagName;
+  // Sur un bouton/lien/champ déjà focusé, Espace a son propre effet natif :
+  // ne pas ajouter une seconde action par-dessus.
+  if (balise === 'BUTTON' || balise === 'A' || balise === 'TEXTAREA' || balise === 'INPUT') return;
+  e.preventDefault();
+  advance();
+});
 
 // =========================
 // Mode lecture libre : carte informative sans question
@@ -357,12 +375,15 @@ function showRecap() {
   recapScreen.scrollIntoView({ behavior: 'smooth' });
 }
 
-function buildResourcesBlock() {
+function buildResourcesBlock(opts) {
+  opts = opts || {};
   const block = document.createElement('div');
   block.className = 'resources-block';
-  const h = document.createElement('h3');
-  h.textContent = 'Besoin d\'en parler ?';
-  block.appendChild(h);
+  if (opts.withHeading !== false) {
+    const h = document.createElement('h3');
+    h.textContent = 'Besoin d\'en parler ?';
+    block.appendChild(h);
+  }
   const list = document.createElement('div');
   list.className = 'resources-list';
   RESOURCES.forEach(r => {
@@ -380,20 +401,20 @@ function buildResourcesBlock() {
 // Avertissement initial + lien ressources permanent
 // =========================
 
+// ColModale (collection.js) porte le piège de focus, Échap et le retour du
+// focus au lien « Besoin d'aide ? » : la modale maison (✕ sans aria-label,
+// sans Échap, sans piège de focus) n'a plus lieu d'être.
 function openResourcesModal() {
-  const modal = document.getElementById('resourcesModal');
-  const content = document.getElementById('resourcesModalContent');
-  content.innerHTML = '';
-  content.appendChild(buildResourcesBlock());
-  modal.style.display = 'flex';
+  ColModale.ouvrir({
+    titre: 'Besoin d\'en parler ?',
+    contenu: buildResourcesBlock({ withHeading: false }),
+    classe: 'ressources'
+  });
 }
 
 document.getElementById('resourcesLink').addEventListener('click', (e) => {
   e.preventDefault();
   openResourcesModal();
-});
-document.getElementById('resourcesModalClose').addEventListener('click', () => {
-  document.getElementById('resourcesModal').style.display = 'none';
 });
 
 document.getElementById('startNormalBtn').addEventListener('click', () => {
@@ -427,6 +448,13 @@ document.getElementById('skipQuestionsLink').addEventListener('click', (e) => {
 // =========================
 
 document.getElementById('exportBtn').addEventListener('click', async () => {
+  // html2canvas est servi depuis vendor/ (le jeu se joue en classe, hors ligne) :
+  // s'il manque quand même (dépôt incomplet, blocage d'extension), le dire plutôt
+  // que de laisser la console afficher seule « html2canvas is not defined ».
+  if (typeof html2canvas === 'undefined') {
+    alert('Export impossible : la bibliothèque d\'export (html2canvas.min.js) est introuvable. Essayez Imprimer → Enregistrer en PDF.');
+    return;
+  }
   const frame = document.getElementById('chatFrame');
   try {
     const canvas = await html2canvas(frame, { scale: 2, useCORS: true, backgroundColor: null });
