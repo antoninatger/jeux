@@ -1024,6 +1024,13 @@
       var match = document.querySelector('.textsize button[data-t="'+saved+'"]');
       setTaille(saved, match);
     }
+    // taille imposée par le lien (?taille=1.4), sans la mémoriser : fenêtre de jeu dans une diapo projetée
+    var tLien = null;
+    try { tLien = new URLSearchParams(location.search).get('taille'); } catch(e){}
+    if (tLien && /^[0-9.]+$/.test(tLien)){
+      document.documentElement.style.setProperty('--taille', tLien);
+      for (var j=0;j<tb.length;j++) tb[j].classList.toggle('on', tb[j].getAttribute('data-t') === tLien);
+    }
 
     // “back to menu” button (visible only during the game)
     var mb = el('menu-btn');
@@ -1061,6 +1068,14 @@
       }
     });
 
+    // lien direct depuis une diapo : index.html?carte=id1,id2 lance ces cartes
+    var ids = null;
+    try { ids = new URLSearchParams(location.search).get('carte'); } catch(e){}
+    if (ids){
+      var voulues = ids.split(',').map(function(x){ return x.trim(); });
+      var paquet = SCENARIOS.filter(function(c){ return voulues.indexOf(c.id) !== -1; });
+      if (paquet.length){ demarrer(paquet); return; }
+    }
     ecranAccueil();
   }
 
