@@ -90,6 +90,11 @@ const QUESTIONS = [
    t:"Un article affirme que ces deux réseaux sociaux connaissent une croissance « comparable » depuis 2019, courbes à l'appui. Regarde bien la construction de ce graphique : quelque chose te paraît-il étrange ?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"Il y a <b>deux échelles verticales différentes</b> : à gauche pour le Réseau A (0 à 60 millions), à droite pour le Réseau B (0 à 600 millions) — dix fois plus grande. Résultat : les deux courbes se superposent presque parfaitement, alors que le Réseau B compte réellement <b>dix fois plus</b> d'utilisateurs que le Réseau A. Toujours vérifier s'il y a un axe à gauche <b>et</b> un axe à droite."},
+  {img:"images/pisa-france-axe-justifie.svg", cred:"D'après la note « France » de l'OCDE, résultats PISA 2025 (8 septembre 2026)",
+   t:"Ce graphique de l'OCDE montre les scores de la France aux enquêtes PISA depuis 2000. Beaucoup de commentaires l'accusent d'exagérer la baisse. Examine-le attentivement : y vois-tu un piège, ou te semble-t-il honnête ?",
+   a:"honnete", opts:["tronq","double","omises"],
+   fix:"🎉 Rien à réparer : une seule échelle, pas de 3D, aucune année retirée. Et remettre l'axe à zéro n'améliorerait rien — ça écraserait les trois courbes en une ligne plate.",
+   e:"C'est un <b>graphique honnête</b>, malgré les apparences. L'axe part bien de <b>450</b> et non de zéro — mais un score PISA ne peut pas valoir zéro : l'échelle est construite pour que la moyenne des pays de l'OCDE tourne autour de <b>500</b>, et aucun pays n'est jamais descendu sous 300. Partir de zéro écraserait les trois courbes en une ligne plate et ferait <b>disparaître</b> une baisse bien réelle de près de 50 points en compréhension de l'écrit. Les deux « Score », à gauche et à droite, ne sont pas un double axe : c'est <b>la même échelle</b>, répétée pour qu'on puisse lire les trois cadres. Et si les sciences ne commencent qu'en 2006 et les maths en 2003, ce n'est pas une donnée retirée : ces matières n'étaient pas encore mesurées avant. <b>Un axe tronqué n'est pas toujours un mensonge</b> — la vraie question est : est-ce que zéro veut dire quelque chose pour cette donnée ?"},
 ];
 
 let deck=[],idx=0,score=0,streak=0,best=0,nbOk=0,freeRetryUsed=false;
@@ -251,7 +256,7 @@ function showFixDemo(it){
   else if(it.a==="omises")initFixOmises();
   else if(it.a==="noaxe")initFixNoaxe();
   else if(it.a==="inverse")initFixInverse();
-  else initFixHonnete();
+  else initFixHonnete(it);
   if(it.a!=="honnete")$("fixReadout").innerHTML=FIX_HINT;
 }
 
@@ -478,9 +483,9 @@ function renderFixInverse(){
 function applyFixInverse(v){fixInverseVal=Math.max(FIX_INVERSE.min,Math.min(FIX_INVERSE.max,v));renderFixInverse();$("fixReadout").innerHTML=FIX_HINT;}
 
 // --- Graphique honnête : rien à réparer ---
-function initFixHonnete(){
+function initFixHonnete(it){
   $("fixChart").innerHTML="";
-  $("fixReadout").innerHTML=`🎉 Ce graphique est déjà honnête : axe à zéro, une seule échelle, pas de 3D, rien de manquant. Rien à réparer !`;
+  $("fixReadout").innerHTML=(it&&it.fix)||`🎉 Ce graphique est déjà honnête : axe à zéro, une seule échelle, pas de 3D, rien de manquant. Rien à réparer !`;
 }
 
 // Applique la consigne écrite au graphique. Renvoie false si elle n'est pas comprise.

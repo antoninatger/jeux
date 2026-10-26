@@ -90,6 +90,11 @@ const QUESTIONS = [
    t:"An article claims these two social networks have seen 'comparable' growth since 2019, curves included. Look closely at how this chart is built: does anything seem off?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"There are <b>two different vertical scales</b>: one on the left for Network A (0 to 60 million), one on the right for Network B (0 to 600 million) — ten times bigger. As a result, the two curves overlap almost perfectly, even though Network B actually has <b>ten times more</b> users than Network A. Always check whether there's an axis on the left <b>and</b> one on the right."},
+  {img:"images/pisa-france-axe-justifie.svg", cred:"After the OECD country note for France, PISA 2025 results (8 September 2026)",
+   t:"This OECD chart shows France's scores in the PISA surveys since 2000. Plenty of comments accuse it of exaggerating the decline. Examine it carefully: do you see a trick, or does it look honest to you?",
+   a:"honnete", opts:["tronq","double","omises"],
+   fix:"🎉 Nothing to fix: a single scale, no 3D, no year removed. And putting the axis back at zero would help nothing — it would squash all three curves into a flat line.",
+   e:"It's an <b>honest chart</b>, despite appearances. The axis does start at <b>450</b> rather than zero — but a PISA score cannot be zero: the scale is built so that the OECD average sits around <b>500</b>, and no country has ever fallen below 300. Starting at zero would squash all three curves into a flat line and make a very real drop of nearly 50 points in reading <b>disappear</b>. The two 'Score' labels, left and right, are not a dual axis: it's <b>the same scale</b>, repeated so all three panels can be read. And if science only starts in 2006 and maths in 2003, that isn't data removed: those subjects weren't measured before then. <b>A truncated axis isn't always a lie</b> — the real question is: does zero mean anything for this data?"},
 ];
 
 let deck=[],idx=0,score=0,streak=0,best=0,nbOk=0,freeRetryUsed=false;
@@ -251,7 +256,7 @@ function showFixDemo(it){
   else if(it.a==="omises")initFixOmises();
   else if(it.a==="noaxe")initFixNoaxe();
   else if(it.a==="inverse")initFixInverse();
-  else initFixHonnete();
+  else initFixHonnete(it);
   if(it.a!=="honnete")$("fixReadout").innerHTML=FIX_HINT;
 }
 
@@ -478,9 +483,9 @@ function renderFixInverse(){
 function applyFixInverse(v){fixInverseVal=Math.max(FIX_INVERSE.min,Math.min(FIX_INVERSE.max,v));renderFixInverse();$("fixReadout").innerHTML=FIX_HINT;}
 
 // --- Honest chart: nothing to fix ---
-function initFixHonnete(){
+function initFixHonnete(it){
   $("fixChart").innerHTML="";
-  $("fixReadout").innerHTML=`🎉 This chart is already honest: zero-based axis, one scale, no 3D, nothing missing. Nothing to fix!`;
+  $("fixReadout").innerHTML=(it&&it.fix)||`🎉 This chart is already honest: zero-based axis, one scale, no 3D, nothing missing. Nothing to fix!`;
 }
 
 // Applies the written instruction to the chart. Returns false if it wasn't understood.
