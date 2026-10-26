@@ -15,8 +15,10 @@
 
 .blue {
   cursor: pointer;
+  touch-action: none;
   transition: opacity 0.12s;
 }
+.blue.dragging { cursor: grabbing; opacity: 1; }
 .blue:hover { opacity: 0.72; }
 .orange { cursor: grab; touch-action: none; }
 .orange.dragging { cursor: grabbing; }
@@ -42,7 +44,7 @@
 
 <!-- ── Question ── -->
 <p class="col-enonce">
-    <strong data-i18n="q">À votre avis, les deux cercles du centre sont-ils de la même taille ?</strong>
+    <strong data-i18n="q">Quel cercle est plus grand que l'autre ?</strong>
     <span class="col-enonce__aide" data-i18n="qSub">Amusez-vous avec la figure pour le trouver.</span>
   </p>
 
@@ -131,7 +133,7 @@ I18N.register({
   fr: {
     back: "← Retour aux illusions",
     pageTitle: "Illusion d'Ebbinghaus",
-    q: "À votre avis, les deux cercles du centre sont-ils de la même taille ?",
+    q: "Quel cercle est plus grand que l'autre ?",
     qSub: "Amusez-vous avec la figure pour le trouver.",
     reset: "↺ Remettre à neuf",
     explShow: "👁 Voir l'explication", explHide: "Masquer l'explication",
@@ -145,7 +147,7 @@ I18N.register({
   en: {
     back: "← Back to illusions",
     pageTitle: "Ebbinghaus Illusion",
-    q: "Do you think the two central circles are the same size?",
+    q: "Which circle is bigger than the other?",
     qSub: "Play with the figure to find out.",
     reset: "↺ Reset",
     explShow: "👁 See the explanation", explHide: "Hide the explanation",
@@ -168,11 +170,37 @@ function toSvgPt(clientX, clientY) {
   };
 }
 
-/* ── Cercles bleus : clic = masquer / afficher ── */
+/* ── Cercles bleus : clic = disparaître, appui long = déplacer ── */
+const APPUI_LONG = 350;            // ms : au-delà, le cercle se déplace au lieu de disparaître
 document.querySelectorAll('.blue').forEach(c => {
-  c.addEventListener('click', () => {
-    c.style.visibility = c.style.visibility === 'hidden' ? '' : 'hidden';
+  c.dataset.cx = c.getAttribute('cx');
+  c.dataset.cy = c.getAttribute('cy');
+  let actif = false, enDeplacement = false, minuteur = null, depart = null, origine = null;
+
+  c.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    actif = true; enDeplacement = false;
+    try { c.setPointerCapture(e.pointerId); } catch (err) { /* pointeur déjà relâché */ }
+    depart = toSvgPt(e.clientX, e.clientY);
+    origine = { x: parseFloat(c.getAttribute('cx')), y: parseFloat(c.getAttribute('cy')) };
+    minuteur = setTimeout(() => { enDeplacement = true; c.classList.add('dragging'); }, APPUI_LONG);
   });
+  c.addEventListener('pointermove', e => {
+    if (!actif || !enDeplacement) return;
+    const p = toSvgPt(e.clientX, e.clientY);
+    c.setAttribute('cx', origine.x + p.x - depart.x);
+    c.setAttribute('cy', origine.y + p.y - depart.y);
+  });
+  function fin(masquer) {
+    if (!actif) return;
+    actif = false;
+    clearTimeout(minuteur);
+    if (!enDeplacement && masquer) c.style.visibility = 'hidden';
+    enDeplacement = false;
+    c.classList.remove('dragging');
+  }
+  c.addEventListener('pointerup', () => fin(true));
+  c.addEventListener('pointercancel', () => fin(false));
 });
 
 /* ── Cercles oranges : déplaçables ── */
@@ -215,7 +243,10 @@ makeDraggable(document.getElementById('o-right'));
 
 /* ── Reset ── */
 document.getElementById('btn-reset').addEventListener('click', () => {
-  document.querySelectorAll('.blue').forEach(c => c.style.visibility = '');
+  document.querySelectorAll('.blue').forEach(c => {
+    c.style.visibility = '';
+    c.setAttribute('cx', c.dataset.cx); c.setAttribute('cy', c.dataset.cy);
+  });
   const oL = document.getElementById('o-left');
   const oR = document.getElementById('o-right');
   oL.setAttribute('cx', '215'); oL.setAttribute('cy', '200');

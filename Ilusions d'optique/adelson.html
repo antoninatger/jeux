@@ -141,12 +141,21 @@ const cases = {
   a: { poly: document.getElementById('pa'), txt: document.getElementById('ta'), dx: 0, dy: 0 },
   b: { poly: document.getElementById('pb'), txt: document.getElementById('tb'), dx: 0, dy: 0 }
 };
+/* Les copies : chaque glissement depuis la case A ou B d'origine en fait sortir
+   une nouvelle, indépendante. L'originale reste à sa place sur l'échiquier. */
+const copies = [];
 
-function place(id) {
-  const c = cases[id];
+function place(c) {
   const t = 'translate(' + c.dx + ',' + c.dy + ')';
   c.poly.setAttribute('transform', t);
   c.txt.setAttribute('transform', t + ' ' + c.txt.dataset.base);
+}
+
+/* Le SVG dessine dans l'ordre du document : la case tenue repasse en dernier,
+   donc au-dessus de toutes les autres. */
+function auDessus(c) {
+  SVG.appendChild(c.poly);
+  SVG.appendChild(c.txt);
 }
 
 function versSvg(clientX, clientY) {
@@ -154,37 +163,64 @@ function versSvg(clientX, clientY) {
   return [ (clientX - r.left) / r.width * VB_W, (clientY - r.top) / r.height * VB_H ];
 }
 
+function nouvelleCopie(src) {
+  const poly = src.poly.cloneNode(false);
+  ['id', 'tabindex', 'role'].forEach(a => poly.removeAttribute(a));
+  poly.classList.remove('tire');
+  const txt = src.txt.cloneNode(true);
+  txt.removeAttribute('id');
+  txt.dataset.base = src.txt.dataset.base;
+  const c = { poly, txt, dx: src.dx, dy: src.dy, copie: true };
+  copies.push(c);
+  auDessus(c);
+  place(c);
+  brancher(c);
+  return c;
+}
+
+/* — pointeur — un seul glissement à la fois, pour toutes les cases */
+const SEUIL = 4;                   // en unités du SVG : en dessous, ce n'est qu'un clic
+let glisse = null;                 // { src, cible, depart, origine }
+
+function debut(c, x, y) {
+  glisse = { src: c, cible: c.copie ? c : null, depart: versSvg(x, y), origine: [c.dx, c.dy] };
+  if (c.copie) { auDessus(c); c.poly.classList.add('tire'); }
+}
+function bouge(x, y) {
+  if (!glisse) return;
+  const p = versSvg(x, y);
+  const ddx = p[0] - glisse.depart[0], ddy = p[1] - glisse.depart[1];
+  if (!glisse.cible) {
+    if (Math.hypot(ddx, ddy) < SEUIL) return;
+    glisse.cible = nouvelleCopie(glisse.src);
+    glisse.cible.poly.classList.add('tire');
+  }
+  glisse.cible.dx = glisse.origine[0] + ddx;
+  glisse.cible.dy = glisse.origine[1] + ddy;
+  place(glisse.cible);
+}
+function fin() {
+  if (glisse && glisse.cible) glisse.cible.poly.classList.remove('tire');
+  glisse = null;
+}
+
+function brancher(c) {
+  [c.poly, c.txt].forEach(el => {
+    el.addEventListener('mousedown', e => { e.preventDefault(); debut(c, e.clientX, e.clientY); });
+    el.addEventListener('touchstart', e => { e.preventDefault(); debut(c, e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+  });
+}
+document.addEventListener('mousemove', e => bouge(e.clientX, e.clientY));
+document.addEventListener('touchmove', e => { if (glisse) { e.preventDefault(); bouge(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+document.addEventListener('mouseup', fin);
+document.addEventListener('touchend', fin);
+
 Object.keys(cases).forEach(id => {
   const c = cases[id];
   c.txt.dataset.base = c.txt.getAttribute('transform');
+  brancher(c);
 
-  /* — pointeur — */
-  let actif = false, depart = [0, 0], origine = [0, 0];
-  function debut(x, y) {
-    actif = true;
-    c.poly.classList.add('tire');
-    depart = versSvg(x, y);
-    origine = [c.dx, c.dy];
-  }
-  function bouge(x, y) {
-    if (!actif) return;
-    const p = versSvg(x, y);
-    c.dx = origine[0] + p[0] - depart[0];
-    c.dy = origine[1] + p[1] - depart[1];
-    place(id);
-  }
-  function fin() { actif = false; c.poly.classList.remove('tire'); }
-
-  [c.poly, c.txt].forEach(el => {
-    el.addEventListener('mousedown', e => { e.preventDefault(); debut(e.clientX, e.clientY); });
-    el.addEventListener('touchstart', e => { e.preventDefault(); debut(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
-  });
-  document.addEventListener('mousemove', e => bouge(e.clientX, e.clientY));
-  document.addEventListener('touchmove', e => { if (actif) { e.preventDefault(); bouge(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-  document.addEventListener('mouseup', fin);
-  document.addEventListener('touchend', fin);
-
-  /* — clavier — */
+  /* — clavier — les flèches déplacent la case d'origine qui a le focus */
   c.poly.setAttribute('tabindex', '0');
   c.poly.setAttribute('role', 'button');
   c.poly.addEventListener('keydown', e => {
@@ -201,12 +237,14 @@ Object.keys(cases).forEach(id => {
     }
     else return;
     e.preventDefault();
-    place(id);
+    auDessus(c);
+    place(c);
   });
 });
 
 document.getElementById('btn-reset').addEventListener('click', () => {
-  Object.keys(cases).forEach(id => { cases[id].dx = 0; cases[id].dy = 0; place(id); });
+  copies.splice(0).forEach(c => { c.poly.remove(); c.txt.remove(); });
+  Object.keys(cases).forEach(id => { cases[id].dx = 0; cases[id].dy = 0; place(cases[id]); });
 });
 
 /* Le libellé du panneau suit son état, sans JS de bascule : <details> s'en
