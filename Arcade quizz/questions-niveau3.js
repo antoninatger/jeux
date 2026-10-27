@@ -165,30 +165,6 @@ var QUESTIONS_NIVEAU3 = [
     answer: 1,
     expl: "L'endogroupe = son propre groupe (ceux qui partagent déjà ses valeurs). L'exogroupe = les autres, ceux qu'on veut convaincre. La stratégie rhétorique est radicalement différente selon la cible."
   },
-  {
-    cat: "🏘️ Endogroupe & Exogroupe",
-    q: "Selon la formation, quelle stratégie Biden a-t-il choisie pour les élections américaines ?",
-    options: [
-      "Convaincre uniquement son camp démocrate",
-      "Ignorer les républicains pour mobiliser sa base",
-      "Convaincre à la fois son endogroupe et une partie de l'exogroupe (républicains modérés)",
-      "Viser uniquement les électeurs indépendants"
-    ],
-    answer: 2,
-    expl: "Biden voulait séduire aussi les républicains modérés → stratégie endogroupe + exogroupe. Trump, lui, misait sur la mobilisation intensive de son seul camp républicain radical."
-  },
-  {
-    cat: "🏘️ Endogroupe & Exogroupe",
-    q: "Selon la formation, Trump visait principalement :",
-    options: [
-      "L'ensemble des Américains sans distinction",
-      "Les Démocrates pour les convertir",
-      "Les indépendants hésitants",
-      "Son propre camp (endogroupe républicain) pour le mobiliser massivement"
-    ],
-    answer: 3,
-    expl: "\"Trump veut convaincre uniquement son propre groupe (républicains assez radicaux) en espérant qu'il y en ait assez qui soient motivés pour aller voter.\" Il ne cherche pas à convertir l'exogroupe."
-  },
 
   // ── Ethos, Pathos, Logos ──────────────────────────────────────
   {
@@ -263,18 +239,6 @@ var QUESTIONS_NIVEAU3 = [
     answer: 3,
     expl: "Attention aux faux syllogismes ! Ce raisonnement ressemble à du Logos mais la structure est fallacieuse : être mortel ne suffit pas à être un homme. C'est un sophisme classique."
   },
-  {
-    cat: "🏷️ Ethos, Pathos, Logos",
-    q: "Harrison Ford fait un discours contre le changement climatique à Cannes, puis repart en jet privé. Quel effet rhétorique cela produit-il ?",
-    options: [
-      "Renforce son Ethos en montrant son engagement",
-      "Affaiblit son Ethos en révélant une contradiction entre ses paroles et ses actes",
-      "Renforce son Pathos en montrant qu'il souffre de la crise climatique",
-      "N'a aucun effet rhétorique car les actes ne comptent pas dans un discours"
-    ],
-    answer: 1,
-    expl: "\"La seule chose qu'on a retenue de son intervention, c'est cette hypocrisie.\" Attaquer l'Ethos (crédibilité) d'un orateur en montrant la contradiction entre ses actes et ses paroles peut ruiner tout un discours."
-  },
 
   // ── Sophismes & bien débattre ─────────────────────────────────
   {
@@ -312,30 +276,6 @@ var QUESTIONS_NIVEAU3 = [
     ],
     answer: 1,
     expl: "\"Ça casse le rythme et l'engrenage de la violence, ça montre qu'on ne considère pas son contradicteur comme un ennemi, et ça permet de débattre sur le fond.\""
-  },
-  {
-    cat: "🤝 Bien débattre",
-    q: "Selon la formation, pourquoi chercher un point d'accord avec son adversaire ?",
-    options: [
-      "Pour lui montrer qu'on a raison sur tous les sujets",
-      "Pour éviter le débat en trouvant un compromis facile",
-      "Pour rendre le débat plus serein et progresser sur les vrais points de désaccord",
-      "Pour que l'adversaire abandonne ses idées plus vite"
-    ],
-    answer: 2,
-    expl: "\"Le fait d'acter le point d'accord ne supprime pas les contradictions. Il y a toujours un pro-vaccin et un anti-vaccin. Mais ça rend le débat plus serein.\" On progresse mieux quand on part d'un terrain commun."
-  },
-  {
-    cat: "🤝 Bien débattre",
-    q: "Pro-vaccin et anti-vaccin : quel point d'accord la formation identifie-t-elle ?",
-    options: [
-      "Les deux sont d'accord sur l'efficacité des vaccins",
-      "Les deux veulent protéger les gens, mais avec des méthodes différentes",
-      "Les deux s'accordent pour limiter les médicaments non testés",
-      "Il n'y a aucun point d'accord possible entre ces deux positions"
-    ],
-    answer: 1,
-    expl: "\"Le point d'accord : on veut protéger les gens. On a juste une méthode différente.\" Partir de ce terrain commun permet un débat plus constructif que de s'opposer frontalement dès le départ."
   },
   {
     cat: "🤝 Bien débattre",

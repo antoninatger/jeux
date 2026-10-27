@@ -29,18 +29,6 @@ var QUESTIONS_NIVEAU2 = [
   },
   {
     cat: "🔍 Fake News & vérification",
-    q: "Quelle information est VRAIE selon la formation ?",
-    options: [
-      "La méduse immortelle existe",
-      "Les véganes veulent interdire les biscuits animaux",
-      "Les deux informations sont vraies",
-      "Les deux informations sont fausses"
-    ],
-    answer: 0,
-    expl: "La méduse Turritopsis dohrnii est réellement biológiquement immortelle. En revanche, l'article sur les biscuits en forme d'animaux est satirique (Gorafi) — exemple parfait de canular pris au sérieux."
-  },
-  {
-    cat: "🔍 Fake News & vérification",
     q: "Quel critère aide à vérifier une information ?",
     options: [
       "Le nombre de \"likes\"",
@@ -324,31 +312,5 @@ var QUESTIONS_NIVEAU2 = [
     ],
     answer: 2,
     expl: "La théorie russe du \"milliard d'or\" affirme que l'Occident veut réduire la population mondiale à un milliard de personnes (d'où l'hostilité envers la Russie). Elle a servi de justification idéologique à l'invasion de l'Ukraine."
-  },
-
-  // ── Fact-checking & limites ───────────────────────────────────
-  {
-    cat: "✅ Fact-checking & limites",
-    q: "Quelle est la principale limite du fact-checking selon la formation ?",
-    options: [
-      "Il est trop lent",
-      "Les fact-checkers sont mal formés",
-      "La fake news n'est que l'arbre qui cache la forêt",
-      "Il est trop coûteux"
-    ],
-    answer: 2,
-    expl: "Se concentrer uniquement sur les fake news pures, c'est ignorer tout le continuum de la désinformation : décontextualisation, cadrage, mute news, astroturfing… La fake news n'est que la partie visible de l'iceberg."
-  },
-  {
-    cat: "✅ Fact-checking & limites",
-    q: "Lequel N'EST PAS une technique de désinformation vue en formation ?",
-    options: [
-      "L'astroturfing",
-      "La mute news",
-      "La fabrique du doute",
-      "Le fact-checking"
-    ],
-    answer: 3,
-    expl: "Le fact-checking est au contraire un outil de lutte contre la désinformation. Les trois autres (astroturfing, mute news, fabrique du doute) sont des techniques de manipulation de l'information."
   }
 ];

@@ -90,42 +90,64 @@ const QUESTIONS = [
    t:"Un article affirme que ces deux réseaux sociaux connaissent une croissance « comparable » depuis 2019, courbes à l'appui. Regarde bien la construction de ce graphique : quelque chose te paraît-il étrange ?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"Il y a <b>deux échelles verticales différentes</b> : à gauche pour le Réseau A (0 à 60 millions), à droite pour le Réseau B (0 à 600 millions) — dix fois plus grande. Résultat : les deux courbes se superposent presque parfaitement, alors que le Réseau B compte réellement <b>dix fois plus</b> d'utilisateurs que le Réseau A. Toujours vérifier s'il y a un axe à gauche <b>et</b> un axe à droite."},
+  {img:"images/pisa-france-axe-justifie.svg", cred:"D'après la note « France » de l'OCDE, résultats PISA 2025 (8 septembre 2026)",
+   t:"Ce graphique de l'OCDE montre les scores de la France aux enquêtes PISA depuis 2000. Beaucoup de commentaires l'accusent d'exagérer la baisse. Examine-le attentivement : y vois-tu un piège, ou te semble-t-il honnête ?",
+   a:"honnete", opts:["tronq","double","omises"],
+   fix:"🎉 Rien à réparer : une seule échelle, pas de 3D, aucune année retirée. Et remettre l'axe à zéro n'améliorerait rien — ça écraserait les trois courbes en une ligne plate.",
+   e:"C'est un <b>graphique honnête</b>, malgré les apparences. L'axe part bien de <b>450</b> et non de zéro — mais un score PISA ne peut pas valoir zéro : l'échelle est construite pour que la moyenne des pays de l'OCDE tourne autour de <b>500</b>, et aucun pays n'est jamais descendu sous 300. Partir de zéro écraserait les trois courbes en une ligne plate et ferait <b>disparaître</b> une baisse bien réelle de près de 50 points en compréhension de l'écrit. Les deux « Score », à gauche et à droite, ne sont pas un double axe : c'est <b>la même échelle</b>, répétée pour qu'on puisse lire les trois cadres. Et si les sciences ne commencent qu'en 2006 et les maths en 2003, ce n'est pas une donnée retirée : ces matières n'étaient pas encore mesurées avant. <b>Un axe tronqué n'est pas toujours un mensonge</b> — la vraie question est : est-ce que zéro veut dire quelque chose pour cette donnée ?"},
 ];
 
 let deck=[],idx=0,score=0,streak=0,best=0,nbOk=0,freeRetryUsed=false;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Identifiant stable d'une question : le chemin de son image (unique, identique en FR et en EN).
+const JEU="graphiques-trompeurs";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 // ===== Mode expert : détection de la technique par mots-clés =====
 const KEYWORDS = {
-  tronq:   ["tronque","tronquee","pas a zero","pas a 0","pas de zero","pas de 0","echelle coupee","axe coupe","zoom"],
+  tronq:   ["tronque","tronquee","pas a zero","pas a 0","pas de zero","pas de 0","echelle coupee","axe coupe","zoom","manque le zero","manque de zero","commence pas a zero","commence pas a 0"],
   cam3d:   ["camembert","3d","trois dimensions","relief","perspective","profondeur","volume","biais","inclinaison","vu de travers","angle de vue"],
   double:  ["deux echelles","deux axes","double axe","double echelle","echelles differentes","axe a droite","axe de droite","axe secondaire","second axe","pas la meme echelle","echelle differente pour chaque","propre echelle","echelle a gauche","echelle a droite"],
   picto:   ["pictogramme","icone","silhouette","disproportion","surface","grossi","trop grande","trop gros","pas a la bonne taille","mauvaise taille","hauteur et largeur","taille des icones","surrepresent","pas proportionnel","pas a l echelle","exagere"],
   omises:  ["manqu","retir","supprim","enlev","dispar","incomplet","cach","omise","omis","trou dans","pas toutes les"],
-  noaxe:   ["sans echelle","pas d echelle","aucune echelle","echelle absente","axe manquant","aucun axe","pas de chiffres sur l axe","pas de chiffre sur l axe","hauteur pas proportionnelle","hauteurs pas proportionnelles","hauteur ne correspond pas","barres ne respectent pas","disproportion des barres","pas a l echelle","barres pas a l echelle"],
+  noaxe:   ["sans echelle","pas d echelle","aucune echelle","echelle absente","axe manquant","aucun axe","pas de chiffres sur l axe","pas de chiffre sur l axe","hauteur pas proportionnelle","hauteurs pas proportionnelles","hauteur ne correspond pas","barres ne respectent pas","disproportion des barres"],
   inverse: ["axe inverse","echelle inversee","a l envers","sens inverse","axe retourne","ordre inverse","valeurs inversees","echelle a l envers","haut en bas invers","axe renverse","monte au lieu de descendre","descend au lieu de monter"],
   honnete: ["honnete","rien a redire","pas de piege","aucun piege","fiable","correct","aucun probleme","rien de trompeur","pas trompeur","tout va bien","rien a signaler","semble correct","tout est normal","aucun souci","pas de souci","rien ne cloche","semble fiable","aucune anomalie","tout semble en ordre","ca va","respecte les bonnes pratiques"],
 };
 function normalize(s){
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
 }
+// Une mention du zéro de l'axe est toujours un axe tronqué, jamais une donnée
+// omise : "manqu" (mot-clé large d'omises) matche aussi "il manque le zéro",
+// d'où cette priorité explicite avant le comptage générique.
+const ZERO_AXIS_PHRASES=["manque le zero","manque de zero","commence pas a zero","commence pas a 0","pas a zero","pas a 0","pas de zero","pas de 0"];
 function detectTech(raw){
   const n=normalize(raw);
+  if(ZERO_AXIS_PHRASES.some(p=>n.includes(normalize(p))))return "tronq";
   let bestId=null,bestCount=0,tieCount=0;
   for(const id in KEYWORDS){
     const count=KEYWORDS[id].reduce((acc,k)=>acc+(n.includes(normalize(k))?1:0),0);
     if(count>bestCount){bestId=id;bestCount=count;tieCount=1;}
     else if(count===bestCount && count>0){tieCount++;}
   }
-  if(bestCount===0||tieCount>1)return null;
+  if(bestCount===0)return null;
+  if(tieCount>1)return "__TIE__";
   return bestId;
 }
 
-function startGame(){
-  deck=shuffle([...QUESTIONS]);
+function startGame(sousDeck){
+  // E2 : toute la série est jouée à chaque partie ; « rejouer mes erreurs » impose un paquet réduit
+  deck=shuffle(sousDeck || [...QUESTIONS]);
   idx=0;score=0;streak=0;best=0;nbOk=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  // la partie repart sans recharger la page : le HUD repart de zéro lui aussi
+  $("score").textContent=0; $("streak").textContent="";
   $("fiches").style.display="none";
   $("intro").style.display="none";
   $("hud").style.display="flex";
@@ -150,7 +172,8 @@ function renderQ(){
   const ft=$("ftext");
   ft.value="";ft.disabled=false;
   $("fvalidate").disabled=false;
-  ft.focus({preventScroll:true});
+  // Pas d'autofocus sur tactile : le clavier virtuel s'ouvrirait et masquerait le graphique.
+  if(!matchMedia("(pointer: coarse)").matches) ft.focus({preventScroll:true});
   $("aidebtn").style.display="block";
   $("aidebtn").disabled=false;
   $("answers").style.display="none";
@@ -174,6 +197,7 @@ function revealAide(){
 }
 
 function applyResult(it,ok,detectedLabel,viaFree){
+  joue.push({id:it.img, titre:texteBrut(it.t), reussi:ok, explication:texteBrut(it.e)});
   if(ok){
     nbOk++;
     if(viaFree){
@@ -232,7 +256,7 @@ function showFixDemo(it){
   else if(it.a==="omises")initFixOmises();
   else if(it.a==="noaxe")initFixNoaxe();
   else if(it.a==="inverse")initFixInverse();
-  else initFixHonnete();
+  else initFixHonnete(it);
   if(it.a!=="honnete")$("fixReadout").innerHTML=FIX_HINT;
 }
 
@@ -459,9 +483,9 @@ function renderFixInverse(){
 function applyFixInverse(v){fixInverseVal=Math.max(FIX_INVERSE.min,Math.min(FIX_INVERSE.max,v));renderFixInverse();$("fixReadout").innerHTML=FIX_HINT;}
 
 // --- Graphique honnête : rien à réparer ---
-function initFixHonnete(){
+function initFixHonnete(it){
   $("fixChart").innerHTML="";
-  $("fixReadout").innerHTML=`🎉 Ce graphique est déjà honnête : axe à zéro, une seule échelle, pas de 3D, rien de manquant. Rien à réparer !`;
+  $("fixReadout").innerHTML=(it&&it.fix)||`🎉 Ce graphique est déjà honnête : axe à zéro, une seule échelle, pas de 3D, rien de manquant. Rien à réparer !`;
 }
 
 // Applique la consigne écrite au graphique. Renvoie false si elle n'est pas comprise.
@@ -582,9 +606,11 @@ function submitFree(){
   const it=deck[idx];
   const detected=detectTech(raw);
   // Réponse inintelligible ≠ mauvaise technique : une reformulation offerte avant de compter faux
-  if(detected===null && !freeRetryUsed){
+  if((detected===null || detected==="__TIE__") && !freeRetryUsed){
     freeRetryUsed=true;
-    $("freehint").textContent="🤔 Aucune technique reconnue dans ta réponse — reformule en nommant une technique (dernier essai).";
+    $("freehint").textContent = detected==="__TIE__"
+      ? "🤔 Deux techniques reconnues dans ta réponse — précise laquelle (dernier essai)."
+      : "🤔 Aucune technique reconnue dans ta réponse — reformule en nommant une technique (dernier essai).";
     return;
   }
   $("freehint").textContent="";
@@ -596,7 +622,7 @@ function submitFree(){
     b.disabled=true;b.classList.add("dim");
     if(b.dataset.ok==="1"){b.classList.remove("dim");b.classList.add("good");}
   });
-  applyResult(it,ok,detected?TECH[detected].l:null,true);
+  applyResult(it,ok,(detected && detected!=="__TIE__")?TECH[detected].l:null,true);
 }
 
 function nextQ(){
@@ -609,8 +635,6 @@ function endGame(){
   $("nextbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  $("end-score").textContent=score+" pts";
-  $("end-sub").textContent=nbOk+"/"+deck.length+" bonnes réponses";
   const ratio=nbOk/deck.length;
   let title,msg;
   if(ratio>=0.9){title="🏆 Œil de statisticien !";msg="Tu repères déjà les pièges classiques du graphique trompeur. Ce réflexe — <b>vérifier l'axe, l'échelle, la 3D et les données manquantes</b> — te servira partout : presse, réseaux, rapports d'entreprise.";}
@@ -618,8 +642,13 @@ function endGame(){
   else{title="👀 L'œil se forme…";msg="Ces techniques trompent presque tout le monde au premier regard — c'est fait pour ! Va faire un tour dans les fiches, puis rejoue.";}
   if(best>=3)msg+="<br><br>Ta meilleure série : <b>"+best+" 🔥</b>";
   msg+="<br><br>💡 <i>Un graphique peut être 100% exact dans ses chiffres et 100% trompeur dans son dessin.</i>";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, score, message, liste des graphiques ratés et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: score+" pts — "+texteBrut(msg),
+    score: nbOk, total: deck.length, items: joue,
+    onRejouer: rates => startGame(QUESTIONS.filter(q => rates.some(r => r.id===q.img))),
+    onRecommencer: () => startGame()
+  });
 }
 
 // ===== Fiches anti-pièges =====

@@ -25,8 +25,18 @@ desktop.ini
 *.pst
 *.zip
 
+# Exception ciblée : la vidéo du géoïde de la Nasa est une pièce du jeu
+# « Répare la Une ! » (2,3 Mo, domaine public). Sans elle, la une 9 n'a rien à montrer.
+!/repare-la-une/geoide-nasa.mp4
+
 # === Copie de travail (ne pas versionner) ===
 /fakemetre-refonte/
 
 # === Boutons perso Windows (outils locaux, ne pas publier) ===
 *.bat
+
+# === Brouillons et notes internes (ne pas publier) ===
+/_prive/
+
+# Cache Python des outils
+/outils/__pycache__/

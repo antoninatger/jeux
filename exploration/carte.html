@@ -56,8 +56,9 @@
   .stop.lock{ cursor:not-allowed; filter:grayscale(.85) brightness(.98); opacity:.72; }
   .stop.lock .roof{ background:var(--lock) !important; }
   .stop.lock:hover{ transform:translate(-50%,-50%); box-shadow:0 6px 16px rgba(20,40,70,.14); }
-  .stop .lockicon{ position:absolute; inset:0; display:none; align-items:center; justify-content:center;
-    font-size:1.8em; background:rgba(255,255,255,.35); }
+  .stop .lockicon{ position:absolute; bottom:8px; right:8px; width:22px; height:22px; border-radius:50%;
+    display:none; align-items:center; justify-content:center;
+    font-size:.82em; background:rgba(255,255,255,.92); }
   .stop.lock .lockicon{ display:flex; }
   .shake{ animation:shake .4s; }
   @keyframes shake{ 0%,100%{transform:translate(-50%,-50%)} 20%,60%{transform:translate(-54%,-50%)} 40%,80%{transform:translate(-46%,-50%)} }
@@ -95,7 +96,7 @@
 
   <header>
     <h1 data-i18n="h1">🗺️ Le parcours de l'explorateur</h1>
-    <div class="greet" id="greet" data-i18n-html="greet">Avance de lieu en lieu&nbsp;: chaque étape en débloque une nouvelle.</div>
+    <div class="greet" id="greet">Avance de lieu en lieu&nbsp;: chaque étape en débloque une nouvelle.</div>
     <div class="progress" id="progress"></div>
   </header>
 
@@ -129,6 +130,9 @@ I18N.register({
     visited: "Lieux visités :", done: " — parcours terminé, bravo ! 🎉",
     lockA: "🔒 Termine d'abord l'étape ", lockB: " pour débloquer celle-ci.",
     unlockA: "🎉 Nouveau lieu débloqué : ", resetMsg: "Parcours réinitialisé.",
+    finA: "✅ Étape terminée : ", finB: ". ",
+    greetOnRouteA: "En route, ", greetOnRouteB: "&nbsp;! ",
+    confirmReset: "Recommencer le parcours à zéro ? (ton avatar est conservé)",
     n_radarnaque: "Radar'naque", d_radarnaque: "Déjouer les arnaques",
     n_fakemetre: "Fakemètre", d_fakemetre: "Mesurer la fiabilité",
     n_chasse: "Chasse aux biais", d_chasse: "Débusquer les biais",
@@ -146,6 +150,9 @@ I18N.register({
     visited: "Places visited:", done: " — journey complete, well done! 🎉",
     lockA: "🔒 Finish step ", lockB: " first to unlock this one.",
     unlockA: "🎉 New place unlocked: ", resetMsg: "Journey reset.",
+    finA: "✅ Step completed: ", finB: ". ",
+    greetOnRouteA: "Off we go, ", greetOnRouteB: "&nbsp;! ",
+    confirmReset: "Restart the journey from scratch? (your avatar is kept)",
     n_radarnaque: "Radar'naque", d_radarnaque: "Outsmart scams",
     n_fakemetre: "Fakemètre", d_fakemetre: "Measure reliability",
     n_chasse: "Bias Hunt", d_chasse: "Track down biases",
@@ -161,7 +168,9 @@ I18N.register({
 
   var LIEUX = [
     { id:'radarnaque',    nom:I18N.t('n_radarnaque'),   emoji:'🛡️', desc:I18N.t('d_radarnaque'),   url:'../radarnaque/index.html',              col:'#ef4444' },
-    { id:'fakemetre',     nom:I18N.t('n_fakemetre'),    emoji:'🕵️', desc:I18N.t('d_fakemetre'),    url:'https://antoninatger.github.io/fakemetre/', col:'#f59e0b' },
+    // sansFin : le Fakemètre vit dans un dépôt séparé et n'émet pas (encore) le message
+    // « col:fin-de-partie » — pour lui seul, l'ouverture vaut fin d'étape (voir ouvrir()).
+    { id:'fakemetre',     nom:I18N.t('n_fakemetre'),    emoji:'🕵️', desc:I18N.t('d_fakemetre'),    url:'https://antoninatger.github.io/fakemetre/', col:'#f59e0b', sansFin:true },
     { id:'chasse-biais',  nom:I18N.t('n_chasse'),       emoji:'🎯', desc:I18N.t('d_chasse'),       url:'../chasse-aux-biais/index.html',        col:'#10b981' },
     { id:'radar-desinfo', nom:I18N.t('n_radardesinfo'), emoji:'📡', desc:I18N.t('d_radardesinfo'), url:'../radar-desinfo/index.html',           col:'#3b82f6' },
     { id:'arene',         nom:I18N.t('n_arene'),        emoji:'⚔️', desc:I18N.t('d_arene'),        url:'../arene-rhetorique/index.html',        col:'#8b5cf6' },
@@ -190,7 +199,7 @@ I18N.register({
 
   // Salutation
   var nom = (avatar && avatar.nom) ? String(avatar.nom).replace(/[<>&]/g,'') : '';
-  document.getElementById('greet').innerHTML = (nom ? 'En route, <b>'+nom+'</b>&nbsp;! ' : '')
+  document.getElementById('greet').innerHTML = (nom ? I18N.t('greetOnRouteA')+'<b>'+nom+'</b>'+I18N.t('greetOnRouteB') : '')
     + I18N.t('stepHint');
 
   // Route (SVG) reliant les étapes
@@ -291,13 +300,20 @@ I18N.register({
   // Lecteur
   var player = document.getElementById('player');
   var frame = document.getElementById('player-frame');
+  var lieuOuvert = -1;   // index du lieu affiché dans le cadre, -1 si fermé
+
   function ouvrir(i){
     var l = LIEUX[i];
+    lieuOuvert = i;
     document.getElementById('player-ttl').textContent = l.emoji + ' ' + l.nom;
     frame.src = l.url;
     player.classList.add('open');
     document.body.style.overflow='hidden';
-    // marque visité + débloque la suite
+    // Depuis E2, les jeux du parcours envoient « col:fin-de-partie » : l'étape se
+    // termine et la suite se débloque dans terminer(), à la fin réelle de la
+    // partie. Seul le Fakemètre (dépôt séparé, hors E2) garde l'ancien repli :
+    // pour lui, l'ouverture vaut fin d'étape — sinon le parcours s'y arrêterait.
+    if(!l.sansFin) return;
     var etaitFront = (i === prog.reached - 1);
     prog.visited[l.id] = true;
     if(etaitFront && prog.reached < LIEUX.length){ prog.reached++; }
@@ -307,7 +323,44 @@ I18N.register({
       setTimeout(function(){ dire(I18N.t('unlockA') + LIEUX[i+1].nom + ' !'); }, 400);
     }
   }
-  function fermer(){ player.classList.remove('open'); frame.src='about:blank'; document.body.style.overflow=''; }
+  function fermer(){ lieuOuvert = -1; player.classList.remove('open'); frame.src='about:blank'; document.body.style.overflow=''; }
+
+  /* ── Fin de partie annoncée par le jeu ────────────────────────────────
+     Contrat défini dans collection.js (« CONTRAT FIN DE PARTIE ») : un jeu
+     encadré appelle Collection.finDePartie(...) quand la partie va à son
+     terme, et le message arrive ici.
+
+     La vérification porte sur e.source — « ce message vient-il bien de MON
+     cadre ? » — et pas sur e.origin : le Fakemètre est servi depuis
+     antoninatger.github.io, les autres jeux depuis ce domaine-ci. Une liste
+     d'origines serait à tenir à jour ; celle-ci se vérifie toute seule.
+
+     Depuis la tâche E2 (5 septembre 2026), les cinq jeux du parcours servis
+     par ce dépôt émettent le message : le déblocage passe par terminer(),
+     à la fin réelle d'une partie. Le Fakemètre, dépôt séparé, ne l'émet pas
+     encore : `ouvrir()` garde pour lui seul (LIEUX[].sansFin) l'ancien
+     déblocage à l'ouverture. À retirer quand le Fakemètre appellera
+     Collection.finDePartie(). */
+  window.addEventListener('message', function(e){
+    if(lieuOuvert < 0 || !frame.contentWindow) return;
+    if(e.source !== frame.contentWindow) return;
+    if(!e.data || e.data.type !== 'col:fin-de-partie') return;
+    terminer(lieuOuvert);
+  });
+
+  function terminer(i){
+    var l = LIEUX[i];
+    var etaitFront = (i === prog.reached - 1);
+    prog.visited[l.id] = true;
+    prog.termines = prog.termines || {};
+    prog.termines[l.id] = true;
+    if(etaitFront && prog.reached < LIEUX.length) prog.reached++;
+    save(PROG_KEY, prog);
+    refresh();
+    var texte = I18N.t('finA') + l.nom + I18N.t('finB');
+    if(etaitFront && prog.reached - 1 === i + 1) texte += I18N.t('unlockA') + LIEUX[i+1].nom + ' !';
+    dire(texte);
+  }
   document.getElementById('player-back').onclick = fermer;
   document.getElementById('player-fs').onclick = function(){
     var r = frame.requestFullscreen || frame.webkitRequestFullscreen || frame.mozRequestFullScreen || frame.msRequestFullscreen;
@@ -316,12 +369,13 @@ I18N.register({
   document.addEventListener('keydown', function(e){ if(e.key==='Escape' && player.classList.contains('open')) fermer(); });
 
   document.getElementById('reset').onclick = function(){
-    if(confirm('Recommencer le parcours à zéro ? (ton avatar est conservé)')){
+    if(confirm(I18N.t('confirmReset'))){
       prog = { reached:1, visited:{}, pos:0 }; save(PROG_KEY, prog);
       placer(0); refresh(); dire(I18N.t('resetMsg'));
     }
   };
 })();
 </script>
+  <script src="../retours.js" defer></script>
 </body>
 </html>

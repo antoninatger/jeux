@@ -177,6 +177,19 @@
     .une__actions .bouton{ flex:1 1 100%; }
   }
   @media (prefers-reduced-motion:reduce){ .carte, .carte:hover{ transition:none; transform:none; } }
+
+  /* Jeux « disponibles après intervention » : grisés et sans lien, sauf en mode
+     intervention (adresse ?intervention, mémorisé sur l'appareil ; ?intervention=off pour sortir). */
+  .pastille--apres{ background:rgba(20,26,36,.82); color:#cbd5e1; }
+  body:not(.mode-intervention) .carte--apres{ cursor:default; }
+  body:not(.mode-intervention) .carte--apres:hover{ transform:none; border-color:var(--bord); box-shadow:0 10px 30px rgba(0,0,0,.28); }
+  body:not(.mode-intervention) .carte--apres .carte__image img{ filter:grayscale(1) contrast(.9); opacity:.45; }
+  body:not(.mode-intervention) .carte--apres .carte__nom{ color:var(--doux); }
+  body:not(.mode-intervention) .carte--apres .carte__lien{ color:var(--doux); pointer-events:none; }
+  body:not(.mode-intervention) .carte--apres .carte__lien::after{ display:none; }
+  body:not(.mode-intervention) .carte--apres .copier{ display:none; }
+  body.mode-intervention .pastille--apres{ display:none; }
+  body:not(.mode-intervention) .carte--apres .pastille--anime{ display:none; }
 </style>
 </head>
 <!-- Le portail n'a pas de page au-dessus de lui : pas de lien de retour.
@@ -298,9 +311,9 @@
             <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#38bdf8" data-themes="desinfo" data-ages="college lycee" data-suivi="radar-desinfo" data-acces="code">
+      <article class="carte carte--apres" style="--c:#38bdf8" data-themes="desinfo" data-ages="college lycee" data-suivi="radar-desinfo" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/radar-desinfo.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_desinfo">Radar de la désinfo</span>
           <a class="carte__lien" href="radar-desinfo/index.html" data-i18n="a_desinfo">Fact-checker d’un jour : trie les dépêches avant publication</a>
@@ -308,9 +321,9 @@
             <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#f75f5f" data-themes="desinfo" data-ages="college lycee" data-suivi="repare-la-une" data-acces="code">
+      <article class="carte carte--apres" style="--c:#f75f5f" data-themes="desinfo" data-ages="college lycee" data-suivi="repare-la-une" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/repare-la-une.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_une">Répare la Une</span>
           <a class="carte__lien" href="repare-la-une/index.html" data-i18n="a_une">Le stagiaire a écrit un titre choc. Répare-le</a>
@@ -318,9 +331,9 @@
             <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#3ecf8e" data-themes="biais" data-ages="college lycee" data-suivi="chasse-aux-biais" data-acces="code">
+      <article class="carte carte--apres" style="--c:#3ecf8e" data-themes="biais" data-ages="college lycee" data-suivi="chasse-aux-biais" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/chasse-aux-biais.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_chasse">Chasse aux biais</span>
           <a class="carte__lien" href="chasse-aux-biais/index.html" data-i18n="a_chasse">Ton cerveau te joue des tours. Prends-le sur le fait</a>
@@ -328,9 +341,9 @@
             <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#c084fc" data-themes="rhetorique" data-ages="lycee" data-suivi="grand-oral" data-acces="code">
+      <article class="carte carte--apres" style="--c:#c084fc" data-themes="rhetorique" data-ages="lycee" data-suivi="grand-oral" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/grand-oral.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_grandoral">Le Grand Oral</span>
           <a class="carte__lien" href="grand-oral/index.html" data-i18n="a_grandoral">Convaincs le conseil municipal, sans un mot de trop</a>
@@ -338,9 +351,9 @@
             <span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#fb923c" data-themes="desinfo" data-ages="college lycee" data-suivi="mes-des-mal" data-acces="code">
+      <article class="carte carte--apres" style="--c:#fb923c" data-themes="desinfo" data-ages="college lycee" data-suivi="mes-des-mal" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/mes-des-mal.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_mesdesmal">Més · Dés · Mal</span>
           <a class="carte__lien" href="mes%20des%20mal%20information/mes-des-mal-information.html" data-i18n="a_mesdesmal">Erreur, mensonge ou vérité qui blesse ? Trie l’info</a>
@@ -348,9 +361,9 @@
             <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#e879f9" data-themes="desinfo" data-ages="college lycee" data-suivi="arcade" data-acces="code">
+      <article class="carte carte--apres" style="--c:#e879f9" data-themes="desinfo" data-ages="college lycee" data-suivi="arcade" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/arcade.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_arcade">Arcade quizz</span>
           <a class="carte__lien" href="Arcade%20quizz/index.html" data-i18n="a_arcade">Blaster, Snake, Whac-a-quiz : l’esprit critique en mode arcade</a>
@@ -358,9 +371,9 @@
             <span class="niveau" data-i18n="agCollege">Collège</span><span class="niveau" data-i18n="agLycee">Lycée</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#818cf8" data-themes="faits" data-ages="primaire" data-suivi="planete-connaissance" data-acces="code">
+      <article class="carte" style="--c:#818cf8" data-themes="faits" data-ages="primaire" data-suivi="planete-connaissance" data-acces="libre">
         <div class="carte__image"><img src="portail/vignettes/planete-connaissance.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--libre" data-i18n="libre">Accès libre</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_planete">Planète Connaissance</span>
           <a class="carte__lien" href="Plan%C3%A8te%20connaissance.html" data-i18n="a_planete">Pilote ta fusée et fais exploser les opinions déguisées en faits</a>
@@ -368,9 +381,9 @@
             <span class="niveau" data-i18n="agPrimaire">Primaire</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#f59e0b" data-themes="faits" data-ages="primaire" data-suivi="mine" data-acces="code">
+      <article class="carte carte--apres" style="--c:#f59e0b" data-themes="faits" data-ages="primaire" data-suivi="mine" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/mine.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_mine">Mine la planète</span>
           <a class="carte__lien" href="mine.html" data-i18n="a_mine">Un seul mot change, et le fait devient opinion</a>
@@ -378,9 +391,9 @@
             <span class="niveau" data-i18n="agPrimaire">Primaire</span></div>
         </div>
       </article>
-      <article class="carte" style="--c:#60a5fa" data-themes="biais" data-ages="primaire" data-suivi="biais-confirmation" data-acces="code">
+      <article class="carte carte--apres" style="--c:#60a5fa" data-themes="biais" data-ages="primaire" data-suivi="biais-confirmation" data-acces="code">
         <div class="carte__image"><img src="portail/vignettes/biais-confirmation.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--code" data-i18n="code">Code établissement</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_cm1">Le biais de confirmation</span>
           <a class="carte__lien" href="biais_confirmation_cm1.html" data-suivi-clic="biais-confirmation" data-i18n="a_cm1">Chloé ou Nathan : qui a raison ?</a>
@@ -393,24 +406,24 @@
 
     <h3 class="sous-titre" data-i18n="catalogues">Pour aller plus loin : les catalogues</h3>
     <div class="grille">
-      <article class="carte carte--large carte--petite" style="--c:#6d8bff">
-        <div class="carte__image"><img src="portail/vignettes/perceptio.jpg" alt="" loading="lazy" width="560" height="315"></div>
+      <article class="carte carte--apres carte--large carte--petite" style="--c:#6d8bff">
+        <div class="carte__image"><img src="portail/vignettes/perceptio.jpg" alt="" loading="lazy" width="560" height="315"><div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_perceptio">Perceptio · catalogue</span>
           <a class="carte__lien" href="Biais%20cognitifs/index.html" data-i18n="a_perceptio">Ton cerveau ment. Poliment.</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_perceptio">Les biais cognitifs : définitions, exemples, QCM, sources</span></div>
         </div>
       </article>
-      <article class="carte carte--large carte--petite" style="--c:#d4a373">
-        <div class="carte__image"><img src="portail/vignettes/rhetor.jpg" alt="" loading="lazy" width="560" height="315"></div>
+      <article class="carte carte--apres carte--large carte--petite" style="--c:#d4a373">
+        <div class="carte__image"><img src="portail/vignettes/rhetor.jpg" alt="" loading="lazy" width="560" height="315"><div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_rhetor">Rhetor · catalogue</span>
           <a class="carte__lien" href="rhetor/index.html" data-i18n="a_rhetor">Le fond ne suffit pas. La forme décide.</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_rhetor">Figures de style, sophismes, lexique de l’argumentation</span></div>
         </div>
       </article>
-      <article class="carte carte--large carte--petite" style="--c:#e07a5f">
-        <div class="carte__image"><img src="portail/vignettes/cobaye.jpg" alt="" loading="lazy" width="560" height="315"></div>
+      <article class="carte carte--apres carte--large carte--petite" style="--c:#e07a5f">
+        <div class="carte__image"><img src="portail/vignettes/cobaye.jpg" alt="" loading="lazy" width="560" height="315"><div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span></div></div>
         <div class="carte__corps">
           <span class="carte__nom" data-i18n="n_cobaye">Cobaye · catalogue</span>
           <a class="carte__lien" href="cobaye/index.html" data-i18n="a_cobaye">10 expériences qui ont marqué la psychologie</a>
@@ -429,27 +442,21 @@
       <h2 class="famille__titre" id="illusions-titre" data-i18n="illTitre">Illusions &amp; démonstrations</h2>
       <p class="famille__texte" data-i18n="illTexte">Ce qu’on montre, sans gagner ni perdre. Idéal pour lancer une discussion en classe.</p>
     </div>
-    <div class="grille grille--4">
-      <article class="carte carte--petite" style="--c:#22d3ee">
-        <div class="carte__image"><img src="portail/vignettes/illusions.jpg" alt="" loading="lazy" width="560" height="315"></div>
+    <div class="grille grille--3i">
+      <article class="carte carte--apres carte--petite" style="--c:#22d3ee">
+        <div class="carte__image"><img src="portail/vignettes/illusions.jpg" alt="" loading="lazy" width="560" height="315"><div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span></div></div>
         <div class="carte__corps"><span class="carte__nom" data-i18n="n_illusions">Illusions d’optique</span>
           <a class="carte__lien" href="Ilusions%20d'optique/index.html" data-i18n="a_illusions">Tes yeux sont formels. Ils ont tort.</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_illusions">10 illusions classiques</span></div></div>
       </article>
-      <article class="carte carte--petite" style="--c:#f0b429">
-        <div class="carte__image"><img src="portail/vignettes/graphiques-trompeurs.jpg" alt="" loading="lazy" width="560" height="315"></div>
+      <article class="carte carte--apres carte--petite" style="--c:#f0b429">
+        <div class="carte__image"><img src="portail/vignettes/graphiques-trompeurs.jpg" alt="" loading="lazy" width="560" height="315"><div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span></div></div>
         <div class="carte__corps"><span class="carte__nom" data-i18n="n_graphiques">Graphiques trompeurs</span>
           <a class="carte__lien" href="graphiques-trompeurs/index.html" data-i18n="a_graphiques">Mêmes chiffres, autre histoire</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_graphiques">17 graphiques à démasquer</span></div></div>
       </article>
-      <article class="carte carte--petite" style="--c:#34d399">
-        <div class="carte__image"><img src="portail/vignettes/terre-ronde-plate.jpg" alt="" loading="lazy" width="560" height="315"></div>
-        <div class="carte__corps"><span class="carte__nom" data-i18n="n_terre">La Terre ronde ou plate ?</span>
-          <a class="carte__lien" href="terre_ronde_plate.html" data-i18n="a_terre">Preuve par preuve, le mythe tombe</a>
-          <div class="carte__pied"><span class="carte__meta" data-i18n="m_terre">Démonstration</span></div></div>
-      </article>
-      <article class="carte carte--petite" style="--c:#fbbf24">
-        <div class="carte__image"><img src="portail/vignettes/notes-google.jpg" alt="" loading="lazy" width="560" height="315"></div>
+      <article class="carte carte--apres carte--petite" style="--c:#fbbf24">
+        <div class="carte__image"><img src="portail/vignettes/notes-google.jpg" alt="" loading="lazy" width="560" height="315"><div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span></div></div>
         <div class="carte__corps"><span class="carte__nom" data-i18n="n_notes">Avis « style Maps »</span>
           <a class="carte__lien" href="notes_google.html" data-i18n="a_notes">2,3 étoiles… vraiment ?</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_notes">Une moyenne peut cacher une tendance</span></div></div>
@@ -467,24 +474,24 @@
       <p class="famille__texte" data-i18n="intTexte">Ce qui sert à animer devant un public : à projeter, ou à jouer tous ensemble.</p>
     </div>
     <div class="grille grille--3i">
-      <article class="carte carte--petite" style="--c:#38bdf8">
+      <article class="carte carte--apres carte--petite" style="--c:#38bdf8">
         <div class="carte__image"><img src="portail/vignettes/lignes-numerotees.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
         <div class="carte__corps"><span class="carte__nom" data-i18n="n_lignes">Lignes numérotées</span>
           <a class="carte__lien" href="jeu-lignes-numerotees/index.html" data-i18n="a_lignes">Mémorise les lignes une par une, puis range-les</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_lignes">À projeter</span></div></div>
       </article>
-      <article class="carte carte--petite" style="--c:#22d3ee">
+      <article class="carte carte--apres carte--petite" style="--c:#22d3ee">
         <div class="carte__image"><img src="portail/vignettes/exploration.jpg" alt="" loading="lazy" width="560" height="315">
-          <div class="carte__badges"><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
         <div class="carte__corps"><span class="carte__nom">Exploration</span>
           <a class="carte__lien" href="exploration/index.html" data-i18n="a_exploration">Crée ton explorateur et parcours la carte des jeux</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_exploration">Parcours guidé</span></div></div>
       </article>
-      <article class="carte carte--petite" style="--c:#a78bfa">
+      <article class="carte carte--apres carte--petite" style="--c:#a78bfa">
         <div class="carte__image" style="display:flex; align-items:center; justify-content:center">
           <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width:56px; height:56px; color:#a78bfa; stroke-width:1.6"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>
-          <div class="carte__badges"><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
+          <div class="carte__badges"><span class="pastille pastille--apres" data-i18n="apres">Disponible après intervention</span><span class="pastille pastille--anime" data-i18n="anime">Pour animer</span></div></div>
         <div class="carte__corps"><span class="carte__nom" data-i18n="n_editeur">Éditeur de questions</span>
           <a class="carte__lien" href="Arcade%20quizz/editeur-questions.html" data-i18n="a_editeur">Écris tes propres questions pour l’Arcade</a>
           <div class="carte__pied"><span class="carte__meta" data-i18n="m_editeur">Pour l’enseignant</span></div></div>
@@ -512,7 +519,7 @@ I18N.register({
     h1: "Jeux pédagogiques", by: "par", sommaire: "Familles de jeux",
     intro: "Esprit critique, désinformation, biais cognitifs : des jeux à jouer directement dans le navigateur, en classe ou à la maison.",
     navJeux: "Jeux", navIllusions: "Illusions", navInterv: "Interventions",
-    phare: "Le jeu phare", libre: "Accès libre", code: "Code établissement", anime: "Pour animer",
+    phare: "Le jeu phare", libre: "Accès libre", code: "Code établissement", apres: "Disponible après intervention", anime: "Pour animer",
     uneTitre: "Vraie info ou fake news ?",
     uneTexte: "Trouve les bonnes sources et mesure la fiabilité de chaque affirmation. Trois niveaux, des affirmations du quotidien aux vraies controverses, et un mode Créateur pour inventer tes propres questions.",
     jouerFakemetre: "Jouer à Fakemètre", voirJeux: "Voir les 12 jeux",
@@ -565,7 +572,7 @@ I18N.register({
     h1: "Educational Games", by: "by", sommaire: "Game families",
     intro: "Critical thinking, disinformation, cognitive biases: games to play right in your browser, in class or at home.",
     navJeux: "Games", navIllusions: "Illusions", navInterv: "Sessions",
-    phare: "Flagship game", libre: "Free access", code: "School code", anime: "For live sessions",
+    phare: "Flagship game", libre: "Free access", code: "School code", apres: "Available after a session", anime: "For live sessions",
     uneTitre: "Real news or fake news?",
     uneTexte: "Find the right sources and measure how reliable each claim is. Three levels, from everyday claims to real controversies, and a Creator mode to write your own questions.",
     jouerFakemetre: "Play Fakemeter", voirJeux: "See the 12 games",
@@ -623,6 +630,22 @@ I18N.register({
   /* Accès réservé : tout est prêt dans les cartes (data-acces, pastilles),
      mais rien ne s'affiche tant que le système de codes n'existe pas. Passer
      à true le jour où jeux.antoninatger.com accepte les codes. */
+
+  /* Mode intervention : ?intervention sur l'adresse (mémorisé sur cet appareil),
+     ?intervention=off pour revenir à la vue publique. */
+  (function () {
+    var q = location.search, on = false;
+    try {
+      if (/[?&]intervention=off\b/.test(q)) localStorage.removeItem('jeux.intervention');
+      else if (/[?&]intervention\b/.test(q)) localStorage.setItem('jeux.intervention', '1');
+      on = localStorage.getItem('jeux.intervention') === '1';
+    } catch (e) { on = /[?&]intervention\b/.test(q) && !/=off/.test(q); }
+    if (on) { document.body.classList.add('mode-intervention'); return; }
+    [].forEach.call(document.querySelectorAll('.carte--apres .carte__lien'), function (a) {
+      a.setAttribute('aria-disabled', 'true'); a.setAttribute('tabindex', '-1');
+      a.addEventListener('click', function (e) { e.preventDefault(); });
+    });
+  })();
   var ACCES_RESERVE = false;
   if (ACCES_RESERVE) document.body.classList.add('acces-reserve');
 
@@ -685,7 +708,7 @@ I18N.register({
         li.appendChild(img);
       } else {
         li.appendChild(document.createElement('span'));
-        if (!suite) suite = c;
+        if (!suite && (!c.classList.contains('carte--apres') || document.body.classList.contains('mode-intervention'))) suite = c;
       }
       var sr = document.createElement('span'); sr.className = 'sr-seul'; sr.textContent = nom + (fait ? ' ✓' : '');
       li.appendChild(sr);

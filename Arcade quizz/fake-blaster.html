@@ -3,38 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAKE BLASTER — Esprit Critique</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<title data-i18n="pageTitle">FAKE BLASTER — Esprit Critique</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
 <script src="../i18n.js"></script>
+<script src="../collection.js"></script>
 <script>
 I18N.register({
   fr: {
+    pageTitle: "Fake Blaster", colRetour: "Retour à l'arcade",
+    startMsg: "Appuie sur ESPACE ou clique pour commencer !",
+    gameOfA: "— partie de", gameOfB: "questions",
+    realOne: "C'EST LA VRAIE ! −1 VIE", lostLife: "−1 VIE !",
     subtitle: "ESPRIT CRITIQUE", menu: "← MENU",
     rule1: "🎯  Les réponses flottent dans le ciel — vise avec la souris",
     rule2: "💥  Détruis toutes les FAUSSES réponses (+50 pts)",
     rule3: "✅  Ne tire PAS sur la bonne réponse (−1 vie)",
     rule4: "➡  Quand tout est détruit, avance à droite pour continuer",
-    startPrompt: "▶  ESPACE ou CLIC pour commencer  ◀",
     controls: "← → : bouger   |   ↑ W : sauter   |   SOURIS : viser   |   CLIC Z X ESPACE : tirer",
     finalScore: "SCORE FINAL : ", loseMsg: "Continue à entrainer ton esprit critique !",
-    replayPrompt: "▶  ESPACE ou CLIC pour rejouer  ◀",
     winTitle: "MISSION ACCOMPLIE !", winMsg: "Tu as démasqué toutes les fausses infos de la série !",
     isTrue: "✅ VRAIE !", advance: "AVANCE !",
-    inGameControls: "← → bouger  |  ↑ sauter  |  SOURIS viser  |  CLIC / ESPACE tirer"
+    inGameControls: "← → bouger  |  ↑ sauter  |  SOURIS viser  |  CLIC / ESPACE tirer",
+    explLabel: "💡 POURQUOI :", explDefault: "La bonne réponse est celle restée en vert.",
+    explWaiting: "L'explication s'affichera ici après chaque question.",
+    plus50: "+50 pts !", plus100Advance: "+100 ! AVANCE ➡",
+    playBtn: "JOUER ▶", replayBtn: "REJOUER ▶"
   },
   en: {
+    pageTitle: "Fake Blaster", colRetour: "Back to the arcade",
+    startMsg: "Press SPACE or click to start!",
+    gameOfA: "— game of", gameOfB: "questions",
+    realOne: "THAT'S THE TRUE ONE! −1 LIFE", lostLife: "−1 LIFE!",
     subtitle: "CRITICAL THINKING", menu: "← MENU",
     rule1: "🎯  The answers float in the sky — aim with the mouse",
     rule2: "💥  Destroy all the FALSE answers (+50 pts)",
     rule3: "✅  Do NOT shoot the correct answer (−1 life)",
     rule4: "➡  When everything's destroyed, move right to continue",
-    startPrompt: "▶  SPACE or CLICK to start  ◀",
     controls: "← → : move   |   ↑ W : jump   |   MOUSE : aim   |   CLICK Z X SPACE : shoot",
     finalScore: "FINAL SCORE: ", loseMsg: "Keep training your critical thinking!",
-    replayPrompt: "▶  SPACE or CLICK to replay  ◀",
     winTitle: "MISSION ACCOMPLISHED!", winMsg: "You unmasked all the false claims in the set!",
     isTrue: "✅ TRUE!", advance: "GO!",
-    inGameControls: "← → move  |  ↑ jump  |  MOUSE aim  |  CLICK / SPACE shoot"
+    inGameControls: "← → move  |  ↑ jump  |  MOUSE aim  |  CLICK / SPACE shoot",
+    explLabel: "💡 WHY:", explDefault: "The correct answer is the one left in green.",
+    explWaiting: "The explanation will appear here after each question.",
+    plus50: "+50 pts!", plus100Advance: "+100! GO ➡",
+    playBtn: "PLAY ▶", replayBtn: "REPLAY ▶"
   }
 });
 </script>
@@ -43,27 +57,70 @@ I18N.register({
 ['questions','questions-6e5e','questions-niveau1','questions-niveau2','questions-niveau3','qcm-store'].forEach(function(f){document.write('<scr'+'ipt src="'+f+(en?'-en':'')+'.js"><'+'/scr'+'ipt>');});})();
 </script>
 <style>
+/* Identité arcade sur le socle (chantier 05). */
+:root{
+  --bg:#07020f;
+  --surface:#150b28;
+  --txt:#e0d0ff;
+  --txt-secondaire:#8a6ab0;  /* 4,65:1 sur --bg */
+  --acc:#ff7700;
+  --acc-txt:#1c0a00;
+  --font-texte:'Nunito',sans-serif;
+  --font-titre:'Press Start 2P',monospace;
+}
+/* Press Start 2P est très large : le titre de l'en-tête unifié redescend. */
+.col-entete__titre{font-size:var(--fs-300);color:#ff7700;text-shadow:0 0 14px rgba(255,119,0,.5)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
   background:#07020f;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   min-height:100vh;
   font-family:'Press Start 2P',monospace;
 }
-#wrap{position:relative;width:800px;max-width:100vw;}
+/* L'en-tête unifié reste en haut ; le jeu se centre par marges auto dans
+   l'espace restant (l'ancien justify-content:center posait l'en-tête au
+   milieu de la page). */
+#wrap{position:relative;width:800px;max-width:100%;margin-top:auto;margin-bottom:auto;}
+#gameArea{position:relative}
+/* E2 : à la fin de la partie, le récapitulatif ColFin prend la place du canvas. */
+#gameArea.fin canvas, #gameArea.fin #actionBtn{display:none}
 #game{
-  display:block;width:800px;height:460px;max-width:100%;
+  display:block;width:800px;aspect-ratio:800/460;height:auto;max-width:100%;
   border:3px solid #c8440a;
   box-shadow:0 0 60px rgba(255,100,0,0.5);
   cursor:crosshair;
 }
+/* F6 : la question vit désormais AU-DESSUS du canvas — les réponses sont
+   dans le ciel du jeu, l'œil ne doit plus faire l'aller-retour vers le bas. */
 #qbar{
-  background:#09040f;border:2px solid #c8440a;border-top:none;
+  background:#09040f;border:2px solid #c8440a;border-bottom:none;
   padding:10px 18px;display:flex;align-items:center;gap:12px;
   line-height:1.5;
 }
-#qlabel{font-size:10px;color:#ff7700;white-space:nowrap;flex-shrink:0;}
+/* F6 : bouton HTML pour commencer/rejouer — la seule action jusqu'ici était
+   Espace/clic sur un texte peint dans le canvas, jamais focusable. */
+#actionBtn{
+  position:absolute;left:50%;bottom:64px;transform:translateX(-50%);
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;
+  padding:12px 30px;border-radius:8px;border:2px solid #ff7700;color:#ff7700;
+  background:rgba(7,2,15,.85);cursor:pointer;letter-spacing:.04em;
+  box-shadow:0 0 20px rgba(255,119,0,.35);transition:all .15s;
+}
+#actionBtn:hover{background:#ff7700;color:#1c0a00}
+#actionBtn[hidden]{display:none}
+#qlabel{font-size:var(--fs-100);color:#ff7700;white-space:nowrap;flex-shrink:0;}
 #qtext{font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:#e0d0ff;flex:1;}
+/* Chantier 04 : bandeau d'explication — le jeu n'en affichait aucune, jamais. */
+#explbar{
+  background:#09040f;border:2px solid #c8440a;border-top:none;
+  padding:10px 18px;display:flex;align-items:flex-start;gap:12px;
+  line-height:1.5;transition:background .2s,border-color .2s;
+}
+#expllabel{font-size:var(--fs-100);color:#ffcc44;white-space:nowrap;flex-shrink:0;padding-top:2px;}
+#expltext{font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:#ffe9b0;flex:1;}
+#explbar.ko{border-color:#ff3355;background:#170209;}
+#explbar.ko #expllabel{color:#ff8098;}
+#explbar.idle #expltext{color:#8a6ab0;font-weight:600;font-style:italic;}
 #menubar{
   background:#09040f;border:2px solid #c8440a;border-top:none;
   padding:10px 18px;display:flex;align-items:center;justify-content:space-between;
@@ -76,17 +133,23 @@ body{
 #menu-link:hover{background:#c8440a;color:#fff;}
 #set-label{color:#8a6ab0;letter-spacing:.04em;font-size:13px;}
 
-/* a11y collection */
-:where(button,a,[tabindex],input,select,textarea):focus-visible{outline:3px solid #38bdf8;outline-offset:2px;border-radius:6px;}
-(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 </style>
 </head>
-<body>
+<body data-col-titre-cle="pageTitle" data-col-retour="index.html" data-col-retour-cle="colRetour">
 <div id="wrap">
-  <canvas id="game" width="800" height="460"></canvas>
   <div id="qbar">
     <span id="qlabel">❓ QUESTION :</span>
-    <span id="qtext">Appuie sur ESPACE ou clique pour commencer !</span>
+    <span id="qtext" data-i18n="startMsg">Appuie sur ESPACE ou clique pour commencer !</span>
+  </div>
+  <div id="gameArea">
+    <canvas id="game" width="800" height="460"></canvas>
+    <button id="actionBtn" type="button"></button>
+    <!-- E2 : écran de fin rendu par ColFin (titre, score, questions ratées, rejouer mes erreurs) à la place du canvas -->
+    <div class="col-fin" id="ecran-fin" hidden></div>
+  </div>
+  <div id="explbar" class="idle" aria-live="polite">
+    <span id="expllabel" data-i18n="explLabel">💡 POURQUOI :</span>
+    <span id="expltext" data-i18n="explWaiting">L'explication s'affichera ici après chaque question.</span>
   </div>
   <div id="menubar">
     <a id="menu-link" href="index.html" data-i18n="menu">← MENU</a>
@@ -94,78 +157,37 @@ body{
   </div>
 </div>
 <script>
-// ══════════════════════════════════════════════
-// DATA — questions de secours (si rien au hub)
-// ══════════════════════════════════════════════
-var QUESTIONS = [
-  {q:"Qu'est-ce qu'une Fake News ?",
-   good:["Une information fausse"],
-   bad:["Une vraie information","Un fait prouvé","Un avis personnel"]},
-  {q:"Comment vérifier une information ?",
-   good:["Vérifier la source"],
-   bad:["La partager immédiatement","Faire confiance aux réseaux","Croire si ça semble sympa"]},
-  {q:"Qu'est-ce qu'un FAIT ?",
-   good:["Une info prouvée, la même pour tous"],
-   bad:["Un avis personnel","Les gâteaux choco sont meilleurs","La glace vanille est délicieuse"]},
-  {q:"Qu'est-ce qu'une OPINION ?",
-   good:["Un avis personnel"],
-   bad:["Une info prouvée","Le soleil est une étoile","Paris est en France"]},
-  {q:"Les paréidolies, c'est quoi ?",
-   good:["Des illusions créées par le cerveau"],
-   bad:["Des faits scientifiques","De vrais visages cachés","Un type de Fake News"]},
-  {q:"C'est quoi le système INTUITIF ?",
-   good:["Rapide mais peut se tromper"],
-   bad:["Lent et très rationnel","Toujours fiable","Consomme beaucoup d'énergie"]},
-  {q:"C'est quoi le système ANALYTIQUE ?",
-   good:["Lent mais plus rationnel"],
-   bad:["Fonctionne très vite","Fait souvent des erreurs","Consomme peu d'énergie"]},
-  {q:"C'est quoi un BIAIS COGNITIF ?",
-   good:["Une distorsion du traitement d'une info"],
-   bad:["Une information vraie","Un fait scientifique","Une méthode de vérif."]},
-  {q:"Que faire face à une info en ligne ?",
-   good:["Vérifier le contexte"],
-   bad:["La partager sans vérifier","Faire confiance aux likes","Croire si c'est spectaculaire"]},
-  {q:"Le biais de CONFIRMATION, c'est ?",
-   good:["Croire les infos qui confirment nos idées"],
-   bad:["Vérifier toutes les informations","Accepter d'avoir tort","Chercher des preuves contraires"]},
-  {q:"Si une info semble trop belle pour être vraie…",
-   good:["Il faut la vérifier"],
-   bad:["C'est forcément vrai","Il faut la partager vite","C'est toujours fiable"]},
-  {q:"Que boit une vache ?",
-   good:["De l'eau"],
-   bad:["Du lait","Du jus de fruit","Du café"]},
-  {q:"L'étoile du Berger, c'est…",
-   good:["Une planète (Vénus)"],
-   bad:["Une étoile","Le Soleil","Mars"]},
-  {q:"Quelle attitude face aux Fake News ?",
-   good:["Être modeste, accepter de se tromper"],
-   bad:["Faire confiance à son instinct","Partager sans réfléchir","Ne jamais douter de soi"]},
-];
+// F6 : le secours local au format good/bad (un troisième format de question
+// dans le projet, en double avec questions.js) est supprimé — DEFAULT_QCM
+// est chargé avant ce script comme dans les cinq autres jeux de l'arcade.
 
 // ── Construction de la session (série du hub + longueur 5/10/30) ──
-function buildSession(){
-  var src = (typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions() : null;
-  if(src && src.length && src[0].options){
-    return src.map(function(item){
-      return {q:item.q, opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
-    });
+function buildSession(pool){
+  // E2 : les jamais vues d'abord (mémoire du store), ou le paquet imposé par « rejouer mes erreurs »
+  var src = pool ? pool.slice() : ((typeof QCMStore!=='undefined') ? QCMStore.getSessionQuestions(QCMStore.cleMemoire()) : null);
+  // Sans série choisie au hub : série par défaut DANS LA LANGUE COURANTE
+  // (questions.js / questions-en.js), comme les autres jeux de l'arcade.
+  if(!(src && src.length && src[0].options) && typeof DEFAULT_QCM!=='undefined' && DEFAULT_QCM.length && DEFAULT_QCM[0].options){
+    src = DEFAULT_QCM.slice();
+    for(var i2=src.length-1;i2>0;i2--){var j2=Math.floor(Math.random()*(i2+1));var t2=src[i2];src[i2]=src[j2];src[j2]=t2;}
+    src = src.slice(0, (typeof QCMStore!=='undefined') ? QCMStore.loadSessionCount() : 10);
   }
-  // Secours : format good/bad local, mélangé puis coupé
-  var list = QUESTIONS.map(function(item){
-    var opts=[{text:item.good[0],bad:false}];
-    item.bad.slice(0,3).forEach(function(b){opts.push({text:b,bad:true});});
-    return {q:item.q, opts:opts};
+  // Chantier 04 : `expl` était perdu ici — le champ n'arrivait jamais jusqu'au jeu.
+  SESSION_SRC = src;
+  return src.map(function(item){
+    return {q:item.q, expl:item.expl,
+            opts:item.options.map(function(o,i){return {text:o, bad:i!==item.answer};})};
   });
-  for(var i=list.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=list[i];list[i]=list[j];list[j]=t;}
-  var n=(typeof QCMStore!=='undefined')?QCMStore.loadSessionCount():10;
-  return list.slice(0,Math.min(n,list.length));
 }
 
 (function(){
-  if(typeof QCMStore==='undefined') return;
-  var info=QCMStore.getActiveInfo();
+  // Le lien MENU vit désormais dans l'en-tête unifié : sans série affichée,
+  // la barre du bas n'a plus rien à montrer, on la masque.
+  var bar=document.getElementById('menubar');
+  var info=(typeof QCMStore!=='undefined')?QCMStore.getActiveInfo():null;
   var lbl=document.getElementById('set-label');
-  if(lbl&&info.label) lbl.textContent=info.label+' — partie de '+Math.min(QCMStore.loadSessionCount(),info.count)+' questions';
+  if(lbl&&info&&info.label) lbl.textContent=info.label+' '+I18N.t('gameOfA')+' '+Math.min(QCMStore.loadSessionCount(),info.count)+' '+I18N.t('gameOfB');
+  else if(bar) bar.style.display='none';
 })();
 
 // ══════════════════════════════════════════════
@@ -226,6 +248,28 @@ var gstate = 'title'; // title | playing | gameover | win
 var frame=0, bgX=0, shakeT=0, flashT=0, flashCol='#ff8800';
 var score=0, lives=3;
 var SESSION=[], qIdx=0, curQ=null, cleared=false;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les questions n'ont pas d'identifiant : leur énoncé (q) en tient lieu, dans les six jeux de
+// l'arcade. Une question est ratée dès qu'elle coûte une vie (la vraie info a été abattue).
+var SESSION_SRC=[], joue=[], erreurQ=false, qNotee=false;
+function noterQuestion(){
+  if(!curQ||qNotee) return;
+  qNotee=true;
+  joue.push({id:curQ.q, titre:curQ.q, reussi:!erreurQ, explication:curQ.expl||''});
+}
+function titreBrut(html){ var d=document.createElement('div'); d.innerHTML=String(html).replace(/<br\s*\/?>/gi,' '); return d.textContent; }
+function finDePartie(win){
+  document.getElementById('gameArea').classList.add('fin');
+  var cible=document.getElementById('ecran-fin'); cible.hidden=false;
+  ColFin.rendre({
+    cible:cible, jeu:(typeof QCMStore!=='undefined')?QCMStore.cleMemoire():'arcade',
+    titre: win ? titreBrut(I18N.t('winTitle')) : 'GAME OVER',
+    message: I18N.t('finalScore')+score+' — '+I18N.t(win?'winMsg':'loseMsg'),
+    score: joue.filter(function(j){ return j.reussi; }).length, total: joue.length, items: joue,
+    onRejouer: function(rates){ startGame(SESSION_SRC.filter(function(q){ return rates.some(function(r){ return r.id===q.q; }); })); },
+    onRecommencer: function(){ startGame(); }
+  });
+}
 
 var hero = {x:130,y:GY,vy:0,onGround:true,shootCD:0,walkF:0,shootFX:0};
 var bullets=[], bubbles=[], particles=[], floats=[];
@@ -251,25 +295,58 @@ cv.addEventListener('click',function(){
   if(gstate==='playing') doShoot(); else startGame();
 });
 
+// F6 : bouton HTML pour commencer/rejouer — accessible au clavier et au
+// lecteur d'écran, là où seul un texte peint dans le canvas existait avant.
+var actionBtn=document.getElementById('actionBtn');
+actionBtn.addEventListener('click',function(e){ e.stopPropagation(); startGame(); });
+function syncActionBtn(){
+  if(gstate!=='title'){ actionBtn.hidden=true; return; } // E2 : à la fin, « rejouer » est dans le récapitulatif ColFin
+  actionBtn.hidden=false;
+  actionBtn.textContent = (gstate==='title') ? I18N.t('playBtn') : I18N.t('replayBtn');
+}
+
 // ══════════════════════════════════════════════
 // CORE
 // ══════════════════════════════════════════════
-function startGame(){
+function startGame(pool){
+  // appelée aussi depuis un clic ou une touche : l'événement n'est pas un paquet
+  pool = Array.isArray(pool) ? pool : null;
   score=0;lives=3;shakeT=0;flashT=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  document.getElementById('gameArea').classList.remove('fin');
+  document.getElementById('ecran-fin').hidden=true;
   hero={x:130,y:GY,vy:0,onGround:true,shootCD:0,walkF:0,shootFX:0};
   bullets=[];particles=[];floats=[];
-  SESSION=buildSession();
+  SESSION=buildSession(pool);
   qIdx=0;
   loadQ();
   gstate='playing';
+  syncActionBtn();
 }
 
 function loadQ(){
   curQ=SESSION[qIdx];
   cleared=false;
+  erreurQ=false; qNotee=false;
   bullets=[];
   document.getElementById('qtext').textContent='('+(qIdx+1)+'/'+SESSION.length+') '+curQ.q;
+  resetExpl();
   spawnBubbles();
+}
+
+// ── Chantier 04 : explication pédagogique, à l'erreur comme à la réussite ──
+function showExpl(type){
+  var bar=document.getElementById('explbar');
+  bar.className=(type==='ko'?'ko':'');
+  document.getElementById('expllabel').textContent=I18N.t('explLabel');
+  document.getElementById('expltext').textContent=(curQ&&curQ.expl)||I18N.t('explDefault');
+}
+function resetExpl(){
+  var bar=document.getElementById('explbar');
+  bar.className='idle';
+  document.getElementById('expllabel').textContent=I18N.t('explLabel');
+  document.getElementById('expltext').textContent=I18N.t('explWaiting');
 }
 
 // ── Bulles flottantes : une par option, réparties dans le ciel ──
@@ -279,16 +356,30 @@ function spawnBubbles(){
   for(var i=opts.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=opts[i];opts[i]=opts[j];opts[j]=t;}
   var n=opts.length;
   cx.font='700 14px Nunito,sans-serif';
+
+  // F6 : colonnes réelles — la largeur des bulles est bornée par la largeur
+  // de leur colonne, plus de jitter qui les poussait dans la colonne voisine
+  // (l'ancienne largeur fixe de 200 px débordait des colonnes de 160 px).
+  var marginX=60;
+  var colW=(W-marginX*2)/n;
+  var maxW=Math.max(90,colW-24);
+  // Au-delà de 60 caractères, deux rangées décalées : le texte prend 2-3
+  // lignes, il lui faut de la hauteur, pas seulement de la largeur.
+  var hasLong=opts.some(function(o){return o.text.length>60;});
+  var skyTop=78, skyBot=GY-130;
+
   for(var k=0;k<n;k++){
-    var maxW=200;
     var lines=wrapLines(opts[k].text,maxW-16);
     var widths=lines.map(function(l){return cx.measureText(l).width;});
     var bw=Math.min(maxW,Math.max.apply(null,widths)+24);
     var bh=lines.length*17+16;
-    // colonnes réparties sur la largeur, hauteur aléatoire dans le ciel
-    var colW=(W-160)/n;
-    var x=110+colW*k+colW/2+(Math.random()-0.5)*30;
-    var y=80+Math.random()*(GY-220);
+    var x=marginX+colW*k+colW/2;
+    var y;
+    if(hasLong){
+      y=(k%2===0) ? (skyTop+bh/2+4) : (skyBot-bh/2-4);
+    } else {
+      y=skyTop+Math.random()*(skyBot-skyTop);
+    }
     bubbles.push({
       x:x, y:y, w:bw, h:bh, lines:lines,
       bad:opts[k].bad, alive:true, revealed:false,
@@ -318,9 +409,9 @@ function doShoot(){
 }
 
 function loseLife(msg,fx,fy){
-  lives--;shakeT=11;
-  addFloat(fx||hero.x,(fy||hero.y-70),msg||'−1 VIE !','#ff3355');
-  if(lives<=0) gstate='gameover';
+  lives--;shakeT=11;erreurQ=true;
+  addFloat(fx||hero.x,(fy||hero.y-70),msg||I18N.t('lostLife'),'#ff3355');
+  if(lives<=0){ gstate='gameover'; syncActionBtn(); noterQuestion(); finDePartie(false); }
 }
 
 function boom(x,y,col,n){
@@ -388,13 +479,16 @@ function update(){
           score+=50;
           boom(bb.x,by,'#ff7700');boom(bb.x,by,'#ffcc00',8);
           flashCol='rgba(255,140,0,1)';flashT=14;
-          addFloat(bb.x,by-30,'+50 pts !','#ffee55');
+          addFloat(bb.x,by-30,I18N.t('plus50'),'#ffee55');
           checkCleared();
         } else if(!bb.revealed){
           bb.revealed=true;bb.flash=20;
           boom(bb.x,by,'#44ff88',10);
           flashCol='rgba(220,0,50,1)';flashT=24;
-          loseLife('C\'EST LA VRAIE ! −1 VIE',bb.x,by-35);
+          loseLife(I18N.t('realOne'),bb.x,by-35);
+          // Chantier 04 : c'est LE moment pédagogique — le joueur vient de tirer
+          // sur la bonne réponse, on lui dit pourquoi c'était la bonne.
+          showExpl('ko');
         }
         break;
       }
@@ -404,7 +498,7 @@ function update(){
   // Avancer vers la droite quand tout est détruit → question suivante
   if(cleared&&hero.x>=W-40){
     qIdx++;
-    if(qIdx>=SESSION.length){ gstate='win'; }
+    if(qIdx>=SESSION.length){ gstate='win'; syncActionBtn(); finDePartie(true); }
     else { hero.x=60; loadQ(); }
   }
 
@@ -425,12 +519,16 @@ function checkCleared(){
     if(bubbles[i].bad&&bubbles[i].alive) return;
   }
   cleared=true;
+  noterQuestion();
   score+=100;
   // Pédagogie : révéler la bonne réponse en vert
   for(var j=0;j<bubbles.length;j++){
     if(!bubbles[j].bad) bubbles[j].revealed=true;
   }
-  addFloat(hero.x,hero.y-90,'+100 ! AVANCE ➡','#44ffcc');
+  addFloat(hero.x,hero.y-90,I18N.t('plus100Advance'),'#44ffcc');
+  // Chantier 04 : explication aussi à la réussite. Elle reste affichée tant que
+  // le joueur n'a pas avancé jusqu'à la question suivante — pas de minuteur.
+  showExpl('ok');
 }
 
 // ══════════════════════════════════════════════
@@ -652,10 +750,8 @@ function drawTitle(){
     cx.fillStyle=rules[i][1];cx.fillText(rules[i][0],W/2,180+i*32);
   }
 
-  if(Math.sin(frame*0.07)>0){
-    cx.font='800 16px Nunito,sans-serif';cx.textAlign='center';cx.textBaseline='middle';
-    cx.fillStyle='#ffffff';cx.fillText(I18N.t('startPrompt'),W/2,H-50);
-  }
+  // F6 : le bouton HTML #actionBtn remplace le texte clignotant qui vivait
+  // ici — seule la ligne de commandes clavier/souris reste peinte.
   cx.font='600 13px Nunito,sans-serif';cx.textAlign='center';cx.textBaseline='middle';
   cx.fillStyle='rgba(170,120,230,0.8)';
   cx.fillText(I18N.t('controls'),W/2,H-20);
@@ -675,10 +771,6 @@ function drawGameOver(){
   cx.fillText(I18N.t('finalScore')+score,W/2,195);
   cx.font='700 16px Nunito,sans-serif';cx.fillStyle='#b9a0e0';
   cx.fillText(I18N.t('loseMsg'),W/2,250);
-  if(Math.sin(frame*0.07)>0){
-    cx.font='800 16px Nunito,sans-serif';cx.fillStyle='#fff';
-    cx.fillText(I18N.t('replayPrompt'),W/2,330);
-  }
   cx.restore();
 }
 
@@ -693,10 +785,6 @@ function drawWin(){
   cx.fillText(I18N.t('finalScore')+score,W/2,195);
   cx.font='700 16px Nunito,sans-serif';cx.fillStyle='#b9e0c8';
   cx.fillText(I18N.t('winMsg'),W/2,250);
-  if(Math.sin(frame*0.07)>0){
-    cx.font='800 16px Nunito,sans-serif';cx.fillStyle='#fff';
-    cx.fillText(I18N.t('replayPrompt'),W/2,330);
-  }
   cx.restore();
 }
 
@@ -761,7 +849,9 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
+syncActionBtn();
 loop();
 </script>
+  <script src="../retours.js" defer></script>
 </body>
 </html>

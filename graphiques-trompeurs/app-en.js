@@ -90,42 +90,64 @@ const QUESTIONS = [
    t:"An article claims these two social networks have seen 'comparable' growth since 2019, curves included. Look closely at how this chart is built: does anything seem off?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"There are <b>two different vertical scales</b>: one on the left for Network A (0 to 60 million), one on the right for Network B (0 to 600 million) — ten times bigger. As a result, the two curves overlap almost perfectly, even though Network B actually has <b>ten times more</b> users than Network A. Always check whether there's an axis on the left <b>and</b> one on the right."},
+  {img:"images/pisa-france-axe-justifie.svg", cred:"After the OECD country note for France, PISA 2025 results (8 September 2026)",
+   t:"This OECD chart shows France's scores in the PISA surveys since 2000. Plenty of comments accuse it of exaggerating the decline. Examine it carefully: do you see a trick, or does it look honest to you?",
+   a:"honnete", opts:["tronq","double","omises"],
+   fix:"🎉 Nothing to fix: a single scale, no 3D, no year removed. And putting the axis back at zero would help nothing — it would squash all three curves into a flat line.",
+   e:"It's an <b>honest chart</b>, despite appearances. The axis does start at <b>450</b> rather than zero — but a PISA score cannot be zero: the scale is built so that the OECD average sits around <b>500</b>, and no country has ever fallen below 300. Starting at zero would squash all three curves into a flat line and make a very real drop of nearly 50 points in reading <b>disappear</b>. The two 'Score' labels, left and right, are not a dual axis: it's <b>the same scale</b>, repeated so all three panels can be read. And if science only starts in 2006 and maths in 2003, that isn't data removed: those subjects weren't measured before then. <b>A truncated axis isn't always a lie</b> — the real question is: does zero mean anything for this data?"},
 ];
 
 let deck=[],idx=0,score=0,streak=0,best=0,nbOk=0,freeRetryUsed=false;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Identifiant stable d'une question : le chemin de son image (unique, identique en FR et en EN).
+const JEU="graphiques-trompeurs";
+let joue=[];
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
 
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 // ===== Expert mode: keyword-based technique detection =====
 const KEYWORDS = {
-  tronq:   ["truncated","not at zero","not at 0","doesn't start at","does not start at","cut axis","cut scale","clipped axis","zoom"],
+  tronq:   ["truncated","not at zero","not at 0","doesn't start at","does not start at","cut axis","cut scale","clipped axis","zoom","missing zero","no zero","not starting at zero"],
   cam3d:   ["pie chart","3d","three dimensions","relief","perspective","depth","tilt","angle","viewed from an angle","slanted"],
   double:  ["two scales","two axes","dual axis","double axis","different scales","right axis","secondary axis","second axis","not the same scale","different scale for each","own scale","scale on the left","scale on the right"],
   picto:   ["pictogram","icon","silhouette","disproportion","area","enlarged","too big","too large","wrong size","height and width","size of the icons","overrepresent","not proportional","not to scale","exaggerat"],
   omises:  ["missing","remov","disappear","incomplete","hidden","cherry pick","hole in the data","not all the years","not all the data"],
-  noaxe:   ["no scale","without a scale","no axis","missing axis","no numbers on the axis","no numbers on the scale","bars not proportional","height not proportional","not to scale","arbitrary height","made up height"],
+  noaxe:   ["no scale","without a scale","no axis","missing axis","no numbers on the axis","no numbers on the scale","bars not proportional","height not proportional","arbitrary height","made up height"],
   inverse: ["inverted axis","reversed axis","upside down","upside-down","flipped scale","reversed scale","axis flipped","backwards axis","flipped axis","axis is backwards"],
   honnete: ["honest","nothing wrong","no trap","no trick","reliable","correct","no problem","not misleading","fine as is","all good","nothing to report","seems fine","looks fine","no issue","looks correct","checks out","follows best practices"],
 };
 function normalize(s){
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
 }
+// A missing zero on the axis is always a truncated axis, never missing data:
+// "missing" (omises' broad keyword) also matches "the axis is missing zero",
+// hence this explicit priority before the generic scoring.
+const ZERO_AXIS_PHRASES=["missing zero","no zero","not starting at zero","not starting at 0","doesn't start at zero","does not start at zero","not at zero","not at 0"];
 function detectTech(raw){
   const n=normalize(raw);
+  if(ZERO_AXIS_PHRASES.some(p=>n.includes(normalize(p))))return "tronq";
   let bestId=null,bestCount=0,tieCount=0;
   for(const id in KEYWORDS){
     const count=KEYWORDS[id].reduce((acc,k)=>acc+(n.includes(normalize(k))?1:0),0);
     if(count>bestCount){bestId=id;bestCount=count;tieCount=1;}
     else if(count===bestCount && count>0){tieCount++;}
   }
-  if(bestCount===0||tieCount>1)return null;
+  if(bestCount===0)return null;
+  if(tieCount>1)return "__TIE__";
   return bestId;
 }
 
-function startGame(){
-  deck=shuffle([...QUESTIONS]);
+function startGame(sousDeck){
+  // E2 : toute la série est jouée à chaque partie ; « rejouer mes erreurs » impose un paquet réduit
+  deck=shuffle(sousDeck || [...QUESTIONS]);
   idx=0;score=0;streak=0;best=0;nbOk=0;
+  joue=[];
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
+  // la partie repart sans recharger la page : le HUD repart de zéro lui aussi
+  $("score").textContent=0; $("streak").textContent="";
   $("fiches").style.display="none";
   $("intro").style.display="none";
   $("hud").style.display="flex";
@@ -150,7 +172,8 @@ function renderQ(){
   const ft=$("ftext");
   ft.value="";ft.disabled=false;
   $("fvalidate").disabled=false;
-  ft.focus({preventScroll:true});
+  // No autofocus on touch: the virtual keyboard would open and hide the chart.
+  if(!matchMedia("(pointer: coarse)").matches) ft.focus({preventScroll:true});
   $("aidebtn").style.display="block";
   $("aidebtn").disabled=false;
   $("answers").style.display="none";
@@ -174,6 +197,7 @@ function revealAide(){
 }
 
 function applyResult(it,ok,detectedLabel,viaFree){
+  joue.push({id:it.img, titre:texteBrut(it.t), reussi:ok, explication:texteBrut(it.e)});
   if(ok){
     nbOk++;
     if(viaFree){
@@ -232,7 +256,7 @@ function showFixDemo(it){
   else if(it.a==="omises")initFixOmises();
   else if(it.a==="noaxe")initFixNoaxe();
   else if(it.a==="inverse")initFixInverse();
-  else initFixHonnete();
+  else initFixHonnete(it);
   if(it.a!=="honnete")$("fixReadout").innerHTML=FIX_HINT;
 }
 
@@ -459,9 +483,9 @@ function renderFixInverse(){
 function applyFixInverse(v){fixInverseVal=Math.max(FIX_INVERSE.min,Math.min(FIX_INVERSE.max,v));renderFixInverse();$("fixReadout").innerHTML=FIX_HINT;}
 
 // --- Honest chart: nothing to fix ---
-function initFixHonnete(){
+function initFixHonnete(it){
   $("fixChart").innerHTML="";
-  $("fixReadout").innerHTML=`🎉 This chart is already honest: zero-based axis, one scale, no 3D, nothing missing. Nothing to fix!`;
+  $("fixReadout").innerHTML=(it&&it.fix)||`🎉 This chart is already honest: zero-based axis, one scale, no 3D, nothing missing. Nothing to fix!`;
 }
 
 // Applies the written instruction to the chart. Returns false if it wasn't understood.
@@ -582,9 +606,11 @@ function submitFree(){
   const it=deck[idx];
   const detected=detectTech(raw);
   // Unintelligible answer ≠ wrong technique: offer one rephrase before counting it wrong
-  if(detected===null && !freeRetryUsed){
+  if((detected===null || detected==="__TIE__") && !freeRetryUsed){
     freeRetryUsed=true;
-    $("freehint").textContent="🤔 No technique recognized in your answer — rephrase using a technique name (last try).";
+    $("freehint").textContent = detected==="__TIE__"
+      ? "🤔 Two techniques recognized in your answer — be more specific (last try)."
+      : "🤔 No technique recognized in your answer — rephrase using a technique name (last try).";
     return;
   }
   $("freehint").textContent="";
@@ -596,7 +622,7 @@ function submitFree(){
     b.disabled=true;b.classList.add("dim");
     if(b.dataset.ok==="1"){b.classList.remove("dim");b.classList.add("good");}
   });
-  applyResult(it,ok,detected?TECH[detected].l:null,true);
+  applyResult(it,ok,(detected && detected!=="__TIE__")?TECH[detected].l:null,true);
 }
 
 function nextQ(){
@@ -609,8 +635,6 @@ function endGame(){
   $("nextbtn").style.display="none";
   $("hud").style.display="none";
   $("end").style.display="block";
-  $("end-score").textContent=score+" pts";
-  $("end-sub").textContent=nbOk+"/"+deck.length+" correct answers";
   const ratio=nbOk/deck.length;
   let title,msg;
   if(ratio>=0.9){title="🏆 Statistician's eye!";msg="You already spot the classic misleading-chart tricks. This reflex — <b>checking the axis, the scale, the 3D and any missing data</b> — will serve you everywhere: news, social media, company reports.";}
@@ -618,8 +642,13 @@ function endGame(){
   else{title="👀 Your eye is training…";msg="These techniques fool almost everyone at first glance — that's the whole point! Go check out the reference cards, then play again.";}
   if(best>=3)msg+="<br><br>Your best streak: <b>"+best+" 🔥</b>";
   msg+="<br><br>💡 <i>A chart can be 100% accurate in its numbers and 100% misleading in its drawing.</i>";
-  $("end-title").textContent=title;
-  $("end-msg").innerHTML=msg;
+  // E2 : titre, score, message, liste des graphiques ratés et boutons sont rendus par ColFin.
+  ColFin.rendre({
+    jeu: JEU, titre: title, message: score+" pts — "+texteBrut(msg),
+    score: nbOk, total: deck.length, items: joue,
+    onRejouer: rates => startGame(QUESTIONS.filter(q => rates.some(r => r.id===q.img))),
+    onRecommencer: () => startGame()
+  });
 }
 
 // ===== Anti-trap reference cards =====

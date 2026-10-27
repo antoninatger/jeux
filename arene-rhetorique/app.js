@@ -135,16 +135,40 @@ const FOES = [
 ];
 
 let foeIdx=0, lineIdx=0, youHP=6, foeHP=0, order=[];
-let correctCount=0, totalCount=0;
-const YOUMAX=6;
+let correctCount=0, totalCount=0, matchCorrect=0;
+// E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
+// Les répliques n'ont pas d'identifiant : leur texte (t) en tient lieu d'une partie à l'autre.
+const JEU="arene-rhetorique";
+let joue=[];
+// « Rejouer mes erreurs » : un adversaire de révision, composé des seules répliques ratées.
+let revision=null;
+function foeActuel(){ return revision || FOES[foeIdx]; }
+function texteBrut(html){ const d=document.createElement("div"); d.innerHTML=String(html).replace(/<br\s*\/?>/gi," "); return d.textContent; }
+// ─── Techniques du dojo (dojo.html) ───
+// Chaque épreuve réussie au dojo débloque une technique, relue ici dans la
+// progression du dojo (localStorage « arene.dojo »). Les trois actives servent
+// une fois par combat ; les Clochettes donnent +1 point de conviction maximum.
+const DOJO_P=(()=>{ try{ return JSON.parse(localStorage.getItem("arene.dojo"))||{}; }catch(e){ return {}; } })();
+const DOJO_EP=DOJO_P.epreuves||{};
+const TECHS=[
+  {id:"regard",  ep:"feuilles", l:"👁️ Regard perçant", s:"retire des mauvaises réponses"},
+  {id:"seconde", ep:"oeil",     l:"🌀 Seconde vue", s:"ta prochaine erreur ne coûte rien"},
+  {id:"contre",  ep:"contre",   l:"⚡ Contre-attaque", s:"2 dégâts… ou 2 points perdus"},
+].filter(x=>DOJO_EP[x.ep]);
+let techUsed={}, techActive={}, ligneEnCours=null;
+const YOUMAX=6+(DOJO_EP.clochettes?1:0);
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startMatch(i){
-  foeIdx=i; lineIdx=0;
-  const foe=FOES[i];
+function startMatch(i, foeRevision){
+  foeIdx=i; lineIdx=0; matchCorrect=0;
+  revision=foeRevision||null;
+  const foe=foeActuel();
   foeHP=foe.hp;
-  if(i===0){ youHP=YOUMAX; correctCount=0; totalCount=0; }
+  techUsed={};
+  if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; }
+  ColFin.protegerSortie(true);
+  $("end").style.display="none";
   order=shuffle([...foe.lines.keys()]);
   $("intro").style.display="none";
   $("inter").style.display="none";
@@ -169,7 +193,7 @@ function renderBreadcrumb(){
 }
 
 function updateHP(){
-  const foe=FOES[foeIdx];
+  const foe=foeActuel();
   $("hp-you").firstElementChild.style.width=(youHP/YOUMAX*100)+"%";
   $("hp-foe").firstElementChild.style.width=(foeHP/foe.hp*100)+"%";
   $("hp-you-txt").textContent="Conviction : "+youHP+"/"+YOUMAX;
@@ -181,8 +205,9 @@ function updateHP(){
 }
 
 function renderTurn(){
-  const foe=FOES[foeIdx];
+  const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
+  ligneEnCours=line; techActive={};
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
@@ -209,28 +234,44 @@ function renderTurn(){
     b.onclick=()=>answer(line,c.id,b);
     ansDiv.appendChild(b);
   });
+  renderTechs();
 }
 
 function answer(line,id,btn){
   const ok=id===line.a;
+  // Seconde vue : l'erreur ne compte pas, la même réplique reste à jouer.
+  if(!ok && techActive.seconde){
+    techActive.seconde=false;
+    btn.disabled=true; btn.classList.add("bad");
+    const r=$("riposte"); r.className="ko"; r.style.display="block";
+    $("rip-title").textContent="🌀 Seconde vue ! Ton erreur ne compte pas : choisis encore.";
+    $("rip-expl").innerHTML="";
+    renderTechs();
+    return;
+  }
+  const dmg=techActive.contre?2:1;
+  joue.push({id:line.t, titre:line.t, reussi:ok, explication:texteBrut(line.e)});
   totalCount++;
-  if(ok) correctCount++;
+  if(ok){ correctCount++; matchCorrect++; }
   const all=[...document.querySelectorAll(".abtn")];
   all.forEach(b=>{b.disabled=true;b.classList.add("dim");});
   const goodLabel=(line.type==="epl"?EPL:FALLACIES).find(o=>o.id===line.a).l;
   all.forEach(b=>{ if(b.dataset.id===line.a){b.classList.remove("dim");b.classList.add("good");} });
   if(ok){
-    foeHP--;
+    foeHP=Math.max(0,foeHP-dmg);
     $("f-foe").classList.add("shake");
     setTimeout(()=>$("f-foe").classList.remove("shake"),450);
     $("rip-title").textContent="✔ Touché ! Tu as démasqué la technique.";
   } else {
     btn.classList.remove("dim");btn.classList.add("bad");
-    youHP--;
+    youHP=Math.max(0,youHP-dmg);
     $("f-you").classList.add("shake");
     setTimeout(()=>$("f-you").classList.remove("shake"),450);
     $("rip-title").textContent="✘ Aïe ! C'était : "+goodLabel;
   }
+  if(dmg===2) $("rip-title").textContent=(ok?"⚡ Contre-attaque ! Deux points de dégâts. ":"⚡ Contre-attaque ratée : tu perds deux points. ")+$("rip-title").textContent;
+  techActive={};
+  renderTechs(true);
   updateHP();
   const rip=$("riposte");
   rip.className=ok?"ok":"ko"; rip.style.display="block";
@@ -247,6 +288,10 @@ function nextTurn(){
   if(foeHP<=0){ winMatch(); return; }
   if(youHP<=0){ lose(); return; }
   lineIdx++;
+  if(lineIdx>=order.length){
+    if(matchCorrect*2>=order.length) winMatch(); else lose();
+    return;
+  }
   renderTurn();
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -254,6 +299,7 @@ function nextTurn(){
 function winMatch(){
   $("battle").style.display="none";
   $("nextbtn").style.display="none";
+  if(revision){ finDePartie("📝 Révision terminée", scoreLine()); return; }
   if(foeIdx===FOES.length-1){ victory(); return; }
   const next=FOES[foeIdx+1];
   $("inter").style.display="block";
@@ -270,23 +316,76 @@ function scoreLine(){
   return "Score final : "+correctCount+" bonnes réponses sur "+totalCount+" ("+pct+" %)";
 }
 
-function victory(){
+// E2 : l'écran de fin — titre, score, répliques ratées et boutons — est rendu par ColFin.
+function finDePartie(titre, msg){
   $("end").style.display="block";
-  $("end-emoji").textContent="👑";
-  $("end-title").textContent="Maître de l'Arène !";
+  ColFin.rendre({
+    jeu: JEU, titre: titre, message: texteBrut(msg),
+    score: correctCount, total: totalCount, items: joue,
+    onRejouer: rates => {
+      const lines=FOES.flatMap(f=>f.lines).filter(l=>rates.some(r=>r.id===l.t));
+      startMatch(foeIdx, {name:"Révision", emoji:"📝", desc:"les répliques que tu as ratées", hp:lines.length, intro:"", lines:lines});
+    },
+    onRecommencer: () => startMatch(0)
+  });
+}
+
+function victory(){
+  const title="Maître de l'Arène !";
   $("retry-btn").style.display="none";
-  $("end-msg").innerHTML="Tu as vaincu les cinq adversaires ! Tu sais maintenant repérer l'<b>ethos</b>, le <b>pathos</b>, le <b>logos</b>… et les sophismes les plus courants.<br><br>"+scoreLine()+"<br><br>Dernier secret de l'arène : la meilleure technique de débat n'est pas une attaque. C'est l'<b>homme de fer</b> — reformuler fidèlement l'argument de l'autre avant d'y répondre, et chercher un <b>point d'accord</b>. Le débat devient alors plus riche… et plus serein. 🤝";
+  const msg="Tu as vaincu les cinq adversaires ! Tu sais maintenant repérer l'<b>ethos</b>, le <b>pathos</b>, le <b>logos</b>… et les sophismes les plus courants.<br><br>"+scoreLine()+"<br><br>Dernier secret de l'arène : la meilleure technique de débat n'est pas une attaque. C'est l'<b>homme de fer</b> — reformuler fidèlement l'argument de l'autre avant d'y répondre, et chercher un <b>point d'accord</b>. Le débat devient alors plus riche… et plus serein. 🤝";
+  finDePartie("👑 "+title, msg);
 }
 
 function lose(){
   $("battle").style.display="none";
   $("nextbtn").style.display="none";
-  $("end").style.display="block";
-  $("end-emoji").textContent="😵";
-  $("end-title").textContent="Battu… cette fois !";
-  $("end-msg").innerHTML=FOES[foeIdx].name+" t'a submergé de rhétorique. Pas grave : l'art du débat <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
+  const title="Battu… cette fois !";
+  const msg=foeActuel().name+" t'a submergé de rhétorique. Pas grave : l'art du débat <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
+  finDePartie("😵 "+title, msg);
   const rb=$("retry-btn");
   rb.style.display="inline-block";
-  rb.textContent="🔁 Retenter "+FOES[foeIdx].name;
-  rb.onclick=()=>{ $("end").style.display="none"; startMatch(foeIdx); };
+  rb.textContent="🔁 Retenter "+foeActuel().name;
+  rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx, revision); };
 }
+
+// Les boutons de techniques, sous les barres de conviction.
+function renderTechs(fini){
+  const box=$("techs"); if(!box) return;
+  box.innerHTML="";
+  box.hidden=!TECHS.length;
+  TECHS.forEach(x=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="tech-btn"+(techActive[x.id]?" active":"");
+    const sous=techUsed[x.id]?(techActive[x.id]?"activée : réponds !":"déjà utilisée"):x.s;
+    b.innerHTML=`${x.l}<span class="asub">${sous}</span>`;
+    b.disabled=!!fini || !!techUsed[x.id];
+    b.setAttribute("aria-pressed", techActive[x.id]?"true":"false");
+    b.onclick=()=>useTech(x.id);
+    box.appendChild(b);
+  });
+}
+
+function useTech(id){
+  techUsed[id]=true;
+  if(id==="regard"){
+    // Retire des mauvaises réponses jusqu'à n'en laisser que deux en jeu.
+    const enJeu=[...document.querySelectorAll(".abtn:not(:disabled)")];
+    const fausses=shuffle(enJeu.filter(b=>b.dataset.id!==ligneEnCours.a));
+    fausses.slice(0,Math.max(0,enJeu.length-2)).forEach(b=>{b.disabled=true;b.classList.add("dim");});
+  } else techActive[id]=true;
+  renderTechs();
+  const premier=document.querySelector(".abtn:not(:disabled)"); if(premier) premier.focus();
+}
+
+// Accueil : ce que le dojo a déjà appris au joueur, et l'avatar de qui a passé l'examen.
+(function(){
+  const etat=$("dojo-etat");
+  if(etat){
+    const noms=TECHS.map(x=>x.l.replace(/^\S+\s/,""));
+    if(DOJO_EP.clochettes) noms.push("🔔 Clochettes (+1 conviction)".replace(/^\S+\s/,""));
+    etat.textContent=noms.length?"🥋 Techniques du dojo prêtes pour l'arène : "+noms.join(", ")+".":"🥋 Nouveau : passe d'abord par le dojo pour t'entraîner et gagner des techniques utilisables ici.";
+  }
+  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥷"; a.title="avatar ninja : examen du dojo réussi"; } }
+})();

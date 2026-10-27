@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 200" font-family="Nunito,Arial,sans-serif">
+  <rect width="560" height="200" fill="#ffffff"/>
+  <rect x="0" y="0" width="560" height="30" fill="#e8f2f4"/>
+  <g fill="#1f3864" font-size="9.5" font-weight="700">
+    <text x="12" y="13">France : les résultats de 2025 sont les plus bas jamais mesurés par PISA</text>
+    <text x="12" y="25">dans les trois matières. La trajectoire à long terme diffère d’une matière à l’autre</text>
+  </g>
+  <text x="4" y="44" font-size="7.5" fill="#555">Score</text>
+  <text x="556" y="44" font-size="7.5" fill="#555" text-anchor="end">Score</text>
+  <g>
+    <text x="110.0" y="45" font-size="9" font-weight="700" text-anchor="middle" fill="#1f4e79">Sciences</text>
+    <rect x="32.0" y="52" width="156.0" height="130" fill="#eaf3f8"/>
+    <line x1="32.0" y1="182.0" x2="188.0" y2="182.0" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="163.4" x2="188.0" y2="163.4" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="144.9" x2="188.0" y2="144.9" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="126.3" x2="188.0" y2="126.3" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="107.7" x2="188.0" y2="107.7" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="89.1" x2="188.0" y2="89.1" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="70.6" x2="188.0" y2="70.6" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="32.0" y1="52.0" x2="188.0" y2="52.0" stroke="#ffffff" stroke-width="0.8"/>
+    <text x="28.0" y="184.4" font-size="7.4" text-anchor="end" fill="#555">450</text>
+    <text x="28.0" y="165.8" font-size="7.4" text-anchor="end" fill="#555">460</text>
+    <text x="28.0" y="147.3" font-size="7.4" text-anchor="end" fill="#555">470</text>
+    <text x="28.0" y="128.7" font-size="7.4" text-anchor="end" fill="#555">480</text>
+    <text x="28.0" y="110.1" font-size="7.4" text-anchor="end" fill="#555">490</text>
+    <text x="28.0" y="91.5" font-size="7.4" text-anchor="end" fill="#555">500</text>
+    <text x="28.0" y="73.0" font-size="7.4" text-anchor="end" fill="#555">510</text>
+    <text x="28.0" y="54.4" font-size="7.4" text-anchor="end" fill="#555">520</text>
+    <line x1="32.0" y1="52" x2="32.0" y2="182" stroke="#888" stroke-width="0.9"/>
+    <line x1="32.0" y1="182" x2="188.0" y2="182" stroke="#888" stroke-width="0.9"/>
+    <polyline points="76.5,98.4 93.2,92.9 110.0,91.0 126.8,98.4 143.5,102.1 160.2,113.3 177.0,120.7" fill="none" stroke="#1f4e79" stroke-width="1.6" stroke-dasharray="4 2.5"/>
+    <g fill="#1f4e79"><circle cx="76.5" cy="98.4" r="2.6"/><circle cx="93.2" cy="92.9" r="2.6"/><circle cx="110.0" cy="91.0" r="2.6"/><circle cx="126.8" cy="98.4" r="2.6"/><circle cx="143.5" cy="102.1" r="2.6"/><circle cx="160.2" cy="113.3" r="2.6"/><circle cx="177.0" cy="120.7" r="2.6"/></g>
+    <g font-size="7.6" fill="#333">
+      <text x="76.5" y="107.9" text-anchor="middle">495</text>
+      <text x="93.2" y="102.4" text-anchor="middle">498</text>
+      <text x="110.0" y="100.5" text-anchor="middle">499</text>
+      <text x="126.8" y="107.9" text-anchor="middle">495</text>
+      <text x="143.5" y="111.6" text-anchor="middle">493</text>
+      <text x="160.2" y="122.8" text-anchor="middle">487</text>
+      <text x="177.0" y="130.2" text-anchor="middle">483</text>
+    </g>
+    <g font-size="6.2" fill="#666" text-anchor="middle">
+      <text x="43.0" y="192">2000</text>
+      <text x="59.8" y="192">2003</text>
+      <text x="76.5" y="192">2006</text>
+      <text x="93.2" y="192">2009</text>
+      <text x="110.0" y="192">2012</text>
+      <text x="126.8" y="192">2015</text>
+      <text x="143.5" y="192">2018</text>
+      <text x="160.2" y="192">2022</text>
+      <text x="177.0" y="192">2025</text>
+    </g>
+  </g>
+  <g>
+    <text x="280.0" y="45" font-size="9" font-weight="700" text-anchor="middle" fill="#6f8f2f">Compréhension de l’écrit</text>
+    <rect x="202.0" y="52" width="156.0" height="130" fill="#f1f6e7"/>
+    <line x1="202.0" y1="182.0" x2="358.0" y2="182.0" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="163.4" x2="358.0" y2="163.4" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="144.9" x2="358.0" y2="144.9" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="126.3" x2="358.0" y2="126.3" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="107.7" x2="358.0" y2="107.7" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="89.1" x2="358.0" y2="89.1" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="70.6" x2="358.0" y2="70.6" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="52.0" x2="358.0" y2="52.0" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="202.0" y1="52" x2="202.0" y2="182" stroke="#888" stroke-width="0.9"/>
+    <line x1="202.0" y1="182" x2="358.0" y2="182" stroke="#888" stroke-width="0.9"/>
+    <polyline points="213.0,79.9 229.8,96.6 246.5,111.4 263.2,96.6 280.0,79.9 296.8,91.0 313.5,102.1 330.2,137.4 347.0,170.9" fill="none" stroke="#6f8f2f" stroke-width="1.6" stroke-dasharray="4 2.5"/>
+    <g fill="#6f8f2f"><circle cx="213.0" cy="79.9" r="2.6"/><circle cx="229.8" cy="96.6" r="2.6"/><circle cx="246.5" cy="111.4" r="2.6"/><circle cx="263.2" cy="96.6" r="2.6"/><circle cx="280.0" cy="79.9" r="2.6"/><circle cx="296.8" cy="91.0" r="2.6"/><circle cx="313.5" cy="102.1" r="2.6"/><circle cx="330.2" cy="137.4" r="2.6"/><circle cx="347.0" cy="170.9" r="2.6"/></g>
+    <g font-size="7.6" fill="#333">
+      <text x="213.0" y="89.4" text-anchor="middle">505</text>
+      <text x="229.8" y="106.1" text-anchor="middle">496</text>
+      <text x="246.5" y="120.9" text-anchor="middle">488</text>
+      <text x="263.2" y="106.1" text-anchor="middle">496</text>
+      <text x="280.0" y="89.4" text-anchor="middle">505</text>
+      <text x="296.8" y="100.5" text-anchor="middle">499</text>
+      <text x="309.5" y="111.6" text-anchor="end">493</text>
+      <text x="326.2" y="146.9" text-anchor="end">474</text>
+      <text x="347.0" y="165.4" text-anchor="middle">456</text>
+    </g>
+    <g font-size="6.2" fill="#666" text-anchor="middle">
+      <text x="213.0" y="192">2000</text>
+      <text x="229.8" y="192">2003</text>
+      <text x="246.5" y="192">2006</text>
+      <text x="263.2" y="192">2009</text>
+      <text x="280.0" y="192">2012</text>
+      <text x="296.8" y="192">2015</text>
+      <text x="313.5" y="192">2018</text>
+      <text x="330.2" y="192">2022</text>
+      <text x="347.0" y="192">2025</text>
+    </g>
+  </g>
+  <g>
+    <text x="450.0" y="45" font-size="9" font-weight="700" text-anchor="middle" fill="#e0761f">Mathématiques</text>
+    <rect x="372.0" y="52" width="156.0" height="130" fill="#fdf1e3"/>
+    <line x1="372.0" y1="182.0" x2="528.0" y2="182.0" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="163.4" x2="528.0" y2="163.4" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="144.9" x2="528.0" y2="144.9" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="126.3" x2="528.0" y2="126.3" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="107.7" x2="528.0" y2="107.7" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="89.1" x2="528.0" y2="89.1" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="70.6" x2="528.0" y2="70.6" stroke="#ffffff" stroke-width="0.8"/>
+    <line x1="372.0" y1="52.0" x2="528.0" y2="52.0" stroke="#ffffff" stroke-width="0.8"/>
+    <text x="532.0" y="184.4" font-size="7.4" fill="#555">450</text>
+    <text x="532.0" y="165.8" font-size="7.4" fill="#555">460</text>
+    <text x="532.0" y="147.3" font-size="7.4" fill="#555">470</text>
+    <text x="532.0" y="128.7" font-size="7.4" fill="#555">480</text>
+    <text x="532.0" y="110.1" font-size="7.4" fill="#555">490</text>
+    <text x="532.0" y="91.5" font-size="7.4" fill="#555">500</text>
+    <text x="532.0" y="73.0" font-size="7.4" fill="#555">510</text>
+    <text x="532.0" y="54.4" font-size="7.4" fill="#555">520</text>
+    <line x1="372.0" y1="52" x2="372.0" y2="182" stroke="#888" stroke-width="0.9"/>
+    <line x1="372.0" y1="182" x2="528.0" y2="182" stroke="#888" stroke-width="0.9"/>
+    <polyline points="399.8,68.7 416.5,96.6 433.2,94.7 450.0,98.4 466.8,102.1 483.5,98.4 500.2,137.4 517.0,167.1" fill="none" stroke="#e0761f" stroke-width="1.6" stroke-dasharray="4 2.5"/>
+    <g fill="#e0761f"><circle cx="399.8" cy="68.7" r="2.6"/><circle cx="416.5" cy="96.6" r="2.6"/><circle cx="433.2" cy="94.7" r="2.6"/><circle cx="450.0" cy="98.4" r="2.6"/><circle cx="466.8" cy="102.1" r="2.6"/><circle cx="483.5" cy="98.4" r="2.6"/><circle cx="500.2" cy="137.4" r="2.6"/><circle cx="517.0" cy="167.1" r="2.6"/></g>
+    <g font-size="7.6" fill="#333">
+      <text x="399.8" y="78.2" text-anchor="middle">511</text>
+      <text x="416.5" y="106.1" text-anchor="middle">496</text>
+      <text x="433.2" y="104.2" text-anchor="middle">497</text>
+      <text x="450.0" y="107.9" text-anchor="middle">495</text>
+      <text x="466.8" y="111.6" text-anchor="middle">493</text>
+      <text x="479.5" y="107.9" text-anchor="end">495</text>
+      <text x="496.2" y="146.9" text-anchor="end">474</text>
+      <text x="517.0" y="161.6" text-anchor="middle">458</text>
+    </g>
+    <g font-size="6.2" fill="#666" text-anchor="middle">
+      <text x="383.0" y="192">2000</text>
+      <text x="399.8" y="192">2003</text>
+      <text x="416.5" y="192">2006</text>
+      <text x="433.2" y="192">2009</text>
+      <text x="450.0" y="192">2012</text>
+      <text x="466.8" y="192">2015</text>
+      <text x="483.5" y="192">2018</text>
+      <text x="500.2" y="192">2022</text>
+      <text x="517.0" y="192">2025</text>
+    </g>
+  </g>
+</svg>
