@@ -1,5 +1,5 @@
 /* =========================================================================
-   Dojo de l'Arène rhétorique — LOGIQUE
+   Dojo de l'Agora — LOGIQUE
    Une seule fois pour les deux langues : le contenu vient de DOJO, chargé
    juste avant (dojo-data.js ou dojo-data-en.js), et les textes d'interface
    des dictionnaires I18N de dojo.html.
@@ -151,13 +151,17 @@
     $('ep-progres').textContent = t('progres', { i: i, n: n });
     $('ep-score').textContent = score != null ? t('scoreEp', { s: score }) : '';
   }
-  function retour(ok, titre, texte) {
+  function retour(ok, titre, texte, defn) {
     const r = $('ep-retour');
     r.hidden = false;
     r.className = 'case retour ' + (ok === true ? 'ok' : ok === false ? 'ko' : '');
     $('ep-retour-titre').textContent = titre;
     $('ep-retour-texte').textContent = texte || '';
-    annoncer(titre + ' ' + (texte || ''));
+    // La définition du sophisme, pour avoir le temps de comprendre ce que le nom veut dire.
+    const def = $('ep-retour-def');
+    def.hidden = !defn;
+    def.textContent = defn || '';
+    annoncer(titre + ' ' + (defn || '') + ' ' + (texte || ''));
   }
   function cacherRetour() { $('ep-retour').hidden = true; }
   let jetonSuivant = 0;
@@ -177,7 +181,7 @@
   // ═════════════════════════════════════════════════════════════════════
 
   // ─── Les Feuilles qui tombent ───
-  let duree = 8;                      // secondes de chute, raccourcies à chaque feuille
+  let duree = 11;                     // secondes de chute, raccourcies à chaque feuille
   let clavierActif = null;
   function mancheFeuille(item, fini, opts) {
     opts = opts || {};
@@ -239,12 +243,11 @@
       } else {
         titre = t('feuilleRateSain');
       }
-      retour(ok, titre, item.e);
-      duree = Math.max(4.5, duree - 0.3);
+      retour(ok, titre, item.e, item.piege ? '📖 ' + soph(item.piege).l + (I18N.lang === 'en' ? ': ' : ' : ') + soph(item.piege).d : '');
+      duree = Math.max(7, duree - 0.3);
       const joue = { id: item.id, titre: item.t, reussi: ok, explication: item.e };
-      // Réussite en mode rapide : on enchaîne tout seul, le rythme fait partie du jeu.
-      // Erreur : on attend le joueur, c'est le moment où il apprend.
-      suivant(t('suivant'), () => fini(ok ? 1 : 0, joue), (ok && !statique) ? 2600 : 0);
+      // On attend toujours le joueur : le temps de lire le nom du sophisme et ce qu'il veut dire.
+      suivant(t('suivant'), () => fini(ok ? 1 : 0, joue));
     }
   }
 
@@ -434,7 +437,7 @@
     const paquet = def.paquet();
     const unite = def.unite || 1;             // clochettes : on compte en cloches
     let i = 0, score = 0;
-    duree = 8;
+    duree = 11;
     ColFin.protegerSortie(true);
     entete(nom);
     cacherRetour();
@@ -450,7 +453,22 @@
         else resultat(nom, score * unite, total, def.seuil * unite);
       });
     }
-    jouer();
+    // Les Feuilles : avant la première chute, le lexique des pièges à repérer.
+    if (nom === 'feuilles') lexique(paquet, jouer); else jouer();
+  }
+
+  function lexique(paquet, partir) {
+    const ids = [...new Set(paquet.map(x => x.piege).filter(Boolean))];
+    const aire = $('ep-aire');
+    aire.textContent = '';
+    const box = el('div', 'case lexique');
+    box.appendChild(el('p', 'retour__titre', t('lexiqueTitre')));
+    box.appendChild(el('p', 'consigne', t('lexiqueIntro')));
+    const dl = el('dl');
+    ids.forEach(id => { dl.append(el('dt', null, soph(id).l), el('dd', null, soph(id).d)); });
+    box.appendChild(dl);
+    aire.appendChild(box);
+    suivant(t('lexiquePret'), partir);
   }
 
   function resultat(nom, score, total, seuil) {

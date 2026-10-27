@@ -20,12 +20,14 @@ const FALLACIES = [
   {id:"cherry",     l:"🍒 Cherry-picking",       s:"only showing the data that fits"},
   {id:"whatabout",  l:"🪞 Whataboutism",         s:"pointing at the other's hypocrisy instead of answering"},
 ];
+const VALABLE={id:"valable", l:"✅ Sound argument", s:"no trap: it's a good argument"};
+function libelle(id){ return [...EPL,...FALLACIES,VALABLE].find(o=>o.id===id); }
 
 // ─── Opponents ───
 // type "epl": identify ethos/pathos/logos. type "fall": name the fallacy (a = id, opts = 3 distractors)
 const FOES = [
   {name:"Uncle Gerard", emoji:"🍗", desc:"family-dinner champion", hp:4,
-   intro:"At dessert, Uncle Gerard puts down his fork: 'You, with all your studying, let's see if you know how to debate!' The battle begins.",
+   intro:"At dessert, Uncle Gerard puts down his fork: 'You, with all your studying, let's see if you know how to debate!' The discussion begins.",
    lines:[
     {type:"epl", t:"'Listen, kid, I have 60 years of life behind me. I have worked hard all my life, and I have never lied to anyone. So you can take my word for it!'",
      a:"ethos", e:"Gerard gives <b>no argument</b> about the actual issue: he highlights his honesty and life experience to inspire trust. That is <b>contextual ethos</b> — like a politician who says they are 'close to the people'."},
@@ -43,6 +45,9 @@ const FOES = [
     {type:"fall", t:"'And you defend screens, do you? That is rich, with your glasses and your average maths grades!'",
      a:"adhom", opts:["paille","halo","popu"],
      e:"Gerard does not answer your arguments: he <b>attacks you</b>. That is a personal attack, or ad hominem. Targeting the person to discredit their argument is common… and fallacious."},
+    {type:"sain", t:"\"Wear your helmet when you cycle: if you fall, it greatly reduces the risk of a serious head injury. There are lots of studies on this and they all point the same way.\"",
+     a:"valable", opts:["genehat", "halo", "pente"],
+     e:"For once, Gérard is right! A precise claim, backed by <b>many studies that agree</b>: that's a <b>sound argument</b>. Recognising it means scoring a <b>point of agreement</b>, the basis of an honest debate."},
    ]},
   {name:"Maxx_Buzz", emoji:"🤳", desc:"influencer with 2.4M followers", hp:5,
    intro:"Maxx_Buzz grabs his selfie stick: 'Hey community! Today I'm debating a hater. Drop your likes!'",
@@ -63,9 +68,12 @@ const FOES = [
      e:"A reversal of the <b>burden of proof</b>: it is up to <b>the person making the claim</b> to prove it, not the other way around. Otherwise I could claim anything — 'Joe Biden is a reptilian!' — and demand that you prove me wrong."},
     {type:"epl", t:"'The numbers speak for themselves: out of 1,000 testers, 87% said they felt better after one month. Here is the full study in the description.'",
      a:"logos", e:"This time, Maxx provides <b>data and a source</b>: that is <b>logos</b>, argumentation through logic and facts. Be careful: a logos argument can still be misleading — you need to check the study! But the <i>appeal</i> being used is reason."},
+    {type:"sain", t:"\"Before you buy a product I show, check whether it's sponsored and read independent reviews: I get paid to talk about it.\"",
+     a:"valable", opts:["popu", "halo", "cherry"],
+     e:"Maxx gives honest, checkable advice: <b>no trap</b> here. A good argument can come from someone you distrust: you judge the argument, not the person."},
    ]},
   {name:"Senator Brutus", emoji:"🏛️", desc:"formidable political speaker", hp:6,
-   intro:"Senator Brutus adjusts his tie under the spotlights: 'My dear fellow citizens, let us crush this young opponent… elegantly.'",
+   intro:"Senator Brutus adjusts his tie under the spotlights: 'My dear fellow citizens, let us see what this young challenger is made of.'",
    lines:[
     {type:"epl", t:"'It is outrageous that in the homeland of human rights, the country of the Enlightenment, people are still sleeping in the streets. In the name of fraternity, vote for me!'",
      a:"ethos", e:"Brutus invokes <b>great universal values</b> — the Enlightenment, fraternity, human rights: that is <b>universal ethos</b>. The other form, contextual ethos, consists of presenting oneself as virtuous."},
@@ -85,6 +93,9 @@ const FOES = [
      e:"The <b>appeal to popularity</b>, political version: being in the majority does not make an argument true. Truth is not decided by vote — for centuries, most people thought the Sun revolved around the Earth."},
     {type:"epl", t:"'Remember that little girl I met in hospital, her drawings pinned to the wall… It is for her, for your children, that I am fighting tonight.'",
      a:"pathos", e:"The moving anecdote, the sick child, the trembling voice: top-level <b>pathos</b>. It is not good or bad in itself — Martin Luther King also used pathos — but you need to <b>spot it</b> so that emotion alone does not convince you."},
+    {type:"sain", t:"\"I propose renovating the most run-down schools first. Here is the inspection report published last month: anyone can check the list, school by school.\"",
+     a:"valable", opts:["popu", "dilemme", "cherry"],
+     e:"A proposal, a <b>public source</b>, data <b>anyone can check</b>: that's a <b>sound argument</b>. Even a formidable politician can be right on one point."},
    ]},
   {name:"The Conspiracy Uncle", emoji:"🕵️", desc:"has done his own research", hp:6,
    intro:"Behind his wall of sticky notes and printed articles, he points a finger at you: 'Ah, you too believe what they tell you on TV… Let me open your eyes.'",
@@ -108,6 +119,9 @@ const FOES = [
      e:"The <b>appeal to nature</b>: 'natural' does not mean 'harmless', and 'chemical' does not mean 'harmful'. Water, arsenic and snake venom are all 100% natural too."},
     {type:"epl", t:"'Unlike journalists paid by lobbies, I have done my own research for years. I have no hidden interest, just the truth to defend.'",
      a:"ethos", e:"He presents himself as the only honest one, the only one who has 'done his research': that is <b>contextual ethos</b>, a self-proclaimed legitimacy. Spending hours online does not replace expertise in a field, nor the scientific method."},
+    {type:"sain", t:"\"I admit it: I'm no expert. Before sharing this, we should check what several reliable sources say.\"",
+     a:"valable", opts:["preuve", "circulaire", "cherry"],
+     e:"A rare moment of clarity: admitting your limits and <b>wanting to check</b> several sources is exactly the right approach. <b>Sound argument</b>."},
    ]},
   {name:"The Greenwashing CEO", emoji:"👔", desc:"master of corporate spin", hp:6,
    intro:"Under the press conference lights, they adjust their lapel mic: 'Here, the planet is our #1 priority. Let me explain why you are wrong to worry.'",
@@ -131,8 +145,170 @@ const FOES = [
     {type:"fall", t:"'Look: at our Lyon factory, we cut emissions by 5% this year. Proof that our environmental strategy works!'",
      a:"cherry", opts:["posthoc","popu","halo"],
      e:"<b>Cherry-picking</b>: a single positive figure, from a single site, is highlighted — while staying silent about the rest of the group, where emissions may have risen."},
+    {type:"sain", t:"\"Our Lyon factory cut its emissions by 30%, and the figure was checked by an independent body. There's still a lot to do at our other sites.\"",
+     a:"valable", opts:["cherry", "halo", "hareng"],
+     e:"This time the figure is <b>independently checked</b>, and she <b>admits what is left to do</b> elsewhere: that's not cherry-picking. <b>Sound argument</b>."},
    ]},
 ];
+
+// ─── The dialogue: answering, and understanding what drives the other person ───
+// For each opponent, in the order of their lines: q = an open question,
+// r = a faithful rephrasing (the "steelman") or, for a good argument,
+// acknowledging it; k = what the character confides once they open up (a clue
+// to their hidden motive). motiv = the real motive; leurres = false leads, the
+// last one the closest (only served in Hard).
+const DIALOGUE = [
+  {motiv:"He is afraid of losing his place in the family: the world is changing fast, and he feels left behind.",
+   leurres:["He wants the last word: at the table, he is always right, and he enjoys it.","He is defending his old trade: he worked in livestock farming all his life.","He distrusts anything new: for him, things were better before, for everyone."],
+   braque:"Gerard folds his arms: 'Oh, listen to you with your big words!' He has stopped listening.",
+   esquive:"Gerard shrugs and helps himself to more cheese. Nothing has moved.",
+   fin:"Gerard smiles: 'Come on, let's go for a bike ride together on Sunday. With helmets, I promise.'",
+   lignes:[
+    {q:"'What has your life taught you about this, concretely?'",
+     r:"'If I understand you, you're worried your experience doesn't count anymore. It counts for me: shall we look at the facts together?'",
+     k:"'You know, at my age, it feels like nobody listens to what you've lived through anymore.'"},
+    {q:"'What really worries you about me eating less meat?'",
+     r:"'You're afraid our family dinners won't be the same. I'll always come, and I love Grandma's cooking, even without chicken.'",
+     k:"'These dinners are all we have left to be together… If you change everything, what will be left?'"},
+    {q:"'What did your neighbour get ill with? That must have shaken you.'",
+     r:"'You're saying organic food doesn't guarantee good health, and that's true. But one case isn't enough to say it's useless: shall we look at what the large studies say?'",
+     k:"'My neighbour was my best friend. I never understood why he got ill.'"},
+    {q:"'What makes you prefer plants to medicines?'",
+     r:"'If I follow you, you distrust medicines that feel too chemical. Some plants really do heal, but hemlock is natural too… Shall we look case by case?'",
+     k:"'Since my operation, I'm fed up with doctors talking to me like a child.'"},
+    {q:"'What scares you when you see young people gaming?'",
+     r:"'You're worried screens will take over, and that's a real question. But gaming doesn't necessarily lead to dropping out of school: where would you draw the line?'",
+     k:"'When you were little, the two of us went fishing. Now you're always on your screen…'"},
+    {q:"'My glasses, fine. But about screens, what really bothers you?'",
+     r:"'I can tell you're annoyed. Let's leave my grades out of it: your point is that screens harm studying, right?'",
+     k:"'Sorry. It's just… I struggle to keep up with everything you young people know.'"},
+    {q:"'You're right. What makes you think of it today?'",
+     r:"'You're right, and the studies back it up. I'll wear it.'",
+     k:"'I was so scared the day your cousin fell. I care about you all, that's all.'"},
+   ]},
+  {motiv:"He is afraid of losing followers, and so his income: he says what the brands ask him to say.",
+   leurres:["He wants to be famous at any cost: likes matter more to him than the truth.","He hates scientists: they mocked him in a video last year.","He sincerely believes in his products: he thinks a detox drink cured him."],
+   braque:"Maxx cuts the mic: 'Another hater… Blocked.' The conversation ends there.",
+   esquive:"Maxx moves on to his next story. Nothing has moved.",
+   fin:"Maxx puts away his selfie stick: 'You know what? My next video will be: how to spot sponsored content.'",
+   lignes:[
+    {q:"'Why does this fundraiser matter to you?'",
+     r:"'I understand you want to help this kitten. But you can be moved and still want to know where the money goes: can you tell us?'",
+     k:"'If my videos don't get views, I can't pay my rent next month.'"},
+    {q:"'What do 2.4 million followers mean to you?'",
+     r:"'You're saying lots of people like your drink, and that's probably true. But it doesn't tell us whether it detoxes anything: what does the science actually say?'",
+     k:"'Numbers are my life. If they drop, the brands leave.'"},
+    {q:"'How did this footballer discover your drink?'",
+     r:"'This footballer is a sports champion, sure. But in nutrition, what makes him an expert?'",
+     k:"'The brand picked the footballer, not me. I hadn't even tasted the drink before the shoot.'"},
+    {q:"'Do you have other reasons to think it's the juice?'",
+     r:"'You haven't had a cold, good. But it could be something else: sleep, luck… How can we know it's the juice?'",
+     k:"'Honestly? I don't know if it's the juice. It's the line the brand asked me to say.'"},
+    {q:"'What would you risk if the product didn't work?'",
+     r:"'You're asking me to prove it doesn't work. But it's up to whoever sells the product to show that it works: do you have independent studies?'",
+     k:"'If I admit the product is useless, I lose the contract… and my community's trust.'"},
+    {q:"'Who ran this study?'",
+     r:"'You're relying on numbers, which is a good approach. To make it solid, we'd need to know who ran the study, and how.'",
+     k:"'The brand paid for the study. I didn't check: I post three videos a day, I don't have time.'"},
+    {q:"'That's brave. Why did you decide to say it?'",
+     r:"'Thanks for saying that, it's honest and rare. It makes me trust you more.'",
+     k:"'I'd love to make more honest videos, but I'm scared nobody would watch them.'"},
+   ]},
+  {motiv:"He is afraid of losing the election and letting down those who believed in him: so he exaggerates.",
+   leurres:["He doesn't believe in any of his ideas: he says whatever wins votes, then forgets.","A company pays him: his laws serve his friends' interests first.","He loves being applauded: on stage, cheers matter more than solutions."],
+   braque:"Brutus turns to the audience: 'You see? My opponents have nothing but insults!' He comes out stronger.",
+   esquive:"Brutus carries on with his speech. Nothing has moved.",
+   fin:"Brutus lowers the mic: 'You know, I prefer a debate like this one to all my rallies. Shall we do it again, in front of the voters?'",
+   lignes:[
+    {q:"'What touches you personally about this issue?'",
+     r:"'You're saying it's shameful that people sleep on the streets, and I agree. Concretely, what do you propose?'",
+     k:"'I grew up in a neighbourhood where neighbours slept in their cars. I've never forgotten it.'"},
+    {q:"'In those countries, did other things change at the same time?'",
+     r:"'You're basing your proposal on data, which is a good start. We'd still need to check that the fall in unemployment really came from that tax.'",
+     k:"'My team spent nights on those projections. If I lose, all that work will be lost.'"},
+    {q:"'Can you quote exactly what your opponent proposes?'",
+     r:"'If I rephrase faithfully: your opponent wants to limit speed in cities, not ban cars. What bothers you about that measure?'",
+     k:"'I admit it, I caricature. My advisers say you need punchlines, otherwise nobody remembers anything.'"},
+    {q:"'Are there really only these two options?'",
+     r:"'You want people to be safe, which is legitimate. But between your law and total insecurity, there are other solutions: which ones did you rule out?'",
+     k:"'My team tells me I'm slipping in the polls. When I'm scared, I oversimplify.'"},
+    {q:"'What do you think of his research itself?'",
+     r:"'You say he's inconsistent, fair enough. But his results must be judged on their merits: what's wrong with his data?'",
+     k:"'That climate scientist put me on the spot in the last debate. I didn't know how to answer him…'"},
+    {q:"'What would you say to those who don't support you?'",
+     r:"'Many people support you, that's a fact. But being popular doesn't mean being right on this specific point: what are your arguments?'",
+     k:"'To be honest, that poll is from last year. Today, I'm not sure of anything.'"},
+    {q:"'What did you promise that little girl?'",
+     r:"'This story clearly matters to you. What is your precise plan for children in hospital?'",
+     k:"'That little girl is real. I promised her that her hospital would stay open.'"},
+    {q:"'That's clear and checkable. How did you choose the order of the schools?'",
+     r:"'Thank you for publishing your sources: that's exactly what makes an honest debate possible.'",
+     k:"'The people who elected me are counting on me. I don't want to let them down.'"},
+   ]},
+  {motiv:"He felt looked down on and alone: in his online group, people finally listen to him.",
+   leurres:["He makes money from his website: the more he scares people, the more remedies he sells.","He wants to scare people for fun: sowing doubt is a game to him.","He thinks he is smarter than everyone: he loves seeing what others miss."],
+   braque:"'See, you're like the others: you think I'm an idiot.' He retreats into his certainties.",
+   esquive:"He goes back to his phone. Nothing has moved.",
+   fin:"He takes a sticky note off the wall: 'We could check one of my facts together next week? Just to see.'",
+   lignes:[
+    {q:"'How did you find these ten studies?'",
+     r:"'You found ten studies, that's work. But if there are hundreds saying the opposite, we need to look at them all: shall we do it together?'",
+     k:"'Scientists never answered me. In my group, at least, people take me seriously.'"},
+    {q:"'Who is behind this website?'",
+     r:"'You trust this website, I get it. But to know if it's reliable, you need an outside source that confirms it: do you have one?'",
+     k:"'A friend from the group made that site. They're the only ones who supported me when I lost my job.'"},
+    {q:"'Is your cat better? What did the vet say?'",
+     r:"'I'm sorry about your cat. The illness coming at the same time as the antenna raises questions, but it doesn't prove one caused the other.'",
+     k:"'My cat is all I have left since I've been living alone. I needed to understand.'"},
+    {q:"'How long have you had this feeling?'",
+     r:"'You feel real distrust, and it probably comes from somewhere. But a feeling isn't enough to prove a lie: what started it?'",
+     k:"'This feeling that something's wrong, I've had it since I was laid off. That day, they lied to me.'"},
+    {q:"'What could change your mind?'",
+     r:"'You're asking me to prove there's no conspiracy. But it's up to whoever makes the claim to prove it: what's your strongest evidence?'",
+     k:"'If I'm wrong, then I've wasted years… and maybe lost my friends from the group too.'"},
+    {q:"'What drove you away from doctors?'",
+     r:"'You want to look after your health, that's legitimate. But natural doesn't mean safe, and chemical doesn't mean dangerous: shall we look at the data on vaccines?'",
+     k:"'A doctor once talked to me like I was an idiot. Since then, I'd rather manage on my own.'"},
+    {q:"'How did you start this research?'",
+     r:"'You've spent a lot of time searching, I respect that. How do you check that your sources are reliable?'",
+     k:"'My research is mostly whole evenings online. It keeps me busy, since I've been alone.'"},
+    {q:"'Good idea. Which sources would seem reliable to you?'",
+     r:"'That's exactly the right approach. Shall we check together?'",
+     k:"'It feels good to be spoken to without being mocked.'"},
+   ]},
+  {motiv:"They know the overall record is bad, and fear for their job and their team if they say so.",
+   leurres:["They enjoy manipulating the public: convincing people despite the facts is a challenge for them.","They are convinced their company is exemplary: they have never seen the figures.","They know nothing about ecology: they repeat a speech without understanding it."],
+   braque:"The CEO smiles, unflappable: 'I think we have nothing more to say to each other.' They end the interview.",
+   esquive:"The CEO goes back to their talking points. Nothing has moved.",
+   fin:"The CEO switches off their mic: 'I'll propose that we publish the full record, site by site. It will be harder… but more honest.'",
+   lignes:[
+    {q:"'And your CO2 emissions, precisely, how are they changing?'",
+     r:"'Recycling cups is good. But my question was about your CO2 emissions: could you come back to that?'",
+     k:"'Emissions aren't my department. I was handed this speech this morning.'"},
+    {q:"'And what are your targets for your own emissions?'",
+     r:"'Your competitors may well do worse. But that says nothing about your own record: where do you stand?'",
+     k:"'If I say we pollute, my colleagues will pay the price.'"},
+    {q:"'Do your customers know your carbon footprint?'",
+     r:"'You have many customers, that's a fact. But being liked doesn't prove you don't pollute: what are your total emissions?'",
+     k:"'Management wants positive messages. The rest, I'm not allowed to talk about.'"},
+    {q:"'Has your ambassador visited your factories?'",
+     r:"'This actress is committed, I don't doubt it. But she isn't a carbon-footprint expert: who assessed your products?'",
+     k:"'The ambassador? She signed a contract. She has never set foot in one of our factories.'"},
+    {q:"'And your total emissions, how have they changed?'",
+     r:"'You give precise figures, which is good. To be clear: emissions per unit are falling, but what about the total?'",
+     k:"'Per unit, yes. But we produce much more… In total, our emissions are rising.'"},
+    {q:"'How do these values translate into action this year?'",
+     r:"'These values matter to you, I hear that. What shows, concretely, that they are applied?'",
+     k:"'I joined this company for these values. Today, I find them hard to defend.'"},
+    {q:"'And your other factories?'",
+     r:"'Lyon is improving, good. But one factory isn't the whole group: what are the figures overall?'",
+     k:"'Lyon is our best site. The others, I'd rather not discuss in public.'"},
+    {q:"'That's real progress. How do you plan to extend it to other sites?'",
+     r:"'Thank you for this verified figure, and for acknowledging what remains to be done. That's what makes your word credible.'",
+     k:"'Thank you. It's the first time anyone has let me say what remains to be done.'"},
+   ]},
+];
+FOES.forEach((f,i)=>{ f.dlg=DIALOGUE[i]; f.lines.forEach((l,j)=>{ l.d=DIALOGUE[i].lignes[j]; l.dlg=DIALOGUE[i]; l.foe=f; }); });
 
 let foeIdx=0, lineIdx=0, youHP=6, foeHP=0, order=[];
 let correctCount=0, totalCount=0, matchCorrect=0;
@@ -153,9 +329,12 @@ const DOJO_EP=DOJO_P.epreuves||{};
 const TECHS=[
   {id:"regard",  ep:"feuilles", l:"👁️ Piercing Gaze", s:"removes wrong answers"},
   {id:"seconde", ep:"oeil",     l:"🌀 Second Sight", s:"your next mistake costs nothing"},
-  {id:"contre",  ep:"contre",   l:"⚡ Counter-attack", s:"2 damage… or 2 points lost"},
+  {id:"contre",  ep:"contre",   l:"⚡ Counter-attack", s:"right: +1 openness; wrong: −2 clarity"},
 ].filter(x=>DOJO_EP[x.ep]);
 let techUsed={}, techActive={}, ligneEnCours=null;
+// The three goals of a match: clarity (youHP), the other person's openness, and what you understood of them.
+let ouverture=0, carnet=[], phase="replique";
+let bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
 const YOUMAX=6+(DOJO_EP.clochettes?1:0);
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -167,6 +346,8 @@ function startMatch(i, foeRevision){
   foeHP=foe.hp;
   techUsed={};
   if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; }
+  if(i===0 && !revision) bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
+  ouverture=0; carnet=[]; phase="replique"; renderCarnet();
   ColFin.protegerSortie(true);
   $("end").style.display="none";
   order=shuffle([...foe.lines.keys()]);
@@ -195,13 +376,13 @@ function renderBreadcrumb(){
 function updateHP(){
   const foe=foeActuel();
   $("hp-you").firstElementChild.style.width=(youHP/YOUMAX*100)+"%";
-  $("hp-foe").firstElementChild.style.width=(foeHP/foe.hp*100)+"%";
-  $("hp-you-txt").textContent="Conviction: "+youHP+"/"+YOUMAX;
-  $("hp-foe-txt").textContent="Conviction: "+foeHP+"/"+foe.hp;
+  $("hp-foe").firstElementChild.style.width=(ouverture/foe.lines.length*100)+"%";
+  $("hp-you-txt").textContent="🧭 Clarity: "+youHP+"/"+YOUMAX;
+  $("hp-foe-txt").textContent="🤝 Openness: "+ouverture+"/"+foe.lines.length;
   $("hp-you").setAttribute("aria-valuemax",YOUMAX);
   $("hp-you").setAttribute("aria-valuenow",Math.max(0,youHP));
-  $("hp-foe").setAttribute("aria-valuemax",foe.hp);
-  $("hp-foe").setAttribute("aria-valuenow",Math.max(0,foeHP));
+  $("hp-foe").setAttribute("aria-valuemax",foe.lines.length);
+  $("hp-foe").setAttribute("aria-valuenow",ouverture);
 }
 
 function renderTurn(){
@@ -211,21 +392,27 @@ function renderTurn(){
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
+  $("dialogue").hidden=true; $("dialogue").innerHTML="";
+  document.querySelector(".bubble").hidden=false; $("piste").hidden=false;
   $("turn-progress").textContent="Reply "+(lineIdx+1)+" / "+foe.lines.length;
   const bubble=document.querySelector(".bubble");
   bubble.classList.remove("pop-replay");
   void bubble.offsetWidth;
   bubble.classList.add("pop-replay");
+  tourFini=false;
+  lancerAttaque(line);
   const ansDiv=$("answers"); ansDiv.innerHTML="";
   let choices;
   if(line.type==="epl"){
     $("qprompt").textContent="Which rhetorical appeal is being used?";
     choices=shuffle(EPL.map(o=>({...o})));
   } else {
-    $("qprompt").textContent="What is wrong with this argument?";
-    const pool=[line.a,...line.opts];
+    $("qprompt").textContent="What is the trap in this argument… if there is one?";
+    const pool=[line.a,...line.opts].filter(id=>id!=="valable");
     choices=shuffle(pool.map(id=>({...FALLACIES.find(f=>f.id===id)})));
+    choices.push({...VALABLE});
   }
+  if(modeSaisie()){ renderSaisie(line); renderTechs(); return; }
   choices.forEach(c=>{
     const b=document.createElement("button");
     b.className="abtn";
@@ -240,56 +427,58 @@ function renderTurn(){
 function answer(line,id,btn){
   const ok=id===line.a;
   // Second Sight: the mistake doesn't count, the same line stays in play.
-  if(!ok && techActive.seconde){
+  if(!ok && btn && techActive.seconde){
     techActive.seconde=false;
-    btn.disabled=true; btn.classList.add("bad");
+    if(!btn){ /* impact : pas de seconde chance */ } else if(btn.tagName==="INPUT"){ btn.value=""; btn.focus(); } else { btn.disabled=true; btn.classList.add("bad"); }
     const r=$("riposte"); r.className="ko"; r.style.display="block";
     $("rip-title").textContent="🌀 Second Sight! Your mistake doesn't count: choose again.";
     $("rip-expl").innerHTML="";
     renderTechs();
-    return;
+    return "seconde";
   }
   const dmg=techActive.contre?2:1;
+  tourFini=true;
+  finAttaque(ok, line);
   joue.push({id:line.t, titre:line.t, reussi:ok, explication:texteBrut(line.e)});
   totalCount++;
   if(ok){ correctCount++; matchCorrect++; }
   const all=[...document.querySelectorAll(".abtn")];
   all.forEach(b=>{b.disabled=true;b.classList.add("dim");});
-  const goodLabel=(line.type==="epl"?EPL:FALLACIES).find(o=>o.id===line.a).l;
+  const goodLabel=libelle(line.a).l;
   all.forEach(b=>{ if(b.dataset.id===line.a){b.classList.remove("dim");b.classList.add("good");} });
   if(ok){
-    foeHP=Math.max(0,foeHP-dmg);
-    $("f-foe").classList.add("shake");
-    setTimeout(()=>$("f-foe").classList.remove("shake"),450);
-    $("rip-title").textContent="✔ Hit! You exposed the technique.";
+    if(dmg===2) ouverture=Math.min(foeActuel().lines.length,ouverture+1);
+    $("rip-title").textContent="✔ Well spotted! You identified the technique.";
   } else {
-    btn.classList.remove("dim");btn.classList.add("bad");
+    if(btn){ btn.classList.remove("dim");btn.classList.add("bad"); }
     youHP=Math.max(0,youHP-dmg);
     $("f-you").classList.add("shake");
     setTimeout(()=>$("f-you").classList.remove("shake"),450);
     $("rip-title").textContent="✘ Ouch! It was: "+goodLabel;
   }
-  if(dmg===2) $("rip-title").textContent=(ok?"⚡ Counter-attack! Two points of damage. ":"⚡ Counter-attack failed: you lose two points. ")+$("rip-title").textContent;
+  if(line.a==="valable") $("rip-title").textContent=ok?"✅ Point of agreement! It wasn't an attack, it was a real argument.":"✘ Ouch! You saw a trap where there wasn't one: it was a sound argument.";
+  if(dmg===2) $("rip-title").textContent=(ok?"⚡ Counter-attack landed: +1 openness. ":"⚡ Counter-attack missed: −2 clarity. ")+$("rip-title").textContent;
   techActive={};
   renderTechs(true);
   updateHP();
   const rip=$("riposte");
   rip.className=ok?"ok":"ko"; rip.style.display="block";
   $("rip-expl").innerHTML=line.e;
-  $("nextbtn").style.display="block";
-  if(foeHP<=0) $("nextbtn").textContent="🏆 Opponent defeated! ➜";
-  else if(youHP<=0) $("nextbtn").textContent="💀 You are out of arguments… ➜";
-  else $("nextbtn").textContent="Next reply ➜";
-  $("nextbtn").scrollIntoView({behavior:"smooth",block:"end"});
-  $("nextbtn").focus();
+  if(youHP<=0){
+    $("nextbtn").style.display="block";
+    $("nextbtn").textContent="😵 You got carried away… ➜";
+    $("nextbtn").focus();
+    return;
+  }
+  renderReponse(line);
 }
 
 function nextTurn(){
-  if(foeHP<=0){ winMatch(); return; }
   if(youHP<=0){ lose(); return; }
+  if(phase==="comprendre"){ winMatch(); return; }
   lineIdx++;
   if(lineIdx>=order.length){
-    if(matchCorrect*2>=order.length) winMatch(); else lose();
+    if(revision || !foeActuel().dlg) winMatch(); else renderComprendre();
     return;
   }
   renderTurn();
@@ -304,10 +493,10 @@ function winMatch(){
   const next=FOES[foeIdx+1];
   $("inter").style.display="block";
   $("inter-emoji").textContent=FOES[foeIdx].emoji;
-  $("inter-title").textContent=FOES[foeIdx].name+" is out of arguments!";
-  $("inter-msg").innerHTML="Well done! You recover a little conviction. 💪<br><br>Next opponent: <b>"+next.emoji+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
+  $("inter-title").textContent="💬 End of the discussion with "+FOES[foeIdx].name;
+  $("inter-msg").innerHTML="You catch your breath: +3 clarity. 🌿<br><br>Next person: <b>"+next.emoji+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
   youHP=Math.min(YOUMAX,youHP+3);
-  $("inter-btn").textContent="⚔️ Face "+next.name;
+  $("inter-btn").textContent="💬 Talk with "+next.name;
   $("inter-btn").onclick=()=>startMatch(foeIdx+1);
 }
 
@@ -331,21 +520,20 @@ function finDePartie(titre, msg){
 }
 
 function victory(){
-  const title="Master of the Arena!";
   $("retry-btn").style.display="none";
-  const msg="You defeated all five opponents! You can now spot <b>ethos</b>, <b>pathos</b>, <b>logos</b>… and the most common fallacies.<br><br>"+scoreLine()+"<br><br>The arena's final secret: the best debating technique is not an attack. It is the <b>steel man</b> — faithfully reformulating the other person's argument before responding to it, and looking for a <b>point of agreement</b>. Debate then becomes richer… and calmer. 🤝";
-  finDePartie("👑 "+title, msg);
+  const msg="You talked with all five characters, and understood what drove "+bilan.compris+" of them out of 5.<br><br>Your answers: "+bilan.question+" questions, "+bilan.reformulation+" rephrasings, "+bilan.esquive+" dodges, "+bilan.massue+" sledgehammer blows.<br><br>"+scoreLine()+"<br><br>Spotting a fallacy is only the start. What moves a discussion forward is asking questions, faithfully rephrasing the other person's idea (the <b>steelman</b>), acknowledging their good arguments… and trying to understand what matters to them. 🤝";
+  finDePartie("🤝 Dialogue builder!", msg);
 }
 
 function lose(){
   $("battle").style.display="none";
   $("nextbtn").style.display="none";
-  const title="Defeated… this time!";
-  const msg=foeActuel().name+" overwhelmed you with rhetoric. No worries: the art of debate is something you <b>practise</b> more than something you learn.<br><br>"+scoreLine()+"<br><br>Read the replies carefully: straw man, false dilemma, appeal to popularity… Once you know them, you see them everywhere!";
+  const title="You got carried away…";
+  const msg=foeActuel().name+" led you into too many traps. No worries: the art of discussion is something you <b>practise</b> more than something you learn.<br><br>"+scoreLine()+"<br><br>Read the replies carefully: straw man, false dilemma, appeal to popularity… Once you know them, you see them everywhere!";
   finDePartie("😵 "+title, msg);
   const rb=$("retry-btn");
   rb.style.display="inline-block";
-  rb.textContent="🔁 Retry "+foeActuel().name;
+  rb.textContent="🔁 Resume the discussion with "+foeActuel().name;
   rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx, revision); };
 }
 
@@ -369,7 +557,10 @@ function renderTechs(fini){
 
 function useTech(id){
   techUsed[id]=true;
-  if(id==="regard"){
+  if(id==="regard" && modeSaisie()){
+    const bonne=libelle(ligneEnCours.a);
+    $("saisie-indice").textContent="👁️ Hint: "+bonne.s;
+  } else if(id==="regard"){
     // Removes wrong answers until only two are left in play.
     const enJeu=[...document.querySelectorAll(".abtn:not(:disabled)")];
     const fausses=shuffle(enJeu.filter(b=>b.dataset.id!==ligneEnCours.a));
@@ -384,8 +575,308 @@ function useTech(id){
   const etat=$("dojo-etat");
   if(etat){
     const noms=TECHS.map(x=>x.l.replace(/^\S+\s/,""));
-    if(DOJO_EP.clochettes) noms.push("🔔 Bells (+1 conviction)".replace(/^\S+\s/,""));
-    etat.textContent=noms.length?"🥋 Dojo techniques ready for the arena: "+noms.join(", ")+".":"🥋 New: train at the dojo first to earn techniques you can use here.";
+    if(DOJO_EP.clochettes) noms.push("🔔 Bells (+1 clarity)".replace(/^\S+\s/,""));
+    etat.textContent=noms.length?"🥋 Dojo techniques ready for the Agora: "+noms.join(", ")+".":"🥋 New: train at the dojo first to earn techniques you can use here.";
   }
   if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥷"; a.title="ninja avatar: dojo exam passed"; } }
 })();
+
+// ─── “Free typing” mode ───
+// The player types the name of the fallacy instead of picking it. Matching
+// ignores accents, case and small words, tolerates a few typos, and accepts
+// the usual names in both French and English (same table in app.js and
+// app-en.js: a student may type “homme de paille” in English mode).
+const SYNONYMES={
+  paille:["homme de paille","epouvantail","sophisme de l'epouvantail","straw man","strawman","caricature","deformation","deformer mes propos"],
+  adhom:["attaque personnelle","ad hominem","attaque ad hominem","attaque a la personne","attaque sur la personne","personal attack","insulte"],
+  popu:["appel a la popularite","popularite","argument de popularite","ad populum","argumentum ad populum","appel au nombre","appel a la majorite","appel a la foule","effet de mode","bandwagon","appeal to popularity","tout le monde le pense"],
+  dilemme:["faux dilemme","dilemme","fausse alternative","faux choix","alternative truquee","fausse dichotomie","false dilemma","false dichotomy","either or"],
+  pente:["pente glissante","pente savonneuse","pente","slippery slope","effet domino","reaction en chaine","engrenage"],
+  genehat:["generalisation hative","generalisation abusive","generalisation","hasty generalisation","hasty generalization","cas isole"],
+  nature:["appel a la nature","naturel","nature","sophisme naturaliste","appeal to nature"],
+  halo:["autorite hors domaine","effet de halo","halo","argument d'autorite","appel a l'autorite","fausse autorite","autorite","appeal to authority","authority outside their field","celebrite"],
+  preuve:["charge de la preuve inversee","charge de la preuve","renversement de la charge de la preuve","inversion de la charge de la preuve","preuve inversee","appel a l'ignorance","ad ignorantiam","burden of proof","reversed burden of proof","argument from ignorance"],
+  posthoc:["cause imaginee","post hoc","post hoc ergo propter hoc","fausse cause","correlation causalite","correlation n'est pas causalite","confusion correlation causalite","cum hoc","effet cigogne","false cause","imagined cause"],
+  circulaire:["raisonnement circulaire","circulaire","petition de principe","raisonnement en cercle","cercle vicieux","circular reasoning","begging the question"],
+  hareng:["hareng rouge","red herring","diversion","changer de sujet","changement de sujet","detournement","faux fuyant","digression","noyer le poisson"],
+  cherry:["cueillette des faits","cueillette de cerises","cueillette","cherry picking","picorage","selection des faits","tri des faits","omission"],
+  whatabout:["et toi alors","et toi","whataboutism","whataboutisme","tu quoque","toi aussi","renvoyer la balle","hypocrisie"],
+  ethos:["ethos","ethique","valeurs","credibilite","legitimite","autorite morale","ethics","credibility","values"],
+  pathos:["pathos","emotion","emotions","emotionnel","sentiment","sentiments","appel aux emotions","emotional","feelings"],
+  logos:["logos","logique","raison","raisonnement","faits","chiffres","logic","facts","reason"],
+};
+const PETITS_MOTS=new Set(["le","la","les","l","de","du","des","d","un","une","a","au","aux","the","of","an","sophisme","sophismes","fallacy","c","est","it","is","s"]);
+function normaliser(s){
+  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]+/g," ").split(" ").filter(w=>w && !PETITS_MOTS.has(w)).join(" ");
+}
+function distance(a,b){
+  const m=a.length, n=b.length; let prec=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){
+    const cour=[i];
+    for(let j=1;j<=n;j++) cour[j]=Math.min(prec[j]+1,cour[j-1]+1,prec[j-1]+(a[i-1]===b[j-1]?0:1));
+    prec=cour;
+  }
+  return prec[n];
+}
+// Renvoie l'id reconnu parmi `ids`, ou null. Une forme contenue mot pour mot
+// dans la saisie l'emporte (la plus longue) ; sinon la plus proche, avec une
+// tolérance d'une faute pour 6 lettres environ.
+function reconnaitre(saisie, ids){
+  const x=normaliser(saisie); if(!x) return null;
+  let meilleur=null, score=Infinity;
+  ids.forEach(id=>(SYNONYMES[id]||[]).forEach(f=>{
+    const y=normaliser(f); if(!y) return;
+    if((" "+x+" ").includes(" "+y+" ")){
+      const sc=-y.length;
+      if(sc<score){ score=sc; meilleur=id; }
+      return;
+    }
+    const tol=y.length<=4?0:Math.min(3,Math.floor(y.length/6)+1);
+    const d=distance(x,y);
+    if(d<=tol && d<score){ score=d; meilleur=id; }
+  }));
+  return meilleur;
+}
+function modeSaisie(){ const r=document.querySelector('input[name="mode"]:checked'); return !!r && r.value==="saisie"; }
+
+function renderSaisie(line){
+  const ansDiv=$("answers");
+  const form=document.createElement("form");
+  form.className="saisie";
+  const input=document.createElement("input");
+  input.type="text"; input.id="saisie-champ"; input.autocomplete="off"; input.spellcheck=false;
+  input.placeholder=line.type==="epl"?"Ethos, pathos or logos?":"Type the name of the fallacy…";
+  input.setAttribute("aria-label","Your answer");
+  const ok=document.createElement("button"); ok.type="submit"; ok.className="saisie-ok"; ok.textContent="Check";
+  const passe=document.createElement("button"); passe.type="button"; passe.className="saisie-passe"; passe.textContent="🤷 I don't know";
+  const msg=document.createElement("p"); msg.className="saisie-msg"; msg.id="saisie-msg"; msg.setAttribute("aria-live","polite");
+  const indice=document.createElement("p"); indice.className="saisie-msg"; indice.id="saisie-indice";
+  form.append(input,ok);
+  if(line.type!=="epl"){
+    const val=document.createElement("button"); val.type="button"; val.className="saisie-valable"; val.textContent="✅ It's a good argument";
+    val.onclick=()=>conclureSaisie(line, "valable", input, null);
+    form.appendChild(val);
+  }
+  form.append(passe,msg,indice);
+  ansDiv.appendChild(form);
+  form.onsubmit=e=>{
+    e.preventDefault();
+    const ids=(line.type==="epl"?EPL:FALLACIES).map(o=>o.id);
+    const id=reconnaitre(input.value, ids);
+    if(!id){ msg.textContent="I don't recognise that name. Try another wording (or “I don't know”)."; input.select(); return; }
+    msg.textContent="";
+    conclureSaisie(line, id, input, input.value);
+  };
+  passe.onclick=()=>conclureSaisie(line, null, input, null);
+  input.focus();
+}
+
+function conclureSaisie(line, id, input, tape){
+  const res=answer(line, id||"", input);
+  const lab=id?libelle(id).l:"";
+  const note=document.createElement("p");
+  note.className="saisie-lu";
+  note.textContent=id==="valable"&&tape==null?"You judged the argument sound.":tape!=null?"You typed “{x}”: recognised as {l}.".replace("{x}",tape.trim()).replace("{l}",lab):"You passed.";
+  $("rip-expl").prepend(note);
+  if(res==="seconde") return;
+  input.classList.add(id===line.a?"good":"bad");
+  [...document.querySelectorAll(".saisie input, .saisie button")].forEach(x=>x.disabled=true);
+}
+
+// Le mode de réponse choisi à l'accueil reste mémorisé d'une partie à l'autre.
+(function(){
+  let m=null; try{ m=localStorage.getItem("arene.mode"); }catch(e){}
+  const r=document.querySelector('input[name="mode"][value="'+(m==="saisie"?"saisie":"qcm")+'"]');
+  if(r) r.checked=true;
+  document.querySelectorAll('input[name="mode"]').forEach(x=>x.addEventListener("change",()=>{
+    try{ localStorage.setItem("arene.mode", x.value); }catch(e){}
+  }));
+})();
+
+// ─── The battle scene ───
+// Each line leaves the opponent like an attack. In Hard mode it crosses the
+// track in slow motion: you must answer before impact. In Easy mode it hangs
+// mid-way, with no timer. A sound argument, once recognised, turns green.
+let attaqueRAF=null, tourFini=false;
+function modeDifficile(){ const r=document.querySelector('input[name="diff"]:checked'); return !!r && r.value==="difficile"; }
+function lancerAttaque(line){
+  cancelAnimationFrame(attaqueRAF); attaqueRAF=null;
+  const a=$("attaque"), piste=$("piste");
+  if(!a) return;
+  a.className=""; a.textContent="🗯️";
+  piste.classList.toggle("suspendue", !modeDifficile());
+  if(!modeDifficile()){ a.style.left="50%"; return; }
+  // Le temps de lire la réplique, plus le temps d'écrire en saisie libre.
+  const duree=(7+line.t.length*0.05+(modeSaisie()?6:0))*1000;
+  const debut=performance.now();
+  function pas(t){
+    const f=Math.min(1,(t-debut)/duree);
+    a.style.left=(92-84*f)+"%";
+    if(f<1) attaqueRAF=requestAnimationFrame(pas);
+    else { attaqueRAF=null; impact(line); }
+  }
+  a.style.left="92%";
+  attaqueRAF=requestAnimationFrame(pas);
+}
+function impact(line){
+  if(tourFini) return;
+  techActive.seconde=false;
+  answer(line,"",null);
+  $("rip-title").textContent="⏱️ Too late: you didn't react in time! "+$("rip-title").textContent;
+  document.querySelectorAll(".abtn, .saisie input, .saisie button").forEach(x=>x.disabled=true);
+}
+function finAttaque(ok, line){
+  cancelAnimationFrame(attaqueRAF); attaqueRAF=null;
+  const a=$("attaque"); if(!a) return;
+  if(ok && line.a==="valable"){ a.textContent="✨"; a.className="vert"; }
+  else if(ok) a.className="brise";
+  else { a.className="touche"; a.style.left="8%"; }
+}
+
+// La difficulté choisie à l'accueil reste mémorisée, comme le mode de réponse.
+(function(){
+  let v=null; try{ v=localStorage.getItem("arene.diff"); }catch(e){}
+  const r=document.querySelector('input[name="diff"][value="'+(v==="difficile"?"difficile":"facile")+'"]');
+  if(r) r.checked=true;
+  document.querySelectorAll('input[name="diff"]').forEach(x=>x.addEventListener("change",()=>{
+    try{ localStorage.setItem("arene.diff", x.value); }catch(e){}
+  }));
+})();
+
+// ─── Second step: what do you answer? ───
+// Une fois le piège repéré (ou non), le joueur choisit sa réponse. Le coup de
+// massue et l'esquive ferment la discussion ; la question et la reformulation
+// l'ouvrent, et le personnage confie un indice de sa motivation cachée.
+// En Facile, l'indice est donné même après une mauvaise réponse ; en
+// Difficile, il faut le mériter.
+const GESTES={
+  massue:{l:"🔨 Sledgehammer", bon:false, m:"Naming the fallacy like a punch changes nobody's mind: the other person feels attacked and shuts down."},
+  esquive:{l:"🙈 Dodge", bon:false, m:"Avoiding conflict keeps the peace, but the discussion goes nowhere."},
+  question:{l:"❓ Open question", bon:true, m:"An open question brings the other person's reasons to light."},
+  reformulation:{l:"🪞 Rephrasing", bon:true, m:"Faithfully rephrasing the other person's idea shows you listened: then they can hear your nuance."},
+};
+function texteMassue(line){
+  const vous=!!(line.dlg&&line.dlg.vous);
+  if(line.type==="sain") return "'You only say that to look reasonable. I don't believe a word of it.'";
+  const nom=libelle(line.a).l.replace(/^\S+\s/,"");
+  if(line.type==="epl") return "'That's just "+nom.toLowerCase()+", it proves nothing!'";
+  return "'"+nom+"! Your argument is worthless.'";
+}
+function renderReponse(line){
+  const box=$("dialogue"), foe=line.foe||foeActuel(), d=line.d;
+  if(!d){ $("nextbtn").style.display="block"; $("nextbtn").textContent="Next line ➜"; return; }
+  const vous=!!(line.dlg&&line.dlg.vous);
+  box.innerHTML="";
+  box.hidden=false;
+  const h=document.createElement("p"); h.className="qprompt";
+  h.textContent="💬 And now, what do you say to {n}?".replace("{n}",foe.name);
+  box.appendChild(h);
+  const grille=document.createElement("div"); grille.className="dgrille";
+  const choix=shuffle([
+    {g:"massue", t:texteMassue(line)},
+    {g:"esquive", t:"'Well… let's not fight. Let's talk about something else.'"},
+    {g:"question", t:d.q},
+    {g:"reformulation", t:d.r},
+  ]);
+  choix.forEach(c=>{
+    const b=document.createElement("button");
+    b.type="button"; b.className="dbtn"; b.dataset.geste=c.g;
+    b.textContent=c.t;
+    b.onclick=()=>repondre(line,c.g,b);
+    grille.appendChild(b);
+  });
+  box.appendChild(grille);
+  const r=document.createElement("div"); r.id="reaction"; r.setAttribute("aria-live","polite"); r.hidden=true;
+  box.appendChild(r);
+  setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); const p=grille.querySelector(".dbtn"); if(p) p.focus({preventScroll:true}); },350);
+}
+function repondre(line,geste,btn){
+  const foe=line.foe||foeActuel(), dlg=line.dlg||{}, G=GESTES[geste];
+  const max=foeActuel().lines.length;
+  bilan[geste]++;
+  document.querySelectorAll(".dbtn").forEach(b=>{
+    b.disabled=true;
+    const g=GESTES[b.dataset.geste];
+    const tag=document.createElement("span"); tag.className="dtag"; tag.textContent=g.l;
+    b.prepend(tag);
+    b.classList.add(b===btn?(g.bon?"good":"bad"):"dim");
+  });
+  const r=$("reaction"); r.hidden=false; r.className=G.bon?"ok":"ko";
+  r.innerHTML="";
+  const tete=document.createElement("p"); tete.className="rtete";
+  const corps=document.createElement("p"); corps.className="rcorps";
+  const lecon=document.createElement("p"); lecon.className="rlecon";
+  lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Acknowledging a good argument builds common ground.":G.m;
+  if(G.bon){
+    ouverture=Math.min(max,ouverture+1);
+    tete.textContent=foe.emoji+" "+"{n} opens up a little:".replace("{n}",foe.name);
+    corps.textContent=line.d.k;
+    noter(line.d.k,false);
+  } else {
+    if(geste==="massue") ouverture=Math.max(0,ouverture-1);
+    tete.textContent=foe.emoji+" "+(geste==="massue"?dlg.braque:dlg.esquive);
+    if(!modeDifficile()){ corps.textContent="Had you made them feel heard, you might have heard: "+line.d.k; noter(line.d.k,true); }
+    else corps.textContent="No confidence this time: this clue slips away.";
+  }
+  r.append(tete,corps,lecon);
+  updateHP();
+  const nb=$("nextbtn");
+  nb.style.display="block";
+  nb.textContent=(lineIdx+1>=order.length && !revision)?"🔎 Understand {n} ➜".replace("{n}",foe.name):"Next line ➜";
+  nb.scrollIntoView({behavior:"smooth",block:"end"});
+  nb.focus({preventScroll:true});
+}
+
+// ─── Le carnet : ce qu'on a compris de l'autre ───
+function noter(k,donne){
+  if(carnet.some(c=>c.k===k)) return;
+  carnet.push({k:k, donne:donne});
+  renderCarnet();
+}
+function renderCarnet(){
+  const box=$("carnet"); if(!box) return;
+  const foe=foeActuel();
+  box.hidden=!carnet.length || !!revision;
+  box.innerHTML="";
+  const t=document.createElement("p"); t.className="ctitre";
+  t.textContent="📓 What you understood about {n}".replace("{n}",foe?foe.name:"");
+  const ul=document.createElement("ul");
+  carnet.forEach(c=>{ const li=document.createElement("li"); li.textContent=c.k; if(c.donne){ li.className="donne"; li.title="clue given (in Easy) despite your answer"; } ul.appendChild(li); });
+  box.append(t,ul);
+}
+
+// ─── Fin du match : comprendre ce qui le motive ───
+function renderComprendre(){
+  const foe=foeActuel(), dlg=foe.dlg;
+  phase="comprendre";
+  tourFini=true; cancelAnimationFrame(attaqueRAF); attaqueRAF=null;
+  document.querySelector(".bubble").hidden=true; $("piste").hidden=true;
+  $("dialogue").hidden=true; $("riposte").style.display="none"; $("nextbtn").style.display="none";
+  $("techs").hidden=true;
+  $("turn-progress").textContent="End of the discussion";
+  $("qprompt").textContent="🔎 Deep down, what drives {n} to talk this way?".replace("{n}",foe.name);
+  const leurres=modeDifficile()?dlg.leurres:dlg.leurres.slice(0,2);
+  const options=shuffle([{id:"vraie", t:dlg.motiv}, ...leurres.map((t,i)=>({id:"leurre"+i, t:t}))]);
+  const ansDiv=$("answers"); ansDiv.innerHTML="";
+  options.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="abtn mbtn"; b.dataset.id=o.id; b.textContent=o.t;
+    b.onclick=()=>{
+      const ok=o.id==="vraie";
+      if(ok) bilan.compris++;
+      ansDiv.querySelectorAll(".abtn").forEach(x=>{ x.disabled=true; x.classList.add(x.dataset.id==="vraie"?"good":x===b?"bad":"dim"); });
+      const rip=$("riposte"); rip.className=ok?"ok":"ko"; rip.style.display="block";
+      $("rip-title").textContent=ok?"🤝 You understood {n}!".replace("{n}",foe.name):"🤔 Not quite…";
+      $("rip-expl").innerHTML="";
+      const p1=document.createElement("p"); p1.textContent=(ok?"":"In fact: ")+dlg.motiv;
+      const p2=document.createElement("p"); p2.className="rfin"; p2.textContent=ok?dlg.fin:"Reread your notebook: behind the arguments there is often a fear or a need. Open questions help you hear them.";
+      $("rip-expl").append(p1,p2);
+      const nb=$("nextbtn"); nb.style.display="block";
+      nb.textContent=foeIdx===FOES.length-1?"🏁 See the summary ➜":"Next character ➜";
+      nb.scrollIntoView({behavior:"smooth",block:"end"}); nb.focus({preventScroll:true});
+    };
+    ansDiv.appendChild(b);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}

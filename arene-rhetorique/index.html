@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-i18n="pageTitle">L'Arène Rhétorique — reconnaître les ressorts du discours et les sophismes</title>
-<meta name="description" data-i18n-content="metaDesc" content="Jeu de débat : cinq adversaires tentent de te convaincre par tous les moyens. À chaque réplique, identifie le ressort rhétorique ou le sophisme utilisé.">
+<title data-i18n="pageTitle">L'Agora — repérer les pièges du discours et comprendre l'autre</title>
+<meta name="description" data-i18n-content="metaDesc" content="Jeu de discussion : cinq personnages tentent de te convaincre par tous les moyens. Repère leurs pièges, fais avancer l'échange et comprends ce qui les motive.">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
@@ -44,6 +44,8 @@ main{display:flex;flex-direction:column;align-items:center;}
 .bigbtn{background:linear-gradient(135deg,#ff5d73,#c2274a);color:#fff;border:none;border-radius:50px;padding:15px 40px;font-family:'Alfa Slab One',serif;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 20px rgba(255,93,115,.35);transition:transform .2s;}
 .bigbtn:hover{transform:translateY(-2px);}
 .bigbtn.gold{background:linear-gradient(135deg,#e4b478,#b9854a);color:#2a1708;box-shadow:0 4px 20px rgba(228,180,120,.3);}
+.bigbtn.ghost{background:transparent;color:var(--tx);border:2px solid rgba(255,255,255,.22);box-shadow:none;font-size:1rem;}
+.bigbtn.ghost:hover{border-color:var(--acc);}
 
 /* Battle zone */
 #battle{display:none;width:100%;max-width:700px;}
@@ -56,7 +58,7 @@ main{display:flex;flex-direction:column;align-items:center;}
 .hpbar{height:12px;background:rgba(0,0,0,.35);border-radius:50px;margin-top:8px;overflow:hidden;}
 .hpfill{height:100%;border-radius:50px;transition:width .5s ease;}
 #hp-you .hpfill{background:linear-gradient(90deg,#3ecf8e,#2da872);}
-#hp-foe .hpfill{background:linear-gradient(90deg,#f75f5f,#d34141);}
+#hp-foe .hpfill{background:linear-gradient(90deg,#e4b478,#b9854a);}
 .hptxt{font-size:var(--fs-100);font-weight:800;color:var(--mu);margin-top:4px;}
 #foe-title{color:var(--rd);}
 #you-title{color:var(--gr);}
@@ -97,7 +99,8 @@ main{display:flex;flex-direction:column;align-items:center;}
 #retry-btn{display:none;margin-bottom:10px;}
 
 /* Le dojo (dojo.html) : le bouton d'accès et les techniques qu'il débloque */
-.intro-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.intro-btns{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.intro-btns .bigbtn{min-width:min(100%,340px);justify-content:center;}
 a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 .dojo-etat{margin-top:14px;color:var(--mu);font-weight:700;font-size:var(--fs-200);line-height:1.5;}
 #techs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 10px;}
@@ -114,6 +117,71 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 .screen .femoji{font-size:3.5rem;display:block;margin-bottom:8px;}
 .screen > p{color:var(--mu);font-weight:700;margin-bottom:18px;line-height:1.55;}
 .screen > p b{color:var(--tx);}
+/* Options de l'accueil : mode de réponse et difficulté */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;text-align:left;}
+.options fieldset{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:12px 14px;}
+.options legend{font-family:'Alfa Slab One',serif;font-size:var(--fs-200);color:var(--acc);padding:0 6px;}
+.options label{display:flex;gap:9px;align-items:flex-start;padding:8px 6px;border-radius:10px;cursor:pointer;font-weight:800;line-height:1.3;}
+.options label:hover{background:rgba(255,255,255,.04);}
+.options input{accent-color:var(--acc);margin-top:3px;flex:none;}
+.options .asub{display:block;font-size:var(--fs-100);font-weight:600;color:var(--mu);margin-top:2px;}
+@media(max-width:520px){.options{grid-template-columns:1fr;}}
+
+/* La piste de combat : l'attaque part de l'adversaire (à droite) vers toi */
+#piste{position:relative;height:46px;margin:-4px 0 10px;border-radius:50px;background:linear-gradient(90deg,rgba(62,207,142,.12),rgba(0,0,0,.25) 30%,rgba(0,0,0,.25) 70%,rgba(247,95,95,.12));border:1px solid var(--bord);overflow:hidden;}
+#piste::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.05) 22px 24px);animation:defile 1.2s linear infinite;}
+#piste.suspendue::before{animation:none;opacity:.5;}
+@keyframes defile{to{background-position:-48px 0;}}
+#attaque{position:absolute;top:50%;left:92%;transform:translate(-50%,-50%);font-size:1.8rem;line-height:1;filter:drop-shadow(0 0 8px rgba(247,95,95,.8));}
+#piste.suspendue #attaque{animation:flotte 1.6s ease-in-out infinite;}
+@keyframes flotte{50%{transform:translate(-50%,-62%) scale(1.08);}}
+#attaque.vert{left:12%!important;transition:left .9s ease;filter:drop-shadow(0 0 12px rgba(62,207,142,1));animation:lueur 1s ease-in-out infinite alternate!important;}
+#piste:has(#attaque.vert){background:linear-gradient(90deg,rgba(62,207,142,.35),rgba(62,207,142,.08));border-color:var(--gr);transition:background .6s;}
+@keyframes lueur{from{transform:translate(-50%,-50%) scale(1);}to{transform:translate(-50%,-50%) scale(1.3);}}
+#attaque.brise{animation:brise .5s ease forwards!important;}
+@keyframes brise{to{transform:translate(-50%,-50%) scale(2.2) rotate(25deg);opacity:0;}}
+#attaque.touche{animation:touche .45s ease forwards!important;}
+@keyframes touche{40%{transform:translate(-50%,-50%) scale(1.6);}to{transform:translate(-50%,-50%) scale(.4);opacity:0;}}
+
+/* Mode « saisie libre » */
+.saisie{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:9px;}
+.saisie input{flex:1 1 220px;min-width:0;background:var(--card);border:2px solid var(--bord);border-radius:13px;padding:12px 14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;color:var(--tx);}
+.saisie input:focus{border-color:var(--acc);outline:none;box-shadow:0 0 0 3px rgba(255,93,115,.3);}
+.saisie input.good{border-color:var(--gr);background:rgba(62,207,142,.12);}
+.saisie input.bad{border-color:var(--rd);background:rgba(247,95,95,.12);}
+.saisie button{background:var(--card);border:2px solid var(--bord);border-radius:13px;padding:10px 14px;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--tx);font-size:.86rem;font-weight:800;}
+.saisie button:hover:not(:disabled){border-color:rgba(255,255,255,.25);}
+.saisie button:disabled{opacity:.45;cursor:default;}
+.saisie .saisie-ok{background:linear-gradient(135deg,#ff5d73,#c2274a);border-color:transparent;color:#fff;}
+.saisie .saisie-valable{border-color:rgba(62,207,142,.5);}
+.saisie-msg{flex-basis:100%;font-size:var(--fs-200);font-weight:700;color:var(--mu);}
+.saisie-msg:empty{display:none;}
+.saisie-lu{font-size:var(--fs-200);color:var(--mu);margin-bottom:6px;font-style:italic;}
+/* Le dialogue : deuxième temps de chaque réplique, carnet d'indices, question finale */
+#dialogue{margin-bottom:12px;}
+#dialogue[hidden],#carnet[hidden],.bubble[hidden],#piste[hidden]{display:none;}
+.dgrille{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.dbtn{background:var(--card);border:2px solid var(--bord);border-radius:13px;padding:12px;cursor:pointer;text-align:left;font-family:Georgia,'Times New Roman',serif;font-style:italic;color:var(--tx);font-size:.92rem;line-height:1.45;transition:all .18s;}
+.dbtn:hover:not(:disabled){border-color:rgba(255,255,255,.25);transform:translateY(-2px);}
+.dbtn:disabled{cursor:default;}
+.dbtn.good{border-color:var(--gr);background:rgba(62,207,142,.12);}
+.dbtn.bad{border-color:var(--rd);background:rgba(247,95,95,.12);}
+.dbtn.dim{opacity:.45;}
+.dtag{display:block;font-family:'Nunito',sans-serif;font-style:normal;font-size:var(--fs-100);font-weight:800;color:var(--mu);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+#reaction{margin-top:12px;border-radius:18px;padding:14px 16px;animation:pop .3s ease;}
+#reaction[hidden]{display:none;}
+#reaction.ok{background:rgba(62,207,142,.1);border:2px solid var(--gr);}
+#reaction.ko{background:rgba(247,95,95,.08);border:2px solid rgba(247,95,95,.6);}
+.rtete{font-weight:800;line-height:1.45;margin-bottom:6px;}
+.rcorps{font-family:Georgia,'Times New Roman',serif;font-style:italic;line-height:1.5;margin-bottom:8px;}
+.rlecon{font-size:var(--fs-200);font-weight:700;color:var(--mu);line-height:1.5;}
+.rfin{margin-top:8px;font-style:italic;}
+#carnet{background:rgba(228,180,120,.08);border:1px dashed rgba(228,180,120,.5);border-radius:14px;padding:10px 14px;margin:-4px 0 12px;}
+.ctitre{font-family:'Alfa Slab One',serif;font-size:var(--fs-200);color:#e4b478;margin-bottom:4px;}
+#carnet ul{margin:0;padding-left:18px;font-size:var(--fs-200);line-height:1.5;font-style:italic;}
+#carnet li.donne{opacity:.6;}
+.abtn.mbtn{grid-column:1/-1;font-size:.95rem;}
+@media(max-width:520px){.dgrille{grid-template-columns:1fr;}}
 @media(max-width:520px){#answers{grid-template-columns:1fr;}}
 /* Lien de retour, bascule de langue, focus et mouvement réduit : fournis
    une seule fois par collection.css / collection.js, plus rien ici. */
@@ -122,20 +190,33 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 <body data-col-retour="../index.html">
 <main>
 <header class="titre-jeu">
-  <h1 data-i18n="h1">⚔️ L'Arène Rhétorique</h1>
-  <p class="sub" data-i18n="sub">Démasque les ruses du discours et remporte le débat !</p>
+  <h1 data-i18n="h1">🏛️ L'Agora</h1>
+  <p class="sub" data-i18n="sub">Repère les ruses du discours, et apprends à mieux discuter !</p>
   <p class="author">par <a href="https://antoninatger.com" target="_blank">Antonin Atger</a></p>
 </header>
 
 <div id="intro">
   <div class="brief">
-    <p data-i18n-html="brief1">🏟️ Bienvenue dans l'arène ! Cinq adversaires vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b> !</p>
-    <p style="margin-top:10px;" data-i18n-html="brief2">🎯 À chaque réplique, identifie le <b>ressort rhétorique</b> ou le <b>sophisme</b> utilisé. Bonne réponse : ton adversaire perd des points de conviction. Mauvaise réponse : c'est toi qui en perds !</p>
-    <p style="margin-top:10px;" data-i18n-html="brief3">👑 Bats les 5 adversaires pour devenir <b>Maître de l'Arène</b>.</p>
+    <p data-i18n-html="brief1">🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.</p>
+    <p style="margin-top:10px;" data-i18n-html="brief2">🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.</p>
+    <p style="margin-top:10px;" data-i18n-html="brief3">🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.</p>
+  </div>
+  <div class="options">
+    <fieldset>
+      <legend data-i18n="modeTitre">Réponse</legend>
+      <label><input type="radio" name="mode" value="qcm" checked><span><span data-i18n="modeQcm">🔘 Choix multiple</span><span class="asub" data-i18n="modeQcmS">Choisis parmi quatre propositions</span></span></label>
+      <label><input type="radio" name="mode" value="saisie"><span><span data-i18n="modeSaisie">⌨️ Saisie libre</span><span class="asub" data-i18n="modeSaisieS">Écris le nom du sophisme, à ta façon</span></span></label>
+    </fieldset>
+    <fieldset>
+      <legend data-i18n="diffTitre">Difficulté</legend>
+      <label><input type="radio" name="diff" value="facile" checked><span><span data-i18n="diffFacile">🌱 Facile</span><span class="asub" data-i18n="diffFacileS">Pas de chrono, et les indices te sont toujours donnés</span></span></label>
+      <label><input type="radio" name="diff" value="difficile"><span><span data-i18n="diffDifficile">🔥 Difficile</span><span class="asub" data-i18n="diffDifficileS">Chrono, et les indices se méritent</span></span></label>
+    </fieldset>
   </div>
   <div class="intro-btns">
-    <button class="bigbtn" onclick="startMatch(0)" data-i18n="enter">⚔️ Entrer dans l'arène</button>
     <a class="bigbtn gold" href="dojo.html" data-i18n="dojo">🥋 S'entraîner au dojo</a>
+    <button class="bigbtn" onclick="startMatch(0)" data-i18n="enter">💬 Rejoindre l'Agora</button>
+    <a class="bigbtn ghost" href="debat.html" data-i18n="classe">🏫 Organiser un débat en classe</a>
   </div>
   <p class="dojo-etat" id="dojo-etat"></p>
 </div>
@@ -161,6 +242,8 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
       <div class="hptxt" id="hp-foe-txt"></div>
     </div>
   </div>
+  <div id="carnet" hidden></div>
+  <div id="piste" aria-hidden="true"><span id="attaque">🗯️</span></div>
   <div id="techs" hidden></div>
   <div class="bubble">
     <span class="btag" id="foe-tag"></span>
@@ -172,6 +255,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <div id="rip-title"></div>
     <p id="rip-expl"></p>
   </div>
+  <div id="dialogue" hidden></div>
   <button id="nextbtn" onclick="nextTurn()">Réplique suivante ➜</button>
 </div>
 
@@ -196,26 +280,34 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 <script>
 I18N.register({
   fr: {
-    pageTitle: "L'Arène Rhétorique — reconnaître les ressorts du discours et les sophismes",
-    metaDesc: "Jeu de débat : cinq adversaires tentent de te convaincre par tous les moyens. À chaque réplique, identifie le ressort rhétorique ou le sophisme utilisé.",
-    h1: "⚔️ L'Arène Rhétorique",
-    sub: "Démasque les ruses du discours et remporte le débat !",
-    brief1: `🏟️ Bienvenue dans l'arène ! Cinq adversaires vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b> !`,
-    brief2: `🎯 À chaque réplique, identifie le <b>ressort rhétorique</b> ou le <b>sophisme</b> utilisé. Bonne réponse : ton adversaire perd des points de conviction. Mauvaise réponse : c'est toi qui en perds !`,
-    brief3: `👑 Bats les 5 adversaires pour devenir <b>Maître de l'Arène</b>.`,
-    enter: "⚔️ Entrer dans l'arène", dojo: "🥋 S'entraîner au dojo", you: "Toi", replay: "🔄 Rejouer",
-    hpYouLabel: "Ta conviction restante", hpFoeLabel: "Conviction restante de l'adversaire"
+    pageTitle: "L'Agora — repérer les pièges du discours et comprendre l'autre",
+    metaDesc: "Jeu de discussion : cinq personnages tentent de te convaincre par tous les moyens. Repère leurs pièges, fais avancer l'échange et comprends ce qui les motive.",
+    h1: "🏛️ L'Agora",
+    sub: "Repère les ruses du discours, et apprends à mieux discuter !",
+    brief1: `🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.`,
+    brief2: `🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.`,
+    brief3: `🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.`,
+    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", classe: "🏫 Organiser un débat en classe", you: "Toi", replay: "🔄 Rejouer",
+    hpYouLabel: "Ta lucidité", hpFoeLabel: "Ouverture de ton interlocuteur",
+    modeTitre: "Réponse", modeQcm: "🔘 Choix multiple", modeQcmS: "Choisis parmi quatre propositions",
+    modeSaisie: "⌨️ Saisie libre", modeSaisieS: "Écris le nom du sophisme, à ta façon",
+    diffTitre: "Difficulté", diffFacile: "🌱 Facile", diffFacileS: "Pas de chrono, et les indices te sont toujours donnés",
+    diffDifficile: "🔥 Difficile", diffDifficileS: "Chrono, et les indices se méritent"
   },
   en: {
-    pageTitle: "The Rhetoric Arena — recognise rhetorical devices and fallacies",
-    metaDesc: "A debate game: five opponents try to convince you by any means. For each line, identify the rhetorical device or the fallacy used.",
-    h1: "⚔️ The Rhetoric Arena",
-    sub: "Unmask the tricks of speech and win the debate!",
-    brief1: `🏟️ Welcome to the arena! Five opponents will try to <b>convince you by any means</b>: appeals to ethics (<b>ethos</b>), emotion (<b>pathos</b>) and logic (<b>logos</b>)… and plenty of <b>fallacious arguments</b>!`,
-    brief2: `🎯 For each line, identify the <b>rhetorical device</b> or the <b>fallacy</b> used. Right answer: your opponent loses conviction points. Wrong answer: you lose them!`,
-    brief3: `👑 Beat all 5 opponents to become <b>Master of the Arena</b>.`,
-    enter: "⚔️ Enter the arena", dojo: "🥋 Train at the dojo", you: "You", replay: "🔄 Play again",
-    hpYouLabel: "Your remaining conviction", hpFoeLabel: "Opponent's remaining conviction"
+    pageTitle: "The Agora — spot the traps of speech and understand others",
+    metaDesc: "A discussion game: five characters try to convince you by any means. Spot their traps, move the exchange forward and understand what drives them.",
+    h1: "🏛️ The Agora",
+    sub: "Spot the tricks of speech, and learn to discuss better!",
+    brief1: `🏛️ Welcome to the Agora, the square where people debate! Five characters will try to <b>convince you by any means</b>: appeals to ethics (<b>ethos</b>), emotion (<b>pathos</b>) and logic (<b>logos</b>)… and plenty of <b>fallacious arguments</b>. But sometimes, <b>genuinely good arguments</b> too.`,
+    brief2: `🎯 Each match has three goals: <b>spot the traps</b> without getting carried away (your clarity), <b>move the exchange forward</b> by choosing your answer well (their openness), and <b>understand what really drives them</b>: every confidence goes into your notebook.`,
+    brief3: `🤝 Finish all five discussions to become a <b>Dialogue builder</b>.`,
+    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", classe: "🏫 Run a debate in class", you: "You", replay: "🔄 Play again",
+    hpYouLabel: "Your clarity", hpFoeLabel: "Openness of the other person",
+    modeTitre: "Answer", modeQcm: "🔘 Multiple choice", modeQcmS: "Pick from four options",
+    modeSaisie: "⌨️ Free typing", modeSaisieS: "Type the fallacy's name, your own way",
+    diffTitre: "Difficulty", diffFacile: "🌱 Easy", diffFacileS: "No timer, and clues are always given",
+    diffDifficile: "🔥 Hard", diffDifficileS: "Timer, and clues must be earned"
   }
 });
 /* La confirmation avant de quitter un combat en cours est désormais celle du
@@ -226,7 +318,7 @@ I18N.register({
 // Aiguillage FR/EN : charge la version française (app.js) ou anglaise (app-en.js) selon la langue choisie.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
 </script>
-<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Arène de rhétorique" data-texte="L’Arène de rhétorique, un jeu gratuit pour démasquer les sophismes et les ruses du discours" data-texte-en="The Rhetoric Arena, a free game to unmask fallacies and tricks of speech"></script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="L’Agora" data-texte="L’Agora, un jeu gratuit pour repérer les ruses du discours et apprendre à mieux discuter" data-texte-en="The Agora, a free game to spot tricks of speech and learn to discuss better"></script>
   <script src="../retours.js" defer></script>
 </body>
 </html>

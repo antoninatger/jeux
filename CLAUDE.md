@@ -33,7 +33,7 @@ dans `REFONTE-UX.md` sans le réordonner.
 
 Antonin a tranché, dans le cadre de la refonte du site (`Web apps/Refonte site 2026/PLAN.md`, question A) :
 
-- **Trois jeux restent en accès libre** : Fakemètre, Radar'naque, Arène de rhétorique (Planète connaissance en plus pour le
+- **Trois jeux restent en accès libre** : Fakemètre, Radar'naque, L'Agora (ex-Arène de rhétorique, dossier `arene-rhetorique/`) (Planète connaissance en plus pour le
   primaire, à confirmer).
 - **Tous les autres sont réservés** aux établissements et structures qui l'ont fait venir, avec **un code par établissement**
   valable l'année scolaire, saisi sur `jeux.antoninatger.com`.

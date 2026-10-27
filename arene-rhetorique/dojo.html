@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-i18n="pageTitle">Le Dojo de l'Arène — s'entraîner à repérer les sophismes</title>
-<meta name="description" data-i18n-content="metaDesc" content="Avant l'Arène rhétorique, un entraînement façon manga : repérer un sophisme, le localiser, le trouver dans un discours et savoir y riposter.">
+<title data-i18n="pageTitle">Le Dojo de l'Agora — s'entraîner à repérer les sophismes</title>
+<meta name="description" data-i18n-content="metaDesc" content="Avant l'Agora, un entraînement façon manga : repérer un sophisme, le localiser, le trouver dans un discours et savoir y riposter.">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../collection.css">
 <style>
 /* ── L'identité du dojo ──────────────────────────────────────────────────
    Une planche de manga : papier crème, encre noire, trame de points, rouge
-   vif pour les coups. L'Arène est bordeaux et nocturne ; le dojo est son
+   vif pour les coups. L'Agora est bordeaux et nocturne ; le dojo est son
    envers, en plein jour, au coucher du soleil sur le terrain d'entraînement.
    Thème clair du socle (data-theme="clair"), identité redéfinie ici. */
 :root {
@@ -382,6 +382,11 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 .retour.ok .retour__titre { color: var(--ok); }
 .retour.ko .retour__titre { color: var(--acc); }
 .retour__texte { font-weight: 600; line-height: var(--lh-normal); }
+.retour__def { font-weight: 700; line-height: var(--lh-normal); margin-bottom: var(--sp-1); }
+.lexique dl { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-1) var(--sp-3); margin-top: var(--sp-2); }
+.lexique dt { font-weight: 800; }
+.lexique dd { margin: 0; line-height: var(--lh-normal); }
+@media (max-width: 560px) { .lexique dl { grid-template-columns: 1fr; } .lexique dd { margin-bottom: var(--sp-2); } }
 .retour[hidden] { display: none; }
 
 /* Résultat d'une épreuve */
@@ -469,7 +474,7 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 </head>
 <body data-col-retour="index.html" data-col-retour-cle="retourArene">
 <main>
-  <h1 data-i18n="h1">🥋 Le Dojo de l'Arène</h1>
+  <h1 data-i18n="h1">🥋 Le Dojo de l'Agora</h1>
 
   <!-- ── INTRO ──────────────────────────────────────────────────────── -->
   <section class="ecran" id="ecran-intro">
@@ -499,7 +504,7 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
           <rect x="168" y="150" width="30" height="7"/><rect x="260" y="140" width="34" height="7"/><rect x="356" y="156" width="30" height="7"/>
         </g>
       </svg>
-      <p class="hero__titre" data-i18n="heroTitre">Avant l'arène, le dojo</p>
+      <p class="hero__titre" data-i18n="heroTitre">Avant l'Agora, le dojo</p>
       <div class="feuilles-deco">
         <span style="left:8%;animation-duration:7s">🍂</span>
         <span style="left:22%;animation-duration:9s;animation-delay:-3s">🍃</span>
@@ -510,8 +515,8 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
     </div>
 
     <div class="case intro-brief">
-      <p data-i18n-html="brief1">Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent survivre à l'Arène. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.</p>
-      <p data-i18n-html="brief2">Chaque épreuve réussie t'apprend une <b>technique</b> utilisable dans l'arène. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.</p>
+      <p data-i18n-html="brief1">Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent tenir bon sur l'Agora. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.</p>
+      <p data-i18n-html="brief2">Chaque épreuve réussie t'apprend une <b>technique</b> utilisable sur l'Agora. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.</p>
     </div>
     <ul class="col-meta">
       <li>⏱️ <span data-i18n="duree">10 à 15 minutes</span></li>
@@ -520,7 +525,7 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
     </ul>
     <div class="actions">
       <button type="button" class="btn-manga" id="btn-entrer" data-i18n="entrer">🥋 Entrer au dojo</button>
-      <a class="btn-manga btn-manga--clair" href="index.html" data-i18n="directArene">⚔️ Aller directement à l'arène</a>
+      <a class="btn-manga btn-manga--clair" href="index.html" data-i18n="directArene">🏛️ Aller directement à l'Agora</a>
     </div>
   </section>
 
@@ -559,10 +564,10 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
       <div class="actions"><button type="button" class="btn-manga" id="btn-examen" data-i18n="passerExamen">Passer l'examen</button></div>
     </div>
     <div class="case">
-      <h3 class="titre-case" data-i18n="techsTitre">Tes techniques pour l'arène</h3>
+      <h3 class="titre-case" data-i18n="techsTitre">Tes techniques pour l'Agora</h3>
       <ul class="techs-liste" id="carte-techs"></ul>
       <div class="actions">
-        <a class="btn-manga" href="index.html" data-i18n="allerArene">⚔️ Entrer dans l'arène</a>
+        <a class="btn-manga" href="index.html" data-i18n="allerArene">🏛️ Rejoindre l'Agora</a>
       </div>
     </div>
     <label class="reglage"><input type="checkbox" id="mode-calme"> <span data-i18n="modeCalme">Mode calme : pas de chute ni de chrono (au clavier, au lecteur d'écran ou en projection)</span></label>
@@ -584,6 +589,7 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
     <div class="aire" id="ep-aire"></div>
     <div class="case retour" id="ep-retour" hidden>
       <p class="retour__titre" id="ep-retour-titre"></p>
+      <p class="retour__def" id="ep-retour-def" hidden></p>
       <p class="retour__texte" id="ep-retour-texte"></p>
     </div>
     <div class="actions">
@@ -606,7 +612,7 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
   <section class="ecran" id="ecran-fin" hidden>
     <div class="case col-fin" id="fin-recap"></div>
     <div class="actions" id="fin-actions">
-      <a class="btn-manga" href="index.html" data-i18n="allerArene">⚔️ Entrer dans l'arène</a>
+      <a class="btn-manga" href="index.html" data-i18n="allerArene">🏛️ Rejoindre l'Agora</a>
       <button type="button" class="btn-manga btn-manga--clair" id="fin-dojo" data-i18n="retourDojo">Retour au dojo</button>
     </div>
   </section>
@@ -625,14 +631,14 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 <script>
 I18N.register({
   fr: {
-    pageTitle: "Le Dojo de l'Arène — s'entraîner à repérer les sophismes",
-    metaDesc: "Avant l'Arène rhétorique, un entraînement façon manga : repérer un sophisme, le localiser, le trouver dans un discours et savoir y riposter.",
-    h1: "🥋 Le Dojo de l'Arène", retourArene: "Retour à l'arène",
-    heroTitre: "Avant l'arène, le dojo",
-    brief1: "Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent survivre à l'Arène. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.",
-    brief2: "Chaque épreuve réussie t'apprend une <b>technique</b> utilisable dans l'arène. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.",
+    pageTitle: "Le Dojo de l'Agora — s'entraîner à repérer les sophismes",
+    metaDesc: "Avant l'Agora, un entraînement façon manga : repérer un sophisme, le localiser, le trouver dans un discours et savoir y riposter.",
+    h1: "🥋 Le Dojo de l'Agora", retourArene: "Retour à l'Agora",
+    heroTitre: "Avant l'Agora, le dojo",
+    brief1: "Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent tenir bon sur l'Agora. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.",
+    brief2: "Chaque épreuve réussie t'apprend une <b>technique</b> utilisable sur l'Agora. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.",
     duree: "10 à 15 minutes", niveau: "Collège · lycée", commandes: "Souris, doigt ou clavier",
-    entrer: "🥋 Entrer au dojo", directArene: "⚔️ Aller directement à l'arène",
+    entrer: "🥋 Entrer au dojo", directArene: "🏛️ Aller directement à l'Agora",
     sceneH: "Scène", suite: "Suite ➜", suivant: "Suivant ➜", continuer: "Continuer ➜",
     narrateur: "Récit", examinateur: "L'examinateur",
     tonRang: "Ton rang", tonType: "Ton type de Nen rhétorique : {nom}",
@@ -645,13 +651,13 @@ I18N.register({
     examenPret: "Six manches contre Sophisuke, une par épreuve, puis une dernière question. Il paraît qu'elle est terrible.",
     examenFait: "Réussi. Tu peux le repasser quand tu veux.",
     passerExamen: "Passer l'examen", repasserExamen: "Repasser l'examen",
-    techsTitre: "Tes techniques pour l'arène",
-    allerArene: "⚔️ Entrer dans l'arène", retourDojo: "Retour au dojo",
+    techsTitre: "Tes techniques pour l'Agora",
+    allerArene: "🏛️ Rejoindre l'Agora", retourDojo: "Retour au dojo",
     modeCalme: "Mode calme : pas de chute ni de chrono (au clavier, au lecteur d'écran ou en projection)",
     modeCalmeForce: "Mode calme activé par ton réglage « réduire les animations ».",
     effacer: "Effacer ma progression au dojo",
     effacerTitre: "Effacer ta progression ?",
-    effacerTexte: "Ton rang, ton rouleau et tes techniques pour l'arène seront perdus.",
+    effacerTexte: "Ton rang, ton rouleau et tes techniques pour l'Agora seront perdus.",
     effacerOui: "Effacer", effacerNon: "Garder",
 
     feuillesTitre: "Les Feuilles qui tombent", feuillesRef: "Entraînement de l'observation", feuillesComp: "Repérer : piège ou argument correct ?",
@@ -674,6 +680,7 @@ I18N.register({
     feuilleOkPiege: "Tranchée ! C'était : {l}.", feuilleOkSain: "Bien vu : cet argument se tient.",
     feuilleRatePiege: "Raté : c'était un piège ({l}).", feuilleTombee: "Trop tard : la feuille est tombée. C'était un piège ({l}).",
     feuilleRateSain: "Aïe : tu as tranché un argument correct.",
+    lexiqueTitre: "📖 Les pièges de cette épreuve", lexiqueIntro: "Prends le temps de lire : chaque feuille piégée cache l'un de ces sophismes. Les autres portent des arguments corrects.", lexiquePret: "🍃 Je suis prêt",
     oeilOk: "Bien vu ! {tech} ({l}).", oeilIndice: "Pas là. Indice du sensei :",
     oeilIndiceTxt: "Cette technique se trahit souvent par des mots comme {signes}.",
     oeilRate: "Raté. La technique était : {tech} ({l}). Les mots qui la trahissaient sont surlignés.",
@@ -694,16 +701,16 @@ I18N.register({
     epScore: "{s} / {t} (il en fallait {seuil})",
     senseiBravo: "« Pas mal. Pas mal du tout. Je vais finir mon chapitre, et on passe à la suite. »",
     senseiEncore: "« Tu n'as pas perdu : tu as appris où tu tombes. Un vrai ninja recommence. »",
-    nouvelleTech: "Technique acquise pour l'arène",
+    nouvelleTech: "Technique acquise pour l'Agora",
     reessayer: "🔁 Réessayer", retourCarte: "Retour au dojo",
     piqueQuestion: "Quelle technique Sophisuke vient-il d'utiliser ?",
     piqueOk: "Bien vu. Sophisuke rougit : c'était {tech} ({l}).",
     piqueKo: "Sophisuke ricane. C'était {tech} ({l}).",
 
-    tech_regard: "👁️ Regard perçant", techDesc_regard: "Retire des mauvaises réponses pour n'en laisser que deux. Une fois par combat.",
-    tech_seconde: "🌀 Seconde vue", techDesc_seconde: "Ta prochaine erreur ne coûte rien et tu peux rejouer. Une fois par combat.",
-    tech_clochettes: "🔔 Clochettes", techDesc_clochettes: "+1 point de conviction maximum, pour toute la partie.",
-    tech_contre: "⚡ Contre-attaque", techDesc_contre: "Bonne réponse : 2 points de dégâts. Erreur : tu en perds 2. Une fois par combat.",
+    tech_regard: "👁️ Regard perçant", techDesc_regard: "Retire des mauvaises réponses pour n'en laisser que deux. Une fois par match.",
+    tech_seconde: "🌀 Seconde vue", techDesc_seconde: "Ta prochaine erreur ne coûte rien et tu peux rejouer. Une fois par match.",
+    tech_clochettes: "🔔 Clochettes", techDesc_clochettes: "+1 point de lucidité maximum sur l'Agora, pour toute la partie.",
+    tech_contre: "⚡ Contre-attaque", techDesc_contre: "Pari risqué : piège bien repéré, +1 ouverture ; erreur, −2 lucidité. Une fois par match.",
     techVerrou: "🔒 {tech} — à gagner à l'épreuve « {ep} »",
 
     rouleauRef: "Collection", rouleauTitre: "Le Rouleau Interdit",
@@ -715,18 +722,18 @@ I18N.register({
     examenRate: "Sophisuke t'a battu cette fois",
     examenRateMsg: "Il te fallait 4 manches sur 6 pour atteindre la dernière question. Relis tes erreurs, puis retente l'examen.",
     finTitreOk: "Œil Ouvert !",
-    finMsgOk: "Tu as passé la Porte. Tu sais repérer un piège, le localiser, le trouver dans un discours et y riposter. Tes techniques t'attendent dans l'arène.",
+    finMsgOk: "Tu as passé la Porte. Tu sais repérer un piège, le localiser, le trouver dans un discours et y riposter. Tes techniques t'attendent sur l'Agora.",
     clicPourContinuer: "(clique ou appuie sur une touche pour continuer)"
   },
   en: {
-    pageTitle: "The Arena Dojo — train to spot fallacies",
-    metaDesc: "Before the Rhetoric Arena, a manga-style training: spot a fallacy, pinpoint it, find it in a speech and learn how to fight back.",
-    h1: "🥋 The Arena Dojo", retourArene: "Back to the arena",
-    heroTitre: "Before the arena, the dojo",
-    brief1: "<b>Sensei Kakasophe</b> trains those who want to survive the Arena. Four trials, four ways to <b>unmask a fallacy</b>: spot it, pinpoint it, find it in a speech and fight back.",
-    brief2: "Each trial you pass teaches you a <b>technique</b> you can use in the arena. Pass the <b>Gate exam</b> against your rival, Sophisuke, to become an <b>Open Eye</b>.",
+    pageTitle: "The Agora Dojo — train to spot fallacies",
+    metaDesc: "Before the Agora, a manga-style training: spot a fallacy, pinpoint it, find it in a speech and learn how to fight back.",
+    h1: "🥋 The Agora Dojo", retourArene: "Back to the Agora",
+    heroTitre: "Before the Agora, the dojo",
+    brief1: "<b>Sensei Kakasophe</b> trains those who want to hold their ground at the Agora. Four trials, four ways to <b>unmask a fallacy</b>: spot it, pinpoint it, find it in a speech and fight back.",
+    brief2: "Each trial you pass teaches you a <b>technique</b> you can use at the Agora. Pass the <b>Gate exam</b> against your rival, Sophisuke, to become an <b>Open Eye</b>.",
     duree: "10 to 15 minutes", niveau: "Ages 11–18", commandes: "Mouse, touch or keyboard",
-    entrer: "🥋 Enter the dojo", directArene: "⚔️ Go straight to the arena",
+    entrer: "🥋 Enter the dojo", directArene: "🏛️ Go straight to the Agora",
     sceneH: "Scene", suite: "Next ➜", suivant: "Next ➜", continuer: "Continue ➜",
     narrateur: "Narrator", examinateur: "The examiner",
     tonRang: "Your rank", tonType: "Your rhetorical Nen type: {nom}",
@@ -739,13 +746,13 @@ I18N.register({
     examenPret: "Six rounds against Sophisuke, one per trial, then one last question. They say it's terrible.",
     examenFait: "Passed. You can retake it whenever you like.",
     passerExamen: "Take the exam", repasserExamen: "Retake the exam",
-    techsTitre: "Your techniques for the arena",
-    allerArene: "⚔️ Enter the arena", retourDojo: "Back to the dojo",
+    techsTitre: "Your techniques for the Agora",
+    allerArene: "🏛️ Join the Agora", retourDojo: "Back to the dojo",
     modeCalme: "Calm mode: no falling, no timer (for keyboard, screen readers or projection)",
     modeCalmeForce: "Calm mode is on because of your “reduce motion” setting.",
     effacer: "Erase my dojo progress",
     effacerTitre: "Erase your progress?",
-    effacerTexte: "Your rank, your scroll and your arena techniques will be lost.",
+    effacerTexte: "Your rank, your scroll and your Agora techniques will be lost.",
     effacerOui: "Erase", effacerNon: "Keep",
 
     feuillesTitre: "Falling Leaves", feuillesRef: "Observation training", feuillesComp: "Spot it: trap or sound argument?",
@@ -768,6 +775,7 @@ I18N.register({
     feuilleOkPiege: "Sliced! It was: {l}.", feuilleOkSain: "Well spotted: that argument holds up.",
     feuilleRatePiege: "Missed: it was a trap ({l}).", feuilleTombee: "Too late: the leaf hit the ground. It was a trap ({l}).",
     feuilleRateSain: "Ouch: you sliced a sound argument.",
+    lexiqueTitre: "📖 The traps in this trial", lexiqueIntro: "Take your time to read: each trapped leaf hides one of these fallacies. The others carry sound arguments.", lexiquePret: "🍃 I'm ready",
     oeilOk: "Well spotted! {tech} ({l}).", oeilIndice: "Not there. The sensei's hint:",
     oeilIndiceTxt: "This technique often gives itself away with words like {signes}.",
     oeilRate: "Missed. The technique was: {tech} ({l}). The words that gave it away are highlighted.",
@@ -788,16 +796,16 @@ I18N.register({
     epScore: "{s} / {t} (you needed {seuil})",
     senseiBravo: "“Not bad. Not bad at all. Let me finish my chapter, then we'll move on.”",
     senseiEncore: "“You didn't lose: you learned where you trip. A real ninja tries again.”",
-    nouvelleTech: "Technique learned for the arena",
+    nouvelleTech: "Technique learned for the Agora",
     reessayer: "🔁 Try again", retourCarte: "Back to the dojo",
     piqueQuestion: "Which technique did Sophisuke just use?",
     piqueOk: "Well spotted. Sophisuke blushes: it was {tech} ({l}).",
     piqueKo: "Sophisuke sneers. It was {tech} ({l}).",
 
-    tech_regard: "👁️ Piercing Gaze", techDesc_regard: "Removes wrong answers until only two are left. Once per fight.",
-    tech_seconde: "🌀 Second Sight", techDesc_seconde: "Your next mistake costs nothing and you can try again. Once per fight.",
-    tech_clochettes: "🔔 Bells", techDesc_clochettes: "+1 maximum conviction point, for the whole game.",
-    tech_contre: "⚡ Counter-attack", techDesc_contre: "Right answer: 2 points of damage. Wrong: you lose 2. Once per fight.",
+    tech_regard: "👁️ Piercing Gaze", techDesc_regard: "Removes wrong answers until only two are left. Once per match.",
+    tech_seconde: "🌀 Second Sight", techDesc_seconde: "Your next mistake costs nothing and you can try again. Once per match.",
+    tech_clochettes: "🔔 Bells", techDesc_clochettes: "+1 maximum clarity point at the Agora, for the whole game.",
+    tech_contre: "⚡ Counter-attack", techDesc_contre: "Risky bet: trap spotted, +1 openness; wrong, −2 clarity. Once per match.",
     techVerrou: "🔒 {tech} — earned in the “{ep}” trial",
 
     rouleauRef: "Collection", rouleauTitre: "The Forbidden Scroll",
@@ -809,11 +817,11 @@ I18N.register({
     examenRate: "Sophisuke beat you this time",
     examenRateMsg: "You needed 4 rounds out of 6 to reach the last question. Go over your mistakes, then retake the exam.",
     finTitreOk: "Open Eye!",
-    finMsgOk: "You made it through the Gate. You can spot a trap, pinpoint it, find it in a speech and fight back. Your techniques are waiting for you in the arena.",
+    finMsgOk: "You made it through the Gate. You can spot a trap, pinpoint it, find it in a speech and fight back. Your techniques are waiting for you at the Agora.",
     clicPourContinuer: "(click or press a key to continue)"
   }
 });
-// Contenu FR ou EN selon la langue, comme app.js / app-en.js pour l'arène.
+// Contenu FR ou EN selon la langue, comme app.js / app-en.js pour l'Agora.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'dojo-data-en.js' : 'dojo-data.js') + '"><\/scr' + 'ipt>');
 </script>
 <script src="dojo.js"></script>

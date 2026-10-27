@@ -1,5 +1,5 @@
 /* =========================================================================
-   Rhetoric Arena Dojo — ENGLISH CONTENT
+   Agora Dojo — ENGLISH CONTENT
    Mirror of dojo-data.js: same `id`s, same structure, translated text.
    The logic lives only once, in dojo.js.
 
@@ -12,46 +12,46 @@ const DOJO = {
 
   // ─── The Forbidden Scroll: each fallacy is a technique ───
   sophismes: {
-    paille:     { l: "Straw man", tech: "Substitution Technique: the Dummy",
+    paille:     { l: "Straw man", d: "distorting or caricaturing what the other person said, to attack that exaggerated version more easily.", tech: "Substitution Technique: the Dummy",
                   signes: "“in other words”, “so you want…”, “what you're really saying…”",
                   parade: "Restate it faithfully: “That's not what I said. All I'm saying is…”" },
-    adhom:      { l: "Personal attack", tech: "Man Strike",
+    adhom:      { l: "Personal attack", d: "attacking the person (their looks, grades, past) instead of answering their argument.", tech: "Man Strike",
                   signes: "“coming from you”, “with your grades”, “how old are you?”",
                   parade: "Back to the point: “Leave me out of it. What's wrong with my argument?”" },
-    popu:       { l: "Appeal to popularity", tech: "Crowd Multi-Clone",
+    popu:       { l: "Appeal to popularity", d: "saying something is true because many people believe or do it.", tech: "Crowd Multi-Clone",
                   signes: "“everybody”, “millions of…”, “3 million views”",
                   parade: "“Lots of people think so, fine. But where's the evidence?”" },
-    dilemme:    { l: "False dilemma", tech: "Two-Door Prison",
+    dilemme:    { l: "False dilemma", d: "presenting only two possible choices when others exist.", tech: "Two-Door Prison",
                   signes: "“either… or…”, “it's this or…”, “you have to choose”",
                   parade: "Find the third door: “There are other options, for example…”" },
-    pente:      { l: "Slippery slope", tech: "Avalanche of a Thousand Consequences",
+    pente:      { l: "Slippery slope", d: "predicting a chain of ever-worse disasters without proving they will happen.", tech: "Avalanche of a Thousand Consequences",
                   signes: "“soon”, “and next it'll be…”, “in ten years”",
                   parade: "Ask about each step: “What shows that one leads to the other?”" },
-    genehat:    { l: "Hasty generalisation", tech: "One for All",
+    genehat:    { l: "Hasty generalisation", d: "drawing a general rule from a single example, or very few cases.", tech: "One for All",
                   signes: "“my cousin”, “once”, “so all of them…”",
                   parade: "“That's one case. What do the other cases say?”" },
-    nature:     { l: "Appeal to nature", tech: "Forest Breathing",
+    nature:     { l: "Appeal to nature", d: "saying something is good because it's natural (or bad because it's chemical).", tech: "Forest Breathing",
                   signes: "“natural”, “100% plants”, “chemicals”",
                   parade: "The counter-example: “Hemlock is natural too.”" },
-    halo:       { l: "Authority outside their field", tech: "Borrowed Aura",
+    halo:       { l: "Authority outside their field", d: "believing someone on a topic because they are famous or expert in another field.", tech: "Borrowed Aura",
                   signes: "“even X says so”, “this champion”, “this star”",
                   parade: "“What exactly are they an expert in? What do specialists in the field say?”" },
-    preuve:     { l: "Reversed burden of proof", tech: "Bomb Bounce-Back",
+    preuve:     { l: "Reversed burden of proof", d: "demanding that the other person prove it false, instead of proving it true yourself.", tech: "Bomb Bounce-Back",
                   signes: "“prove me wrong”, “you can't prove it isn't”",
                   parade: "“The person making the claim has to prove it.”" },
-    posthoc:    { l: "Imagined cause", tech: "Coincidence Genjutsu",
+    posthoc:    { l: "Imagined cause", d: "believing one thing caused another just because it happened first.", tech: "Coincidence Genjutsu",
                   signes: "“ever since”, “right after”, “coincidence?”",
                   parade: "“One came after the other, fine. But what shows that one caused the other?”" },
-    circulaire: { l: "Circular reasoning", tech: "Ouroboros Serpent",
+    circulaire: { l: "Circular reasoning", d: "using the conclusion as proof of itself: 'it's true because it's true'.", tech: "Ouroboros Serpent",
                   signes: "“because it's true”, “it says so itself”",
                   parade: "“You're using your conclusion as proof. Do you have an outside source?”" },
-    hareng:     { l: "Red herring", tech: "Smoke Bomb",
+    hareng:     { l: "Red herring", d: "changing the subject to avoid answering the real question.", tech: "Smoke Bomb",
                   signes: "“let's talk about… instead”, “the real problem is…”",
                   parade: "Back to the question: “We'll get to that later. My question was…”" },
-    cherry:     { l: "Cherry-picking", tech: "Picker's Hand",
+    cherry:     { l: "Cherry-picking", d: "showing only the examples or figures that fit, and hiding the rest.", tech: "Picker's Hand",
                   signes: "“look at this number”, “these three reviews”, “I only kept…”",
                   parade: "“And what does the rest of the data say?”" },
-    whatabout:  { l: "Whataboutism", tech: "Ice Mirror",
+    whatabout:  { l: "Whataboutism", d: "answering a criticism with 'what about you?' instead of addressing the substance.", tech: "Ice Mirror",
                   signes: "“what about you?”, “what about them?”, “look who's talking”",
                   parade: "“We can talk about me later. Right now, we're talking about you.”" }
   },
@@ -60,13 +60,13 @@ const DOJO = {
   accueil: {
     retard: "The sensei shows up two hours late, nose buried in a little orange book.",
     excuse: "“Sorry. I got lost on the path of logic.”",
-    defi: "“So, you want to enter the Arena? The sophists will eat you alive. Convince me to train you.”",
+    defi: "“So, you want to go to the Agora? The sophists will eat you alive. Convince me to train you.”",
     choix: [
       { t: "“Everybody says you're the best sensei!”", ok: false,
         r: "“Crowd Multi-Clone. A thousand people repeating the same thing doesn't make an argument. Try again.”" },
       { t: "“If you say no, my whole life is ruined!”", ok: false,
         r: "“The Avalanche of a Thousand Consequences, really? Your life will be just fine. Try again.”" },
-      { t: "“I lose in the arena because I can't see the traps. I want to learn to see them.”", ok: true,
+      { t: "“At the Agora, I get fooled because I can't see the traps. I want to learn to see them.”", ok: true,
         r: "“… A clear reason and a goal. Finally, a real argument. Welcome to the dojo.”" }
     ],
     rival: "“Another beginner? I was trained by the greatest sophists. I'll be waiting for you at the exam. If you make it that far.”"
@@ -319,15 +319,15 @@ const DOJO = {
     { t: "“The whole class thinks I'm going to win. So give up right now.”", a: "popu", opts: ["halo", "dilemme"] },
     { t: "“Either you become my disciple, or you stay a loser your whole life.”", a: "dilemme", opts: ["pente", "paille"] },
     { t: "“You, unmasking fallacies? With that haircut?”", a: "adhom", opts: ["whatabout", "genehat"] },
-    { t: "“If you fail this trial, you'll fail the exam, then the arena, then your whole life.”", a: "pente", opts: ["dilemme", "posthoc"] },
+    { t: "“If you fail this trial, you'll fail the exam, then the Agora, then your whole life.”", a: "pente", opts: ["dilemme", "posthoc"] },
     { t: "“You say I'm cheating? What about your sensei, always late, is he perfect?”", a: "whatabout", opts: ["hareng", "adhom"] }
   ],
 
   // ─── The Gate exam ───
   examen: {
-    intro: "In front of the arena gates, Sophisuke is waiting, arms crossed. “Six rounds. One from each trial. Hold on, and you're through.”",
+    intro: "At the gates of the Agora, Sophisuke is waiting, arms crossed. “Six rounds. One from each trial. Hold on, and you're through.”",
     examinateur: "A hooded examiner steps forward. His voice echoes through the whole dojo.",
-    q10: "“Last question. If you get it wrong, you can NEVER enter the arena again. Not today, not tomorrow, not ever. So: will you answer, or give up?”",
+    q10: "“Last question. If you get it wrong, you can NEVER go to the Agora again. Not today, not tomorrow, not ever. So: will you answer, or give up?”",
     choix: [
       { t: "“I give up.”", ok: false },
       { t: "“I'll answer!”", ok: false },

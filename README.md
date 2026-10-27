@@ -10,7 +10,7 @@ Chaque jeu est autonome : il suffit d'ouvrir son fichier `index.html` (ou le `.h
 | `radarnaque/` | Radar'naque — repérer les arnaques (SMS, e-mails, appels, deepfakes…) |
 | `radar-desinfo/` | Repérer la désinformation |
 | `chasse-aux-biais/` | Chasse aux biais cognitifs |
-| `arene-rhetorique/` | Arène de rhétorique |
+| `arene-rhetorique/` | L'Agora (ex-Arène de rhétorique), et son dojo |
 | `grand-oral/` | Entraînement au grand oral |
 | `repare-la-une/` | Réparer la une d'un journal |
 | `Ilusions d'optique/` | Illusions d'optique |

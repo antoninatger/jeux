@@ -1,5 +1,5 @@
 /* =========================================================================
-   Dojo de l'Arène rhétorique — CONTENU FRANÇAIS
+   Dojo de l'Agora — CONTENU FRANÇAIS
    Miroir anglais : dojo-data-en.js. Les deux fichiers gardent les mêmes
    `id` et la même structure : seuls les textes sont traduits. La logique,
    elle, n'existe qu'une fois, dans dojo.js.
@@ -15,46 +15,46 @@ const DOJO = {
   // tech = nom de la technique, signes = les mots qui la trahissent,
   // parade = comment y répondre honnêtement.
   sophismes: {
-    paille:     { l: "Homme de paille", tech: "Technique de substitution : le Mannequin",
+    paille:     { l: "Homme de paille", d: "déformer ou caricaturer ce que l'autre a dit, pour attaquer plus facilement cette version exagérée.", tech: "Technique de substitution : le Mannequin",
                   signes: "« autrement dit », « donc tu veux… », « en fait, ce que tu dis… »",
                   parade: "Reformuler fidèlement : « Ce n'est pas ce que j'ai dit. Je dis seulement que… »" },
-    adhom:      { l: "Attaque personnelle", tech: "Frappe à l'Homme",
+    adhom:      { l: "Attaque personnelle", d: "attaquer la personne (son physique, ses notes, son passé) au lieu de répondre à son argument.", tech: "Frappe à l'Homme",
                   signes: "« venant de toi », « avec tes notes », « t'as quel âge ? »",
                   parade: "Ramener au fond : « Laisse ma personne de côté. Qu'est-ce qui est faux dans mon argument ? »" },
-    popu:       { l: "Appel à la popularité", tech: "Multiclonage de la Foule",
+    popu:       { l: "Appel à la popularité", d: "dire que c'est vrai parce que beaucoup de gens le pensent ou le font.", tech: "Multiclonage de la Foule",
                   signes: "« tout le monde », « des millions de… », « 3 millions de vues »",
                   parade: "« Beaucoup de gens le pensent, d'accord. Mais quelle est la preuve ? »" },
-    dilemme:    { l: "Faux dilemme", tech: "Prison des Deux Portes",
+    dilemme:    { l: "Faux dilemme", d: "présenter seulement deux choix possibles, alors qu'il en existe d'autres.", tech: "Prison des Deux Portes",
                   signes: "« soit… soit… », « c'est ça ou… », « il faut choisir »",
                   parade: "Chercher la troisième porte : « Il existe d'autres options, par exemple… »" },
-    pente:      { l: "Pente glissante", tech: "Avalanche des Mille Conséquences",
+    pente:      { l: "Pente glissante", d: "annoncer une suite de catastrophes de plus en plus graves, sans prouver qu'elles vont arriver.", tech: "Avalanche des Mille Conséquences",
                   signes: "« bientôt », « et après, ce sera… », « dans dix ans »",
                   parade: "Demander chaque marche : « Qu'est-ce qui prouve que l'une entraîne l'autre ? »" },
-    genehat:    { l: "Généralisation hâtive", tech: "Un pour Tous",
+    genehat:    { l: "Généralisation hâtive", d: "tirer une règle générale d'un seul exemple, ou de très peu de cas.", tech: "Un pour Tous",
                   signes: "« mon cousin », « une fois », « donc tous les… »",
                   parade: "« C'est un cas. Qu'est-ce que disent les autres cas ? »" },
-    nature:     { l: "Appel à la nature", tech: "Souffle de la Forêt",
+    nature:     { l: "Appel à la nature", d: "dire que c'est bon parce que c'est naturel (ou mauvais parce que c'est chimique).", tech: "Souffle de la Forêt",
                   signes: "« naturel », « 100 % plantes », « chimique »",
                   parade: "Le contre-exemple : « La ciguë aussi est naturelle. »" },
-    halo:       { l: "Autorité hors domaine", tech: "Aura empruntée",
+    halo:       { l: "Autorité hors domaine", d: "croire quelqu'un sur un sujet parce qu'il est célèbre ou expert dans un autre domaine.", tech: "Aura empruntée",
                   signes: "« même X le dit », « ce champion », « cette star »",
                   parade: "« Il est expert en quoi, exactement ? Qu'en disent les spécialistes du sujet ? »" },
-    preuve:     { l: "Charge de la preuve inversée", tech: "Renvoi de la Bombe",
+    preuve:     { l: "Charge de la preuve inversée", d: "exiger que l'autre prouve que c'est faux, au lieu de prouver soi-même que c'est vrai.", tech: "Renvoi de la Bombe",
                   signes: "« prouve-moi le contraire », « tu ne peux pas prouver que non »",
                   parade: "« C'est à celui qui affirme d'apporter la preuve. »" },
-    posthoc:    { l: "Cause imaginée", tech: "Genjutsu de la Coïncidence",
+    posthoc:    { l: "Cause imaginée", d: "croire qu'une chose en a causé une autre juste parce qu'elle est arrivée avant.", tech: "Genjutsu de la Coïncidence",
                   signes: "« depuis que », « juste après », « coïncidence ? »",
                   parade: "« Ça s'est suivi, d'accord. Mais qu'est-ce qui montre que l'un a causé l'autre ? »" },
-    circulaire: { l: "Raisonnement circulaire", tech: "Serpent Ouroboros",
+    circulaire: { l: "Raisonnement circulaire", d: "utiliser la conclusion comme preuve d'elle-même : « c'est vrai parce que c'est vrai ».", tech: "Serpent Ouroboros",
                   signes: "« parce que c'est vrai », « il le dit lui-même »",
                   parade: "« Tu utilises ta conclusion comme preuve. Tu as une source extérieure ? »" },
-    hareng:     { l: "Hareng rouge", tech: "Bombe fumigène",
+    hareng:     { l: "Hareng rouge", d: "changer de sujet pour éviter de répondre à la vraie question.", tech: "Bombe fumigène",
                   signes: "« parlons plutôt de… », « le vrai problème, c'est… »",
                   parade: "Revenir à la question : « On en parlera après. Ma question, c'était… »" },
-    cherry:     { l: "Cueillette des faits", tech: "Main du Cueilleur",
+    cherry:     { l: "Cueillette des faits", d: "ne montrer que les exemples ou les chiffres qui arrangent, et cacher les autres.", tech: "Main du Cueilleur",
                   signes: "« regarde ce chiffre », « ces trois avis », « je n'ai gardé que… »",
                   parade: "« Et toutes les autres données, elles disent quoi ? »" },
-    whatabout:  { l: "Et toi alors ?", tech: "Miroir de Glace",
+    whatabout:  { l: "Et toi alors ?", d: "répondre à une critique par « et toi alors ? » au lieu de répondre sur le fond.", tech: "Miroir de Glace",
                   signes: "« et toi alors ? », « et eux ? », « c'est l'hôpital qui… »",
                   parade: "« On pourra parler de moi après. Là, on parle de toi. »" }
   },
@@ -63,13 +63,13 @@ const DOJO = {
   accueil: {
     retard: "Le sensei arrive avec deux heures de retard, le nez plongé dans un petit livre orange.",
     excuse: "« Désolé. Je me suis perdu sur le chemin de la logique. »",
-    defi: "« Alors comme ça, tu veux entrer dans l'Arène ? Les sophistes vont te dévorer tout cru. Convaincs-moi de t'entraîner. »",
+    defi: "« Alors comme ça, tu veux aller sur l'Agora ? Les sophistes vont te dévorer tout cru. Convaincs-moi de t'entraîner. »",
     choix: [
       { t: "« Tout le monde dit que vous êtes le meilleur sensei ! »", ok: false,
         r: "« Multiclonage de la Foule. Mille personnes qui répètent la même chose, ça ne fait pas un argument. Recommence. »" },
       { t: "« Si vous refusez, ma vie entière est fichue ! »", ok: false,
         r: "« L'Avalanche des Mille Conséquences, carrément ? Ta vie ira très bien. Recommence. »" },
-      { t: "« Je perds dans l'arène parce que je ne vois pas les pièges. Je veux apprendre à les voir. »", ok: true,
+      { t: "« Sur l'Agora, je me fais avoir parce que je ne vois pas les pièges. Je veux apprendre à les voir. »", ok: true,
         r: "« … Une raison claire et un objectif. Enfin un vrai argument. Bienvenue au dojo. »" }
     ],
     rival: "« Encore un débutant ? Moi, j'ai été formé par les plus grands sophistes. Je t'attendrai à l'examen. Si tu y arrives. »"
@@ -330,15 +330,15 @@ const DOJO = {
     { t: "« Toute la classe pense que je vais gagner. Alors abandonne tout de suite. »", a: "popu", opts: ["halo", "dilemme"] },
     { t: "« Soit tu deviens mon disciple, soit tu restes un nul toute ta vie. »", a: "dilemme", opts: ["pente", "paille"] },
     { t: "« Toi, démasquer des sophismes ? Avec cette coupe de cheveux ? »", a: "adhom", opts: ["whatabout", "genehat"] },
-    { t: "« Si tu rates cette épreuve, tu rateras l'examen, puis l'arène, puis ta vie entière. »", a: "pente", opts: ["dilemme", "posthoc"] },
+    { t: "« Si tu rates cette épreuve, tu rateras l'examen, puis l'Agora, puis ta vie entière. »", a: "pente", opts: ["dilemme", "posthoc"] },
     { t: "« Tu dis que je triche ? Et ton sensei, toujours en retard, il est parfait peut-être ? »", a: "whatabout", opts: ["hareng", "adhom"] }
   ],
 
   // ─── L'examen de la Porte ───
   examen: {
-    intro: "Devant les grilles de l'arène, Sophisuke t'attend, bras croisés. « Six manches. Une de chaque épreuve. Si tu tiens, tu passes. »",
+    intro: "Aux portes de l'Agora, Sophisuke t'attend, bras croisés. « Six manches. Une de chaque épreuve. Si tu tiens, tu passes. »",
     examinateur: "Un examinateur encapuchonné s'avance. Sa voix résonne dans tout le dojo.",
-    q10: "« Dernière question. Si tu la rates, tu ne pourras PLUS JAMAIS entrer dans l'arène. Ni aujourd'hui, ni demain, ni jamais. Alors : tu réponds, ou tu abandonnes ? »",
+    q10: "« Dernière question. Si tu la rates, tu ne pourras PLUS JAMAIS aller sur l'Agora. Ni aujourd'hui, ni demain, ni jamais. Alors : tu réponds, ou tu abandonnes ? »",
     choix: [
       { t: "« J'abandonne. »", ok: false },
       { t: "« Je réponds ! »", ok: false },
