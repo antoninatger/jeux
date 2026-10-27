@@ -415,6 +415,44 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 .carte-tech.verrou h3 { color: var(--txt-secondaire); font-size: var(--fs-600); }
 
 /* ── Les effets : cut-in, onomatopées, ellipse ───────────────────────── */
+/* Les portes de l'Agora qui s'ouvrent quand l'examen est réussi */
+.portes { position: fixed; inset: 0; z-index: 950; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-4); padding: var(--sp-4);
+  background: radial-gradient(ellipse 70% 55% at 50% 45%, #5a1f33 0%, #24101a 60%, #12070b 100%); color: #fdeef0; overflow: hidden; animation: portes-fondu .5s ease-out both; }
+.portes__scene { position: relative; width: min(78vw, 360px); display: flex; flex-direction: column; align-items: center; }
+.portes__fronton { width: 100%; aspect-ratio: 4 / 1; background: #e4b478; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.portes__facade { width: 92%; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; }
+.portes__colonne { width: 11%; align-self: stretch; background: repeating-linear-gradient(90deg, #e4b478 0 5px, #b9854a 5px 7px); border-top: 8px solid #e4b478; }
+.portes__cadre { position: relative; width: 66%; aspect-ratio: 4 / 4.6; background: #12070b; border: 6px solid #e4b478; border-bottom: 0; perspective: 900px; overflow: hidden; }
+.portes__lumiere { position: absolute; inset: 0; background: radial-gradient(circle at 50% 60%, #fff6d8 0%, #ffcf8a 30%, #ff8a5c 60%, transparent 85%); opacity: 0; animation: portes-lumiere 1.6s ease-out .9s forwards; }
+.portes__battant { position: absolute; top: 0; bottom: 0; width: 50%; background: repeating-linear-gradient(90deg, #6b2b1d 0 14px, #5a2318 14px 16px); border: 3px solid #2b140c; }
+.portes__battant::after { content: ''; position: absolute; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: #e4b478; }
+.portes__battant--g { left: 0; transform-origin: left center; animation: portes-g 1.8s cubic-bezier(.5,0,.2,1) .7s forwards; }
+.portes__battant--g::after { right: 10px; }
+.portes__battant--d { right: 0; transform-origin: right center; animation: portes-d 1.8s cubic-bezier(.5,0,.2,1) .7s forwards; }
+.portes__battant--d::after { left: 10px; }
+.portes__marches { width: 100%; height: 22px; background: repeating-linear-gradient(#e4b478 0 6px, #a87a46 6px 8px); }
+.portes__scene::before { content: ''; position: absolute; left: 50%; top: 55%; width: 220%; aspect-ratio: 1; translate: -50% -50%; z-index: -1;
+  background: repeating-conic-gradient(rgba(255,207,138,.16) 0 8deg, transparent 8deg 20deg); border-radius: 50%; opacity: 0; animation: portes-rayons 1.2s ease-out 1.4s forwards, portes-tourne 40s linear 1.4s infinite; }
+.portes__texte { text-align: center; opacity: 0; animation: portes-texte .7s ease-out 2.1s forwards; }
+.portes__sur { font-family: var(--font-titre); font-size: clamp(1.6rem, 1.1rem + 2.5vw, 2.6rem); line-height: 1.15; text-shadow: 0 0 24px rgba(255,207,138,.6); margin-bottom: var(--sp-4); }
+.portes__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: center; }
+@keyframes portes-fondu { from { opacity: 0; } }
+@keyframes portes-g { to { transform: rotateY(-105deg); } }
+@keyframes portes-d { to { transform: rotateY(105deg); } }
+@keyframes portes-lumiere { to { opacity: 1; } }
+@keyframes portes-rayons { to { opacity: 1; } }
+@keyframes portes-tourne { to { rotate: 360deg; } }
+@keyframes portes-texte { from { opacity: 0; transform: translateY(16px) scale(.94); } to { opacity: 1; transform: none; } }
+/* Mode calme ou moins d'animations : les portes sont déjà ouvertes. */
+.portes--calme, .portes--calme * , .portes--calme *::before, .portes--calme::before { animation: none !important; }
+.portes--calme .portes__battant--g { transform: rotateY(-105deg); }
+.portes--calme .portes__battant--d { transform: rotateY(105deg); }
+.portes--calme .portes__lumiere, .portes--calme .portes__texte, .portes--calme .portes__scene::before { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .portes, .portes *, .portes__scene::before { animation: none !important; }
+  .portes__battant--g { transform: rotateY(-105deg); } .portes__battant--d { transform: rotateY(105deg); }
+  .portes__lumiere, .portes__texte, .portes__scene::before { opacity: 1; }
+}
 .cutin { position: fixed; inset: 0; pointer-events: none; z-index: 900; display: none; align-items: center; justify-content: center; }
 .cutin.joue { display: flex; }
 .cutin__fond { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(23,18,13,.22) 0 2deg, transparent 2deg 9deg); animation: vitesse 1.5s ease-out forwards; }
@@ -732,6 +770,7 @@ I18N.register({
     examenOkCut: "Examen réussi", examenSur: "Œil Ouvert",
     examenRate: "Sophisuke t'a battu cette fois",
     examenRateMsg: "Il te fallait 4 manches sur 6 pour atteindre la dernière question. Relis tes erreurs, puis retente l'examen.",
+    portesTitre: "Tu es prêt à entrer dans l'Agora !", portesEntrer: "🏛️ Entrer dans l'Agora", portesBilan: "Voir mon bilan",
     finTitreOk: "Œil Ouvert !",
     finMsgOk: "Tu as passé la Porte. Tu sais repérer un piège, le localiser, le trouver dans un discours et y riposter. Tes techniques t'attendent sur l'Agora.",
     clicPourContinuer: "(clique ou appuie sur une touche pour continuer)"
@@ -829,6 +868,7 @@ I18N.register({
     examenOkCut: "Exam passed", examenSur: "Open Eye",
     examenRate: "Sophisuke beat you this time",
     examenRateMsg: "You needed 4 rounds out of 6 to reach the last question. Go over your mistakes, then retake the exam.",
+    portesTitre: "You are ready to enter the Agora!", portesEntrer: "🏛️ Enter the Agora", portesBilan: "See my results",
     finTitreOk: "Open Eye!",
     finMsgOk: "You made it through the Gate. You can spot a trap, pinpoint it, find it in a speech and fight back. Your techniques are waiting for you at the Agora.",
     clicPourContinuer: "(click or press a key to continue)"

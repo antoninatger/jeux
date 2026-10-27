@@ -899,6 +899,42 @@
     if (ancienne) ancienne.remove();
     const r = revue();
     if (r) $('fin-recap').after(r);
+    if (reussi) portes();
+  }
+
+  // ─── Les portes de l'Agora : l'examen réussi, elles s'ouvrent ───
+  function portes() {
+    const ancien = document.querySelector('.portes');
+    if (ancien) ancien.remove();
+    const o = el('div', 'portes' + (calme() ? ' portes--calme' : ''));
+    o.setAttribute('role', 'dialog');
+    o.setAttribute('aria-modal', 'true');
+    o.setAttribute('aria-labelledby', 'portes-titre');
+    o.innerHTML =
+      '<div class="portes__scene" aria-hidden="true">' +
+        '<div class="portes__fronton"></div>' +
+        '<div class="portes__facade"><span class="portes__colonne"></span>' +
+          '<div class="portes__cadre"><div class="portes__lumiere"></div>' +
+          '<div class="portes__battant portes__battant--g"></div><div class="portes__battant portes__battant--d"></div></div>' +
+          '<span class="portes__colonne"></span></div>' +
+        '<div class="portes__marches"></div>' +
+      '</div>' +
+      '<div class="portes__texte">' +
+        '<p class="portes__sur" id="portes-titre"></p>' +
+        '<div class="portes__actions"><a class="btn-manga" href="index.html"></a>' +
+        '<button type="button" class="btn-manga btn-manga--clair"></button></div>' +
+      '</div>';
+    o.querySelector('.portes__sur').textContent = t('portesTitre');
+    const entrer = o.querySelector('a'), bilan = o.querySelector('button');
+    entrer.textContent = t('portesEntrer');
+    bilan.textContent = t('portesBilan');
+    document.body.appendChild(o);
+    const fermer = () => { document.removeEventListener('keydown', echap, true); o.remove(); $('fin-recap').focus && $('fin-recap').focus({ preventScroll: true }); };
+    function echap(e) { if (e.key === 'Escape') { e.preventDefault(); fermer(); } }
+    document.addEventListener('keydown', echap, true);
+    bilan.addEventListener('click', fermer);
+    annoncer(t('portesTitre'));
+    setTimeout(() => entrer.focus({ preventScroll: true }), calme() ? 0 : 2600);
   }
 
   // ─── Branchements ───
