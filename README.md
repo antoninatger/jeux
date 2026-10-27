@@ -10,7 +10,7 @@ Chaque jeu est autonome : il suffit d'ouvrir son fichier `index.html` (ou le `.h
 | `radarnaque/` | Radar'naque — repérer les arnaques (SMS, e-mails, appels, deepfakes…) |
 | `radar-desinfo/` | Repérer la désinformation |
 | `chasse-aux-biais/` | Chasse aux biais cognitifs |
-| `agora/` | Agorateur (ex-L'Agora, ex-Arène de rhétorique), son dojo et le mode débat en classe. `arene-rhetorique/` ne contient plus que des redirections vers `agora/` |
+| `agorateur/` | Agorateur (ex-L'Agora, ex-Arène de rhétorique), son dojo et le mode débat en classe. `agora/` et `arene-rhetorique/` ne contiennent plus que des redirections vers `agorateur/` |
 | `grand-oral/` | Entraînement au grand oral |
 | `repare-la-une/` | Réparer la une d'un journal |
 | `Ilusions d'optique/` | Illusions d'optique |

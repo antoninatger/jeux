@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="pageTitle">Le Dojo de l'Agora — s'entraîner à repérer les sophismes</title>
+<meta name="description" data-i18n-content="metaDesc" content="Avant l'Agora, un entraînement façon manga : repérer un sophisme, le localiser, le trouver dans un discours et savoir y riposter.">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../collection.css">
+<style>
+/* ── L'identité du dojo ──────────────────────────────────────────────────
+   Une planche de manga : papier crème, encre noire, trame de points, rouge
+   vif pour les coups. L'Agora est bordeaux et nocturne ; le dojo est son
+   envers, en plein jour, au coucher du soleil sur le terrain d'entraînement.
+   Thème clair du socle (data-theme="clair"), identité redéfinie ici. */
+:root {
+  --bg:             #f3ead7;   /* papier */
+  --surface:        #fffaf0;
+  --bordure:        #17120d;
+  --txt:            #17120d;   /* encre — 15,6:1 sur --bg */
+  --txt-secondaire: #5c4a39;   /* 6,9:1 sur --bg, 8,1:1 sur --surface */
+  --acc:            #b3122e;   /* rouge de coup — 5,8:1 sur --bg */
+  --acc-txt:        #ffffff;
+  --ok:             #1b7a4b;
+  --alerte:         #b3122e;
+  --encre:          #17120d;
+  --or:             #f2b33d;
+  --ciel-haut:      #ffb347;
+  --ciel-bas:       #8e1b3a;
+  --font-texte:     'Nunito', system-ui, sans-serif;
+  --font-titre:     'Alfa Slab One', Georgia, serif;
+  --font-sfx:       'Lilita One', 'Alfa Slab One', sans-serif;
+  --trame: radial-gradient(rgba(23,18,13,.13) 1px, transparent 1.4px) 0 0 / 7px 7px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  background-image: var(--trame);
+  color: var(--txt);
+  font-family: var(--font-texte);
+  padding: 0 16px 40px;
+  min-height: 100vh;
+}
+.col-entete__titre { font-family: var(--font-titre); color: var(--encre); }
+main { max-width: 760px; margin: 0 auto; }
+.ecran[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── Les cases de manga ─────────────────────────────────────────────── */
+.case {
+  position: relative;
+  background: var(--surface);
+  border: 3px solid var(--encre);
+  border-radius: 4px;
+  box-shadow: 5px 5px 0 var(--encre);
+  padding: var(--sp-4) var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+.case--trame { background: var(--surface); background-image: var(--trame); }
+.titre-case {
+  font-family: var(--font-titre);
+  font-size: var(--fs-500);
+  line-height: var(--lh-serre);
+  margin-bottom: var(--sp-2);
+}
+.ref {
+  display: inline-block;
+  background: var(--encre);
+  color: #fff;
+  font-size: var(--fs-100);
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  margin-bottom: var(--sp-2);
+  transform: skew(-8deg);
+}
+.btn-manga {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: var(--cible);
+  padding: 0 var(--sp-5);
+  border: 3px solid var(--encre);
+  border-radius: 4px;
+  background: var(--acc);
+  color: var(--acc-txt);
+  font-family: var(--font-titre);
+  font-size: var(--fs-400);
+  letter-spacing: .3px;
+  box-shadow: 4px 4px 0 var(--encre);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .12s, box-shadow .12s;
+}
+.btn-manga:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--encre); }
+.btn-manga:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--encre); }
+.btn-manga:disabled { opacity: .45; cursor: default; }
+.btn-manga--clair { background: var(--surface); color: var(--encre); }
+.btn-manga--or { background: var(--or); color: var(--encre); }
+.btn-manga[hidden] { display: none !important; }
+.actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: center; margin-top: var(--sp-4); }
+
+/* ── Le terrain d'entraînement au coucher du soleil ─────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border: 3px solid var(--encre);
+  box-shadow: 5px 5px 0 var(--encre);
+  border-radius: 4px;
+  margin: var(--sp-3) 0 var(--sp-5);
+  aspect-ratio: 600 / 230;
+  background: var(--ciel-bas);
+}
+.hero svg { display: block; width: 100%; height: 100%; }
+.hero__titre {
+  position: absolute; left: 0; right: 0; top: 10%;
+  text-align: center;
+  font-family: var(--font-titre);
+  font-size: clamp(1.4rem, 1rem + 3vw, 2.6rem);
+  color: #fff;
+  -webkit-text-stroke: 1.5px var(--encre);
+  text-shadow: 3px 3px 0 var(--encre);
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
+.feuilles-deco span {
+  position: absolute; top: -10%;
+  font-size: 1.3rem;
+  animation: chute-deco linear infinite;
+  opacity: .9;
+}
+@keyframes chute-deco {
+  0%   { transform: translate(0, 0) rotate(0); }
+  50%  { transform: translate(-30px, 140px) rotate(180deg); }
+  100% { transform: translate(10px, 300px) rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) { .feuilles-deco { display: none; } }
+
+.intro-brief p + p { margin-top: var(--sp-3); }
+.intro-brief b { color: var(--acc); }
+.col-meta li { background: var(--surface); border-color: var(--encre); color: var(--txt-secondaire); }
+
+/* ── Les scènes : portrait + bulle ──────────────────────────────────── */
+.scene-case { display: grid; grid-template-columns: 96px 1fr; gap: var(--sp-4); align-items: start; min-height: 190px; }
+.portrait {
+  width: 96px; height: 96px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.2rem;
+  border: 3px solid var(--encre);
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(23,18,13,.16) 0 4deg, transparent 4deg 12deg),
+    var(--surface);
+}
+.scene--rival .portrait { background: repeating-conic-gradient(from 0deg, rgba(179,18,46,.25) 0 4deg, transparent 4deg 12deg), #fff; }
+.scene--examinateur .portrait { background: var(--encre); }
+.nom-perso { font-family: var(--font-titre); font-size: var(--fs-300); margin-bottom: var(--sp-2); }
+.scene--rival .nom-perso { color: var(--acc); }
+.bulle {
+  position: relative;
+  background: #fff;
+  border: 3px solid var(--encre);
+  border-radius: 22px;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-400);
+  line-height: var(--lh-normal);
+  font-weight: 700;
+}
+.bulle::before {
+  content: ''; position: absolute; left: -14px; top: 22px;
+  border: 10px solid transparent; border-right: 14px solid var(--encre); border-left: 0;
+}
+.scene--narrateur .bulle { border-radius: 0; background: #fff8e3; font-style: italic; font-weight: 600; }
+.scene--narrateur .bulle::before { display: none; }
+.choix-liste { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-4); }
+.choix {
+  text-align: left;
+  min-height: var(--cible);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--surface);
+  border: 2px solid var(--encre);
+  border-radius: 4px;
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  font-weight: 700;
+  color: var(--txt);
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--encre);
+}
+.choix:hover:not(:disabled) { background: #fff; transform: translate(-1px, -1px); }
+.choix:disabled { cursor: default; opacity: .55; }
+.choix.juste { opacity: 1; border-color: var(--ok); box-shadow: 3px 3px 0 var(--ok); background: #eaf7ef; }
+.choix.faux  { opacity: 1; border-color: var(--acc); box-shadow: 3px 3px 0 var(--acc); background: #fdecee; text-decoration: line-through; }
+.reponse { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-left: 6px solid var(--encre); background: #fff8e3; font-weight: 700; line-height: var(--lh-normal); }
+.reponse.ok { border-left-color: var(--ok); }
+.reponse.ko { border-left-color: var(--acc); }
+
+/* ── La carte du dojo ────────────────────────────────────────────────── */
+.rang {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3);
+}
+.rang__nom { font-family: var(--font-titre); font-size: var(--fs-500); color: var(--acc); }
+.rang__label { font-size: var(--fs-200); font-weight: 800; color: var(--txt-secondaire); text-transform: uppercase; letter-spacing: 1px; }
+.grille { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-5); }
+.grille .case { margin-bottom: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.grille .case:nth-child(odd)  { transform: rotate(-.6deg); }
+.grille .case:nth-child(even) { transform: rotate(.6deg); }
+.num {
+  position: absolute; top: -14px; right: 10px;
+  font-family: var(--font-titre); font-size: 2.2rem; line-height: 1;
+  color: var(--acc); -webkit-text-stroke: 1px var(--encre);
+}
+.comp { font-size: var(--fs-200); font-weight: 700; color: var(--txt-secondaire); }
+.statut { font-size: var(--fs-200); font-weight: 800; }
+.statut.fait { color: var(--ok); }
+.grille .btn-manga { margin-top: auto; font-size: var(--fs-300); }
+.case--examen { background: var(--encre); color: #fff; text-align: center; }
+.case--examen .titre-case { color: var(--or); }
+.case--examen p { color: #f1e6d2; }
+.techs-liste { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); }
+.techs-liste li { padding: var(--sp-2) var(--sp-3); border: 2px dashed var(--encre); border-radius: 4px; font-weight: 700; }
+.techs-liste li.acquise { border-style: solid; background: #fff6dd; }
+.techs-liste li span { display: block; font-size: var(--fs-200); font-weight: 600; color: var(--txt-secondaire); }
+.reglage { display: flex; align-items: center; gap: var(--sp-2); font-weight: 700; margin-top: var(--sp-3); }
+.lien-discret { background: none; border: none; color: var(--txt-secondaire); text-decoration: underline; font: inherit; font-size: var(--fs-200); cursor: pointer; }
+
+/* ── L'épreuve ───────────────────────────────────────────────────────── */
+.ep-tete { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-3); flex-wrap: wrap; }
+.ep-compteurs { text-align: right; font-weight: 800; font-size: var(--fs-200); color: var(--txt-secondaire); }
+.consigne { font-weight: 600; line-height: var(--lh-normal); margin-top: var(--sp-2); }
+.consigne b { color: var(--acc); }
+.aire { position: relative; margin-bottom: var(--sp-4); }
+
+/* Les Feuilles qui tombent */
+.terrain {
+  position: relative;
+  height: 330px;
+  overflow: hidden;
+  border: 3px solid var(--encre);
+  border-radius: 4px;
+  background:
+    linear-gradient(to bottom, rgba(255,179,71,.55), rgba(142,27,58,.35)),
+    var(--trame),
+    var(--surface);
+}
+.terrain::after { /* le sol */
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
+  background: repeating-linear-gradient(90deg, #3a1d12 0 18px, #2b140c 18px 36px);
+  border-top: 3px solid var(--encre);
+}
+.feuille {
+  position: absolute; left: 50%; top: 0;
+  width: min(88%, 520px);
+  margin-left: calc(min(88%, 520px) / -2);
+  background: #fff;
+  border: 3px solid var(--encre);
+  border-radius: 40% 4px 40% 4px;
+  padding: var(--sp-3) var(--sp-4) var(--sp-3) 52px;
+  box-shadow: 4px 4px 0 var(--encre);
+  font-weight: 700;
+  line-height: var(--lh-normal);
+}
+.feuille__icone { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.6rem; }
+.feuille.tombe { animation: chute linear forwards; }
+.feuille.posee { top: 22%; }
+@keyframes chute {
+  0%   { transform: translate(0, 8px) rotate(-3deg); opacity: 0; }
+  5%   { opacity: 1; }
+  25%  { transform: translate(-14px, 55px) rotate(2deg); }
+  50%  { transform: translate(12px, 105px) rotate(-2deg); }
+  75%  { transform: translate(-8px, 155px) rotate(3deg); }
+  100% { transform: translate(0, 205px) rotate(0); }
+}
+.feuille.tranchee { clip-path: polygon(0 0, 100% 0, 100% 46%, 0 58%); border-color: var(--acc); }
+.feuille.tranchee::after {
+  content: ''; position: absolute; left: -6%; right: -6%; top: 52%; height: 4px;
+  background: var(--acc); transform: rotate(-4deg);
+}
+.feuille-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-top: var(--sp-3); }
+.feuille-actions .btn-manga { width: 100%; }
+.touches { text-align: center; font-size: var(--fs-200); color: var(--txt-secondaire); font-weight: 700; margin-top: var(--sp-2); }
+kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radius: 4px; padding: 0 6px; background: #fff; font-size: var(--fs-100); }
+
+/* L'Œil */
+.phrase-oeil {
+  font-size: var(--fs-500);
+  line-height: 1.9;
+  font-weight: 700;
+  background: #fff;
+  border: 3px solid var(--encre);
+  border-radius: 4px;
+  padding: var(--sp-4);
+}
+.morceau {
+  display: inline;
+  min-height: 0;
+  font: inherit;
+  color: var(--txt);
+  background: none;
+  border: none;
+  border-bottom: 3px dotted rgba(23,18,13,.35);
+  padding: 2px 3px;
+  margin: 0 1px;
+  cursor: pointer;
+  line-height: inherit;
+  border-radius: 3px;
+}
+.morceau:hover:not(:disabled) { background: #fff1c9; }
+.morceau:disabled { cursor: default; }
+.morceau.barre { text-decoration: line-through; color: var(--txt-secondaire); border-bottom-color: transparent; }
+.morceau.trouve { background: var(--acc); color: #fff; border-bottom-color: var(--encre); }
+.morceau.revele { background: #ffe08a; border-bottom: 3px solid var(--acc); }
+
+/* Le Test des clochettes */
+.cloches { display: flex; gap: var(--sp-3); justify-content: center; font-size: 2rem; margin-bottom: var(--sp-3); }
+.cloche { filter: grayscale(1); opacity: .35; transition: transform .2s; }
+.cloche.prise { filter: none; opacity: 1; animation: ding .5s; }
+@keyframes ding { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-25deg); } 75% { transform: rotate(25deg); } }
+.chrono { height: 12px; border: 2px solid var(--encre); border-radius: 50px; overflow: hidden; background: #fff; margin-bottom: var(--sp-3); }
+.chrono__barre { height: 100%; background: repeating-linear-gradient(45deg, var(--acc) 0 8px, #d63b55 8px 16px); transition: width 1s linear; }
+.sujet { font-family: var(--font-titre); font-size: var(--fs-400); margin-bottom: var(--sp-3); }
+.discours { display: flex; flex-direction: column; gap: var(--sp-2); }
+.phrase-cloche {
+  text-align: left;
+  font-family: var(--font-texte);
+  font-size: var(--fs-300);
+  font-weight: 700;
+  line-height: var(--lh-normal);
+  color: var(--txt);
+  background: #fff;
+  border: 2px solid var(--encre);
+  border-radius: 4px;
+  padding: var(--sp-3) var(--sp-4);
+  cursor: pointer;
+}
+.phrase-cloche:hover:not(:disabled) { background: #fff6dd; }
+.phrase-cloche:disabled { cursor: default; }
+.phrase-cloche.prise { border-color: var(--ok); background: #eaf7ef; }
+.phrase-cloche.faux { border-color: var(--acc); background: #fdecee; }
+.phrase-cloche.manquee { border: 3px dashed var(--acc); }
+.note { display: block; margin-top: var(--sp-1); font-size: var(--fs-200); font-weight: 700; color: var(--txt-secondaire); }
+.note b { color: var(--acc); }
+.erreurs { text-align: center; font-weight: 800; font-size: var(--fs-200); color: var(--txt-secondaire); margin-top: var(--sp-2); }
+
+/* Le Contre */
+.badge-tech { display: inline-block; background: var(--acc); color: #fff; font-weight: 800; font-size: var(--fs-100); text-transform: uppercase; letter-spacing: .5px; padding: 2px 10px; transform: skew(-8deg); margin-bottom: var(--sp-2); }
+
+/* La Divination */
+.bol {
+  position: relative;
+  width: 180px; height: 110px;
+  margin: 0 auto var(--sp-4);
+  border: 3px solid var(--encre);
+  border-top: none;
+  border-radius: 0 0 90px 90px;
+  overflow: hidden;
+  background: #fff;
+}
+.bol::before { content: ''; position: absolute; left: -3px; right: -3px; top: 0; height: 6px; background: var(--encre); }
+.eau { position: absolute; left: 0; right: 0; bottom: 0; top: 18px; background: #9fd3e6; transition: background .8s; }
+.bol__feuille { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; transition: transform .8s; }
+.eau--coeur { background: #e2475d; animation: battre 1s ease-in-out infinite; }
+@keyframes battre { 50% { transform: scale(1.06); } }
+.eau--troupeau { background: radial-gradient(circle, #fff 2px, transparent 3px) 0 0 / 14px 14px, #7fbfd6; animation: bulles 1.2s linear infinite; }
+@keyframes bulles { to { background-position: 0 -28px, 0 0; } }
+.eau--detective { background: repeating-conic-gradient(#6aa9c0 0 15deg, #9fd3e6 15deg 30deg); animation: tourbillon 2s linear infinite; }
+@keyframes tourbillon { to { transform: rotate(360deg) scale(1.6); } }
+.eau--forteresse { background: linear-gradient(135deg, #e9f6fb 25%, #c3e3f0 25% 50%, #e9f6fb 50% 75%, #c3e3f0 75%) 0 0 / 18px 18px; }
+.eau--calme { background: #9fd3e6; }
+.div-boutons { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); margin-top: var(--sp-3); }
+.type-nom { font-family: var(--font-titre); font-size: var(--fs-600); color: var(--acc); text-align: center; }
+.liste-verdicts { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3); }
+.liste-verdicts li { border-left: 5px solid var(--encre); padding: var(--sp-2) var(--sp-3); background: #fff; }
+.liste-verdicts li.piege { border-left-color: var(--acc); }
+.liste-verdicts li.sain { border-left-color: var(--ok); }
+.liste-verdicts small { display: block; color: var(--txt-secondaire); font-weight: 700; font-size: var(--fs-200); margin-top: 2px; }
+
+/* Le retour au joueur */
+.retour { border-left-width: 10px; }
+.retour.ok { border-color: var(--ok); box-shadow: 5px 5px 0 var(--ok); }
+.retour.ko { border-color: var(--acc); box-shadow: 5px 5px 0 var(--acc); }
+.retour__titre { font-family: var(--font-titre); font-size: var(--fs-400); margin-bottom: var(--sp-1); }
+.retour.ok .retour__titre { color: var(--ok); }
+.retour.ko .retour__titre { color: var(--acc); }
+.retour__texte { font-weight: 600; line-height: var(--lh-normal); }
+.retour__def { font-weight: 700; line-height: var(--lh-normal); margin-bottom: var(--sp-1); }
+.lexique dl { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-1) var(--sp-3); margin-top: var(--sp-2); }
+.lexique dt { font-weight: 800; }
+.lexique dd { margin: 0; line-height: var(--lh-normal); }
+.revue-ok { color: var(--ok); font-size: var(--fs-200); white-space: nowrap; }
+.revue-ko { color: var(--acc); font-size: var(--fs-200); white-space: nowrap; }
+@media (max-width: 560px) { .lexique dl { grid-template-columns: 1fr; } .lexique dd { margin-bottom: var(--sp-2); } }
+.retour[hidden] { display: none; }
+
+/* Résultat d'une épreuve */
+.resultat { text-align: center; }
+.resultat__score { font-family: var(--font-titre); font-size: var(--fs-700); }
+.tech-acquise { margin: var(--sp-4) auto 0; max-width: 460px; background: var(--encre); color: #fff; padding: var(--sp-4); border-radius: 4px; transform: rotate(-1deg); }
+.tech-acquise__label { display: block; font-size: var(--fs-100); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #f1e6d2; }
+.tech-acquise strong { display: block; font-family: var(--font-titre); color: var(--or); font-size: var(--fs-500); }
+
+/* Le Rouleau Interdit */
+.rouleau { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-4); margin-bottom: var(--sp-5); }
+.carte-tech { background: #fff; border: 3px solid var(--encre); border-radius: 4px; box-shadow: 4px 4px 0 var(--encre); padding: var(--sp-3) var(--sp-4); }
+.carte-tech h3 { font-family: var(--font-titre); font-size: var(--fs-300); line-height: var(--lh-serre); color: var(--acc); }
+.carte-tech .soph { font-weight: 800; font-size: var(--fs-200); margin: 2px 0 var(--sp-2); }
+.carte-tech p { font-size: var(--fs-200); line-height: var(--lh-normal); margin-top: var(--sp-1); }
+.carte-tech .compte { color: var(--txt-secondaire); font-weight: 800; }
+.carte-tech.verrou { background: var(--surface); background-image: var(--trame); border-style: dashed; box-shadow: none; text-align: center; color: var(--txt-secondaire); }
+.carte-tech.verrou h3 { color: var(--txt-secondaire); font-size: var(--fs-600); }
+
+/* ── Les effets : cut-in, onomatopées, ellipse ───────────────────────── */
+.cutin { position: fixed; inset: 0; pointer-events: none; z-index: 900; display: none; align-items: center; justify-content: center; }
+.cutin.joue { display: flex; }
+.cutin__fond { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(23,18,13,.22) 0 2deg, transparent 2deg 9deg); animation: vitesse 1.5s ease-out forwards; }
+.cutin__bande {
+  position: relative;
+  width: 112%;
+  background: var(--encre);
+  color: #fff;
+  border-top: 6px solid var(--acc);
+  border-bottom: 6px solid var(--acc);
+  padding: var(--sp-4) var(--sp-5);
+  text-align: center;
+  transform: rotate(-4deg);
+  animation: bande 1.5s cubic-bezier(.2,.9,.2,1) forwards;
+}
+.cutin__sur { display: block; font-family: var(--font-sfx); color: var(--or); font-size: var(--fs-400); letter-spacing: 2px; text-transform: uppercase; }
+.cutin__titre { display: block; font-family: var(--font-titre); font-size: clamp(1.4rem, 1rem + 3vw, 2.6rem); line-height: 1.15; }
+@keyframes vitesse { 0% { opacity: 0; transform: scale(1.4); } 15% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes bande {
+  0%   { transform: translateX(-120%) rotate(-4deg); }
+  18%  { transform: translateX(0) rotate(-4deg); }
+  82%  { transform: translateX(0) rotate(-4deg); opacity: 1; }
+  100% { transform: translateX(120%) rotate(-4deg); opacity: 0; }
+}
+.sfx {
+  position: absolute; z-index: 5; right: 6%; top: 8%;
+  font-family: var(--font-sfx);
+  font-size: clamp(2rem, 1.4rem + 3vw, 3.2rem);
+  color: var(--or);
+  -webkit-text-stroke: 2px var(--encre);
+  text-shadow: 3px 3px 0 var(--encre);
+  transform: rotate(var(--rot, -8deg));
+  pointer-events: none;
+  animation: sfx .9s ease-out forwards;
+}
+.sfx--rouge { color: var(--acc); }
+@keyframes sfx { 0% { transform: scale(.3) rotate(var(--rot)); opacity: 0; } 20% { transform: scale(1.15) rotate(var(--rot)); opacity: 1; } 80% { opacity: 1; } 100% { transform: scale(1) rotate(var(--rot)); opacity: 0; } }
+.ellipse {
+  position: fixed; inset: 0; z-index: 950;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--encre);
+  color: #fff;
+  font-family: var(--font-titre);
+  font-size: clamp(1.6rem, 1rem + 4vw, 3.4rem);
+  text-align: center;
+  padding: var(--sp-5);
+}
+.ellipse[hidden] { display: none; }
+
+#fin-actions { margin-top: var(--sp-5); }
+
+@media (max-width: 560px) {
+  body { padding: 0 12px 32px; }
+  .case { padding: var(--sp-3) var(--sp-4); }
+  .grille { grid-template-columns: 1fr; }
+  .grille .case:nth-child(n) { transform: none; }
+  .scene-case { grid-template-columns: 1fr; }
+  .portrait { width: 72px; height: 72px; font-size: 2.4rem; }
+  .bulle::before { display: none; }
+  .terrain { height: 360px; }
+  .div-boutons { grid-template-columns: 1fr; }
+  .phrase-oeil { font-size: var(--fs-400); }
+}
+</style>
+</head>
+<body data-col-retour="index.html" data-col-retour-cle="retourArene">
+<main>
+  <h1 data-i18n="h1">🥋 Le Dojo de l'Agora</h1>
+
+  <!-- ── INTRO ──────────────────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-intro">
+    <div class="hero" aria-hidden="true">
+      <svg viewBox="0 0 600 230" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffcf6b"/>
+            <stop offset=".45" stop-color="#ff7b4a"/>
+            <stop offset="1" stop-color="#8e1b3a"/>
+          </linearGradient>
+        </defs>
+        <rect width="600" height="230" fill="url(#ciel)"/>
+        <circle cx="430" cy="150" r="70" fill="#ffe7b0" opacity=".9"/>
+        <g stroke="#ffe7b0" stroke-width="2" opacity=".5">
+          <line x1="300" y1="60" x2="600" y2="60"/><line x1="0" y1="92" x2="260" y2="92"/><line x1="340" y1="118" x2="600" y2="118"/>
+        </g>
+        <polygon points="0,180 70,120 130,165 210,95 300,170 380,130 460,175 540,110 600,150 600,230 0,230" fill="#5a1530"/>
+        <polygon points="0,200 90,165 180,195 280,160 390,198 480,170 600,195 600,230 0,230" fill="#3b1020"/>
+        <rect y="200" width="600" height="30" fill="#24090f"/>
+        <g fill="#2a130b" stroke="#17120d" stroke-width="3">
+          <rect x="170" y="128" width="26" height="76" rx="3"/>
+          <rect x="262" y="112" width="30" height="92" rx="3"/>
+          <rect x="358" y="134" width="26" height="70" rx="3"/>
+        </g>
+        <g fill="#c9a36b">
+          <rect x="168" y="150" width="30" height="7"/><rect x="260" y="140" width="34" height="7"/><rect x="356" y="156" width="30" height="7"/>
+        </g>
+      </svg>
+      <p class="hero__titre" data-i18n="heroTitre">Avant l'Agora, le dojo</p>
+      <div class="feuilles-deco">
+        <span style="left:8%;animation-duration:7s">🍂</span>
+        <span style="left:22%;animation-duration:9s;animation-delay:-3s">🍃</span>
+        <span style="left:47%;animation-duration:8s;animation-delay:-5s">🍂</span>
+        <span style="left:66%;animation-duration:10s;animation-delay:-2s">🍃</span>
+        <span style="left:84%;animation-duration:7.5s;animation-delay:-6s">🍂</span>
+      </div>
+    </div>
+
+    <div class="case intro-brief">
+      <p data-i18n-html="brief1">Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent tenir bon sur l'Agora. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.</p>
+      <p data-i18n-html="brief2">Chaque épreuve réussie t'apprend une <b>technique</b> utilisable sur l'Agora. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.</p>
+    </div>
+    <ul class="col-meta">
+      <li>⏱️ <span data-i18n="duree">10 à 15 minutes</span></li>
+      <li>🎓 <span data-i18n="niveau">Collège · lycée</span></li>
+      <li>⌨️ <span data-i18n="commandes">Souris, doigt ou clavier</span></li>
+    </ul>
+    <div class="actions">
+      <button type="button" class="btn-manga" id="btn-entrer" data-i18n="entrer">🥋 Entrer au dojo</button>
+      <a class="btn-manga btn-manga--clair" href="index.html" data-i18n="directArene">🏛️ Aller directement à l'Agora</a>
+    </div>
+  </section>
+
+  <!-- ── SCÈNE (dialogues) ──────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-scene" hidden>
+    <h2 class="sr-only" id="scene-h" data-i18n="sceneH">Scène</h2>
+    <div class="case case--trame scene-case" id="scene-case">
+      <div class="portrait" id="scene-perso" aria-hidden="true"></div>
+      <div>
+        <p class="nom-perso" id="scene-nom"></p>
+        <p class="bulle" id="scene-texte"></p>
+        <div class="choix-liste" id="scene-choix"></div>
+        <p class="reponse" id="scene-reponse" hidden></p>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn-manga" id="scene-suite" data-i18n="suite">Suite ➜</button>
+    </div>
+  </section>
+
+  <!-- ── CARTE DU DOJO ──────────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-carte" hidden>
+    <div class="case rang">
+      <div>
+        <p class="rang__label" data-i18n="tonRang">Ton rang</p>
+        <h2 class="rang__nom" id="carte-rang"></h2>
+        <p class="comp" id="carte-type"></p>
+      </div>
+      <button type="button" class="btn-manga btn-manga--or" id="btn-rouleau"></button>
+    </div>
+    <div class="grille" id="carte-grille"></div>
+    <div class="case case--examen" id="carte-examen">
+      <span class="ref" data-i18n="examenRef">Examen final</span>
+      <h3 class="titre-case" data-i18n="examenTitre">L'examen de la Porte</h3>
+      <p id="carte-examen-txt"></p>
+      <div class="actions"><button type="button" class="btn-manga" id="btn-examen" data-i18n="passerExamen">Passer l'examen</button></div>
+    </div>
+    <div class="case">
+      <h3 class="titre-case" data-i18n="techsTitre">Tes techniques pour l'Agora</h3>
+      <ul class="techs-liste" id="carte-techs"></ul>
+      <div class="actions">
+        <a class="btn-manga" href="index.html" data-i18n="allerArene">🏛️ Rejoindre l'Agora</a>
+      </div>
+    </div>
+    <label class="reglage"><input type="checkbox" id="mode-calme"> <span data-i18n="modeCalme">Mode calme : pas de chute ni de chrono (au clavier, au lecteur d'écran ou en projection)</span></label>
+    <p style="margin-top:var(--sp-3)"><button type="button" class="lien-discret" id="btn-effacer" data-i18n="effacer">Effacer ma progression au dojo</button></p>
+  </section>
+
+  <!-- ── ÉPREUVE ────────────────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-epreuve" hidden>
+    <div class="case">
+      <div class="ep-tete">
+        <div>
+          <span class="ref" id="ep-ref"></span>
+          <h2 class="titre-case" id="ep-titre"></h2>
+        </div>
+        <div class="ep-compteurs"><span id="ep-progres"></span><br><span id="ep-score"></span></div>
+      </div>
+      <p class="consigne" id="ep-consigne"></p>
+    </div>
+    <div class="aire" id="ep-aire"></div>
+    <div class="case retour" id="ep-retour" hidden>
+      <p class="retour__titre" id="ep-retour-titre"></p>
+      <p class="retour__def" id="ep-retour-def" hidden></p>
+      <p class="retour__texte" id="ep-retour-texte"></p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn-manga" id="ep-suivant" hidden></button>
+    </div>
+  </section>
+
+  <!-- ── LE ROULEAU INTERDIT ────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-rouleau" hidden>
+    <div class="case case--trame">
+      <span class="ref" data-i18n="rouleauRef">Collection</span>
+      <h2 class="titre-case" data-i18n="rouleauTitre">Le Rouleau Interdit</h2>
+      <p class="consigne" data-i18n-html="rouleauIntro">Chaque sophisme est une technique des sophistes. Démasque-la une fois au dojo pour la recopier dans ton rouleau, avec ses <b>signes</b> et sa <b>parade</b>.</p>
+    </div>
+    <div class="rouleau" id="rouleau-grille"></div>
+    <div class="actions"><button type="button" class="btn-manga" id="rouleau-retour" data-i18n="retourDojo">Retour au dojo</button></div>
+  </section>
+
+  <!-- ── FIN DE L'EXAMEN ────────────────────────────────────────────── -->
+  <section class="ecran" id="ecran-fin" hidden>
+    <div class="case col-fin" id="fin-recap"></div>
+    <div class="actions" id="fin-actions">
+      <a class="btn-manga" href="index.html" data-i18n="allerArene">🏛️ Rejoindre l'Agora</a>
+      <button type="button" class="btn-manga btn-manga--clair" id="fin-dojo" data-i18n="retourDojo">Retour au dojo</button>
+    </div>
+    <div class="pj-rangee" style="margin-top:18px"></div>
+  </section>
+</main>
+
+<!-- Effets plein écran : décoratifs, le texte est annoncé par #annonce. -->
+<div class="cutin" id="cutin" aria-hidden="true">
+  <div class="cutin__fond"></div>
+  <div class="cutin__bande"><span class="cutin__sur" id="cutin-sur"></span><span class="cutin__titre" id="cutin-titre"></span></div>
+</div>
+<div class="ellipse" id="ellipse" hidden></div>
+<p class="sr-only" id="annonce" role="status" aria-live="polite"></p>
+
+<script src="../i18n.js"></script>
+<script src="../collection.js"></script>
+<script>
+I18N.register({
+  fr: {
+    pageTitle: "Le Dojo de l'Agora — s'entraîner à repérer les sophismes",
+    metaDesc: "Avant l'Agora, un entraînement façon manga : repérer un sophisme, le localiser, le trouver dans un discours et savoir y riposter.",
+    h1: "🥋 Le Dojo de l'Agora", retourArene: "Retour à l'Agora",
+    heroTitre: "Avant l'Agora, le dojo",
+    brief1: "Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent tenir bon sur l'Agora. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.",
+    brief2: "Chaque épreuve réussie t'apprend une <b>technique</b> utilisable sur l'Agora. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.",
+    duree: "10 à 15 minutes", niveau: "Collège · lycée", commandes: "Souris, doigt ou clavier",
+    entrer: "🥋 Entrer au dojo", directArene: "🏛️ Aller directement à l'Agora",
+    sceneH: "Scène", suite: "Suite ➜", suivant: "Suivant ➜", continuer: "Continuer ➜",
+    narrateur: "Récit", examinateur: "L'examinateur",
+    tonRang: "Ton rang", tonType: "Ton type de Nen rhétorique : {nom}",
+    rang0: "Gobe-tout", rang1: "Sceptique", rang2: "Questionneur", rang3: "Enquêteur", rang4: "Démasqueur", rang5: "Œil Ouvert",
+    rouleauBtn: "📜 Rouleau Interdit · {n} / {t}",
+    commencer: "Commencer", rejouer: "Rejouer", aFaire: "Pas encore réussie",
+    techAcquise: "✓ Technique acquise : {tech}",
+    examenRef: "Examen final", examenTitre: "L'examen de la Porte",
+    examenVerrou: "Réussis les quatre épreuves pour affronter Sophisuke. Encore {n}.",
+    examenPret: "Six manches contre Sophisuke, une par épreuve, puis une dernière question. Il paraît qu'elle est terrible.",
+    examenFait: "Réussi. Tu peux le repasser quand tu veux.",
+    passerExamen: "Passer l'examen", repasserExamen: "Repasser l'examen",
+    techsTitre: "Tes techniques pour l'Agora",
+    allerArene: "🏛️ Rejoindre l'Agora", retourDojo: "Retour au dojo",
+    modeCalme: "Mode calme : pas de chute ni de chrono (au clavier, au lecteur d'écran ou en projection)",
+    modeCalmeForce: "Mode calme activé par ton réglage « réduire les animations ».",
+    effacer: "Effacer ma progression au dojo",
+    effacerTitre: "Effacer ta progression ?",
+    effacerTexte: "Ton rang, ton rouleau et tes techniques pour l'Agora seront perdus.",
+    effacerOui: "Effacer", effacerNon: "Garder",
+
+    feuillesTitre: "Les Feuilles qui tombent", feuillesRef: "Entraînement de l'observation", feuillesComp: "Repérer : piège ou argument correct ?",
+    feuillesConsigne: "Chaque feuille porte une phrase. <b>Tranche</b> celles qui contiennent un sophisme, <b>laisse tomber</b> les arguments corrects. Attention : tous ne sont pas des pièges. 9 sur 12 pour réussir.",
+    oeilTitre: "L'Œil du sensei", oeilRef: "L'œil qui lit les signes", oeilComp: "Localiser : quels mots trahissent le piège ?",
+    oeilConsigne: "Clique sur le <b>groupe de mots</b> qui trahit la technique de l'adversaire. Deux essais par phrase. 4 points sur 6 pour réussir.",
+    clochettesTitre: "Le Test des clochettes", clochettesRef: "Le test du premier jour", clochettesComp: "Repérer les pièges cachés dans un discours",
+    clochettesConsigne: "Sophisuke fait un discours de cinq phrases. Deux <b>clochettes</b> y sont cachées : deux phrases fallacieuses. Attrape-les avant la fin du temps, sans dépasser trois erreurs. 3 clochettes sur 4 pour réussir.",
+    contreTitre: "Le Contre", contreRef: "Bloquer, puis renvoyer", contreComp: "Riposter sans tomber dans le piège",
+    contreConsigne: "Un adversaire t'attaque avec un sophisme. Choisis la <b>meilleure riposte</b> : ni céder, ni répondre par un autre sophisme. 4 sur 5 pour réussir.",
+    divTitre: "La Divination de l'eau", divRef: "Le test du type", divComp: "",
+    divConsigne: "Le sensei pose un bol d'eau et une feuille. Pour chaque phrase, dis simplement si elle te <b>convainc</b>. Il n'y a pas de bonne réponse : l'eau va révéler ton type.",
+    examenConsigne: "Six manches, une par épreuve. Il en faut 4 pour atteindre la dernière question.",
+    progres: "{i} / {n}", scoreEp: "Score : {s}",
+
+    trancher: "✂️ Trancher", laisser: "🍃 Laisser tomber",
+    touches: "Clavier : <kbd>T</kbd> trancher · <kbd>L</kbd> laisser tomber",
+    sfxClac: "CLAC !", sfxDing: "DING !", sfxBonk: "BONK !", sfxContre: "CONTRE !", sfxHaha: "HAHA !", sfxOups: "OUPS…",
+    techDemasquee: "Technique démasquée", techAcquiseCut: "Technique acquise",
+    feuilleOkPiege: "Tranchée ! C'était : {l}.", feuilleOkSain: "Bien vu : cet argument se tient.",
+    feuilleRatePiege: "Raté : c'était un piège ({l}).", feuilleTombee: "Trop tard : la feuille est tombée. C'était un piège ({l}).",
+    feuilleRateSain: "Aïe : tu as tranché un argument correct.",
+    lexiqueTitre: "📖 Les pièges de cette épreuve", lexiqueIntro: "Prends le temps de lire : chaque feuille piégée cache l'un de ces sophismes. Les autres portent des arguments corrects.", lexiquePret: "🍃 Je suis prêt",
+    revueTitre: "📜 Les sophismes que tu as croisés", revueIntro: "Pour les revoir tous : ce que fait chaque piège, et comment y répondre.", revueRepere: "✔ repéré", revueRate: "✖ à revoir", revueParade: "Parade :",
+    oeilOk: "Bien vu ! {tech} ({l}).", oeilIndice: "Pas là. Indice du sensei :",
+    oeilIndiceTxt: "Cette technique se trahit souvent par des mots comme {signes}.",
+    oeilRate: "Raté. La technique était : {tech} ({l}). Les mots qui la trahissaient sont surlignés.",
+    clocheSujet: "Sophisuke : « {sujet} »",
+    clochePrise: "Clochette ! {tech} ({l}).", clocheSaine: "Cet argument se tient : ce n'était pas une clochette.",
+    clocheManquee: "Clochette manquée : {tech} ({l}).",
+    erreurs: "Erreurs : {n} / 3",
+    clochesToutes: "Les deux clochettes ! Sophisuke fait la grimace.",
+    clochesUne: "Une clochette sur deux.", clochesAucune: "Aucune clochette. Sophisuke rigole.",
+    contreTech: "Technique : {tech}",
+    contreOk: "CONTRE parfait.", contreCede: "Tu as plié : l'adversaire gagne sans combattre.",
+    contreBonk: "BONK ! Le sensei te lance son petit livre orange : ta riposte est elle-même un sophisme ({l}).",
+    divOui: "Ça me convainc", divBof: "Bof", divNon: "Pas du tout",
+    divResultat: "Le résultat", divVerdictPiege: "Piège", divVerdictSain: "Argument correct",
+    divRetenir: "Ce qu'il fallait voir :",
+
+    epReussie: "Épreuve réussie !", epRatee: "Pas encore…",
+    epScore: "{s} / {t} (il en fallait {seuil})",
+    senseiBravo: "« Pas mal. Pas mal du tout. Je vais finir mon chapitre, et on passe à la suite. »",
+    senseiEncore: "« Tu n'as pas perdu : tu as appris où tu tombes. Un vrai ninja recommence. »",
+    nouvelleTech: "Technique acquise pour l'Agora",
+    reessayer: "🔁 Réessayer", retourCarte: "Retour au dojo",
+    piqueQuestion: "Sophisuke : {t} Quelle technique vient-il d'utiliser ?",
+    piqueOk: "Bien vu. Sophisuke rougit : c'était {tech} ({l}). {e}",
+    piqueKo: "Sophisuke ricane. C'était {tech} ({l}). {e}",
+
+    tech_regard: "👁️ Regard perçant", techDesc_regard: "Retire des mauvaises réponses pour n'en laisser que deux. Une fois par match.",
+    tech_seconde: "🌀 Seconde vue", techDesc_seconde: "Ta prochaine erreur ne coûte rien et tu peux rejouer. Une fois par match.",
+    tech_clochettes: "🔔 Clochettes", techDesc_clochettes: "+1 point de lucidité maximum sur l'Agora, pour toute la partie.",
+    tech_contre: "⚡ Contre-attaque", techDesc_contre: "Pari risqué : piège bien repéré, +1 ouverture ; erreur, −2 lucidité. Une fois par match.",
+    techVerrou: "🔒 {tech} — à gagner à l'épreuve « {ep} »",
+
+    rouleauRef: "Collection", rouleauTitre: "Le Rouleau Interdit",
+    rouleauIntro: "Chaque sophisme est une technique des sophistes. Démasque-la une fois au dojo pour la recopier dans ton rouleau, avec ses <b>signes</b> et sa <b>parade</b>.",
+    rouleauSignes: "Signes :", rouleauParade: "Parade :", rouleauCompte: "Démasquée {n} fois",
+    rouleauVerrou: "Technique non découverte",
+
+    examenOkCut: "Examen réussi", examenSur: "Œil Ouvert",
+    examenRate: "Sophisuke t'a battu cette fois",
+    examenRateMsg: "Il te fallait 4 manches sur 6 pour atteindre la dernière question. Relis tes erreurs, puis retente l'examen.",
+    finTitreOk: "Œil Ouvert !",
+    finMsgOk: "Tu as passé la Porte. Tu sais repérer un piège, le localiser, le trouver dans un discours et y riposter. Tes techniques t'attendent sur l'Agora.",
+    clicPourContinuer: "(clique ou appuie sur une touche pour continuer)"
+  },
+  en: {
+    pageTitle: "The Agora Dojo — train to spot fallacies",
+    metaDesc: "Before the Agora, a manga-style training: spot a fallacy, pinpoint it, find it in a speech and learn how to fight back.",
+    h1: "🥋 The Agora Dojo", retourArene: "Back to the Agora",
+    heroTitre: "Before the Agora, the dojo",
+    brief1: "<b>Sensei Kakasophe</b> trains those who want to hold their ground at the Agora. Four trials, four ways to <b>unmask a fallacy</b>: spot it, pinpoint it, find it in a speech and fight back.",
+    brief2: "Each trial you pass teaches you a <b>technique</b> you can use at the Agora. Pass the <b>Gate exam</b> against your rival, Sophisuke, to become an <b>Open Eye</b>.",
+    duree: "10 to 15 minutes", niveau: "Ages 11–18", commandes: "Mouse, touch or keyboard",
+    entrer: "🥋 Enter the dojo", directArene: "🏛️ Go straight to the Agora",
+    sceneH: "Scene", suite: "Next ➜", suivant: "Next ➜", continuer: "Continue ➜",
+    narrateur: "Narrator", examinateur: "The examiner",
+    tonRang: "Your rank", tonType: "Your rhetorical Nen type: {nom}",
+    rang0: "Swallows-it-all", rang1: "Sceptic", rang2: "Questioner", rang3: "Investigator", rang4: "Unmasker", rang5: "Open Eye",
+    rouleauBtn: "📜 Forbidden Scroll · {n} / {t}",
+    commencer: "Start", rejouer: "Play again", aFaire: "Not passed yet",
+    techAcquise: "✓ Technique learned: {tech}",
+    examenRef: "Final exam", examenTitre: "The Gate exam",
+    examenVerrou: "Pass all four trials to face Sophisuke. {n} to go.",
+    examenPret: "Six rounds against Sophisuke, one per trial, then one last question. They say it's terrible.",
+    examenFait: "Passed. You can retake it whenever you like.",
+    passerExamen: "Take the exam", repasserExamen: "Retake the exam",
+    techsTitre: "Your techniques for the Agora",
+    allerArene: "🏛️ Join the Agora", retourDojo: "Back to the dojo",
+    modeCalme: "Calm mode: no falling, no timer (for keyboard, screen readers or projection)",
+    modeCalmeForce: "Calm mode is on because of your “reduce motion” setting.",
+    effacer: "Erase my dojo progress",
+    effacerTitre: "Erase your progress?",
+    effacerTexte: "Your rank, your scroll and your Agora techniques will be lost.",
+    effacerOui: "Erase", effacerNon: "Keep",
+
+    feuillesTitre: "Falling Leaves", feuillesRef: "Observation training", feuillesComp: "Spot it: trap or sound argument?",
+    feuillesConsigne: "Each leaf carries a sentence. <b>Slice</b> the ones with a fallacy, <b>let fall</b> the sound arguments. Careful: not all of them are traps. 9 out of 12 to pass.",
+    oeilTitre: "The Sensei's Eye", oeilRef: "The eye that reads the signs", oeilComp: "Pinpoint it: which words give the trap away?",
+    oeilConsigne: "Click the <b>group of words</b> that gives away your opponent's technique. Two tries per sentence. 4 points out of 6 to pass.",
+    clochettesTitre: "The Bell Test", clochettesRef: "The first-day test", clochettesComp: "Find the traps hidden in a speech",
+    clochettesConsigne: "Sophisuke gives a five-sentence speech. Two <b>bells</b> are hidden in it: two fallacious sentences. Grab them before time runs out, with no more than three mistakes. 3 bells out of 4 to pass.",
+    contreTitre: "The Counter", contreRef: "Block, then strike back", contreComp: "Fight back without falling into the trap",
+    contreConsigne: "An opponent attacks you with a fallacy. Pick the <b>best comeback</b>: don't give in, and don't answer with another fallacy. 4 out of 5 to pass.",
+    divTitre: "Water Divination", divRef: "The type test", divComp: "",
+    divConsigne: "The sensei sets down a bowl of water and a leaf. For each sentence, just say whether it <b>convinces</b> you. There's no right answer: the water will reveal your type.",
+    examenConsigne: "Six rounds, one per trial. You need 4 to reach the last question.",
+    progres: "{i} / {n}", scoreEp: "Score: {s}",
+
+    trancher: "✂️ Slice", laisser: "🍃 Let it fall",
+    touches: "Keyboard: <kbd>T</kbd> slice · <kbd>L</kbd> let it fall",
+    sfxClac: "SLASH!", sfxDing: "DING!", sfxBonk: "BONK!", sfxContre: "COUNTER!", sfxHaha: "HA HA!", sfxOups: "OOPS…",
+    techDemasquee: "Technique unmasked", techAcquiseCut: "Technique learned",
+    feuilleOkPiege: "Sliced! It was: {l}.", feuilleOkSain: "Well spotted: that argument holds up.",
+    feuilleRatePiege: "Missed: it was a trap ({l}).", feuilleTombee: "Too late: the leaf hit the ground. It was a trap ({l}).",
+    feuilleRateSain: "Ouch: you sliced a sound argument.",
+    lexiqueTitre: "📖 The traps in this trial", lexiqueIntro: "Take your time to read: each trapped leaf hides one of these fallacies. The others carry sound arguments.", lexiquePret: "🍃 I'm ready",
+    revueTitre: "📜 The fallacies you came across", revueIntro: "To review them all: what each trap does, and how to answer it.", revueRepere: "✔ spotted", revueRate: "✖ to review", revueParade: "Parry:",
+    oeilOk: "Well spotted! {tech} ({l}).", oeilIndice: "Not there. The sensei's hint:",
+    oeilIndiceTxt: "This technique often gives itself away with words like {signes}.",
+    oeilRate: "Missed. The technique was: {tech} ({l}). The words that gave it away are highlighted.",
+    clocheSujet: "Sophisuke: “{sujet}”",
+    clochePrise: "Bell! {tech} ({l}).", clocheSaine: "That argument holds up: it wasn't a bell.",
+    clocheManquee: "Missed bell: {tech} ({l}).",
+    erreurs: "Mistakes: {n} / 3",
+    clochesToutes: "Both bells! Sophisuke pulls a face.",
+    clochesUne: "One bell out of two.", clochesAucune: "No bells. Sophisuke laughs.",
+    contreTech: "Technique: {tech}",
+    contreOk: "Perfect COUNTER.", contreCede: "You gave in: your opponent wins without a fight.",
+    contreBonk: "BONK! The sensei throws his little orange book at you: your comeback is a fallacy too ({l}).",
+    divOui: "Convinces me", divBof: "Meh", divNon: "Not at all",
+    divResultat: "The result", divVerdictPiege: "Trap", divVerdictSain: "Sound argument",
+    divRetenir: "What there was to see:",
+
+    epReussie: "Trial passed!", epRatee: "Not yet…",
+    epScore: "{s} / {t} (you needed {seuil})",
+    senseiBravo: "“Not bad. Not bad at all. Let me finish my chapter, then we'll move on.”",
+    senseiEncore: "“You didn't lose: you learned where you trip. A real ninja tries again.”",
+    nouvelleTech: "Technique learned for the Agora",
+    reessayer: "🔁 Try again", retourCarte: "Back to the dojo",
+    piqueQuestion: "Sophisuke: {t} Which technique did he just use?",
+    piqueOk: "Well spotted. Sophisuke blushes: it was {tech} ({l}). {e}",
+    piqueKo: "Sophisuke sneers. It was {tech} ({l}). {e}",
+
+    tech_regard: "👁️ Piercing Gaze", techDesc_regard: "Removes wrong answers until only two are left. Once per match.",
+    tech_seconde: "🌀 Second Sight", techDesc_seconde: "Your next mistake costs nothing and you can try again. Once per match.",
+    tech_clochettes: "🔔 Bells", techDesc_clochettes: "+1 maximum clarity point at the Agora, for the whole game.",
+    tech_contre: "⚡ Counter-attack", techDesc_contre: "Risky bet: trap spotted, +1 openness; wrong, −2 clarity. Once per match.",
+    techVerrou: "🔒 {tech} — earned in the “{ep}” trial",
+
+    rouleauRef: "Collection", rouleauTitre: "The Forbidden Scroll",
+    rouleauIntro: "Each fallacy is a sophist technique. Unmask it once in the dojo to copy it into your scroll, with its <b>signs</b> and its <b>parry</b>.",
+    rouleauSignes: "Signs:", rouleauParade: "Parry:", rouleauCompte: "Unmasked {n} times",
+    rouleauVerrou: "Technique not discovered",
+
+    examenOkCut: "Exam passed", examenSur: "Open Eye",
+    examenRate: "Sophisuke beat you this time",
+    examenRateMsg: "You needed 4 rounds out of 6 to reach the last question. Go over your mistakes, then retake the exam.",
+    finTitreOk: "Open Eye!",
+    finMsgOk: "You made it through the Gate. You can spot a trap, pinpoint it, find it in a speech and fight back. Your techniques are waiting for you at the Agora.",
+    clicPourContinuer: "(click or press a key to continue)"
+  }
+});
+// Contenu FR ou EN selon la langue, comme app.js / app-en.js pour l'Agora.
+document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'dojo-data-en.js' : 'dojo-data.js') + '"><\/scr' + 'ipt>');
+</script>
+<script src="dojo.js"></script>
+<script src="../retours.js" defer></script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Agorateur" data-texte="Agorateur, un jeu gratuit pour repérer les ruses du discours et apprendre à mieux discuter" data-texte-en="Agorator, a free game to spot tricks of speech and learn to discuss better" data-url="https://antoninatger.github.io/jeux/agorateur/"></script>
+</body>
+</html>

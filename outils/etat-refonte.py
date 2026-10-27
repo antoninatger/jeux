@@ -86,7 +86,7 @@ JEUX_A_RECAP = (
     "radarnaque/index.html",
     "radar-desinfo/index.html",
     "chasse-aux-biais/index.html",
-    "agora/index.html",
+    "agorateur/index.html",
     "grand-oral/index.html",
     "repare-la-une/index.html",
     "graphiques-trompeurs/index.html",
