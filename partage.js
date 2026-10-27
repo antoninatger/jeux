@@ -25,7 +25,7 @@
   if (location.hostname !== 'antoninatger.github.io') return;
   var p = decodeURIComponent(location.pathname), cible = null;
   if (/^\/fakemetre(\/|$)/.test(p)) cible = '/jeux/fakemetre' + p.slice(10);
-  else if (/^\/jeux\/(radarnaque|agora|arene-rhetorique)(\/|$)|^\/jeux\/Planète connaissance\.html$|^\/jeux\/ressources\/faux-messages\.html$/.test(p)) cible = p;
+  else if (/^\/jeux\/(radarnaque|agorateur|agora|arene-rhetorique)(\/|$)|^\/jeux\/Planète connaissance\.html$|^\/jeux\/ressources\/faux-messages\.html$/.test(p)) cible = p;
   if (cible) location.replace('https://antoninatger.com' + encodeURI(cible) + location.search + location.hash);
 })();
 
