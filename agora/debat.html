@@ -339,6 +339,7 @@ table.compteurs{width:100%;border-collapse:collapse;}
     <button type="button" class="btn plein" id="btn-nouveau" data-i18n="nouveau">🔁 Préparer un autre débat</button>
   </p>
   <p class="centre muet" id="bi-copie" aria-live="polite"></p>
+  <div class="pj-rangee no-print" style="margin-top:18px"></div>
 </section>
 
 <div id="voile" hidden><div class="boite" id="voile-boite" role="dialog" aria-modal="true"></div></div>
@@ -502,5 +503,7 @@ document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'debat-data-en.js' :
 </script>
 <script src="debat.js"></script>
 <script src="../retours.js" defer></script>
+<!-- Pas de bouton flottant sur un écran projeté : le mot au créateur est dans le bilan. -->
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="L’Agora" data-texte="L’Agora, un jeu gratuit pour repérer les ruses du discours et apprendre à mieux discuter" data-texte-en="The Agora, a free game to spot tricks of speech and learn to discuss better" data-url="https://antoninatger.github.io/jeux/agora/" data-flottant="non"></script>
 </body>
 </html>

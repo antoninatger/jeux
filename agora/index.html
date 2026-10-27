@@ -135,7 +135,6 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 .ag-scene{position:relative;z-index:1;display:block;width:min(100%,900px);flex:1 1 0;min-height:120px;margin-top:8px;}
 /* Texte trop long pour l'écran (téléphone) : le ciel s'allonge au lieu de rogner le temple. */
 .ag-scene{margin-bottom:64px;}
-@media (max-height:700px),(max-width:700px){.ag-hero{height:auto;}.ag-scene{flex:none;height:auto;margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
 .ag-temple{fill:#351a23;stroke:#e4b478;stroke-width:2;stroke-linejoin:round;}
 .ag-cannelure{fill:none;stroke:#e4b478;stroke-opacity:.35;stroke-width:1;}
 .ag-bulle rect,.ag-bulle path{fill:#fdeef0;}
@@ -148,6 +147,8 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 @keyframes ag-balance{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 .ag-descendre{position:absolute;z-index:2;bottom:12px;color:#fdeef0;font-weight:800;font-size:var(--fs-200);text-decoration:none;background:rgba(27,13,17,.7);border:1px solid rgba(228,180,120,.4);border-radius:50px;padding:8px 16px;white-space:nowrap;}
 .ag-descendre:hover{border-color:var(--acc);}
+/* Écran bas ou étroit : le ciel s'allonge, le bouton passe sous la scène. */
+@media (max-height:700px),(max-width:700px){.ag-hero{height:auto;}.ag-scene{flex:none;height:auto;margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
 #ag-choix{max-width:620px;margin:28px auto 0;scroll-margin-top:calc(var(--entete-h,56px) + 12px);}
 /* Le dévoilement : le ciel d'abord, puis l'accroche et chaque phrase ; les
    options et les boutons quand on descend jusqu'à eux. */
@@ -179,6 +180,9 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 .intro-btns{display:flex;flex-direction:column;align-items:center;gap:12px;}
 .intro-btns .bigbtn{width:min(100%,360px);padding-left:20px;padding-right:20px;justify-content:center;text-align:center;}
 a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
+.ag-avis{margin-top:10px;text-align:center;}
+.ag-avis button{max-width:100%;white-space:normal;background:none;border:1px solid rgba(228,180,120,.35);border-radius:50px;color:var(--tx);font:inherit;font-weight:700;font-size:var(--fs-200);padding:8px 16px;cursor:pointer;}
+.ag-avis button:hover,.ag-avis button:focus-visible{border-color:var(--acc);}
 .dojo-etat{max-width:460px;margin:14px auto 0;text-align:center;overflow-wrap:anywhere;color:var(--mu);font-weight:700;font-size:var(--fs-200);line-height:1.5;}
 #techs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 10px;}
 #techs[hidden]{display:none;}
@@ -288,9 +292,9 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <div class="ag-texte">
       <p class="ag-accroche" data-i18n="sub">Repère les ruses du discours, et apprends à mieux discuter !</p>
     <div class="brief">
-      <p data-i18n-html="brief1">🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.</p>
-      <p style="margin-top:10px;" data-i18n-html="brief2">🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.</p>
-      <p style="margin-top:10px;" data-i18n-html="brief3">🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.</p>
+      <p data-i18n-html="brief1">🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : éthique (<b>ethos</b>), émotion (<b>pathos</b>), logique (<b>logos</b>)… beaucoup d'<b>arguments fallacieux</b>, et parfois de <b>vrais bons arguments</b>.</p>
+      <p style="margin-top:10px;" data-i18n-html="brief2">🥋 Commence par le <b>dojo</b> : tu y apprends à reconnaître les sophismes et tu gagnes des techniques. 🎯 Puis, sur l'Agora, <b>repère les pièges</b>, <b>fais avancer l'échange</b> et <b>comprends ce qui motive</b> chaque personnage, jusqu'à devenir <b>Bâtisseur de dialogue</b>.</p>
+      <p style="margin-top:10px;" data-i18n-html="brief3">🏫 Et en classe, passe au <b>vrai débat</b> : l'Agora s'affiche au tableau, deux équipes argumentent, et toute la classe traque les sophismes en direct.</p>
     </div>
     </div>
     <svg class="ag-scene" viewBox="0 30 620 215" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
@@ -325,6 +329,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <a class="bigbtn ghost" href="debat.html" data-i18n="classe">🏫 Organiser un débat en classe</a>
   </div>
   <p class="dojo-etat" id="dojo-etat"></p>
+  <p class="ag-avis"><button type="button" onclick="window.PartageJeux&&PartageJeux.ouvrir('avis')" data-i18n="avisLien">💬 Une idée, un bug, un avis ? Écris-moi</button></p>
   </div>
 </div>
 
@@ -392,10 +397,10 @@ I18N.register({
     metaDesc: "Jeu de discussion : cinq personnages tentent de te convaincre par tous les moyens. Repère leurs pièges, fais avancer l'échange et comprends ce qui les motive.",
     h1: "🏛️ L'Agora",
     sub: "Repère les ruses du discours, et apprends à mieux discuter !",
-    brief1: `🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.`,
-    brief2: `🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.`,
-    brief3: `🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.`,
-    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", you: "Toi", replay: "🔄 Rejouer",
+    brief1: `🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : éthique (<b>ethos</b>), émotion (<b>pathos</b>), logique (<b>logos</b>)… beaucoup d'<b>arguments fallacieux</b>, et parfois de <b>vrais bons arguments</b>.`,
+    brief2: `🥋 Commence par le <b>dojo</b> : tu y apprends à reconnaître les sophismes et tu gagnes des techniques. 🎯 Puis, sur l'Agora, <b>repère les pièges</b>, <b>fais avancer l'échange</b> et <b>comprends ce qui motive</b> chaque personnage, jusqu'à devenir <b>Bâtisseur de dialogue</b>.`,
+    brief3: `🏫 Et en classe, passe au <b>vrai débat</b> : l'Agora s'affiche au tableau, deux équipes argumentent, et toute la classe traque les sophismes en direct.`,
+    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", avisLien: "💬 Une idée, un bug, un avis ? Écris-moi", you: "Toi", replay: "🔄 Rejouer",
     hpYouLabel: "Ta lucidité", hpFoeLabel: "Ouverture de ton interlocuteur",
     modeTitre: "Réponse", modeQcm: "🔘 Choix multiple", modeQcmS: "Choisis parmi quatre propositions",
     modeSaisie: "⌨️ Saisie libre", modeSaisieS: "Écris le nom du sophisme, à ta façon",
@@ -407,10 +412,10 @@ I18N.register({
     metaDesc: "A discussion game: five characters try to convince you by any means. Spot their traps, move the exchange forward and understand what drives them.",
     h1: "🏛️ The Agora",
     sub: "Spot the tricks of speech, and learn to discuss better!",
-    brief1: `🏛️ Welcome to the Agora, the square where people debate! Five characters will try to <b>convince you by any means</b>: appeals to ethics (<b>ethos</b>), emotion (<b>pathos</b>) and logic (<b>logos</b>)… and plenty of <b>fallacious arguments</b>. But sometimes, <b>genuinely good arguments</b> too.`,
-    brief2: `🎯 Each match has three goals: <b>spot the traps</b> without getting carried away (your clarity), <b>move the exchange forward</b> by choosing your answer well (their openness), and <b>understand what really drives them</b>: every confidence goes into your notebook.`,
-    brief3: `🤝 Finish all five discussions to become a <b>Dialogue builder</b>.`,
-    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", you: "You", replay: "🔄 Play again",
+    brief1: `🏛️ Welcome to the Agora, the square where people debate! Five characters will try to <b>convince you by any means</b>: ethics (<b>ethos</b>), emotion (<b>pathos</b>), logic (<b>logos</b>)… plenty of <b>fallacious arguments</b>, and sometimes <b>genuinely good arguments</b>.`,
+    brief2: `🥋 Start at the <b>dojo</b>: learn to recognise fallacies and earn techniques. 🎯 Then, on the Agora, <b>spot the traps</b>, <b>move the exchange forward</b> and <b>understand what drives</b> each character, until you become a <b>Dialogue builder</b>.`,
+    brief3: `🏫 And in class, move on to a <b>real debate</b>: the Agora goes up on the board, two teams make their case, and the whole class hunts for fallacies live.`,
+    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", avisLien: "💬 An idea, a bug, feedback? Write to me", you: "You", replay: "🔄 Play again",
     hpYouLabel: "Your clarity", hpFoeLabel: "Openness of the other person",
     modeTitre: "Answer", modeQcm: "🔘 Multiple choice", modeQcmS: "Pick from four options",
     modeSaisie: "⌨️ Free typing", modeSaisieS: "Type the fallacy's name, your own way",
