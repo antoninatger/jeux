@@ -112,7 +112,7 @@ main{display:flex;flex-direction:column;align-items:center;}
 body{overflow-x:clip;}
 main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 #intro{max-width:none;width:100%;}
-.ag-hero{position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:calc(100svh - var(--entete-h,56px) - 16px);height:calc(100svh - var(--entete-h,56px) - 16px);display:flex;flex-direction:column;justify-content:space-between;align-items:center;overflow:hidden;
+.ag-hero{position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:calc(100svh - var(--entete-h,56px) - 16px);display:flex;flex-direction:column;justify-content:space-between;align-items:center;overflow:hidden;
   background:radial-gradient(ellipse 60% 45% at 50% 82%,rgba(255,93,115,.22),transparent 70%),linear-gradient(#0f0508 0%,#24101a 45%,#3a1522 78%,#1b0d11 100%);}
 .ag-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(transparent,rgba(228,180,120,.08));border-top:2px solid rgba(228,180,120,.35);pointer-events:none;}
 .ag-etoiles{position:absolute;inset:0;width:100%;height:100%;opacity:.8;}
@@ -132,23 +132,49 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 .ag-accroche{font-family:'Alfa Slab One',serif;font-size:clamp(1.6rem,1.1rem + 2vw,2.6rem);line-height:1.15;color:#fdeef0;text-shadow:0 0 30px rgba(255,93,115,.45);margin-bottom:clamp(14px,3vh,28px);}
 #intro .ag-texte .brief{background:none;border:none;padding:0;margin:0;text-align:center;font-size:clamp(1rem,.92rem + .45vw,1.25rem);line-height:1.6;font-weight:700;color:#fdeef0;text-shadow:0 2px 10px rgba(0,0,0,.6);}
 #intro .ag-texte .brief p{margin-top:clamp(10px,2vh,18px) !important;}
-.ag-scene{position:relative;z-index:1;display:block;width:min(100%,900px);flex:1 1 0;min-height:120px;margin-top:8px;}
+.ag-scene{position:relative;z-index:1;display:block;overflow:visible;width:min(100%,1300px);height:clamp(220px,38vh,440px);flex:none;margin-top:-7vh;}
+/* Le haut de la scène n'est que du ciel : il passe sous la fin du texte. */
+.ag-texte{z-index:2;}
 /* Texte trop long pour l'écran (téléphone) : le ciel s'allonge au lieu de rogner le temple. */
-.ag-scene{margin-bottom:64px;}
+.ag-scene{margin-bottom:56px;}
+.ag-colline{fill:#1f0c14;}
+.ag-ville,.ag-cypres{fill:#170910;}
+.ag-fenetres{fill:#ffcf8a;}
+.ag-fenetres rect{animation:ag-veille 6s ease-in-out infinite;}
+@keyframes ag-veille{0%,100%{opacity:.9}45%{opacity:.35}55%{opacity:.8}}
+.ag-lueur{animation:ag-pouls 5s ease-in-out infinite;}
+@keyframes ag-pouls{0%,100%{opacity:.75}50%{opacity:1}}
 .ag-temple{fill:#351a23;stroke:#e4b478;stroke-width:2;stroke-linejoin:round;}
+.ag-temple .ag-trait{fill:none;stroke-opacity:.45;stroke-width:1.2;}
 .ag-cannelure{fill:none;stroke:#e4b478;stroke-opacity:.35;stroke-width:1;}
+.ag-pave path{stroke:#e4b478;stroke-opacity:.09;stroke-width:1;fill:none;}
+.ag-tronc{fill:none;stroke:#3a2418;stroke-width:7;stroke-linecap:round;}
+.ag-feuillage{fill:#2e3324;}
+.ag-feuillage ellipse:nth-child(odd){fill:#363c2a;}
+.ag-pied{fill:none;stroke:#e4b478;stroke-width:2.5;stroke-linecap:round;}
+.ag-coupe{fill:#e4b478;}
+.ag-flamme{fill:#ff8a3c;transform-box:fill-box;transform-origin:50% 100%;animation:ag-flamme .5s ease-in-out infinite alternate;}
+.ag-flamme2{fill:#ffe08a;animation-duration:.35s;}
+@keyframes ag-flamme{from{transform:scale(1,1) skewX(-3deg)}to{transform:scale(.88,1.12) skewX(4deg)}}
+.ag-halo-feu{animation:ag-pouls 1.6s ease-in-out infinite;}
+.ag-ombre{fill:#000;opacity:.35;}
+.ag-tribune{fill:#4a2531;stroke:#e4b478;stroke-width:1.5;}
+.ag-perso{animation:ag-balance 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%;}
+@keyframes ag-balance{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+/* Les bulles se répondent tour à tour, comme une conversation ; la tienne vient en dernier. */
 .ag-bulle rect,.ag-bulle path{fill:#fdeef0;}
 .ag-toi rect,.ag-toi path{fill:#e4b478;}
-.ag-bulle{animation:ag-flotte 4s ease-in-out infinite;}
-@keyframes ag-flotte{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.ag-gens > text{animation:ag-balance 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%;}
-.ag-gens > text:nth-of-type(2n){animation-delay:-1.1s;}
-.ag-gens > text:nth-of-type(3n){animation-delay:-2.2s;}
-@keyframes ag-balance{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.ag-bulle{transform-box:fill-box;transform-origin:50% 100%;animation:ag-parle 14s ease-out infinite both;}
+@keyframes ag-parle{0%{opacity:0;transform:scale(.4)}3%{opacity:1;transform:scale(1.08)}5%{transform:scale(1)}24%{opacity:1;transform:scale(1)}28%,100%{opacity:0;transform:scale(.9)}}
+.ag-lucioles{fill:#ffe08a;}
+.ag-lucioles circle{animation:ag-luciole 8s ease-in-out infinite;filter:drop-shadow(0 0 3px #ffcf8a);}
+@keyframes ag-luciole{0%,100%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(14px,-22px);opacity:.8}80%{opacity:.2}}
 .ag-descendre{position:absolute;z-index:2;bottom:12px;color:#fdeef0;font-weight:800;font-size:var(--fs-200);text-decoration:none;background:rgba(27,13,17,.7);border:1px solid rgba(228,180,120,.4);border-radius:50px;padding:8px 16px;white-space:nowrap;}
 .ag-descendre:hover{border-color:var(--acc);}
-/* Écran bas ou étroit : le ciel s'allonge, le bouton passe sous la scène. */
-@media (max-height:700px),(max-width:700px){.ag-hero{height:auto;}.ag-scene{flex:none;height:auto;margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
+/* Téléphone : la scène déborde des deux côtés pour rester grande (l'olivier et la chouette sortent à moitié du cadre). */
+@media (max-width:700px){.ag-scene{width:135%;max-width:none;height:auto;margin-top:-4vh;}}
+/* Écran bas ou étroit : le bouton passe sous la scène. */
+@media (max-height:700px),(max-width:700px){.ag-scene{margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
 #ag-choix{max-width:620px;margin:28px auto 0;scroll-margin-top:calc(var(--entete-h,56px) + 12px);}
 /* Le dévoilement : le ciel d'abord, puis l'accroche et chaque phrase ; les
    options et les boutons quand on descend jusqu'à eux. */
@@ -172,7 +198,7 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 #intro.tout-voir .ag-accroche,#intro.tout-voir .ag-texte .brief p,#intro.tout-voir .ag-scene{animation-delay:0s;}
 #intro.tout-voir .ag-descendre{animation-delay:0s,1s;}
 @media (prefers-reduced-motion:reduce){
-  .ag-etoiles circle,.ag-halo,.ag-filante,.ag-nuage,.ag-bulle,.ag-gens > text,.ag-accroche,#intro .ag-texte .brief p,.ag-scene,.ag-descendre,
+  .ag-etoiles circle,.ag-halo,.ag-filante,.ag-nuage,.ag-bulle,.ag-perso,.ag-fenetres rect,.ag-lueur,.ag-flamme,.ag-halo-feu,.ag-lucioles circle,.ag-accroche,#intro .ag-texte .brief p,.ag-scene,.ag-descendre,
   #ag-choix.vu .options fieldset,#ag-choix.vu .intro-btns > *,#ag-choix.vu .dojo-etat{animation:none;}
   .ag-filante{display:none;}
   #ag-choix.anime .options fieldset,#ag-choix.anime .intro-btns > *,#ag-choix.anime .dojo-etat{opacity:1;}
@@ -297,17 +323,23 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
       <p style="margin-top:10px;" data-i18n-html="brief3">🏫 Et en classe, passe au <b>vrai débat</b> : l'Agora s'affiche au tableau, deux équipes argumentent, et toute la classe traque les sophismes en direct.</p>
     </div>
     </div>
-    <svg class="ag-scene" viewBox="0 30 620 215" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
-    <g class="ag-temple">
-      <path d="M170 86 310 40 450 86z"/>
-      <rect x="176" y="86" width="268" height="12" rx="2"/>
-      <rect x="190" y="98" width="18" height="92" rx="2"/><path d="M196 102v84M202 102v84" class="ag-cannelure"/><rect x="235" y="98" width="18" height="92" rx="2"/><path d="M241 102v84M247 102v84" class="ag-cannelure"/><rect x="280" y="98" width="18" height="92" rx="2"/><path d="M286 102v84M292 102v84" class="ag-cannelure"/><rect x="322" y="98" width="18" height="92" rx="2"/><path d="M328 102v84M334 102v84" class="ag-cannelure"/><rect x="367" y="98" width="18" height="92" rx="2"/><path d="M373 102v84M379 102v84" class="ag-cannelure"/><rect x="412" y="98" width="18" height="92" rx="2"/><path d="M418 102v84M424 102v84" class="ag-cannelure"/>
-      <rect x="170" y="190" width="280" height="8" rx="2"/>
-      <rect x="160" y="198" width="300" height="8" rx="2"/>
-    </g>
-    <path d="M0 236h620" stroke="#e4b478" stroke-opacity=".35" stroke-width="2"/>
-    <g class="ag-gens"><g class="ag-bulle" style="animation-delay:-0s"><rect x="38" y="150" width="44" height="32" rx="12"/><path d="M55 181l5 9 5-9z"/><text x="60" y="173" font-size="18" text-anchor="middle">😤</text></g><text x="60" y="226" font-size="34" text-anchor="middle">🍗</text><g class="ag-bulle" style="animation-delay:-0.6s"><rect x="128" y="150" width="44" height="32" rx="12"/><path d="M145 181l5 9 5-9z"/><text x="150" y="173" font-size="18" text-anchor="middle">📣</text></g><text x="150" y="226" font-size="34" text-anchor="middle">🤳</text><g class="ag-bulle" style="animation-delay:-1.2s"><rect x="218" y="150" width="44" height="32" rx="12"/><path d="M235 181l5 9 5-9z"/><text x="240" y="173" font-size="18" text-anchor="middle">⚖️</text></g><text x="240" y="226" font-size="34" text-anchor="middle">🎤</text><g class="ag-bulle" style="animation-delay:-1.8s"><rect x="358" y="150" width="44" height="32" rx="12"/><path d="M375 181l5 9 5-9z"/><text x="380" y="173" font-size="18" text-anchor="middle">❓</text></g><text x="380" y="226" font-size="34" text-anchor="middle">🕵️</text><g class="ag-bulle" style="animation-delay:-2.4s"><rect x="448" y="150" width="44" height="32" rx="12"/><path d="M465 181l5 9 5-9z"/><text x="470" y="173" font-size="18" text-anchor="middle">♻️</text></g><text x="470" y="226" font-size="34" text-anchor="middle">👔</text><g class="ag-bulle" style="animation-delay:-3.0s"><rect x="538" y="150" width="44" height="32" rx="12"/><path d="M555 181l5 9 5-9z"/><text x="560" y="173" font-size="18" text-anchor="middle">💡</text></g><text x="560" y="226" font-size="34" text-anchor="middle">🦉</text><g class="ag-bulle ag-toi" style="animation-delay:-1.5s"><rect x="286" y="138" width="48" height="34" rx="12"/><path d="M305 171l5 9 5-9z"/><text x="310" y="162" font-size="20" text-anchor="middle">🤝</text></g><text x="310" y="232" font-size="44" text-anchor="middle">🙋</text></g>
-  </svg>
+    <svg class="ag-scene" viewBox="0 0 1000 340" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
+    <defs><radialGradient id="ag-lueur"><stop offset="0" stop-color="#ffcf8a" stop-opacity=".75"/><stop offset=".55" stop-color="#ff8a5c" stop-opacity=".25"/><stop offset="1" stop-color="#ff5d73" stop-opacity="0"/></radialGradient><radialGradient id="ag-feu"><stop offset="0" stop-color="#ffd27a" stop-opacity=".55"/><stop offset="1" stop-color="#ff5d73" stop-opacity="0"/></radialGradient></defs>
+    <path class="ag-colline" d="M-400 236 C-250 210 -120 262 0 250 C90 215 170 222 250 236 C330 250 380 212 470 214 C560 216 600 246 690 236 C780 226 850 200 1000 222 C1120 238 1250 206 1400 230 V305 H-400z"/>
+    <g class="ag-ville"><rect x="120" y="228" width="26" height="16"/><rect x="150" y="222" width="18" height="22"/><rect x="205" y="236" width="22" height="14"/><rect x="700" y="232" width="24" height="16"/><rect x="732" y="226" width="16" height="22"/><rect x="905" y="212" width="28" height="16"/><rect x="936" y="206" width="18" height="22"/><rect x="270" y="238" width="18" height="12"/></g>
+    <g class="ag-fenetres"><rect x="126" y="233" width="4" height="5" style="animation-delay:-1.9s"/><rect x="140" y="233" width="4" height="5" style="animation-delay:-0.9s"/><rect x="154" y="228" width="4" height="5" style="animation-delay:-3.9s"/><rect x="210" y="240" width="4" height="5" style="animation-delay:-0.4s"/><rect x="706" y="237" width="4" height="5" style="animation-delay:-3.2s"/><rect x="720" y="237" width="4" height="5" style="animation-delay:-2.2s"/><rect x="736" y="231" width="4" height="5" style="animation-delay:-0.3s"/><rect x="911" y="217" width="4" height="5" style="animation-delay:-3.0s"/><rect x="925" y="217" width="4" height="5" style="animation-delay:-0.2s"/><rect x="940" y="212" width="4" height="5" style="animation-delay:-2.6s"/><rect x="274" y="242" width="4" height="5" style="animation-delay:-0.4s"/></g>
+    <g class="ag-cypres"><path d="M185 236 q-9 -21 0 -46 q9 25 0 46z"/><path d="M660 240 q-9 -18 0 -40 q9 22 0 40z"/><path d="M980 222 q-9 -22 0 -50 q9 28 0 50z"/><path d="M40 248 q-9 -16 0 -36 q9 20 0 36z"/></g>
+    <ellipse class="ag-lueur" cx="500" cy="205" rx="190" ry="120" fill="url(#ag-lueur)"/>
+    <g class="ag-temple"><path d="M352 120 500 62 648 120z"/><path class="ag-trait" d="M374 114 500 72 626 114z"/><circle cx="500" cy="60" r="5"/><circle cx="352" cy="118" r="4"/><circle cx="648" cy="118" r="4"/><rect x="362" y="120" width="276" height="18" rx="2"/><rect class="ag-trait" x="372" y="124" width="5" height="10"/><rect class="ag-trait" x="386" y="124" width="5" height="10"/><rect class="ag-trait" x="400" y="124" width="5" height="10"/><rect class="ag-trait" x="414" y="124" width="5" height="10"/><rect class="ag-trait" x="428" y="124" width="5" height="10"/><rect class="ag-trait" x="442" y="124" width="5" height="10"/><rect class="ag-trait" x="456" y="124" width="5" height="10"/><rect class="ag-trait" x="470" y="124" width="5" height="10"/><rect class="ag-trait" x="484" y="124" width="5" height="10"/><rect class="ag-trait" x="498" y="124" width="5" height="10"/><rect class="ag-trait" x="512" y="124" width="5" height="10"/><rect class="ag-trait" x="526" y="124" width="5" height="10"/><rect class="ag-trait" x="540" y="124" width="5" height="10"/><rect class="ag-trait" x="554" y="124" width="5" height="10"/><rect class="ag-trait" x="568" y="124" width="5" height="10"/><rect class="ag-trait" x="582" y="124" width="5" height="10"/><rect class="ag-trait" x="596" y="124" width="5" height="10"/><rect class="ag-trait" x="610" y="124" width="5" height="10"/><rect class="ag-trait" x="624" y="124" width="5" height="10"/><rect x="378" y="138" width="30" height="8" rx="2"/><rect x="382" y="146" width="22" height="116"/><path class="ag-cannelure" d="M389 150v108M397 150v108"/><rect x="422" y="138" width="30" height="8" rx="2"/><rect x="426" y="146" width="22" height="116"/><path class="ag-cannelure" d="M433 150v108M441 150v108"/><rect x="466" y="138" width="30" height="8" rx="2"/><rect x="470" y="146" width="22" height="116"/><path class="ag-cannelure" d="M477 150v108M485 150v108"/><rect x="510" y="138" width="30" height="8" rx="2"/><rect x="514" y="146" width="22" height="116"/><path class="ag-cannelure" d="M521 150v108M529 150v108"/><rect x="554" y="138" width="30" height="8" rx="2"/><rect x="558" y="146" width="22" height="116"/><path class="ag-cannelure" d="M565 150v108M573 150v108"/><rect x="598" y="138" width="30" height="8" rx="2"/><rect x="602" y="146" width="22" height="116"/><path class="ag-cannelure" d="M609 150v108M617 150v108"/><rect x="370" y="262" width="260" height="10" rx="2"/><rect x="354" y="272" width="292" height="10" rx="2"/><rect x="338" y="282" width="324" height="10" rx="2"/></g>
+    <path d="M-400 300h1800" stroke="#e4b478" stroke-opacity=".35" stroke-width="2"/>
+    <g class="ag-pave"><path d="M300 300 L-300 340"/><path d="M325 300 L-200 340"/><path d="M350 300 L-100 340"/><path d="M375 300 L0 340"/><path d="M400 300 L100 340"/><path d="M425 300 L200 340"/><path d="M450 300 L300 340"/><path d="M475 300 L400 340"/><path d="M500 300 L500 340"/><path d="M525 300 L600 340"/><path d="M550 300 L700 340"/><path d="M575 300 L800 340"/><path d="M600 300 L900 340"/><path d="M625 300 L1000 340"/><path d="M650 300 L1100 340"/><path d="M675 300 L1200 340"/><path d="M700 300 L1300 340"/><path d="M-400 318h1800M-400 331h1800"/></g>
+    <g class="ag-olivier"><path class="ag-tronc" d="M66 300c4-26-8-40 2-62 6-12 2-22-6-30m10 32c10-8 22-10 30-22"/><g class="ag-feuillage"><ellipse cx="50" cy="198" rx="40" ry="22"/><ellipse cx="96" cy="206" rx="34" ry="18"/><ellipse cx="72" cy="180" rx="36" ry="20"/><ellipse cx="30" cy="218" rx="24" ry="14"/></g></g>
+    <g class="ag-temple"><rect x="928" y="248" width="44" height="10" rx="2"/><path d="M934 300V258h32v38l-6-6-5 8-6-5-5 6-5-4z"/><rect x="926" y="296" width="48" height="6" rx="2"/></g>
+    <g class="ag-brasero"><circle class="ag-halo-feu" cx="300" cy="232" r="46" fill="url(#ag-feu)"/><path class="ag-pied" d="M286 300 L300 258 L314 300 M300 258 V300"/><path class="ag-coupe" d="M280 252 h40 l-6 10 h-28z"/><path class="ag-flamme" d="M300 214 c10 14 16 22 12 32 c-2 6 -8 8 -12 8 c-4 0 -10 -2 -12 -8 c-4 -10 2 -18 12 -32z"/><path class="ag-flamme ag-flamme2" d="M300 228 c5 8 8 12 6 18 c-1 4 -4 6 -6 6 c-2 0 -5 -2 -6 -6 c-2 -6 1 -10 6 -18z"/></g>
+    <g class="ag-brasero"><circle class="ag-halo-feu" cx="700" cy="232" r="46" fill="url(#ag-feu)"/><path class="ag-pied" d="M686 300 L700 258 L714 300 M700 258 V300"/><path class="ag-coupe" d="M680 252 h40 l-6 10 h-28z"/><path class="ag-flamme" d="M700 214 c10 14 16 22 12 32 c-2 6 -8 8 -12 8 c-4 0 -10 -2 -12 -8 c-4 -10 2 -18 12 -32z"/><path class="ag-flamme ag-flamme2" d="M700 228 c5 8 8 12 6 18 c-1 4 -4 6 -6 6 c-2 0 -5 -2 -6 -6 c-2 -6 1 -10 6 -18z"/></g>
+    <g class="ag-gens"><ellipse class="ag-ombre" cx="160" cy="300" rx="18" ry="4"/><ellipse class="ag-ombre" cx="236" cy="294" rx="16" ry="4"/><ellipse class="ag-ombre" cx="764" cy="294" rx="16" ry="4"/><ellipse class="ag-ombre" cx="846" cy="300" rx="18" ry="4"/><ellipse class="ag-ombre" cx="657" cy="264" rx="13" ry="4"/><ellipse class="ag-ombre" cx="950" cy="250" rx="14" ry="4"/><text class="ag-perso" x="160" y="298" font-size="44" text-anchor="middle" style="animation-delay:0.0s">🍗</text><text class="ag-perso" x="236" y="292" font-size="38" text-anchor="middle" style="animation-delay:-0.7s">🤳</text><text class="ag-perso" x="764" y="292" font-size="38" text-anchor="middle" style="animation-delay:-1.4s">🎤</text><text class="ag-perso" x="846" y="298" font-size="44" text-anchor="middle" style="animation-delay:-2.1s">👔</text><text class="ag-perso" x="657" y="262" font-size="30" text-anchor="middle" style="animation-delay:-2.8s">🕵️</text><text class="ag-perso" x="950" y="248" font-size="34" text-anchor="middle" style="animation-delay:-3.5s">🦉</text><g class="ag-bulle" style="animation-delay:0s"><rect x="135" y="208" width="50" height="36" rx="13"/><path d="M154 243l6 10 6-10z"/><text x="160" y="234" font-size="20" text-anchor="middle">😤</text></g><g class="ag-bulle" style="animation-delay:2s"><rect x="739" y="208" width="50" height="36" rx="13"/><path d="M758 243l6 10 6-10z"/><text x="764" y="234" font-size="20" text-anchor="middle">⚖️</text></g><g class="ag-bulle" style="animation-delay:4s"><rect x="211" y="208" width="50" height="36" rx="13"/><path d="M230 243l6 10 6-10z"/><text x="236" y="234" font-size="20" text-anchor="middle">📣</text></g><g class="ag-bulle" style="animation-delay:6s"><rect x="632" y="186" width="50" height="36" rx="13"/><path d="M651 221l6 10 6-10z"/><text x="657" y="212" font-size="20" text-anchor="middle">❓</text></g><g class="ag-bulle" style="animation-delay:8s"><rect x="821" y="208" width="50" height="36" rx="13"/><path d="M840 243l6 10 6-10z"/><text x="846" y="234" font-size="20" text-anchor="middle">♻️</text></g><g class="ag-bulle" style="animation-delay:10s"><rect x="925" y="168" width="50" height="36" rx="13"/><path d="M944 203l6 10 6-10z"/><text x="950" y="194" font-size="20" text-anchor="middle">💡</text></g><ellipse class="ag-tribune" cx="500" cy="324" rx="46" ry="9"/><path class="ag-tribune" d="M456 314h88v10h-88z"/><text class="ag-perso ag-toi-perso" x="500" y="314" font-size="54" text-anchor="middle">🙋</text><g class="ag-bulle ag-toi" style="animation-delay:12s"><rect x="472" y="208" width="56" height="40" rx="14"/><path d="M494 247l6 10 6-10z"/><text x="500" y="237" font-size="24" text-anchor="middle">🤝</text></g></g>
+    <g class="ag-lucioles"><circle cx="110" cy="270" r="2.2" style="animation-delay:-0.7s;animation-duration:7.7s"/><circle cx="260" cy="250" r="2.2" style="animation-delay:-6.6s;animation-duration:6.5s"/><circle cx="330" cy="290" r="2.2" style="animation-delay:-1.8s;animation-duration:8.5s"/><circle cx="420" cy="240" r="2.2" style="animation-delay:-7.6s;animation-duration:8.3s"/><circle cx="590" cy="250" r="2.2" style="animation-delay:-3.2s;animation-duration:9.9s"/><circle cx="690" cy="285" r="2.2" style="animation-delay:-0.4s;animation-duration:9.4s"/><circle cx="800" cy="255" r="2.2" style="animation-delay:-2.3s;animation-duration:6.6s"/><circle cx="890" cy="275" r="2.2" style="animation-delay:-0.9s;animation-duration:7.2s"/><circle cx="40" cy="290" r="2.2" style="animation-delay:-6.5s;animation-duration:6.7s"/><circle cx="560" cy="300" r="2.2" style="animation-delay:-4.7s;animation-duration:8.6s"/></g>
+    </svg>
     <a class="ag-descendre" href="#ag-choix" data-i18n="descendre">▼ Choisis ta partie</a>
   </section>
   <div id="ag-choix">
