@@ -176,11 +176,10 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
   .ag-filante{display:none;}
   #ag-choix.anime .options fieldset,#ag-choix.anime .intro-btns > *,#ag-choix.anime .dojo-etat{opacity:1;}
 }
-}
 .intro-btns{display:flex;flex-direction:column;align-items:center;gap:12px;}
-.intro-btns .bigbtn{min-width:min(100%,340px);justify-content:center;}
+.intro-btns .bigbtn{width:min(100%,360px);padding-left:20px;padding-right:20px;justify-content:center;text-align:center;}
 a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
-.dojo-etat{margin-top:14px;color:var(--mu);font-weight:700;font-size:var(--fs-200);line-height:1.5;}
+.dojo-etat{max-width:460px;margin:14px auto 0;text-align:center;overflow-wrap:anywhere;color:var(--mu);font-weight:700;font-size:var(--fs-200);line-height:1.5;}
 #techs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 10px;}
 #techs[hidden]{display:none;}
 .tech-btn{background:var(--card);border:2px dashed rgba(228,180,120,.6);border-radius:13px;padding:8px 12px;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--tx);font-size:var(--fs-200);font-weight:800;text-align:left;line-height:1.25;}
