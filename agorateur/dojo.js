@@ -398,13 +398,62 @@
       const cible = m.indexOf('[[') >= 0;
       const b = bouton('morceau', m.replace('[[', '').replace(']]', ''));
       b.dataset.cible = cible ? '1' : '0';
-      b.addEventListener('click', () => clic(b));
+      b.style.animationDelay = (-k * 0.45).toFixed(2) + 's';
+      b.addEventListener('click', e => { if (glisse) { glisse = false; return; } lancer(b); });
       p.appendChild(b);
       if (k < morceaux.length - 1) p.appendChild(document.createTextNode(' '));
       return b;
     });
-    aire.appendChild(p);
+    // Le stand de tir : la phrase en cibles, le lanceur en dessous.
+    const stand = el('div', 'stand');
+    const lanceur = el('div', 'lanceur', '✦'); lanceur.setAttribute('aria-hidden', 'true');
+    stand.append(p, lanceur);
+    const aide = el('p', 'touches', t('oeilGeste'));
+    aire.append(stand, aide);
     boutons[0].focus({ preventScroll: true });
+
+    // Le shuriken part du lanceur vers le morceau visé : d'un clic ou d'un
+    // appui sur le morceau, ou d'un glissement dans sa direction (on retient le
+    // morceau le plus proche de l'axe du geste).
+    let vol = false, glisse = false, depart = null;
+    function centre(x) { const r = x.getBoundingClientRect(), s0 = stand.getBoundingClientRect(); return { x: r.left + r.width / 2 - s0.left, y: r.top + r.height / 2 - s0.top }; }
+    function lancer(b, cap) {
+      if (vol || (b && b.disabled)) return;
+      const a = centre(lanceur);
+      if (calme()) { if (b) clic(b); return; }
+      vol = true;
+      const z = b ? centre(b) : { x: a.x + cap.x * 600, y: a.y + cap.y * 600 };
+      const sh = el('span', 'shuriken', '✦'); sh.setAttribute('aria-hidden', 'true');
+      sh.style.left = a.x + 'px'; sh.style.top = a.y + 'px';
+      stand.appendChild(sh);
+      lanceur.classList.add('vide');
+      const anim = sh.animate([
+        { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)' },
+        { transform: 'translate(calc(-50% + ' + (z.x - a.x) + 'px), calc(-50% + ' + (z.y - a.y) + 'px)) rotate(900deg) scale(.8)' }
+      ], { duration: b ? 320 : 450, easing: 'ease-in' });
+      anim.onfinish = () => {
+        sh.remove(); vol = false; lanceur.classList.remove('vide');
+        if (!b) return;
+        b.classList.remove('touche'); void b.offsetWidth; b.classList.add('touche');
+        clic(b);
+      };
+    }
+    stand.addEventListener('pointerdown', e => { depart = { x: e.clientX, y: e.clientY }; });
+    stand.addEventListener('pointerup', e => {
+      if (!depart) return;
+      const dx = e.clientX - depart.x, dy = e.clientY - depart.y, d = Math.hypot(dx, dy);
+      depart = null;
+      if (d < 30 || dy > -10) return;            // un clic, ou un geste vers le bas : rien
+      glisse = true; setTimeout(() => { glisse = false; }, 0);
+      const u = { x: dx / d, y: dy / d }, a = centre(lanceur);
+      let meilleur = null, ecart = 0.35;          // environ 20° de tolérance
+      boutons.filter(b => !b.disabled).forEach(b => {
+        const c = centre(b), cx = c.x - a.x, cy = c.y - a.y, n = Math.hypot(cx, cy);
+        const angle = Math.acos(Math.max(-1, Math.min(1, (cx * u.x + cy * u.y) / n)));
+        if (angle < ecart) { ecart = angle; meilleur = b; }
+      });
+      lancer(meilleur, u);
+    });
     let essais = 0;
     const s = soph(item.a);
     function fin(points) {
@@ -528,6 +577,7 @@
   }
 
   // ─── Le Contre ───
+  let dureeContre = 24;               // secondes de vol de la flèche, raccourcies à chaque manche
   function mancheContre(item, fini) {
     const aire = $('ep-aire');
     aire.textContent = '';
@@ -535,24 +585,82 @@
     const cadre = el('div', 'case case--trame');
     cadre.appendChild(el('span', 'badge-tech', t('contreTech', { tech: s.tech })));
     cadre.appendChild(el('p', 'bulle', item.t));
+    // La piste : l'argument file comme une flèche de Sophisuke vers toi. On
+    // l'arrête en posant la bonne parade dessus (glisser), ou d'un clic.
+    const piste = el('div', 'piste'); piste.setAttribute('aria-hidden', 'true');
+    const fleche = el('div', 'fleche', '➳');
+    piste.append(el('span', 'piste__tireur', '😼'), fleche, el('span', 'piste__cible', '🙋'));
     const zone = el('div', 'choix-liste');
     const choix = shuffle(item.choix.slice());
+    let fait = false, tire = false;
     const boutons = choix.map(c => {
       const b = bouton('choix', c.t);
-      b.addEventListener('click', () => choisir(c, b));
+      b.addEventListener('click', () => { if (tire) { tire = false; return; } choisir(c, b); });
+      saisir(b, c);
       zone.appendChild(b);
       return b;
     });
-    cadre.appendChild(zone);
+    cadre.append(piste, zone, el('p', 'touches', t('contreGeste')));
     aire.appendChild(cadre);
     annoncer(item.t);
     boutons[0].focus({ preventScroll: true });
+    if (!calme()) {
+      fleche.style.animationDuration = dureeContre + 's';
+      fleche.classList.add('vole');
+      fleche.addEventListener('animationend', () => choisir({ k: 'tard' }, null));
+    }
+
+    // Glisser une parade : une copie suit le doigt ; lâchée sur la piste, elle pare.
+    function saisir(b, c) {
+      let d = null, copie = null;
+      b.addEventListener('pointerdown', e => {
+        if (fait || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        d = { x: e.clientX, y: e.clientY };
+        try { b.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      b.addEventListener('pointermove', e => {
+        if (!d || fait) return;
+        if (!copie && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 10) return;
+        if (!copie) {
+          copie = el('div', 'parade-copie', '🛡️ ' + c.t);
+          copie.setAttribute('aria-hidden', 'true');
+          document.body.appendChild(copie);
+          b.classList.add('saisi');
+        }
+        copie.style.left = e.clientX + 'px'; copie.style.top = e.clientY + 'px';
+        const r = piste.getBoundingClientRect();
+        piste.classList.toggle('visee', e.clientY > r.top - 30 && e.clientY < r.bottom + 30);
+      });
+      const lacher = e => {
+        if (!d) return;
+        d = null; piste.classList.remove('visee'); b.classList.remove('saisi');
+        if (!copie) return;
+        copie.remove(); copie = null;
+        tire = true; setTimeout(() => { tire = false; }, 0);
+        const r = piste.getBoundingClientRect();
+        if (e.type === 'pointerup' && e.clientY > r.top - 30 && e.clientY < r.bottom + 30) choisir(c, b);
+      };
+      b.addEventListener('pointerup', lacher);
+      b.addEventListener('pointercancel', lacher);
+      b.style.touchAction = 'none';
+    }
     function choisir(c, b) {
+      if (fait) return;
+      fait = true;
+      fleche.style.animationPlayState = 'paused';
       boutons.forEach((x, k) => { x.disabled = true; if (choix[k].k === 'bonne') x.classList.add('juste'); });
       const ok = c.k === 'bonne';
-      if (!ok) b.classList.add('faux');
+      if (b && !ok) b.classList.add('faux');
+      dureeContre = Math.max(14, dureeContre - 1);
+      if (ok) {
+        const bouclier = el('span', 'bouclier', '🛡️'); bouclier.setAttribute('aria-hidden', 'true');
+        bouclier.style.left = (fleche.offsetLeft + fleche.offsetWidth) + 'px';
+        piste.appendChild(bouclier);
+        fleche.classList.add('brisee');
+      } else piste.classList.add('touche');
       croise(item.a, ok);
       if (ok) { sfx(cadre, t('sfxContre')); retour(true, t('contreOk'), item.e, definition(item.a)); }
+      else if (c.k === 'tard') { sfx(cadre, t('sfxBonk'), true); retour(false, t('contreTard'), item.e, definition(item.a)); }
       else if (c.k === 'sophisme') { sfx(cadre, t('sfxBonk'), true); retour(false, t('contreBonk', { l: soph(c.s).l }), item.e, definition(item.a) + '\n' + definition(c.s)); }
       else { sfx(cadre, t('sfxOups'), true); retour(false, t('contreCede'), item.e, definition(item.a)); }
       const joue = { id: item.id, titre: item.t, reussi: ok, explication: item.e };

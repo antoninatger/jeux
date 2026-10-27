@@ -189,6 +189,19 @@ main { max-width: 760px; margin: 0 auto; }
 .choix:hover:not(:disabled) { background: #fff; transform: translate(-1px, -1px); }
 .choix:disabled { cursor: default; opacity: .55; }
 .choix.juste { opacity: 1; border-color: var(--ok); box-shadow: 3px 3px 0 var(--ok); background: #eaf7ef; }
+/* Le Contre : la flèche-argument et le bouclier */
+.piste { position: relative; height: 56px; margin-top: var(--sp-4); border-top: 3px dashed rgba(23,18,13,.25); border-bottom: 3px dashed rgba(23,18,13,.25); display: flex; align-items: center; justify-content: space-between; padding: 0 6px; transition: background .2s; }
+.piste.visee { background: rgba(255,224,138,.6); }
+.piste__tireur, .piste__cible { font-size: 2rem; position: relative; z-index: 2; }
+.piste.touche .piste__cible { animation: impact .4s ease-out 2; }
+.fleche { position: absolute; left: 44px; top: 50%; translate: 0 -50%; font-size: 2.4rem; line-height: 1; color: var(--acc); font-weight: 900; }
+.fleche.vole { animation: fleche-vole linear forwards; }
+@keyframes fleche-vole { to { left: calc(100% - 96px); } }
+.fleche.brisee { animation-play-state: paused; transition: transform .5s ease-in, opacity .5s; transform: translateY(26px) rotate(70deg); opacity: .35; }
+.bouclier { position: absolute; top: 50%; translate: -10% -50%; font-size: 2.4rem; animation: impact .35s ease-out; z-index: 3; }
+.choix.saisi { opacity: .45; }
+.parade-copie { position: fixed; z-index: 960; translate: -50% -120%; max-width: min(80vw, 360px); background: #fff; border: 3px solid var(--encre); border-radius: 6px; box-shadow: 4px 4px 0 var(--encre); padding: 6px 10px; font-weight: 700; font-size: var(--fs-200); pointer-events: none; rotate: -2deg; }
+@media (prefers-reduced-motion: reduce) { .fleche.vole { animation: none; } }
 .choix.faux  { opacity: 1; border-color: var(--acc); box-shadow: 3px 3px 0 var(--acc); background: #fdecee; text-decoration: line-through; }
 .reponse { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-left: 6px solid var(--encre); background: #fff8e3; font-weight: 700; line-height: var(--lh-normal); }
 .reponse.ok { border-left-color: var(--ok); }
@@ -311,6 +324,20 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
   border-radius: 3px;
 }
 .morceau:hover:not(:disabled) { background: #fff1c9; }
+/* Le stand de tir : les morceaux deviennent des cibles qui flottent, le
+   shuriken part du lanceur. */
+.stand { position: relative; touch-action: none; user-select: none; -webkit-user-select: none; padding-bottom: 70px; }
+.stand .phrase-oeil { line-height: 2.3; }
+.stand .morceau { display: inline-block; line-height: 1.4; border: 2px solid var(--encre); border-bottom-width: 4px; background: #fff7e6; padding: 2px 8px; margin: 3px 2px; box-shadow: 2px 2px 0 var(--encre); animation: flotte 2.6s ease-in-out infinite; cursor: crosshair; }
+.stand .morceau:disabled { animation: none; box-shadow: none; }
+.stand .morceau.barre { border-color: var(--txt-secondaire); }
+.stand .morceau.touche { animation: impact .35s ease-out; }
+@keyframes flotte { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-5px) rotate(1deg); } }
+@keyframes impact { 0% { transform: scale(1.12) rotate(-4deg); } 50% { transform: scale(.95) rotate(3deg); } 100% { transform: none; } }
+.lanceur { position: absolute; left: 50%; bottom: 8px; translate: -50% 0; width: 54px; height: 54px; display: grid; place-items: center; font-size: 2rem; color: var(--encre); background: #fff; border: 3px solid var(--encre); border-radius: 50%; box-shadow: 3px 3px 0 var(--encre); pointer-events: none; }
+.lanceur.vide { color: transparent; }
+.shuriken { position: absolute; z-index: 3; font-size: 2rem; line-height: 1; color: var(--encre); pointer-events: none; text-shadow: 0 0 6px #fff; }
+@media (prefers-reduced-motion: reduce) { .stand .morceau { animation: none; } }
 .morceau:disabled { cursor: default; }
 .morceau.barre { text-decoration: line-through; color: var(--txt-secondaire); border-bottom-color: transparent; }
 .morceau.trouve { background: var(--acc); color: #fff; border-bottom-color: var(--encre); }
@@ -711,7 +738,7 @@ I18N.register({
     feuillesTitre: "Les Feuilles qui tombent", feuillesRef: "Entraînement de l'observation", feuillesComp: "Repérer : piège ou argument correct ?",
     feuillesConsigne: "Chaque feuille porte une phrase. <b>Tranche</b> celles qui contiennent un sophisme, <b>laisse tomber</b> les arguments corrects. Attention : tous ne sont pas des pièges. 9 sur 12 pour réussir.",
     oeilTitre: "L'Œil du sensei", oeilRef: "L'œil qui lit les signes", oeilComp: "Localiser : quels mots trahissent le piège ?",
-    oeilConsigne: "Clique sur le <b>groupe de mots</b> qui trahit la technique de l'adversaire. Deux essais par phrase. 4 points sur 6 pour réussir.",
+    oeilConsigne: "Lance ton shuriken sur le <b>groupe de mots</b> qui trahit la technique de l'adversaire. Deux essais par phrase. 4 points sur 6 pour réussir.",
     clochettesTitre: "Le Test des clochettes", clochettesRef: "Le test du premier jour", clochettesComp: "Repérer les pièges cachés dans un discours",
     clochettesConsigne: "Sophisuke fait un discours de cinq phrases. Deux <b>clochettes</b> y sont cachées : deux phrases fallacieuses. Attrape-les avant la fin du temps, sans dépasser trois erreurs. 3 clochettes sur 4 pour réussir.",
     contreTitre: "Le Contre", contreRef: "Bloquer, puis renvoyer", contreComp: "Riposter sans tomber dans le piège",
@@ -730,6 +757,7 @@ I18N.register({
     feuilleRateSain: "Aïe : tu as tranché un argument correct.",
     lexiqueTitre: "📖 Les pièges de cette épreuve", lexiqueIntro: "Prends le temps de lire : chaque feuille piégée cache l'un de ces sophismes. Les autres portent des arguments corrects.", lexiquePret: "🍃 Je suis prêt",
     revueTitre: "📜 Les sophismes que tu as croisés", revueIntro: "Pour les revoir tous : ce que fait chaque piège, et comment y répondre.", revueRepere: "✔ repéré", revueRate: "✖ à revoir", revueParade: "Parade :",
+    oeilGeste: "Lance ton shuriken : touche le morceau piégé, ou fais glisser ton doigt (ou la souris) vers lui. Au clavier : Tab puis Entrée.",
     oeilOk: "Bien vu ! {tech} ({l}).", oeilIndice: "Pas là. Indice du sensei :",
     oeilIndiceTxt: "Cette technique se trahit souvent par des mots comme {signes}.",
     oeilRate: "Raté. La technique était : {tech} ({l}). Les mots qui la trahissaient sont surlignés.",
@@ -740,6 +768,8 @@ I18N.register({
     clochesToutes: "Les deux clochettes ! Sophisuke fait la grimace.",
     clochesUne: "Une clochette sur deux.", clochesAucune: "Aucune clochette. Sophisuke rigole.",
     contreTech: "Technique : {tech}",
+    contreGeste: "Fais glisser la bonne parade sur la flèche avant qu'elle ne t'atteigne (ou clique dessus). En mode calme, la flèche attend.",
+    contreTard: "Trop tard : l'argument t'a touché avant ta parade.",
     contreOk: "CONTRE parfait.", contreCede: "Tu as plié : l'adversaire gagne sans combattre.",
     contreBonk: "BONK ! Le sensei te lance son petit livre orange : ta riposte est elle-même un sophisme ({l}).",
     divOui: "Ça me convainc", divBof: "Bof", divNon: "Pas du tout",
@@ -809,7 +839,7 @@ I18N.register({
     feuillesTitre: "Falling Leaves", feuillesRef: "Observation training", feuillesComp: "Spot it: trap or sound argument?",
     feuillesConsigne: "Each leaf carries a sentence. <b>Slice</b> the ones with a fallacy, <b>let fall</b> the sound arguments. Careful: not all of them are traps. 9 out of 12 to pass.",
     oeilTitre: "The Sensei's Eye", oeilRef: "The eye that reads the signs", oeilComp: "Pinpoint it: which words give the trap away?",
-    oeilConsigne: "Click the <b>group of words</b> that gives away your opponent's technique. Two tries per sentence. 4 points out of 6 to pass.",
+    oeilConsigne: "Throw your shuriken at the <b>group of words</b> that gives away your opponent's technique. Two tries per sentence. 4 points out of 6 to pass.",
     clochettesTitre: "The Bell Test", clochettesRef: "The first-day test", clochettesComp: "Find the traps hidden in a speech",
     clochettesConsigne: "Sophisuke gives a five-sentence speech. Two <b>bells</b> are hidden in it: two fallacious sentences. Grab them before time runs out, with no more than three mistakes. 3 bells out of 4 to pass.",
     contreTitre: "The Counter", contreRef: "Block, then strike back", contreComp: "Fight back without falling into the trap",
@@ -828,6 +858,7 @@ I18N.register({
     feuilleRateSain: "Ouch: you sliced a sound argument.",
     lexiqueTitre: "📖 The traps in this trial", lexiqueIntro: "Take your time to read: each trapped leaf hides one of these fallacies. The others carry sound arguments.", lexiquePret: "🍃 I'm ready",
     revueTitre: "📜 The fallacies you came across", revueIntro: "To review them all: what each trap does, and how to answer it.", revueRepere: "✔ spotted", revueRate: "✖ to review", revueParade: "Parry:",
+    oeilGeste: "Throw your shuriken: tap the trapped words, or swipe your finger (or the mouse) towards them. Keyboard: Tab then Enter.",
     oeilOk: "Well spotted! {tech} ({l}).", oeilIndice: "Not there. The sensei's hint:",
     oeilIndiceTxt: "This technique often gives itself away with words like {signes}.",
     oeilRate: "Missed. The technique was: {tech} ({l}). The words that gave it away are highlighted.",
@@ -838,6 +869,8 @@ I18N.register({
     clochesToutes: "Both bells! Sophisuke pulls a face.",
     clochesUne: "One bell out of two.", clochesAucune: "No bells. Sophisuke laughs.",
     contreTech: "Technique: {tech}",
+    contreGeste: "Drag the right parry onto the arrow before it hits you (or click it). In calm mode, the arrow waits.",
+    contreTard: "Too late: the argument hit you before you parried.",
     contreOk: "Perfect COUNTER.", contreCede: "You gave in: your opponent wins without a fight.",
     contreBonk: "BONK! The sensei throws his little orange book at you: your comeback is a fallacy too ({l}).",
     divOui: "Convinces me", divBof: "Meh", divNon: "Not at all",
