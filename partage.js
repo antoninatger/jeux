@@ -16,6 +16,19 @@
    (utile sur l'écran de fin). En JavaScript : PartageJeux.ouvrir('partage'|'avis').
    Les messages partent par Web3Forms, comme les autres formulaires du site.
    ===================================================================== */
+
+/* Les jeux en accès libre sont aussi servis sur antoninatger.com/jeux/… (le site les
+   recopie à chaque construction, voir jeux_copies dans site.yaml du dépôt « site »).
+   Sur antoninatger.github.io, on renvoie vers cette adresse, en gardant ?lang= et #,
+   pour que liens et référencement profitent au domaine. Les autres jeux ne bougent pas. */
+(function () {
+  if (location.hostname !== 'antoninatger.github.io') return;
+  var p = decodeURIComponent(location.pathname), cible = null;
+  if (/^\/fakemetre(\/|$)/.test(p)) cible = '/jeux/fakemetre' + p.slice(10);
+  else if (/^\/jeux\/(radarnaque|agora|arene-rhetorique)(\/|$)|^\/jeux\/Planète connaissance\.html$|^\/jeux\/ressources\/faux-messages\.html$/.test(p)) cible = p;
+  if (cible) location.replace('https://antoninatger.com' + encodeURI(cible) + location.search + location.hash);
+})();
+
 (function () {
   if (window.PartageJeux) return;
   var S = document.currentScript || document.querySelector('script[src*="partage.js"]');
