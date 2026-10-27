@@ -106,47 +106,76 @@ main{display:flex;flex-direction:column;align-items:center;}
 #revue-sophismes dd{margin:2px 0 0;line-height:1.55;}
 .rv-ok{color:var(--gr);font-size:var(--fs-200);}
 .rv-ko{color:var(--rd);font-size:var(--fs-200);}
-.ag-scene{display:block;width:100%;max-width:620px;height:auto;margin:0 auto 18px;border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,.35);}
+/* ── L'accueil plein écran ───────────────────────────────────────────────
+   Le ciel occupe tout l'écran sous l'en-tête ; le texte y apparaît phrase après
+   phrase ; le temple et les personnages sont posés en bas, sur la place. */
+body{overflow-x:clip;}
+main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
+#intro{max-width:none;width:100%;}
+.ag-hero{position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:calc(100svh - var(--entete-h,56px) - 16px);height:calc(100svh - var(--entete-h,56px) - 16px);display:flex;flex-direction:column;justify-content:space-between;align-items:center;overflow:hidden;
+  background:radial-gradient(ellipse 60% 45% at 50% 82%,rgba(255,93,115,.22),transparent 70%),linear-gradient(#0f0508 0%,#24101a 45%,#3a1522 78%,#1b0d11 100%);}
+.ag-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(transparent,rgba(228,180,120,.08));border-top:2px solid rgba(228,180,120,.35);pointer-events:none;}
+.ag-etoiles{position:absolute;inset:0;width:100%;height:100%;opacity:.8;}
+.ag-etoiles circle{animation:ag-scintille 3s ease-in-out infinite;}
+.ag-etoiles circle:nth-child(3n){animation-delay:-1s;}
+.ag-etoiles circle:nth-child(3n+1){animation-delay:-2s;animation-duration:4.5s;}
+@keyframes ag-scintille{0%,100%{opacity:1}50%{opacity:.2}}
+.ag-lune{position:absolute;top:4%;right:5%;width:clamp(80px,11vw,150px);overflow:visible;}
+.ag-halo{animation:ag-halo 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+@keyframes ag-halo{0%,100%{transform:scale(1);opacity:.12}50%{transform:scale(1.2);opacity:.22}}
+.ag-nuage{position:absolute;left:0;width:var(--l);animation:ag-traverse 60s linear infinite;pointer-events:none;}
+.ag-nuage svg{display:block;width:100%;height:auto;filter:blur(2px);}
+@keyframes ag-traverse{from{transform:translateX(calc(-1 * var(--l)))}to{transform:translateX(100vw)}}
+.ag-filante{position:absolute;top:12%;left:15%;width:90px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#fdeef0);transform:rotate(18deg);opacity:0;animation:ag-filante 11s ease-in 3s infinite;}
+@keyframes ag-filante{0%{opacity:0;transform:rotate(18deg) translateX(0)}2%{opacity:1}9%{opacity:0;transform:rotate(18deg) translateX(320px)}100%{opacity:0;transform:rotate(18deg) translateX(320px)}}
+.ag-texte{position:relative;z-index:1;max-width:760px;padding:clamp(16px,4vh,52px) 20px 0;text-align:center;}
+.ag-accroche{font-family:'Alfa Slab One',serif;font-size:clamp(1.6rem,1.1rem + 2vw,2.6rem);line-height:1.15;color:#fdeef0;text-shadow:0 0 30px rgba(255,93,115,.45);margin-bottom:clamp(14px,3vh,28px);}
+#intro .ag-texte .brief{background:none;border:none;padding:0;margin:0;text-align:center;font-size:clamp(1rem,.92rem + .45vw,1.25rem);line-height:1.6;font-weight:700;color:#fdeef0;text-shadow:0 2px 10px rgba(0,0,0,.6);}
+#intro .ag-texte .brief p{margin-top:clamp(10px,2vh,18px) !important;}
+.ag-scene{position:relative;z-index:1;display:block;width:min(100%,900px);flex:1 1 0;min-height:120px;margin-top:8px;}
+/* Texte trop long pour l'écran (téléphone) : le ciel s'allonge au lieu de rogner le temple. */
+.ag-scene{margin-bottom:64px;}
+@media (max-height:700px),(max-width:700px){.ag-hero{height:auto;}.ag-scene{flex:none;height:auto;margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
 .ag-temple{fill:#351a23;stroke:#e4b478;stroke-width:2;stroke-linejoin:round;}
 .ag-cannelure{fill:none;stroke:#e4b478;stroke-opacity:.35;stroke-width:1;}
 .ag-bulle rect,.ag-bulle path{fill:#fdeef0;}
 .ag-toi rect,.ag-toi path{fill:#e4b478;}
 .ag-bulle{animation:ag-flotte 4s ease-in-out infinite;}
 @keyframes ag-flotte{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@media (prefers-reduced-motion:reduce){.ag-bulle{animation:none;}}
-/* L'accueil s'anime : nuages qui passent, étoiles qui scintillent, étoile filante,
-   personnages qui se balancent ; puis la page se dévoile morceau par morceau. */
-.ag-nuage{animation:ag-passe 50s linear infinite;}
-@keyframes ag-passe{from{transform:translateX(-140px)}to{transform:translateX(780px)}}
-.ag-etoiles circle{animation:ag-scintille 3s ease-in-out infinite;}
-.ag-etoiles circle:nth-child(3n){animation-delay:-1s;}
-.ag-etoiles circle:nth-child(3n+1){animation-delay:-2s;animation-duration:4s;}
-@keyframes ag-scintille{0%,100%{opacity:1}50%{opacity:.25}}
-.ag-halo{animation:ag-halo 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
-@keyframes ag-halo{0%,100%{transform:scale(1);opacity:.12}50%{transform:scale(1.25);opacity:.2}}
-.ag-filante{opacity:0;animation:ag-filante 9s ease-in 2s infinite;}
-@keyframes ag-filante{0%{opacity:0;transform:translate(0,0)}3%{opacity:1}10%{opacity:0;transform:translate(160px,58px)}100%{opacity:0;transform:translate(160px,58px)}}
 .ag-gens > text{animation:ag-balance 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%;}
 .ag-gens > text:nth-of-type(2n){animation-delay:-1.1s;}
 .ag-gens > text:nth-of-type(3n){animation-delay:-2.2s;}
 @keyframes ag-balance{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
-@keyframes ag-entree{from{opacity:0;transform:translateY(14px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-#intro .ag-scene,#intro .brief,#intro .brief p,#intro .options fieldset,#intro .intro-btns > *,#intro .dojo-etat{animation:ag-entree .6s ease-out both;}
-#intro .brief{animation-delay:.25s;}
-#intro .brief p:nth-child(1){animation-delay:.45s;}
-#intro .brief p:nth-child(2){animation-delay:1.05s;}
-#intro .brief p:nth-child(3){animation-delay:1.65s;}
-#intro .options fieldset:nth-child(1){animation-delay:2.1s;}
-#intro .options fieldset:nth-child(2){animation-delay:2.25s;}
-#intro .intro-btns > :nth-child(1){animation-delay:2.6s;}
-#intro .intro-btns > :nth-child(2){animation-delay:2.75s;}
-#intro .intro-btns > :nth-child(3){animation-delay:2.9s;}
-#intro .dojo-etat{animation-delay:3.1s;}
-/* Un clic ou une touche pendant le dévoilement : tout s'affiche d'un coup. */
-#intro.tout-voir .ag-scene,#intro.tout-voir .brief,#intro.tout-voir .brief p,#intro.tout-voir .options fieldset,#intro.tout-voir .intro-btns > *,#intro.tout-voir .dojo-etat{animation-delay:0s;}
+.ag-descendre{position:absolute;z-index:2;bottom:12px;color:#fdeef0;font-weight:800;font-size:var(--fs-200);text-decoration:none;background:rgba(27,13,17,.7);border:1px solid rgba(228,180,120,.4);border-radius:50px;padding:8px 16px;white-space:nowrap;}
+.ag-descendre:hover{border-color:var(--acc);}
+#ag-choix{max-width:620px;margin:28px auto 0;scroll-margin-top:calc(var(--entete-h,56px) + 12px);}
+/* Le dévoilement : le ciel d'abord, puis l'accroche et chaque phrase ; les
+   options et les boutons quand on descend jusqu'à eux. */
+@keyframes ag-entree{from{opacity:0;transform:translateY(14px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+@keyframes ag-rebond{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+.ag-accroche,#intro .ag-texte .brief p,.ag-scene{animation:ag-entree .9s ease-out both;}
+.ag-scene{animation-delay:.1s;}
+.ag-accroche{animation-delay:.5s;}
+#intro .ag-texte .brief p:nth-child(1){animation-delay:1.4s;}
+#intro .ag-texte .brief p:nth-child(2){animation-delay:2.8s;}
+#intro .ag-texte .brief p:nth-child(3){animation-delay:4.2s;}
+.ag-descendre{animation:ag-entree .6s ease-out 5s both,ag-rebond 1.8s ease-in-out 6s infinite;}
+#ag-choix.anime .options fieldset,#ag-choix.anime .intro-btns > *,#ag-choix.anime .dojo-etat{opacity:0;}
+#ag-choix.vu .options fieldset,#ag-choix.vu .intro-btns > *,#ag-choix.vu .dojo-etat{animation:ag-entree .6s ease-out both;}
+#ag-choix.vu .options fieldset:nth-child(2){animation-delay:.15s;}
+#ag-choix.vu .intro-btns > :nth-child(1){animation-delay:.4s;}
+#ag-choix.vu .intro-btns > :nth-child(2){animation-delay:.55s;}
+#ag-choix.vu .intro-btns > :nth-child(3){animation-delay:.7s;}
+#ag-choix.vu .dojo-etat{animation-delay:.9s;}
+/* Un clic ou une touche pendant le dévoilement : le texte s'affiche d'un coup. */
+#intro.tout-voir .ag-accroche,#intro.tout-voir .ag-texte .brief p,#intro.tout-voir .ag-scene{animation-delay:0s;}
+#intro.tout-voir .ag-descendre{animation-delay:0s,1s;}
 @media (prefers-reduced-motion:reduce){
-  .ag-nuage,.ag-etoiles circle,.ag-halo,.ag-filante,.ag-gens > text,
-  #intro .ag-scene,#intro .brief,#intro .brief p,#intro .options fieldset,#intro .intro-btns > *,#intro .dojo-etat{animation:none;}
+  .ag-etoiles circle,.ag-halo,.ag-filante,.ag-nuage,.ag-bulle,.ag-gens > text,.ag-accroche,#intro .ag-texte .brief p,.ag-scene,.ag-descendre,
+  #ag-choix.vu .options fieldset,#ag-choix.vu .intro-btns > *,#ag-choix.vu .dojo-etat{animation:none;}
+  .ag-filante{display:none;}
+  #ag-choix.anime .options fieldset,#ag-choix.anime .intro-btns > *,#ag-choix.anime .dojo-etat{opacity:1;}
+}
 }
 .intro-btns{display:flex;flex-direction:column;align-items:center;gap:12px;}
 .intro-btns .bigbtn{min-width:min(100%,340px);justify-content:center;}
@@ -245,21 +274,27 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 </header>
 
 <div id="intro">
-  <!-- Le visuel d'accueil : l'Agora la nuit, un temple, et les personnages qui
-       débattent sur la place. Décoratif : les bulles flottent doucement, sauf
-       si le système demande moins d'animations. -->
-  <svg class="ag-scene" viewBox="0 0 620 250" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id="ag-ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1522"/><stop offset="1" stop-color="#1b0d11"/></linearGradient>
-      <radialGradient id="ag-lueur" cx=".5" cy=".55" r=".5"><stop offset="0" stop-color="#ff5d73" stop-opacity=".22"/><stop offset="1" stop-color="#ff5d73" stop-opacity="0"/></radialGradient>
-    </defs>
-    <rect width="620" height="250" rx="20" fill="url(#ag-ciel)"/>
-    <ellipse cx="310" cy="140" rx="260" ry="120" fill="url(#ag-lueur)"/>
-    <g class="ag-etoiles" fill="#fdeef0" opacity=".7"><circle cx="40" cy="30" r="1.4"/><circle cx="95" cy="58" r="1"/><circle cx="150" cy="22" r="1.6"/><circle cx="210" cy="48" r="1"/><circle cx="265" cy="18" r="1.2"/><circle cx="360" cy="26" r="1.1"/><circle cx="420" cy="52" r="1.5"/><circle cx="470" cy="20" r="1"/><circle cx="520" cy="64" r="1.2"/><circle cx="600" cy="90" r="1"/><circle cx="30" cy="92" r="1"/><circle cx="250" cy="70" r="0.9"/><circle cx="395" cy="80" r="0.9"/><circle cx="585" cy="22" r="1.3"/></g>
-    <circle cx="560" cy="44" r="18" fill="#e4b478"/><circle cx="569" cy="38" r="16" fill="#2f1220"/>
-    <circle class="ag-halo" cx="560" cy="44" r="28" fill="#e4b478" opacity=".12"/>
-    <g class="ag-filante"><path d="M120 30 l60 22" stroke="#fdeef0" stroke-width="2" stroke-linecap="round"/></g>
-    <g class="ag-nuage" style="animation-duration:52s;animation-delay:-10s"><g transform="translate(0 70) scale(1.0)" fill="#fdeef0" opacity=".2"><ellipse cx="0" cy="0" rx="60" ry="16"/><ellipse cx="-22" cy="-10" rx="26" ry="16"/><ellipse cx="18" cy="-14" rx="30" ry="20"/></g></g><g class="ag-nuage" style="animation-duration:38s;animation-delay:-30s"><g transform="translate(0 112) scale(0.7)" fill="#fdeef0" opacity=".16"><ellipse cx="0" cy="0" rx="60" ry="16"/><ellipse cx="-22" cy="-10" rx="26" ry="16"/><ellipse cx="18" cy="-14" rx="30" ry="20"/></g></g><g class="ag-nuage" style="animation-duration:64s;animation-delay:-45s"><g transform="translate(0 40) scale(0.55)" fill="#fdeef0" opacity=".14"><ellipse cx="0" cy="0" rx="60" ry="16"/><ellipse cx="-22" cy="-10" rx="26" ry="16"/><ellipse cx="18" cy="-14" rx="30" ry="20"/></g></g>
+  <!-- L'accueil plein écran : l'Agora la nuit. Le texte apparaît dans le ciel,
+       phrase après phrase ; en bas, le temple et les personnages qui débattent.
+       Tout le décor est décoratif (aria-hidden) ; le texte, lui, est du vrai
+       texte. Rien ne bouge si le système demande moins d'animations. -->
+  <section class="ag-hero">
+    <svg class="ag-etoiles" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><g fill="#fdeef0"><circle cx="673" cy="87" r="1.5"/><circle cx="108" cy="47" r="1.8"/><circle cx="202" cy="197" r="1.8"/><circle cx="128" cy="269" r="1"/><circle cx="86" cy="54" r="1.5"/><circle cx="866" cy="45" r="1"/><circle cx="195" cy="292" r="1.5"/><circle cx="131" cy="299" r="0.8"/><circle cx="467" cy="332" r="1.8"/><circle cx="136" cy="305" r="1.8"/><circle cx="822" cy="35" r="1"/><circle cx="105" cy="295" r="1"/><circle cx="603" cy="224" r="1"/><circle cx="1117" cy="70" r="1.8"/><circle cx="641" cy="296" r="1"/><circle cx="221" cy="307" r="1.8"/><circle cx="394" cy="200" r="0.8"/><circle cx="1131" cy="374" r="0.8"/><circle cx="1165" cy="40" r="1.8"/><circle cx="431" cy="264" r="1.8"/><circle cx="885" cy="407" r="1.2"/><circle cx="963" cy="309" r="1.5"/><circle cx="750" cy="163" r="1"/><circle cx="378" cy="367" r="1"/><circle cx="177" cy="304" r="1.2"/><circle cx="1085" cy="263" r="1.2"/><circle cx="929" cy="157" r="1.8"/><circle cx="159" cy="70" r="1.8"/><circle cx="866" cy="94" r="1.2"/><circle cx="321" cy="260" r="1.5"/><circle cx="90" cy="352" r="0.8"/><circle cx="1152" cy="303" r="1.2"/><circle cx="706" cy="365" r="1.2"/><circle cx="1027" cy="306" r="1.5"/><circle cx="150" cy="57" r="1.2"/><circle cx="980" cy="366" r="0.8"/><circle cx="134" cy="384" r="1.2"/><circle cx="922" cy="155" r="1.5"/><circle cx="720" cy="21" r="1.5"/><circle cx="737" cy="96" r="1.8"/><circle cx="249" cy="262" r="0.8"/><circle cx="456" cy="403" r="1.2"/><circle cx="274" cy="388" r="1"/><circle cx="824" cy="210" r="1.5"/><circle cx="175" cy="95" r="1.5"/><circle cx="832" cy="291" r="1.2"/><circle cx="290" cy="429" r="1.5"/><circle cx="1136" cy="152" r="1.5"/></g></svg>
+    <svg class="ag-lune" viewBox="-25 -25 150 150" aria-hidden="true" focusable="false"><circle class="ag-halo" cx="50" cy="50" r="46" fill="#e4b478" opacity=".12"/><circle cx="50" cy="50" r="30" fill="#e4b478"/><circle cx="64" cy="40" r="27" fill="#1c0a10"/></svg>
+    <div class="ag-filante" aria-hidden="true"></div>
+    <div class="ag-nuage" style="top:14%;--l:200px;animation-duration:70s;animation-delay:-12s;opacity:.16"><svg viewBox="-90 -40 180 60" aria-hidden="true" focusable="false"><g fill="#fdeef0"><ellipse cx="0" cy="0" rx="85" ry="18"/><ellipse cx="-32" cy="-12" rx="36" ry="20"/><ellipse cx="22" cy="-18" rx="42" ry="24"/></g></svg></div>
+    <div class="ag-nuage" style="top:34%;--l:140px;animation-duration:52s;animation-delay:-36s;opacity:.12"><svg viewBox="-90 -40 180 60" aria-hidden="true" focusable="false"><g fill="#fdeef0"><ellipse cx="0" cy="0" rx="85" ry="18"/><ellipse cx="-32" cy="-12" rx="36" ry="20"/><ellipse cx="22" cy="-18" rx="42" ry="24"/></g></svg></div>
+    <div class="ag-nuage" style="top:6%;--l:110px;animation-duration:90s;animation-delay:-60s;opacity:.1"><svg viewBox="-90 -40 180 60" aria-hidden="true" focusable="false"><g fill="#fdeef0"><ellipse cx="0" cy="0" rx="85" ry="18"/><ellipse cx="-32" cy="-12" rx="36" ry="20"/><ellipse cx="22" cy="-18" rx="42" ry="24"/></g></svg></div>
+    <div class="ag-nuage" style="top:48%;--l:240px;animation-duration:80s;animation-delay:-5s;opacity:.08"><svg viewBox="-90 -40 180 60" aria-hidden="true" focusable="false"><g fill="#fdeef0"><ellipse cx="0" cy="0" rx="85" ry="18"/><ellipse cx="-32" cy="-12" rx="36" ry="20"/><ellipse cx="22" cy="-18" rx="42" ry="24"/></g></svg></div>
+    <div class="ag-texte">
+      <p class="ag-accroche" data-i18n="sub">Repère les ruses du discours, et apprends à mieux discuter !</p>
+    <div class="brief">
+      <p data-i18n-html="brief1">🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.</p>
+      <p style="margin-top:10px;" data-i18n-html="brief2">🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.</p>
+      <p style="margin-top:10px;" data-i18n-html="brief3">🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.</p>
+    </div>
+    </div>
+    <svg class="ag-scene" viewBox="0 30 620 215" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
     <g class="ag-temple">
       <path d="M170 86 310 40 450 86z"/>
       <rect x="176" y="86" width="268" height="12" rx="2"/>
@@ -270,11 +305,9 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <path d="M0 236h620" stroke="#e4b478" stroke-opacity=".35" stroke-width="2"/>
     <g class="ag-gens"><g class="ag-bulle" style="animation-delay:-0s"><rect x="38" y="150" width="44" height="32" rx="12"/><path d="M55 181l5 9 5-9z"/><text x="60" y="173" font-size="18" text-anchor="middle">😤</text></g><text x="60" y="226" font-size="34" text-anchor="middle">🍗</text><g class="ag-bulle" style="animation-delay:-0.6s"><rect x="128" y="150" width="44" height="32" rx="12"/><path d="M145 181l5 9 5-9z"/><text x="150" y="173" font-size="18" text-anchor="middle">📣</text></g><text x="150" y="226" font-size="34" text-anchor="middle">🤳</text><g class="ag-bulle" style="animation-delay:-1.2s"><rect x="218" y="150" width="44" height="32" rx="12"/><path d="M235 181l5 9 5-9z"/><text x="240" y="173" font-size="18" text-anchor="middle">⚖️</text></g><text x="240" y="226" font-size="34" text-anchor="middle">🎤</text><g class="ag-bulle" style="animation-delay:-1.8s"><rect x="358" y="150" width="44" height="32" rx="12"/><path d="M375 181l5 9 5-9z"/><text x="380" y="173" font-size="18" text-anchor="middle">❓</text></g><text x="380" y="226" font-size="34" text-anchor="middle">🕵️</text><g class="ag-bulle" style="animation-delay:-2.4s"><rect x="448" y="150" width="44" height="32" rx="12"/><path d="M465 181l5 9 5-9z"/><text x="470" y="173" font-size="18" text-anchor="middle">♻️</text></g><text x="470" y="226" font-size="34" text-anchor="middle">👔</text><g class="ag-bulle" style="animation-delay:-3.0s"><rect x="538" y="150" width="44" height="32" rx="12"/><path d="M555 181l5 9 5-9z"/><text x="560" y="173" font-size="18" text-anchor="middle">💡</text></g><text x="560" y="226" font-size="34" text-anchor="middle">🦉</text><g class="ag-bulle ag-toi" style="animation-delay:-1.5s"><rect x="286" y="138" width="48" height="34" rx="12"/><path d="M305 171l5 9 5-9z"/><text x="310" y="162" font-size="20" text-anchor="middle">🤝</text></g><text x="310" y="232" font-size="44" text-anchor="middle">🙋</text></g>
   </svg>
-  <div class="brief">
-    <p data-i18n-html="brief1">🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.</p>
-    <p style="margin-top:10px;" data-i18n-html="brief2">🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.</p>
-    <p style="margin-top:10px;" data-i18n-html="brief3">🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.</p>
-  </div>
+    <a class="ag-descendre" href="#ag-choix" data-i18n="descendre">▼ Choisis ta partie</a>
+  </section>
+  <div id="ag-choix">
   <div class="options">
     <fieldset>
       <legend data-i18n="modeTitre">Réponse</legend>
@@ -293,6 +326,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <a class="bigbtn ghost" href="debat.html" data-i18n="classe">🏫 Organiser un débat en classe</a>
   </div>
   <p class="dojo-etat" id="dojo-etat"></p>
+  </div>
 </div>
 
 <div id="battle">
@@ -362,7 +396,7 @@ I18N.register({
     brief1: `🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : appel à l'éthique (<b>ethos</b>), à l'émotion (<b>pathos</b>), à la logique (<b>logos</b>)… et beaucoup d'<b>arguments fallacieux</b>. Mais aussi, parfois, de <b>vrais bons arguments</b>.`,
     brief2: `🎯 Chaque match a trois buts : <b>repérer les pièges</b> sans te laisser embarquer (ta lucidité), <b>faire avancer l'échange</b> en choisissant bien ta réponse (son ouverture), et <b>comprendre ce qui le motive</b> vraiment : chaque confidence rejoint ton carnet.`,
     brief3: `🤝 Va au bout des cinq discussions pour devenir <b>Bâtisseur de dialogue</b>.`,
-    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", classe: "🏫 Organiser un débat en classe", you: "Toi", replay: "🔄 Rejouer",
+    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", you: "Toi", replay: "🔄 Rejouer",
     hpYouLabel: "Ta lucidité", hpFoeLabel: "Ouverture de ton interlocuteur",
     modeTitre: "Réponse", modeQcm: "🔘 Choix multiple", modeQcmS: "Choisis parmi quatre propositions",
     modeSaisie: "⌨️ Saisie libre", modeSaisieS: "Écris le nom du sophisme, à ta façon",
@@ -377,7 +411,7 @@ I18N.register({
     brief1: `🏛️ Welcome to the Agora, the square where people debate! Five characters will try to <b>convince you by any means</b>: appeals to ethics (<b>ethos</b>), emotion (<b>pathos</b>) and logic (<b>logos</b>)… and plenty of <b>fallacious arguments</b>. But sometimes, <b>genuinely good arguments</b> too.`,
     brief2: `🎯 Each match has three goals: <b>spot the traps</b> without getting carried away (your clarity), <b>move the exchange forward</b> by choosing your answer well (their openness), and <b>understand what really drives them</b>: every confidence goes into your notebook.`,
     brief3: `🤝 Finish all five discussions to become a <b>Dialogue builder</b>.`,
-    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", classe: "🏫 Run a debate in class", you: "You", replay: "🔄 Play again",
+    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", you: "You", replay: "🔄 Play again",
     hpYouLabel: "Your clarity", hpFoeLabel: "Openness of the other person",
     modeTitre: "Answer", modeQcm: "🔘 Multiple choice", modeQcmS: "Pick from four options",
     modeSaisie: "⌨️ Free typing", modeSaisieS: "Type the fallacy's name, your own way",
@@ -392,8 +426,18 @@ I18N.register({
    plus d'objet. */
 // Aiguillage FR/EN : charge la version française (app.js) ou anglaise (app-en.js) selon la langue choisie.
 // Pendant le dévoilement de l'accueil, un clic ou une touche affiche tout d'un coup.
-(function(){ const i=document.getElementById('intro'); const tout=()=>i.classList.add('tout-voir');
-  document.addEventListener('pointerdown',tout,{once:true}); document.addEventListener('keydown',tout,{once:true}); })();
+// Les options et les boutons se dévoilent quand on descend jusqu'à eux.
+(function(){
+  const i=document.getElementById('intro'), choix=document.getElementById('ag-choix');
+  const tout=()=>i.classList.add('tout-voir');
+  document.addEventListener('pointerdown',tout,{once:true}); document.addEventListener('keydown',tout,{once:true});
+  const calme=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(calme||!('IntersectionObserver' in window)) return;
+  choix.classList.add('anime');
+  const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ choix.classList.add('vu'); io.disconnect(); } },{threshold:.15});
+  io.observe(choix);
+  document.querySelector('.ag-descendre').addEventListener('click',e=>{ e.preventDefault(); choix.scrollIntoView({behavior:'smooth',block:'start'}); });
+})();
 // Les définitions et parades du dojo servent à la révision de fin de partie.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'dojo-data-en.js' : 'dojo-data.js') + '"><\/scr' + 'ipt>');
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
