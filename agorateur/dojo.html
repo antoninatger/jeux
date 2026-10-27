@@ -370,6 +370,19 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 .phrase-cloche.prise { border-color: var(--ok); background: #eaf7ef; }
 .phrase-cloche.faux { border-color: var(--acc); background: #fdecee; }
 .phrase-cloche.manquee { border: 3px dashed var(--acc); }
+/* La rivière : les phrases-feuilles descendent le courant jusqu'à la cascade */
+.discours.riviere { position: relative; display: block; height: min(430px, 62svh); overflow: hidden; border: 3px solid var(--encre); border-radius: 4px; user-select: none; -webkit-user-select: none;
+  background: repeating-linear-gradient(170deg, rgba(255,255,255,.18) 0 2px, transparent 2px 26px), linear-gradient(#5fa8c9, #3c7fa6); background-size: 100% 200%, 100% 100%; animation: eau 6s linear infinite; }
+@keyframes eau { to { background-position: 0 100%, 0 0; } }
+.riviere .phrase-cloche { position: absolute; left: 6%; width: 88%; top: -45%; border-radius: 30% 6px 30% 6px; box-shadow: 3px 3px 0 rgba(0,0,0,.35); animation: courant 26s linear both; cursor: grab; }
+.riviere .phrase-cloche::before { content: '🍃'; margin-right: 6px; }
+@keyframes courant { 0% { top: -45%; transform: translateX(0) rotate(-1deg); } 25% { transform: translateX(-10px) rotate(1deg); } 50% { transform: translateX(10px) rotate(-1deg); } 75% { transform: translateX(-6px) rotate(1deg); } 100% { top: 104%; transform: translateX(0) rotate(0); } }
+.riviere .phrase-cloche.repechee { transition: transform .5s ease-out, opacity .5s; transform: translateY(-30px) scale(.92); opacity: .9; z-index: 2; }
+.riviere .phrase-cloche.repechee.faux { opacity: .55; }
+.cascade { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; pointer-events: none; z-index: 3;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 6px, rgba(255,255,255,.35) 6px 14px); -webkit-mask: linear-gradient(transparent, #000); mask: linear-gradient(transparent, #000); animation: ecume .6s linear infinite; }
+@keyframes ecume { to { background-position: 14px 0; } }
+@media (prefers-reduced-motion: reduce) { .discours.riviere, .cascade { animation: none; } }
 .note { display: block; margin-top: var(--sp-1); font-size: var(--fs-200); font-weight: 700; color: var(--txt-secondaire); }
 .note b { color: var(--acc); }
 .erreurs { text-align: center; font-weight: 800; font-size: var(--fs-200); color: var(--txt-secondaire); margin-top: var(--sp-2); }
@@ -739,8 +752,8 @@ I18N.register({
     feuillesConsigne: "Chaque feuille porte une phrase. <b>Tranche</b> celles qui contiennent un sophisme, <b>laisse tomber</b> les arguments corrects. Attention : tous ne sont pas des pièges. 9 sur 12 pour réussir.",
     oeilTitre: "L'Œil du sensei", oeilRef: "L'œil qui lit les signes", oeilComp: "Localiser : quels mots trahissent le piège ?",
     oeilConsigne: "Lance ton shuriken sur le <b>groupe de mots</b> qui trahit la technique de l'adversaire. Deux essais par phrase. 4 points sur 6 pour réussir.",
-    clochettesTitre: "Le Test des clochettes", clochettesRef: "Le test du premier jour", clochettesComp: "Repérer les pièges cachés dans un discours",
-    clochettesConsigne: "Sophisuke fait un discours de cinq phrases. Deux <b>clochettes</b> y sont cachées : deux phrases fallacieuses. Attrape-les avant la fin du temps, sans dépasser trois erreurs. 3 clochettes sur 4 pour réussir.",
+    clochettesTitre: "La Rivière des paroles", clochettesRef: "Le test du premier jour", clochettesComp: "Repérer les pièges cachés dans un discours",
+    clochettesConsigne: "Sophisuke confie son discours à la rivière : cinq phrases descendent le courant. Deux portent une <b>clochette</b> : deux phrases fallacieuses. Repêche-les (clique ou touche la feuille) avant qu'elles passent la cascade, sans dépasser trois erreurs. 3 clochettes sur 4 pour réussir.",
     contreTitre: "Le Contre", contreRef: "Bloquer, puis renvoyer", contreComp: "Riposter sans tomber dans le piège",
     contreConsigne: "Un adversaire t'attaque avec un sophisme. Choisis la <b>meilleure riposte</b> : ni céder, ni répondre par un autre sophisme. 4 sur 5 pour réussir.",
     divTitre: "La Divination de l'eau", divRef: "Le test du type", divComp: "",
@@ -840,8 +853,8 @@ I18N.register({
     feuillesConsigne: "Each leaf carries a sentence. <b>Slice</b> the ones with a fallacy, <b>let fall</b> the sound arguments. Careful: not all of them are traps. 9 out of 12 to pass.",
     oeilTitre: "The Sensei's Eye", oeilRef: "The eye that reads the signs", oeilComp: "Pinpoint it: which words give the trap away?",
     oeilConsigne: "Throw your shuriken at the <b>group of words</b> that gives away your opponent's technique. Two tries per sentence. 4 points out of 6 to pass.",
-    clochettesTitre: "The Bell Test", clochettesRef: "The first-day test", clochettesComp: "Find the traps hidden in a speech",
-    clochettesConsigne: "Sophisuke gives a five-sentence speech. Two <b>bells</b> are hidden in it: two fallacious sentences. Grab them before time runs out, with no more than three mistakes. 3 bells out of 4 to pass.",
+    clochettesTitre: "The River of Words", clochettesRef: "The first-day test", clochettesComp: "Find the traps hidden in a speech",
+    clochettesConsigne: "Sophisuke sets a speech adrift on the river: five sentences float downstream. Two carry a <b>bell</b>: two fallacious sentences. Fish them out (click or tap the leaf) before they go over the waterfall, with no more than three mistakes. 3 bells out of 4 to pass.",
     contreTitre: "The Counter", contreRef: "Block, then strike back", contreComp: "Fight back without falling into the trap",
     contreConsigne: "An opponent attacks you with a fallacy. Pick the <b>best comeback</b>: don't give in, and don't answer with another fallacy. 4 out of 5 to pass.",
     divTitre: "Water Divination", divRef: "The type test", divComp: "",

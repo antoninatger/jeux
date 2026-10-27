@@ -500,39 +500,45 @@
     const c1 = el('span', 'cloche', '🔔'), c2 = el('span', 'cloche', '🔔');
     cloches.append(c1, c2);
     tete.appendChild(cloches);
-    let chrono = null, barre = null, restant = 75;
-    if (!calme()) {
-      chrono = el('div', 'chrono'); barre = el('div', 'chrono__barre'); barre.style.width = '100%';
-      chrono.appendChild(barre); chrono.setAttribute('aria-hidden', 'true');
-      tete.appendChild(chrono);
-    }
-    const liste = el('div', 'discours');
+    // La rivière : les phrases descendent le courant l'une après l'autre ; on
+    // repêche les clochettes avant la cascade. Le courant remplace le chrono.
+    // En mode calme, le discours reste posé, sans courant ni temps limite.
+    const riviere = !calme();
+    const liste = el('div', 'discours' + (riviere ? ' riviere' : ''));
     const erreursEl = el('p', 'erreurs', t('erreurs', { n: 0 }));
     tete.append(liste, erreursEl);
     aire.appendChild(tete);
 
     let prises = 0, erreurs = 0, termine = false;
-    const boutons = item.phrases.map(ph => {
+    const boutons = item.phrases.map((ph, k) => {
       const b = bouton('phrase-cloche', ph.t);
       b.addEventListener('click', () => clic(b, ph));
+      if (riviere) {
+        b.style.animationDelay = (k * 11) + 's';
+        b.addEventListener('animationend', e => {
+          if (e.animationName !== 'courant' || termine) return;
+          b.disabled = true; b.classList.add('passee');
+          verifier();
+        });
+      }
       liste.appendChild(b);
       return b;
     });
+    if (riviere) {
+      const cascade = el('div', 'cascade'); cascade.setAttribute('aria-hidden', 'true');
+      liste.appendChild(cascade);
+    }
     boutons[0].focus({ preventScroll: true });
     annoncer(t('clocheSujet', { sujet: item.sujet }));
 
     let tm = null;
-    if (chrono) {
-      tm = chronoActif = setInterval(() => {
-        restant--;
-        barre.style.width = (restant / 75 * 100) + '%';
-        if (restant <= 0) terminer();
-      }, 1000);
-    }
+    // Toutes les feuilles repêchées ou passées : fin de la manche.
+    function verifier() { if (!termine && boutons.every(x => x.disabled)) terminer(); }
     function note(b, html) { const n = el('span', 'note'); n.innerHTML = html; b.appendChild(n); }
     function clic(b, ph) {
       if (termine) return;
       b.disabled = true;
+      if (riviere) { b.style.animationPlayState = 'paused'; b.classList.add('repechee'); }
       if (ph.piege) {
         prises++;
         b.classList.add('prise');
@@ -552,11 +558,14 @@
         annoncer(t('clocheSaine'));
         if (erreurs >= 3) terminer();
       }
+      verifier();
     }
     function terminer() {
       if (termine) return;
       termine = true;
       clearInterval(tm);
+      // Le courant s'arrête : le discours se pose, dans l'ordre, pour le bilan.
+      if (riviere) { liste.classList.remove('riviere'); boutons.forEach(b => { b.style.animation = 'none'; }); const c = liste.querySelector('.cascade'); if (c) c.remove(); }
       item.phrases.forEach((ph, k) => {
         const b = boutons[k];
         b.disabled = true;
