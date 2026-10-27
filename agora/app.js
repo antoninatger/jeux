@@ -318,6 +318,8 @@ let correctCount=0, totalCount=0, matchCorrect=0;
 // Les répliques n'ont pas d'identifiant : leur texte (t) en tient lieu d'une partie à l'autre.
 const JEU="arene-rhetorique";
 let joue=[];
+// Les sophismes croisés pendant la partie, pour la révision de fin : id → {ok, ko}.
+let croises={};
 // « Rejouer mes erreurs » : un adversaire de révision, composé des seules répliques ratées.
 let revision=null;
 function foeActuel(){ return revision || FOES[foeIdx]; }
@@ -347,7 +349,7 @@ function startMatch(i, foeRevision){
   const foe=foeActuel();
   foeHP=foe.hp;
   techUsed={};
-  if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; }
+  if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; croises={}; }
   if(i===0 && !revision) bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
   ouverture=0; carnet=[]; phase="replique"; renderCarnet();
   ColFin.protegerSortie(true);
@@ -442,6 +444,7 @@ function answer(line,id,btn){
   tourFini=true;
   finAttaque(ok, line);
   joue.push({id:line.t, titre:line.t, reussi:ok, explication:texteBrut(line.e)});
+  if(FALLACIES.some(f=>f.id===line.a)){ const c=croises[line.a]||(croises[line.a]={ok:0,ko:0}); if(ok) c.ok++; else c.ko++; }
   totalCount++;
   if(ok){ correctCount++; matchCorrect++; }
   const all=[...document.querySelectorAll(".abtn")];
@@ -519,6 +522,24 @@ function finDePartie(titre, msg){
     },
     onRecommencer: () => startMatch(0)
   });
+  renderRevue();
+}
+
+// La révision de fin : tous les sophismes croisés, avec la définition et la parade du dojo
+// (dojo-data.js est chargé par index.html), ou à défaut la description courte.
+function renderRevue(){
+  const box=$("revue-sophismes"); if(!box) return;
+  const ids=Object.keys(croises);
+  box.hidden=!ids.length;
+  if(!ids.length){ box.innerHTML=""; return; }
+  const esc=x=>String(x).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const dojo=(typeof DOJO!=="undefined")?DOJO.sophismes:{};
+  box.innerHTML="<h2>📜 Les sophismes que tu as croisés</h2><p class='rv-intro'>Pour les revoir tous : ce que fait chaque piège, et comment y répondre.</p><dl>"+ids.map(id=>{
+    const f=libelle(id), d=dojo[id], c=croises[id];
+    const etat=c.ko?"<span class='rv-ko'>✖ à revoir</span>":"<span class='rv-ok'>✔ repéré</span>";
+    const def=d?esc(d.d.charAt(0).toUpperCase()+d.d.slice(1))+" <b>Parade :</b> "+esc(d.parade):esc(f.s);
+    return "<dt>"+esc(f.l)+" "+etat+"</dt><dd>"+def+"</dd>";
+  }).join("")+"</dl>";
 }
 
 function victory(){

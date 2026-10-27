@@ -12,7 +12,7 @@ const DOJO = {
 
   // ─── The Forbidden Scroll: each fallacy is a technique ───
   sophismes: {
-    paille:     { l: "Straw man", d: "distorting or caricaturing what the other person said, to attack that exaggerated version more easily.", tech: "Substitution Technique: the Dummy",
+    paille:     { l: "Straw man", d: "distorting what the other person said (exaggerating it, caricaturing it, putting words in their mouth), then attacking that distorted version. Like hitting a straw dummy instead of a real opponent: it's easy, but you haven't answered what they actually think.", tech: "Substitution Technique: the Dummy",
                   signes: "“in other words”, “so you want…”, “what you're really saying…”",
                   parade: "Restate it faithfully: “That's not what I said. All I'm saying is…”" },
     adhom:      { l: "Personal attack", d: "attacking the person (their looks, grades, past) instead of answering their argument.", tech: "Man Strike",
@@ -315,12 +315,18 @@ const DOJO = {
 
   // ─── Sophisuke's taunts, between trials ───
   piques: [
-    { t: "“You got one question wrong? Honestly, you're not cut out for this.”", a: "genehat", opts: ["adhom", "pente"] },
-    { t: "“The whole class thinks I'm going to win. So give up right now.”", a: "popu", opts: ["halo", "dilemme"] },
-    { t: "“Either you become my disciple, or you stay a loser your whole life.”", a: "dilemme", opts: ["pente", "paille"] },
-    { t: "“You, unmasking fallacies? With that haircut?”", a: "adhom", opts: ["whatabout", "genehat"] },
-    { t: "“If you fail this trial, you'll fail the exam, then the Agora, then your whole life.”", a: "pente", opts: ["dilemme", "posthoc"] },
-    { t: "“You say I'm cheating? What about your sensei, always late, is he perfect?”", a: "whatabout", opts: ["hareng", "adhom"] }
+    { t: "“You missed the first leaf? Then you'll miss all the others. One mistake is enough to tell.”", a: "genehat", opts: ["adhom", "pente"],
+      e: "From a single mistake, he draws a rule for all the others. One case isn't enough to conclude." },
+    { t: "“The whole class thinks I'm going to win. So give up right now.”", a: "popu", opts: ["halo", "dilemme"],
+      e: "Lots of people thinking it doesn't prove he'll win." },
+    { t: "“Either you become my disciple, or you stay a loser your whole life.”", a: "dilemme", opts: ["pente", "paille"],
+      e: "He leaves only two choices, when there are plenty of others." },
+    { t: "“You, unmasking fallacies? With that haircut?”", a: "adhom", opts: ["whatabout", "genehat"],
+      e: "He targets your haircut, not your ability to unmask fallacies." },
+    { t: "“If you fail this trial, you'll fail the exam, then the Agora, then your whole life.”", a: "pente", opts: ["dilemme", "posthoc"],
+      e: "Failing one trial doesn't necessarily lead to everything else: each step of the disaster is claimed without proof." },
+    { t: "“You say I'm cheating? What about your sensei, always late, is he perfect?”", a: "whatabout", opts: ["hareng", "adhom"],
+      e: "He answers the accusation by criticising the sensei, without saying whether he cheats or not." }
   ],
 
   // ─── The Gate exam ───

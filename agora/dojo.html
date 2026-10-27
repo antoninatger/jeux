@@ -386,6 +386,8 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 .lexique dl { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-1) var(--sp-3); margin-top: var(--sp-2); }
 .lexique dt { font-weight: 800; }
 .lexique dd { margin: 0; line-height: var(--lh-normal); }
+.revue-ok { color: var(--ok); font-size: var(--fs-200); white-space: nowrap; }
+.revue-ko { color: var(--acc); font-size: var(--fs-200); white-space: nowrap; }
 @media (max-width: 560px) { .lexique dl { grid-template-columns: 1fr; } .lexique dd { margin-bottom: var(--sp-2); } }
 .retour[hidden] { display: none; }
 
@@ -681,6 +683,7 @@ I18N.register({
     feuilleRatePiege: "Raté : c'était un piège ({l}).", feuilleTombee: "Trop tard : la feuille est tombée. C'était un piège ({l}).",
     feuilleRateSain: "Aïe : tu as tranché un argument correct.",
     lexiqueTitre: "📖 Les pièges de cette épreuve", lexiqueIntro: "Prends le temps de lire : chaque feuille piégée cache l'un de ces sophismes. Les autres portent des arguments corrects.", lexiquePret: "🍃 Je suis prêt",
+    revueTitre: "📜 Les sophismes que tu as croisés", revueIntro: "Pour les revoir tous : ce que fait chaque piège, et comment y répondre.", revueRepere: "✔ repéré", revueRate: "✖ à revoir", revueParade: "Parade :",
     oeilOk: "Bien vu ! {tech} ({l}).", oeilIndice: "Pas là. Indice du sensei :",
     oeilIndiceTxt: "Cette technique se trahit souvent par des mots comme {signes}.",
     oeilRate: "Raté. La technique était : {tech} ({l}). Les mots qui la trahissaient sont surlignés.",
@@ -703,9 +706,9 @@ I18N.register({
     senseiEncore: "« Tu n'as pas perdu : tu as appris où tu tombes. Un vrai ninja recommence. »",
     nouvelleTech: "Technique acquise pour l'Agora",
     reessayer: "🔁 Réessayer", retourCarte: "Retour au dojo",
-    piqueQuestion: "Quelle technique Sophisuke vient-il d'utiliser ?",
-    piqueOk: "Bien vu. Sophisuke rougit : c'était {tech} ({l}).",
-    piqueKo: "Sophisuke ricane. C'était {tech} ({l}).",
+    piqueQuestion: "Sophisuke : {t} Quelle technique vient-il d'utiliser ?",
+    piqueOk: "Bien vu. Sophisuke rougit : c'était {tech} ({l}). {e}",
+    piqueKo: "Sophisuke ricane. C'était {tech} ({l}). {e}",
 
     tech_regard: "👁️ Regard perçant", techDesc_regard: "Retire des mauvaises réponses pour n'en laisser que deux. Une fois par match.",
     tech_seconde: "🌀 Seconde vue", techDesc_seconde: "Ta prochaine erreur ne coûte rien et tu peux rejouer. Une fois par match.",
@@ -776,6 +779,7 @@ I18N.register({
     feuilleRatePiege: "Missed: it was a trap ({l}).", feuilleTombee: "Too late: the leaf hit the ground. It was a trap ({l}).",
     feuilleRateSain: "Ouch: you sliced a sound argument.",
     lexiqueTitre: "📖 The traps in this trial", lexiqueIntro: "Take your time to read: each trapped leaf hides one of these fallacies. The others carry sound arguments.", lexiquePret: "🍃 I'm ready",
+    revueTitre: "📜 The fallacies you came across", revueIntro: "To review them all: what each trap does, and how to answer it.", revueRepere: "✔ spotted", revueRate: "✖ to review", revueParade: "Parry:",
     oeilOk: "Well spotted! {tech} ({l}).", oeilIndice: "Not there. The sensei's hint:",
     oeilIndiceTxt: "This technique often gives itself away with words like {signes}.",
     oeilRate: "Missed. The technique was: {tech} ({l}). The words that gave it away are highlighted.",
@@ -798,9 +802,9 @@ I18N.register({
     senseiEncore: "“You didn't lose: you learned where you trip. A real ninja tries again.”",
     nouvelleTech: "Technique learned for the Agora",
     reessayer: "🔁 Try again", retourCarte: "Back to the dojo",
-    piqueQuestion: "Which technique did Sophisuke just use?",
-    piqueOk: "Well spotted. Sophisuke blushes: it was {tech} ({l}).",
-    piqueKo: "Sophisuke sneers. It was {tech} ({l}).",
+    piqueQuestion: "Sophisuke: {t} Which technique did he just use?",
+    piqueOk: "Well spotted. Sophisuke blushes: it was {tech} ({l}). {e}",
+    piqueKo: "Sophisuke sneers. It was {tech} ({l}). {e}",
 
     tech_regard: "👁️ Piercing Gaze", techDesc_regard: "Removes wrong answers until only two are left. Once per match.",
     tech_seconde: "🌀 Second Sight", techDesc_seconde: "Your next mistake costs nothing and you can try again. Once per match.",

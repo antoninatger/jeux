@@ -160,10 +160,45 @@
     // La définition du sophisme, pour avoir le temps de comprendre ce que le nom veut dire.
     const def = $('ep-retour-def');
     def.hidden = !defn;
+    def.style.whiteSpace = 'pre-line';
     def.textContent = defn || '';
     annoncer(titre + ' ' + (defn || '') + ' ' + (texte || ''));
   }
   function cacherRetour() { $('ep-retour').hidden = true; }
+
+  // Le nom et la définition d'un sophisme, sous chaque retour : on ne nomme
+  // jamais un piège sans dire ce qu'il fait.
+  function definition(id) {
+    return '📖 ' + soph(id).l + (I18N.lang === 'en' ? ': ' : ' : ') + soph(id).d;
+  }
+  // Les sophismes croisés pendant l'épreuve (ou l'examen) en cours, pour la
+  // révision de fin : id → { ok, ko }.
+  let croises = {};
+  function croise(id, ok) {
+    if (!id) return;
+    const c = croises[id] || (croises[id] = { ok: 0, ko: 0 });
+    if (ok) c.ok++; else c.ko++;
+  }
+  // La révision de fin : tous les sophismes croisés, avec leur définition et leur parade.
+  function revue() {
+    const ids = Object.keys(croises);
+    if (!ids.length) return null;
+    const box = el('div', 'case lexique');
+    box.appendChild(el('h3', 'titre-case', t('revueTitre')));
+    box.appendChild(el('p', 'consigne', t('revueIntro')));
+    const dl = el('dl');
+    ids.forEach(id => {
+      const s = soph(id), c = croises[id];
+      const dt = el('dt', null, s.l + ' ');
+      dt.appendChild(el('span', c.ko ? 'revue-ko' : 'revue-ok', c.ko ? t('revueRate') : t('revueRepere')));
+      const dd = el('dd', null, majuscule(s.d) + ' ');
+      dd.append(el('b', null, t('revueParade') + ' '), document.createTextNode(s.parade));
+      dl.append(dt, dd);
+    });
+    box.appendChild(dl);
+    return box;
+  }
+  function majuscule(x) { return x.charAt(0).toUpperCase() + x.slice(1); }
   let jetonSuivant = 0;
   function suivant(label, fn, autoMs) {
     const b = $('ep-suivant');
@@ -243,7 +278,8 @@
       } else {
         titre = t('feuilleRateSain');
       }
-      retour(ok, titre, item.e, item.piege ? '📖 ' + soph(item.piege).l + (I18N.lang === 'en' ? ': ' : ' : ') + soph(item.piege).d : '');
+      croise(item.piege, ok);
+      retour(ok, titre, item.e, item.piege ? definition(item.piege) : '');
       duree = Math.max(7, duree - 0.3);
       const joue = { id: item.id, titre: item.t, reussi: ok, explication: item.e };
       // On attend toujours le joueur : le temps de lire le nom du sophisme et ce qu'il veut dire.
@@ -281,7 +317,8 @@
         demasque(item.a);
         sfx(aire, t('sfxClac'));
         cutin(t('techDemasquee'), s.tech);
-        retour(true, t('oeilOk', { tech: s.tech, l: s.l }), item.e);
+        croise(item.a, true);
+        retour(true, t('oeilOk', { tech: s.tech, l: s.l }), item.e, definition(item.a));
         fin(essais === 0 ? 1 : 0.5);
       } else {
         essais++;
@@ -294,7 +331,8 @@
         } else {
           boutons.forEach(x => { if (x.dataset.cible === '1') x.classList.add('revele'); });
           sfx(aire, t('sfxOups'), true);
-          retour(false, t('oeilRate', { tech: s.tech, l: s.l }), item.e);
+          croise(item.a, false);
+          retour(false, t('oeilRate', { tech: s.tech, l: s.l }), item.e, definition(item.a));
           fin(0);
         }
       }
@@ -380,7 +418,9 @@
       });
       const titre = prises === 2 ? t('clochesToutes') : prises === 1 ? t('clochesUne') : t('clochesAucune');
       const expl = item.phrases.filter(ph => ph.piege).map(ph => ph.e).join(' ');
-      retour(prises === 2 ? true : prises === 0 ? false : null, titre, expl);
+      item.phrases.forEach((ph, k) => { if (ph.piege) croise(ph.piege, boutons[k].classList.contains('prise')); });
+      retour(prises === 2 ? true : prises === 0 ? false : null, titre, expl,
+        item.phrases.filter(ph => ph.piege).map(ph => definition(ph.piege)).join('\n'));
       const joue = { id: item.id, titre: item.sujet, reussi: prises === 2, explication: expl };
       suivant(t('suivant'), () => fini(prises / 2, joue));
     }
@@ -410,9 +450,10 @@
       boutons.forEach((x, k) => { x.disabled = true; if (choix[k].k === 'bonne') x.classList.add('juste'); });
       const ok = c.k === 'bonne';
       if (!ok) b.classList.add('faux');
-      if (ok) { sfx(cadre, t('sfxContre')); retour(true, t('contreOk'), item.e); }
-      else if (c.k === 'sophisme') { sfx(cadre, t('sfxBonk'), true); retour(false, t('contreBonk', { l: soph(c.s).l }), item.e); }
-      else { sfx(cadre, t('sfxOups'), true); retour(false, t('contreCede'), item.e); }
+      croise(item.a, ok);
+      if (ok) { sfx(cadre, t('sfxContre')); retour(true, t('contreOk'), item.e, definition(item.a)); }
+      else if (c.k === 'sophisme') { sfx(cadre, t('sfxBonk'), true); retour(false, t('contreBonk', { l: soph(c.s).l }), item.e, definition(item.a) + '\n' + definition(c.s)); }
+      else { sfx(cadre, t('sfxOups'), true); retour(false, t('contreCede'), item.e, definition(item.a)); }
       const joue = { id: item.id, titre: item.t, reussi: ok, explication: item.e };
       suivant(t('suivant'), () => fini(ok ? 1 : 0, joue));
     }
@@ -438,6 +479,7 @@
     const unite = def.unite || 1;             // clochettes : on compte en cloches
     let i = 0, score = 0;
     duree = 11;
+    croises = {};
     ColFin.protegerSortie(true);
     entete(nom);
     cacherRetour();
@@ -497,6 +539,8 @@
       if (nouvelle) cutin(t('techAcquiseCut'), t('tech_' + tech));
     }
     aire.appendChild(c);
+    const r = revue();
+    if (r) aire.appendChild(r);
     annoncer(h.textContent + ' ' + score + ' / ' + total);
     h.tabIndex = -1;
     h.focus({ preventScroll: true });
@@ -518,9 +562,9 @@
     const s = soph(p.a);
     scene([
       { qui: 'rival', texte: p.t },
-      { qui: 'narrateur', texte: t('piqueQuestion'), uneChance: true,
+      { qui: 'narrateur', texte: t('piqueQuestion', { t: p.t }), uneChance: true,
         choix: ids.map(id => ({ t: soph(id).tech + ' — ' + soph(id).l, ok: id === p.a,
-                                r: id === p.a ? t('piqueOk', { tech: s.tech, l: s.l }) : t('piqueKo', { tech: s.tech, l: s.l }) })),
+                                r: id === p.a ? t('piqueOk', { tech: s.tech, l: s.l, e: p.e }) : t('piqueKo', { tech: s.tech, l: s.l, e: p.e }) })),
         apres: ok => { if (ok) demasque(p.a); } }
     ], apres);
   }
@@ -681,6 +725,7 @@
         .concat([[mancheContre, DOJO.ripostes.find(r => r.examen)]]);
       const joue = [];
       let i = 0, score = 0;
+      croises = {};
       ColFin.protegerSortie(true);
       entete('examen', t('examenConsigne'));
       $('ep-titre').textContent = t('examenTitre');
@@ -749,6 +794,10 @@
       onRejouer: () => lancerExamen(),
       onRecommencer: () => lancerExamen()
     });
+    const ancienne = document.querySelector('#ecran-fin .lexique');
+    if (ancienne) ancienne.remove();
+    const r = revue();
+    if (r) $('fin-recap').after(r);
   }
 
   // ─── Branchements ───

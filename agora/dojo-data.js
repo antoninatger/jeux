@@ -15,7 +15,7 @@ const DOJO = {
   // tech = nom de la technique, signes = les mots qui la trahissent,
   // parade = comment y répondre honnêtement.
   sophismes: {
-    paille:     { l: "Homme de paille", d: "déformer ou caricaturer ce que l'autre a dit, pour attaquer plus facilement cette version exagérée.", tech: "Technique de substitution : le Mannequin",
+    paille:     { l: "Homme de paille", d: "déformer ce que l'autre a dit (l'exagérer, le caricaturer, lui faire dire ce qu'il n'a pas dit), puis attaquer cette version déformée. Comme frapper un mannequin de paille au lieu d'un vrai adversaire : c'est facile, mais on n'a pas répondu à ce qu'il pensait vraiment.", tech: "Technique de substitution : le Mannequin",
                   signes: "« autrement dit », « donc tu veux… », « en fait, ce que tu dis… »",
                   parade: "Reformuler fidèlement : « Ce n'est pas ce que j'ai dit. Je dis seulement que… »" },
     adhom:      { l: "Attaque personnelle", d: "attaquer la personne (son physique, ses notes, son passé) au lieu de répondre à son argument.", tech: "Frappe à l'Homme",
@@ -326,12 +326,18 @@ const DOJO = {
 
   // ─── Les piques de Sophisuke, entre les épreuves ───
   piques: [
-    { t: "« T'as raté une question ? Franchement, t'es pas fait pour ça. »", a: "genehat", opts: ["adhom", "pente"] },
-    { t: "« Toute la classe pense que je vais gagner. Alors abandonne tout de suite. »", a: "popu", opts: ["halo", "dilemme"] },
-    { t: "« Soit tu deviens mon disciple, soit tu restes un nul toute ta vie. »", a: "dilemme", opts: ["pente", "paille"] },
-    { t: "« Toi, démasquer des sophismes ? Avec cette coupe de cheveux ? »", a: "adhom", opts: ["whatabout", "genehat"] },
-    { t: "« Si tu rates cette épreuve, tu rateras l'examen, puis l'Agora, puis ta vie entière. »", a: "pente", opts: ["dilemme", "posthoc"] },
-    { t: "« Tu dis que je triche ? Et ton sensei, toujours en retard, il est parfait peut-être ? »", a: "whatabout", opts: ["hareng", "adhom"] }
+    { t: "« T'as raté la première feuille ? Alors tu rateras toutes les autres. Une erreur, ça suffit pour savoir. »", a: "genehat", opts: ["adhom", "pente"],
+      e: "D'une seule erreur, il tire une règle pour toutes les autres. Un seul cas ne suffit pas pour conclure." },
+    { t: "« Toute la classe pense que je vais gagner. Alors abandonne tout de suite. »", a: "popu", opts: ["halo", "dilemme"],
+      e: "Que beaucoup de gens le pensent ne prouve pas qu'il va gagner." },
+    { t: "« Soit tu deviens mon disciple, soit tu restes un nul toute ta vie. »", a: "dilemme", opts: ["pente", "paille"],
+      e: "Il ne laisse que deux choix, alors qu'il en existe bien d'autres." },
+    { t: "« Toi, démasquer des sophismes ? Avec cette coupe de cheveux ? »", a: "adhom", opts: ["whatabout", "genehat"],
+      e: "Il vise ta coupe de cheveux, pas ta capacité à démasquer des sophismes." },
+    { t: "« Si tu rates cette épreuve, tu rateras l'examen, puis l'Agora, puis ta vie entière. »", a: "pente", opts: ["dilemme", "posthoc"],
+      e: "Rater une épreuve n'entraîne pas forcément tout le reste : chaque étape de la catastrophe est affirmée sans preuve." },
+    { t: "« Tu dis que je triche ? Et ton sensei, toujours en retard, il est parfait peut-être ? »", a: "whatabout", opts: ["hareng", "adhom"],
+      e: "Il répond à l'accusation en critiquant le sensei, sans dire s'il triche ou non." }
   ],
 
   // ─── L'examen de la Porte ───
