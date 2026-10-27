@@ -48,10 +48,44 @@
   const ECRANS = ['intro', 'scene', 'carte', 'epreuve', 'rouleau', 'fin'];
   function montrer(nom, cible) {
     ECRANS.forEach(k => { $('ecran-' + k).hidden = (k !== nom); });
+    libelleRetour(nom);
     window.scrollTo(0, 0);
     const c = cible || $('ecran-' + nom).querySelector('h2');
     if (c) { if (!c.matches('button, a')) c.tabIndex = -1; c.focus({ preventScroll: true }); }
   }
+  // Le retour de l'en-tête : depuis une épreuve, une scène, le rouleau ou la
+  // fin, il ramène à la carte du dojo ; depuis la carte ou l'accueil du dojo,
+  // à la page d'accueil d'Agorateur.
+  const DANS_LE_DOJO = ['scene', 'epreuve', 'rouleau', 'fin'];
+  function ecranVisible() { return ECRANS.find(k => !$('ecran-' + k).hidden); }
+  function libelleRetour(nom) {
+    const l = document.querySelector('.col-entete__retour .col-entete__label');
+    if (!l) return;
+    const cle = DANS_LE_DOJO.includes(nom) ? 'retourDojo' : 'retourArene';
+    l.textContent = t(cle);
+    l.parentNode.setAttribute('aria-label', t(cle));
+  }
+  // En phase de capture, et posé avant celui de collection.js : c'est nous qui
+  // décidons, puis on demande confirmation seulement au milieu d'une épreuve.
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('.col-entete__retour');
+    const nom = a && ecranVisible();
+    if (!a || !DANS_LE_DOJO.includes(nom)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (nom === 'rouleau' || nom === 'fin') { carte(); return; }
+    ColModale.confirmer({ titre: t('quitterEpreuveTitre'), texte: t('quitterEpreuveTexte'), ok: t('quitterEpreuveOui'), annuler: t('quitterEpreuveNon') })
+      .then(oui => { if (oui) abandonner(); });
+  }, true);
+  // Quitter en cours de route : plus de clavier, de chrono ni de feuille qui tombe.
+  function abandonner() {
+    if (clavierActif) { document.removeEventListener('keydown', clavierActif); clavierActif = null; }
+    clearInterval(chronoActif);
+    $('ep-aire').textContent = '';
+    cacherRetour();
+    carte();
+  }
+
   function annoncer(texte) {
     const a = $('annonce');
     a.textContent = '';
@@ -218,6 +252,7 @@
   // ─── Les Feuilles qui tombent ───
   let duree = 11;                     // secondes de chute, raccourcies à chaque feuille
   let clavierActif = null;
+  let chronoActif = null;            // le chrono des Cloches, à couper si on quitte l'épreuve
   function mancheFeuille(item, fini, opts) {
     opts = opts || {};
     const aire = $('ep-aire');
@@ -439,7 +474,7 @@
 
     let tm = null;
     if (chrono) {
-      tm = setInterval(() => {
+      tm = chronoActif = setInterval(() => {
         restant--;
         barre.style.width = (restant / 75 * 100) + '%';
         if (restant <= 0) terminer();
@@ -868,6 +903,8 @@
 
   // ─── Branchements ───
   $('btn-entrer').addEventListener('click', () => (P.accueil ? carte() : accueil()));
+  // Le sensei déjà rencontré : on arrive directement sur la carte du dojo.
+  if (P.accueil) carte(); else libelleRetour('intro');
   $('btn-rouleau').addEventListener('click', rouleau);
   $('rouleau-retour').addEventListener('click', carte);
   $('btn-examen').addEventListener('click', lancerExamen);
