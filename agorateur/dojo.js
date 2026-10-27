@@ -256,6 +256,7 @@
     bT.addEventListener('click', () => decider(true));
     bL.addEventListener('click', () => decider(false));
     bT.focus({ preventScroll: true });
+    geste(terrain, f, angle => { f.style.setProperty('--coupe', angle + 'deg'); decider(true); }, () => fait);
 
     function decider(tranche, tombee) {
       if (fait) return;
@@ -265,7 +266,7 @@
       f.style.animationPlayState = 'paused';
       bT.disabled = bL.disabled = true;
       const ok = (tranche === !!item.piege);
-      if (tranche) { f.classList.add('tranchee'); sfx(terrain, t('sfxClac')); }
+      if (tranche) { f.classList.add('tranchee'); moitie(terrain, f); sfx(terrain, t('sfxClac')); }
       let titre;
       if (ok && item.piege) {
         demasque(item.piege);
@@ -285,6 +286,71 @@
       // On attend toujours le joueur : le temps de lire le nom du sophisme et ce qu'il veut dire.
       suivant(t('suivant'), () => fini(ok ? 1 : 0, joue));
     }
+  }
+
+  // Trancher d'un geste, comme Fruit Ninja : on glisse la souris (bouton
+  // enfoncé) ou le doigt à travers la feuille. Une traînée suit le geste ; la
+  // feuille est tranchée quand le trait l'a traversée sur une bonne longueur,
+  // pour qu'un simple clic de lecture ne coupe rien.
+  function geste(terrain, f, coupe, fini) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'trainee'); svg.setAttribute('aria-hidden', 'true');
+    const trait = document.createElementNS(NS, 'polyline');
+    svg.appendChild(trait); terrain.appendChild(svg);
+    let pts = [], actif = false, dedans = 0, depart = null, anim = 0;
+    const local = e => { const r = terrain.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() }; };
+    // Longueur du segment a→b à l'intérieur du rectangle r (découpage de Liang-Barsky).
+    function traverse(a, b, r) {
+      const dx = b.x - a.x, dy = b.y - a.y; let t0 = 0, t1 = 1;
+      const bords = [[-dx, a.x - r.left], [dx, r.right - a.x], [-dy, a.y - r.top], [dy, r.bottom - a.y]];
+      for (const [p, q] of bords) {
+        if (p === 0) { if (q < 0) return 0; continue; }
+        const u = q / p;
+        if (p < 0) { if (u > t1) return 0; if (u > t0) t0 = u; } else { if (u < t0) return 0; if (u < t1) t1 = u; }
+      }
+      return (t1 - t0) * Math.hypot(dx, dy);
+    }
+    function dessiner() {
+      const now = performance.now();
+      pts = pts.filter(p => now - p.t < 180);
+      trait.setAttribute('points', pts.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' '));
+      anim = pts.length ? requestAnimationFrame(dessiner) : 0;
+    }
+    terrain.addEventListener('pointerdown', e => {
+      if (fini() || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      actif = true; dedans = 0; const p = local(e); depart = p; pts = [p];
+      try { terrain.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
+    });
+    terrain.addEventListener('pointermove', e => {
+      if (!actif || fini()) return;
+      const p = local(e), a = pts[pts.length - 1] || p;
+      pts.push(p);
+      if (!anim) anim = requestAnimationFrame(dessiner);
+      const tr = terrain.getBoundingClientRect(), fr = f.getBoundingClientRect();
+      const r = { left: fr.left - tr.left, right: fr.right - tr.left, top: fr.top - tr.top, bottom: fr.bottom - tr.top };
+      dedans += traverse(a, p, r);
+      if (dedans >= Math.min(140, (r.right - r.left) * 0.3)) {
+        actif = false;
+        coupe(Math.max(-35, Math.min(35, Math.atan2(p.y - depart.y, p.x - depart.x) * 180 / Math.PI)));
+      }
+    });
+    const lacher = () => { actif = false; };
+    terrain.addEventListener('pointerup', lacher);
+    terrain.addEventListener('pointercancel', lacher);
+  }
+  // La moitié basse de la feuille tranchée s'écarte un peu de la haute : la
+  // coupe se voit, et la phrase reste lisible pendant qu'on lit le retour.
+  function moitie(terrain, f) {
+    const m = f.cloneNode(true);
+    m.classList.remove('tombe', 'tranchee'); m.classList.add('moitie');
+    m.style.top = f.offsetTop + 'px';
+    m.style.transform = getComputedStyle(f).transform;
+    m.setAttribute('aria-hidden', 'true');
+    m.style.animationDuration = m.style.animationPlayState = '';
+    if (calme()) m.style.animation = 'none';
+    terrain.appendChild(m);
   }
 
   // ─── L'Œil du sensei ───

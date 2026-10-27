@@ -270,11 +270,17 @@ main { max-width: 760px; margin: 0 auto; }
   75%  { transform: translate(-8px, 155px) rotate(3deg); }
   100% { transform: translate(0, 205px) rotate(0); }
 }
-.feuille.tranchee { clip-path: polygon(0 0, 100% 0, 100% 46%, 0 58%); border-color: var(--acc); }
+.feuille.tranchee { clip-path: polygon(0 0, 100% 0, 100% 46%, 0 58%); border-color: var(--acc); translate: -3px -6px; rotate: -1.5deg; transition: translate .25s, rotate .25s; }
 .feuille.tranchee::after {
   content: ''; position: absolute; left: -6%; right: -6%; top: 52%; height: 4px;
-  background: var(--acc); transform: rotate(-4deg);
+  background: var(--acc); transform: rotate(var(--coupe, -4deg));
 }
+/* Le geste qui tranche : pas de défilement ni de sélection sur le terrain. */
+.terrain { touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
+.trainee { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+.trainee polyline { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px var(--acc)); }
+.feuille.moitie { clip-path: polygon(0 58%, 100% 46%, 100% 100%, 0 100%); border-color: var(--acc); pointer-events: none; translate: 4px 8px; rotate: 1.5deg; animation: moitie .3s ease-out; }
+@keyframes moitie { from { translate: 0 0; rotate: 0deg; } }
 .feuille-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-top: var(--sp-3); }
 .feuille-actions .btn-manga { width: 100%; }
 .touches { text-align: center; font-size: var(--fs-200); color: var(--txt-secondaire); font-weight: 700; margin-top: var(--sp-2); }
@@ -677,7 +683,7 @@ I18N.register({
     progres: "{i} / {n}", scoreEp: "Score : {s}",
 
     trancher: "✂️ Trancher", laisser: "🍃 Laisser tomber",
-    touches: "Clavier : <kbd>T</kbd> trancher · <kbd>L</kbd> laisser tomber",
+    touches: "Tranche la feuille d'un geste, à la souris ou au doigt · Clavier : <kbd>T</kbd> trancher · <kbd>L</kbd> laisser tomber",
     sfxClac: "CLAC !", sfxDing: "DING !", sfxBonk: "BONK !", sfxContre: "CONTRE !", sfxHaha: "HAHA !", sfxOups: "OUPS…",
     techDemasquee: "Technique démasquée", techAcquiseCut: "Technique acquise",
     feuilleOkPiege: "Tranchée ! C'était : {l}.", feuilleOkSain: "Bien vu : cet argument se tient.",
@@ -773,7 +779,7 @@ I18N.register({
     progres: "{i} / {n}", scoreEp: "Score: {s}",
 
     trancher: "✂️ Slice", laisser: "🍃 Let it fall",
-    touches: "Keyboard: <kbd>T</kbd> slice · <kbd>L</kbd> let it fall",
+    touches: "Slice the leaf with a swipe, mouse or finger · Keyboard: <kbd>T</kbd> slice · <kbd>L</kbd> let it fall",
     sfxClac: "SLASH!", sfxDing: "DING!", sfxBonk: "BONK!", sfxContre: "COUNTER!", sfxHaha: "HA HA!", sfxOups: "OOPS…",
     techDemasquee: "Technique unmasked", techAcquiseCut: "Technique learned",
     feuilleOkPiege: "Sliced! It was: {l}.", feuilleOkSain: "Well spotted: that argument holds up.",
