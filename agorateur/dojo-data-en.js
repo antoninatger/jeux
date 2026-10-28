@@ -8,7 +8,7 @@
 const DOJO = {
 
   sensei: { nom: "Sensei Kakasophe", emoji: "🥷" },
-  rival:  { nom: "Sophisuke", emoji: "😼" },
+  rival:  { nom: "Sophisuke", emoji: "🥷" },
 
   // ─── The Forbidden Scroll: each fallacy is a technique ───
   sophismes: {
@@ -71,7 +71,7 @@ const DOJO = {
     ],
     // L'entrée en scène de Sophisuke, l'ancien disciple du sensei.
     entree: [
-      { qui: "narrateur", texte: "A gust of wind. Leaves swirl. On the dojo roof, a silhouette, arms crossed." },
+      { qui: "narrateur", texte: "A gust of wind. Leaves swirl. On the dojo roof, a figure in black, arms crossed, eyes cold as a blade." },
       { qui: "rival", texte: "“Hmph. The old man is still taking students?”" },
       { qui: "sensei", texte: "(without looking up from his book) “Sophisuke. My former disciple. He left to join the sophists, the ones who win every debate… without ever being right.”" },
       { qui: "rival", texte: "(he leaps down from the roof) “Listen up, beginner. I'll be waiting at the gates of the Agora. If you make it that far… I'll crush you!”" },

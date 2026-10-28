@@ -599,7 +599,7 @@
     // l'arrête en posant la bonne parade dessus (glisser), ou d'un clic.
     const piste = el('div', 'piste'); piste.setAttribute('aria-hidden', 'true');
     const fleche = el('div', 'fleche', '➳');
-    piste.append(el('span', 'piste__tireur', '😼'), fleche, el('span', 'piste__cible', '🙋'));
+    piste.append(el('span', 'piste__tireur', '🥷'), fleche, el('span', 'piste__cible', '🙋'));
     const zone = el('div', 'choix-liste');
     const choix = shuffle(item.choix.slice());
     let fait = false, tire = false;
@@ -1015,7 +1015,7 @@
     ColFin.rendre({
       cible: $('fin-recap'),
       jeu: 'arene-dojo',
-      titre: reussi ? '👁️ ' + t('finTitreOk') : '😼 ' + t('examenRate'),
+      titre: reussi ? '👁️ ' + t('finTitreOk') : '🥷 ' + t('examenRate'),
       message: reussi ? t('finMsgOk') : t('examenRateMsg'),
       items: joue,
       onRejouer: () => lancerExamen(),

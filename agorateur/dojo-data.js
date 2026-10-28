@@ -9,7 +9,7 @@
 const DOJO = {
 
   sensei: { nom: "Sensei Kakasophe", emoji: "🥷" },
-  rival:  { nom: "Sophisuke", emoji: "😼" },
+  rival:  { nom: "Sophisuke", emoji: "🥷" },
 
   // ─── Le Rouleau Interdit : chaque sophisme est une technique ───
   // tech = nom de la technique, signes = les mots qui la trahissent,
@@ -74,7 +74,7 @@ const DOJO = {
     ],
     // L'entrée en scène de Sophisuke, l'ancien disciple du sensei.
     entree: [
-      { qui: "narrateur", texte: "Un coup de vent. Des feuilles tourbillonnent. Sur le toit du dojo, une silhouette, bras croisés." },
+      { qui: "narrateur", texte: "Un coup de vent. Des feuilles tourbillonnent. Sur le toit du dojo, une silhouette en noir, bras croisés, le regard froid comme une lame." },
       { qui: "rival", texte: "« Hmph. Le vieux prend encore des élèves ? »" },
       { qui: "sensei", texte: "(sans lever les yeux de son livre) « Sophisuke. Mon ancien disciple. Il est parti chez les sophistes, ceux qui gagnent tous les débats… sans jamais avoir raison. »" },
       { qui: "rival", texte: "(il saute du toit) « Écoute bien, débutant. Je t'attendrai aux portes de l'Agora. Si tu y arrives… je t'écraserai ! »" },

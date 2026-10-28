@@ -512,10 +512,10 @@ function entrerAgora(){
     '<rect x="276" y="96" width="88" height="150" fill="#12070b"/>'+
     '<ellipse class="ae-lumiere" cx="320" cy="190" rx="90" ry="110" fill="url(#ae-lum)"/>'+
     '<rect class="ae-porte ae-g" x="276" y="96" width="44" height="150"/><rect class="ae-porte ae-d" x="320" y="96" width="44" height="150"/>'+
-    '<g class="ae-marcheurs">'+(avec?'<text x="290" y="296" font-size="46" text-anchor="middle">😼</text><text x="345" y="296" font-size="50" text-anchor="middle">🙋</text>':'<text x="320" y="296" font-size="50" text-anchor="middle">🙋</text>')+'</g>'+
+    '<g class="ae-marcheurs">'+(avec?'<text x="290" y="296" font-size="46" text-anchor="middle">🥷</text><text x="345" y="296" font-size="50" text-anchor="middle">🙋</text>':'<text x="320" y="296" font-size="50" text-anchor="middle">🙋</text>')+'</g>'+
     '</svg><div class="ae-texte"><p class="ae-titre" id="ae-titre"></p>'+(avec?'<p class="ae-bulle"></p>':'')+'<p class="ae-passer"></p></div>';
   o.querySelector('.ae-titre').textContent=I18N.t(avec?'entreeAvec':'entreeSeul');
-  if(avec) o.querySelector('.ae-bulle').textContent='😼 '+I18N.t('entreeSophisuke');
+  if(avec) o.querySelector('.ae-bulle').textContent='🥷 '+I18N.t('entreeSophisuke');
   o.querySelector('.ae-passer').textContent=I18N.t('entreePasser');
   document.body.appendChild(o);
   let fini=false;
