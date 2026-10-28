@@ -40,7 +40,7 @@ jobs:
         env:
           SITE_TOKEN: ${{ secrets.SITE_TOKEN }}
         run: |
-          [ -n "$SITE_TOKEN" ] || { echo "Pas de secret SITE_TOKEN : étape sautée."; exit 0; }
+          [ -n "$SITE_TOKEN" ] || { echo "::warning title=antoninatger.com pas reconstruit::Secret SITE_TOKEN absent : le site ne se mettra à jour qu'à sa prochaine reconstruction planifiée."; exit 0; }
           curl -fsS -X POST \
             -H "Authorization: Bearer $SITE_TOKEN" \
             -H "Accept: application/vnd.github+json" \
