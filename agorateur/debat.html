@@ -38,6 +38,21 @@ b,strong{color:var(--tx);}
 .panneau{background:var(--panel);border:1px solid var(--bord);border-radius:18px;padding:18px 20px;margin-bottom:18px;}
 .brief{font-weight:600;line-height:1.6;}
 .brief b{color:var(--acc);}
+.brief summary{cursor:pointer;font-weight:800;}
+/* La préparation pas à pas : une étape ouverte à la fois, les étapes faites
+   se replient en une ligne, les suivantes attendent. */
+.etape[data-etat="avenir"]{display:none;}
+.etape[data-etat="fait"] > :not(h2):not(.resume){display:none !important;}
+.etape:not([data-etat="fait"]) .resume{display:none;}
+.etape[data-etat="fait"]{padding-top:12px;padding-bottom:12px;}
+.etape[data-etat="fait"] h2{margin-bottom:4px;opacity:.7;}
+.etape[data-etat="actif"]{animation:etape-entree .45s ease-out;}
+@keyframes etape-entree{from{opacity:0;transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){.etape[data-etat="actif"]{animation:none;}}
+.resume{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-weight:700;}
+.suite-etape{text-align:center;margin-top:16px;}
+.fiche details{margin-top:8px;}
+.fiche details > summary{cursor:pointer;font-weight:800;}
 .muet{color:var(--mu);font-size:var(--fs-200);font-weight:600;}
 
 /* Boutons, repris de l'Agora */
@@ -161,16 +176,21 @@ table.compteurs{width:100%;border-collapse:collapse;}
     <h1 id="prep-titre" data-i18n="h1">🏫 Agorateur en classe</h1>
     <p class="sub" data-i18n="sub">Prépare, anime et clôture un vrai débat, projeté au tableau.</p>
   </div>
-  <div class="panneau brief" data-i18n-html="brief">Les mêmes trois buts que dans le jeu : <b>repérer les pièges</b>, <b>faire avancer l'échange</b> et <b>comprendre ce qui motive l'autre</b>. Pas d'équipe gagnante au K.-O. : on valorise les bonnes questions, les reformulations fidèles et les points d'accord. Aucun nom d'élève, rien n'est envoyé en ligne.</div>
+  <details class="panneau brief"><summary data-i18n="commentMarche">Comment ça marche ?</summary>
+    <p style="margin-top:8px" data-i18n-html="brief">Les mêmes trois buts que dans le jeu : <b>repérer les pièges</b>, <b>faire avancer l'échange</b> et <b>comprendre ce qui motive l'autre</b>. Pas d'équipe gagnante au K.-O. : on valorise les bonnes questions, les reformulations fidèles et les points d'accord. Aucun nom d'élève, rien n'est envoyé en ligne.</p>
+  </details>
 
-  <section class="panneau" aria-labelledby="t-format">
+  <section class="panneau etape" data-etape="1" aria-labelledby="t-format">
     <h2 id="t-format" data-i18n="etapeFormat">1. Le format</h2>
+    <div class="resume"></div>
     <div id="formats" class="cartes"></div>
     <div id="format-fiche" class="fiche"></div>
+    <p class="suite-etape"><button type="button" class="bigbtn" id="suite-1" data-i18n="suiteSujet">Suivant : le sujet ➜</button></p>
   </section>
 
-  <section class="panneau" aria-labelledby="t-sujet">
+  <section class="panneau etape" data-etape="2" aria-labelledby="t-sujet">
     <h2 id="t-sujet" data-i18n="etapeSujet">2. Le sujet</h2>
+    <div class="resume"></div>
     <div id="bloc-themes">
       <div class="barre">
         <label for="f-niveau" data-i18n="niveau">Niveau</label>
@@ -189,10 +209,12 @@ table.compteurs{width:100%;border-collapse:collapse;}
       <div id="persos" class="cartes" style="margin-top:10px"></div>
     </div>
     <div id="sujet-fiche" class="fiche" hidden></div>
+    <p class="suite-etape"><button type="button" class="bigbtn" id="suite-2" data-i18n="suiteEquipes">Suivant : les équipes ➜</button></p>
   </section>
 
-  <section class="panneau" aria-labelledby="t-equipes">
+  <section class="panneau etape" data-etape="3" aria-labelledby="t-equipes">
     <h2 id="t-equipes" data-i18n="etapeEquipes">3. Les équipes et la durée</h2>
+    <div class="resume"></div>
     <div class="barre">
       <label for="f-duree" data-i18n="dureeTotale">Durée totale</label>
       <select id="f-duree"></select>
@@ -213,7 +235,7 @@ table.compteurs{width:100%;border-collapse:collapse;}
     <p id="sans-equipes" class="muet" data-i18n="sansEquipes" hidden>Pas d'équipes : toute la classe se place sur la ligne, et la parole tourne entre les trois zones.</p>
   </section>
 
-  <p class="lancer">
+  <p class="lancer" id="bloc-lancer">
     <button type="button" class="bigbtn" id="btn-lancer" data-i18n="lancer">▶ Lancer le débat</button>
   </p>
   <p class="centre muet" id="lancer-aide" data-i18n="lancerAide">Choisis un format et un sujet pour commencer.</p>
@@ -355,6 +377,7 @@ I18N.register({
     h1: "🏫 Agorateur en classe", retourAgora: "Retour à l'Agora",
     sub: "Prépare, anime et clôture un vrai débat, projeté au tableau.",
     brief: "Les mêmes trois buts que dans le jeu : <b>repérer les pièges</b>, <b>faire avancer l'échange</b> et <b>comprendre ce qui motive l'autre</b>. Pas d'équipe gagnante au K.-O. : on valorise les bonnes questions, les reformulations fidèles et les points d'accord. Aucun nom d'élève, rien n'est envoyé en ligne.",
+    commentMarche: "Comment ça marche ?", suiteSujet: "Suivant : le sujet ➜", suiteEquipes: "Suivant : les équipes ➜", modifier: "✏️ Modifier", voirDeroule: "Voir le déroulé et la règle", voirFiche: "📋 La fiche du sujet : positions, pièges, motivations", voirPerso: "📋 Sa position et ses pièges",
     etapeFormat: "1. Le format", etapeSujet: "2. Le sujet", etapeEquipes: "3. Les équipes et la durée",
     niveau: "Niveau", tousNiveaux: "Tous les niveaux", auHasard: "🎲 Un sujet au hasard",
     sujetLibre: "✏️ Ou ton propre sujet :", sujetLibrePh: "Écris ta question, puis valide", valider: "Valider",
@@ -428,6 +451,7 @@ I18N.register({
     h1: "🏫 Agorator in class", retourAgora: "Back to the Agora",
     sub: "Prepare, run and wrap up a real debate, projected on the board.",
     brief: "The same three goals as in the game: <b>spot the traps</b>, <b>move the exchange forward</b> and <b>understand what drives the other side</b>. No team wins by knockout: good questions, faithful rephrasing and points of agreement are what count. No student names, nothing is sent online.",
+    commentMarche: "How does it work?", suiteSujet: "Next: the topic ➜", suiteEquipes: "Next: the teams ➜", modifier: "✏️ Change", voirDeroule: "See the steps and the rule", voirFiche: "📋 Topic sheet: positions, traps, motivations", voirPerso: "📋 Their position and traps",
     etapeFormat: "1. The format", etapeSujet: "2. The topic", etapeEquipes: "3. Teams and timing",
     niveau: "Level", tousNiveaux: "All levels", auHasard: "🎲 Random topic",
     sujetLibre: "✏️ Or your own topic:", sujetLibrePh: "Type your question, then confirm", valider: "Confirm",

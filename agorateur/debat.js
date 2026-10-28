@@ -105,11 +105,12 @@
     const f = format();
     fiche.hidden = !f;
     if (!f) return;
-    let h = '<p>' + esc(f.resume) + '</p><p class="muet" style="margin-top:6px">' + esc(t('fTravail', { t: f.travail })) + '</p>';
+    let h = '<p>' + esc(f.resume) + '</p><details><summary>' + esc(t('voirDeroule')) + '</summary>' +
+      '<p class="muet" style="margin-top:6px">' + esc(t('fTravail', { t: f.travail })) + '</p>';
     h += '<h3>' + esc(t('deroule')) + '</h3><ol style="margin-left:22px">' +
       phases().map((p) => '<li>' + esc(p.nom) + ' <span class="muet">(' + mmss(p.sec) + ')</span></li>').join('') + '</ol>';
     if (f.missions) h += '<h3>' + esc(t('missions')) + '</h3><ul>' + f.missions.map((m) => '<li>' + esc(m) + '</li>').join('') + '</ul>';
-    h += '<p class="regle"><b>' + esc(t('regleAgora')) + '</b> ' + esc(f.regle) + '</p>';
+    h += '<p class="regle"><b>' + esc(t('regleAgora')) + '</b> ' + esc(f.regle) + '</p></details>';
     fiche.innerHTML = h;
   }
 
@@ -162,26 +163,28 @@
     const s = sujet();
     fiche.hidden = !s;
     if (!s) return;
-    let h = '';
+    let h = '<p><b>' + esc(s.q) + '</b></p>';
     if (s.perso) {
       const p = s.perso;
+      h += '<details><summary>' + esc(t('voirPerso')) + '</summary>';
       h += '<h3>' + esc(t('persoPosition')) + '</h3><p>' + esc(p.position) + '</p>';
       h += '<h3>' + esc(t('persoPieges')) + '</h3><p>' + p.pieges.map((id) => '<span class="pastille">' + esc(sophisme(id).l) + '</span>').join('') + '</p>';
       h += '<details class="secret"><summary>' + esc(t('secretTitre')) + '</summary>' +
         '<p style="margin-top:8px"><b>' + esc(t('secretMotiv')) + '</b> ' + esc(p.motiv) + '</p>' +
         '<p style="margin-top:8px"><b>' + esc(t('secretIndices')) + '</b></p><ul>' + p.indices.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul>' +
-        '<p class="muet" style="margin-top:8px">' + esc(t('secretJeu')) + '</p></details>';
+        '<p class="muet" style="margin-top:8px">' + esc(t('secretJeu')) + '</p></details></details>';
     } else if (theme()) {
       const th = theme();
+      h += '<details><summary>' + esc(t('voirFiche')) + '</summary>';
       h += '<h3>' + esc(t('positionsTitre')) + '</h3><div class="positions3">' + th.positions.map((p) =>
         '<div><b>' + esc(p.nom) + '</b><ul>' + p.pistes.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul></div>').join('') + '</div>';
       h += '<h3>' + esc(t('piegesTitre')) + '</h3><ul>' + th.pieges.map((id) =>
         '<li><b>' + esc(sophisme(id).l) + '</b> : ' + esc(sophisme(id).d) + '</li>').join('') + '</ul>';
       h += '<h3>' + esc(t('motivTitre')) + '</h3><p>' + th.motivations.map((m) => '<span class="pastille">' + esc(m) + '</span>').join('') + '</p>';
       h += '<h3>' + esc(t('bonsTitre')) + '</h3><ul><li><b>' + esc(t('bonPour', { p: th.positions[0].nom })) + '</b> ' + esc(th.bons[0]) +
-        '</li><li><b>' + esc(t('bonContre', { p: th.positions[1].nom })) + '</b> ' + esc(th.bons[1]) + '</li></ul>';
+        '</li><li><b>' + esc(t('bonContre', { p: th.positions[1].nom })) + '</b> ' + esc(th.bons[1]) + '</li></ul></details>';
     } else {
-      h += '<p><b>' + esc(s.q) + '</b></p><p class="muet" style="margin-top:6px">' + esc(t('sujetLibreFiche')) + '</p>';
+      h += '<p class="muet" style="margin-top:6px">' + esc(t('sujetLibreFiche')) + '</p>';
     }
     fiche.innerHTML = h;
   }
@@ -252,12 +255,50 @@
     $('lancer-aide').hidden = pret;
   }
 
+  // La préparation pas à pas : format, puis sujet, puis équipes et lancement.
+  let etape = 1;
+  function resumeEtape(k) {
+    if (k === 1) { const f = format(); return f ? f.emoji + ' ' + f.nom : ''; }
+    if (k === 2) { const s = sujet(); return s ? s.q : ''; }
+    return '';
+  }
+  function allerEtape(k, defiler) {
+    etape = k;
+    rendreEtapes();
+    if (defiler) {
+      const sec = document.querySelector('.etape[data-etape="' + k + '"]');
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const h = sec.querySelector('h2'); h.tabIndex = -1; h.focus({ preventScroll: true });
+    }
+  }
+  function rendreEtapes() {
+    document.querySelectorAll('.etape').forEach((sec) => {
+      const k = +sec.dataset.etape;
+      sec.dataset.etat = k < etape ? 'fait' : k === etape ? 'actif' : 'avenir';
+      const r = sec.querySelector('.resume');
+      r.innerHTML = '';
+      if (k < etape) {
+        const txt = document.createElement('span'); txt.textContent = '✓ ' + resumeEtape(k);
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = t('modifier');
+        b.addEventListener('click', () => allerEtape(k, true));
+        r.append(txt, b);
+      }
+    });
+    $('suite-1').disabled = !format();
+    $('suite-2').disabled = !sujet();
+    $('bloc-lancer').hidden = etape !== 3;
+    $('lancer-aide').hidden = etape !== 3 || !$('btn-lancer').disabled;
+  }
+
   function toutRendre() {
     rendreFormats();
     rendreSujet();
     rendreEquipes();
     rendreLancer();
+    rendreEtapes();
   }
+  $('suite-1').addEventListener('click', () => allerEtape(2, true));
+  $('suite-2').addEventListener('click', () => allerEtape(3, true));
 
   $('f-niveau').addEventListener('change', (e) => { prep.niveau = e.target.value; sauver(); rendreSujet(); });
   $('btn-hasard').addEventListener('click', () => {
@@ -752,6 +793,7 @@
     clearInterval(minuterie);
     D = null;
     afficher('prep');
+    etape = 1;
     toutRendre();
     window.scrollTo(0, 0);
   });
