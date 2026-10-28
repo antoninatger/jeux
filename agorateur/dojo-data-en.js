@@ -69,7 +69,14 @@ const DOJO = {
       { t: "“At the Agora, I get fooled because I can't see the traps. I want to learn to see them.”", ok: true,
         r: "“… A clear reason and a goal. Finally, a real argument. Welcome to the dojo.”" }
     ],
-    rival: "“Another beginner? I was trained by the greatest sophists. I'll be waiting for you at the exam. If you make it that far.”"
+    // L'entrée en scène de Sophisuke, l'ancien disciple du sensei.
+    entree: [
+      { qui: "narrateur", texte: "A gust of wind. Leaves swirl. On the dojo roof, a silhouette, arms crossed." },
+      { qui: "rival", texte: "“Hmph. The old man is still taking students?”" },
+      { qui: "sensei", texte: "(without looking up from his book) “Sophisuke. My former disciple. He left to join the sophists, the ones who win every debate… without ever being right.”" },
+      { qui: "rival", texte: "(he leaps down from the roof) “Listen up, beginner. I'll be waiting at the gates of the Agora. If you make it that far… I'll crush you!”" },
+      { qui: "narrateur", texte: "SHWOOOM! Sophisuke has vanished." }
+    ]
   },
 
   // ─── Prologue: Water Divination ───
@@ -330,6 +337,30 @@ const DOJO = {
   ],
 
   // ─── The Gate exam ───
+  // ─── L'arc de Sophisuke : rival, puis allié ───
+  arc: {
+    fissure: [
+      { qui: "narrateur", texte: "Flashback. A black-and-white picture: two young students training side by side at the dojo." },
+      { qui: "rival", texte: "(his back turned) “…Not bad. I used to look for the truth too. But the truth is slow. Winning is instant.”" },
+      { qui: "narrateur", texte: "He clenches his fist." },
+      { qui: "rival", texte: "“Don't think this changes anything!”" }
+    ],
+    avantExamen: [
+      { qui: "narrateur", texte: "Lightning splits the sky above the gates of the Agora." },
+      { qui: "rival", texte: "“My forbidden techniques against your little lessons. Show me what your method is worth… RIVAL!”" }
+    ],
+    apresExamen: [
+      { qui: "narrateur", texte: "Sophisuke drops to his knees. Silence. A leaf lands on his shoulder." },
+      { qui: "rival", texte: "“Why… Why don't my techniques work on you anymore?”" },
+      { qui: "narrateur", texte: "You hold out your hand." },
+      { qui: "toi", texte: "“Because an argument is something you understand. Not something you crush.”" },
+      { qui: "narrateur", texte: "He hesitates… then takes your hand." },
+      { qui: "rival", texte: "“Hmph. Don't think we're friends.”" },
+      { qui: "narrateur", texte: "Behind you, the gates of the Agora begin to open." },
+      { qui: "rival", texte: "“…But at the Agora, I'll walk beside you.”" }
+    ]
+  },
+
   examen: {
     intro: "At the gates of the Agora, Sophisuke is waiting, arms crossed. “Six rounds. One from each trial. Hold on, and you're through.”",
     examinateur: "A hooded examiner steps forward. His voice echoes through the whole dojo.",

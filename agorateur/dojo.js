@@ -30,7 +30,7 @@
   const CLE = 'arene.dojo';
   const EPREUVES = ['feuilles', 'oeil', 'clochettes', 'contre'];
   const TECHNIQUES = { feuilles: 'regard', oeil: 'seconde', clochettes: 'clochettes', contre: 'contre' };
-  function neuve() { return { v: 1, accueil: false, type: null, epreuves: {}, examen: false, rouleau: {}, calme: false, piques: 0 }; }
+  function neuve() { return { v: 1, accueil: false, type: null, epreuves: {}, examen: false, rouleau: {}, calme: false, piques: 0, fissure: false }; }
   function charger() {
     try { const p = JSON.parse(localStorage.getItem(CLE)); if (p && p.v === 1) return Object.assign(neuve(), p); } catch (e) {}
     return neuve();
@@ -117,7 +117,8 @@
     sensei:      () => ({ emoji: DOJO.sensei.emoji, nom: DOJO.sensei.nom }),
     rival:       () => ({ emoji: DOJO.rival.emoji, nom: DOJO.rival.nom }),
     narrateur:   () => ({ emoji: '📜', nom: t('narrateur') }),
-    examinateur: () => ({ emoji: '❔', nom: t('examinateur') })
+    examinateur: () => ({ emoji: '❔', nom: t('examinateur') }),
+    toi:         () => ({ emoji: '🙋', nom: t('toi') })
   };
   function scene(planches, fin) {
     let i = 0;
@@ -767,9 +768,16 @@
     const bRe = bouton('btn-manga btn-manga--clair', t('reessayer'));
     bRe.addEventListener('click', () => lancerEpreuve(nom));
     const bSuite = bouton('btn-manga', t('continuer'));
-    bSuite.addEventListener('click', () => (reussi ? pique(carte) : carte()));
+    bSuite.addEventListener('click', () => (reussi ? pique(apresPique) : carte()));
     actions.append(bSuite, bRe);
     aire.appendChild(actions);
+  }
+
+  // Après la deuxième épreuve réussie, une seule fois : le flash-back de Sophisuke.
+  function apresPique() {
+    const reussies = EPREUVES.filter(n => P.epreuves[n]).length;
+    if (reussies >= 2 && !P.fissure) { P.fissure = true; sauver(); scene(DOJO.arc.fissure, carte); }
+    else carte();
   }
 
   // Sophisuke surgit entre deux épreuves, avec une pique à démasquer.
@@ -794,7 +802,7 @@
       { qui: 'narrateur', texte: a.retard },
       { qui: 'sensei', texte: a.excuse },
       { qui: 'sensei', texte: a.defi, choix: shuffle(a.choix.slice()), sfxOk: '!!' },
-      { qui: 'rival', texte: a.rival }
+      ...a.entree
     ], () => { P.accueil = true; sauver(); divination(); });
   }
 
@@ -934,7 +942,7 @@
   // ─── L'examen de la Porte ───
   function lancerExamen() {
     const ex = DOJO.examen;
-    scene([{ qui: 'rival', texte: ex.intro }], () => {
+    scene([{ qui: 'rival', texte: ex.intro }, ...DOJO.arc.avantExamen], () => {
       const pieges = shuffle(DOJO.feuilles.filter(f => f.piege)).slice(0, 2);
       const sain = shuffle(DOJO.feuilles.filter(f => !f.piege)).slice(0, 1);
       const manches = shuffle(pieges.concat(sain)).map(it => [mancheFeuille, it, { statique: true }])
@@ -977,7 +985,8 @@
           P.examen = true; sauver();
           demasque('dilemme'); demasque('pente');
           cutin(t('examenOkCut'), t('examenSur'));
-        } }
+        } },
+      ...DOJO.arc.apresExamen
     ], () => ellipse(ex.apres, () => finExamen(true, joue)));
   }
 

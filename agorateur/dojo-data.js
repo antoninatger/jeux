@@ -72,7 +72,14 @@ const DOJO = {
       { t: "« Sur l'Agora, je me fais avoir parce que je ne vois pas les pièges. Je veux apprendre à les voir. »", ok: true,
         r: "« … Une raison claire et un objectif. Enfin un vrai argument. Bienvenue au dojo. »" }
     ],
-    rival: "« Encore un débutant ? Moi, j'ai été formé par les plus grands sophistes. Je t'attendrai à l'examen. Si tu y arrives. »"
+    // L'entrée en scène de Sophisuke, l'ancien disciple du sensei.
+    entree: [
+      { qui: "narrateur", texte: "Un coup de vent. Des feuilles tourbillonnent. Sur le toit du dojo, une silhouette, bras croisés." },
+      { qui: "rival", texte: "« Hmph. Le vieux prend encore des élèves ? »" },
+      { qui: "sensei", texte: "(sans lever les yeux de son livre) « Sophisuke. Mon ancien disciple. Il est parti chez les sophistes, ceux qui gagnent tous les débats… sans jamais avoir raison. »" },
+      { qui: "rival", texte: "(il saute du toit) « Écoute bien, débutant. Je t'attendrai aux portes de l'Agora. Si tu y arrives… je t'écraserai ! »" },
+      { qui: "narrateur", texte: "SHUUUN ! Sophisuke a disparu." }
+    ]
   },
 
   // ─── Prologue : la Divination de l'eau ───
@@ -341,6 +348,30 @@ const DOJO = {
   ],
 
   // ─── L'examen de la Porte ───
+  // ─── L'arc de Sophisuke : rival, puis allié ───
+  arc: {
+    fissure: [
+      { qui: "narrateur", texte: "Flash-back. Une image en noir et blanc : deux petits élèves s'entraînent côte à côte, au dojo." },
+      { qui: "rival", texte: "(de dos) « …Pas mal. Moi aussi, avant, je cherchais la vérité. Mais la vérité, c'est lent. Gagner, c'est tout de suite. »" },
+      { qui: "narrateur", texte: "Il serre le poing." },
+      { qui: "rival", texte: "« Ne crois pas que ça change quoi que ce soit ! »" }
+    ],
+    avantExamen: [
+      { qui: "narrateur", texte: "Un éclair zèbre le ciel au-dessus des portes de l'Agora." },
+      { qui: "rival", texte: "« Mes techniques interdites contre tes petites leçons. Montre-moi ce que vaut ta méthode… RIVAL ! »" }
+    ],
+    apresExamen: [
+      { qui: "narrateur", texte: "Sophisuke tombe à genoux. Silence. Une feuille se pose sur son épaule." },
+      { qui: "rival", texte: "« Pourquoi… Pourquoi mes techniques ne marchent plus sur toi ? »" },
+      { qui: "narrateur", texte: "Tu lui tends la main." },
+      { qui: "toi", texte: "« Parce qu'un argument, ça se comprend. Ça ne s'écrase pas. »" },
+      { qui: "narrateur", texte: "Il hésite… puis attrape ta main." },
+      { qui: "rival", texte: "« Hmph. Ne crois pas qu'on est amis. »" },
+      { qui: "narrateur", texte: "Derrière vous, les portes de l'Agora commencent à s'ouvrir." },
+      { qui: "rival", texte: "« …Mais sur l'Agora, je marche à côté de toi. »" }
+    ]
+  },
+
   examen: {
     intro: "Aux portes de l'Agora, Sophisuke t'attend, bras croisés. « Six manches. Une de chaque épreuve. Si tu tiens, tu passes. »",
     examinateur: "Un examinateur encapuchonné s'avance. Sa voix résonne dans tout le dojo.",
