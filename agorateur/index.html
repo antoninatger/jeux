@@ -170,6 +170,29 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 .ag-lucioles circle{animation:ag-luciole 8s ease-in-out infinite;filter:drop-shadow(0 0 3px #ffcf8a);}
 @keyframes ag-luciole{0%,100%{transform:translate(0,0);opacity:0}20%{opacity:1}50%{transform:translate(14px,-22px);opacity:.8}80%{opacity:.2}}
 .ag-descendre{position:absolute;z-index:2;bottom:12px;color:#fdeef0;font-weight:800;font-size:var(--fs-200);text-decoration:none;background:rgba(27,13,17,.7);border:1px solid rgba(228,180,120,.4);border-radius:50px;padding:8px 16px;white-space:nowrap;}
+.ag-entree{position:fixed;inset:0;z-index:1000;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,3vh,28px);padding:20px;
+  background:radial-gradient(ellipse 60% 45% at 50% 70%,rgba(255,170,110,.35),transparent 70%),linear-gradient(#0f0508,#2a1220 60%,#1b0d11);color:#fdeef0;animation:ae-fondu .5s ease-out both;}
+.ag-entree svg{width:min(92vw,620px);height:auto;overflow:visible;}
+.ae-temple{fill:#351a23;stroke:#e4b478;stroke-width:3;stroke-linejoin:round;}
+.ae-porte{fill:#6b2b1d;stroke:#2b140c;stroke-width:2;}
+.ae-g{transform-box:fill-box;transform-origin:left center;animation:ae-g 1.6s cubic-bezier(.5,0,.2,1) .4s forwards;}
+.ae-d{transform-box:fill-box;transform-origin:right center;animation:ae-d 1.6s cubic-bezier(.5,0,.2,1) .4s forwards;}
+.ae-lumiere{opacity:0;animation:ae-lum 1.4s ease-out .8s forwards;}
+.ae-marcheurs{transform-box:fill-box;transform-origin:50% 100%;animation:ae-marche 3.2s ease-in-out 1.2s both;}
+.ae-marcheurs text{animation:ae-pas .4s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%;}
+.ae-marcheurs text:nth-child(2){animation-delay:-.2s;}
+.ae-texte{text-align:center;max-width:620px;opacity:0;animation:ae-texte .7s ease-out 1.6s forwards;}
+.ae-titre{font-family:'Alfa Slab One',serif;font-size:clamp(1.4rem,1rem + 2vw,2.2rem);line-height:1.2;text-shadow:0 0 24px rgba(255,93,115,.5);}
+.ae-bulle{display:inline-block;margin-top:12px;background:#fdeef0;color:#2a1708;border-radius:16px;padding:8px 14px;font-weight:800;}
+.ae-passer{font-size:var(--fs-200);color:#e9c9cf;font-weight:700;margin-top:10px;}
+@keyframes ae-fondu{from{opacity:0}}
+@keyframes ae-g{to{transform:scaleX(.08) skewY(-8deg)}}
+@keyframes ae-d{to{transform:scaleX(.08) skewY(8deg)}}
+@keyframes ae-lum{to{opacity:1}}
+@keyframes ae-marche{0%{transform:translateX(-330px)}65%{transform:translateX(0)}100%{transform:translate(0,-48px) scale(.55);opacity:.85}}
+@keyframes ae-pas{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-6px) rotate(4deg)}}
+@keyframes ae-texte{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ag-entree,.ag-entree *{animation:none !important}.ae-g,.ae-d{transform:scaleX(.08)}.ae-lumiere,.ae-texte{opacity:1}}
 .ag-descendre:hover{border-color:var(--acc);}
 /* Téléphone : la scène déborde des deux côtés pour rester grande (l'olivier et la chouette sortent à moitié du cadre). */
 @media (max-width:700px){.ag-scene{width:135%;max-width:none;height:auto;margin-top:-4vh;}}
@@ -357,7 +380,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
   </div>
   <div class="intro-btns">
     <a class="bigbtn gold" href="dojo.html" data-i18n="dojo">🥋 S'entraîner au dojo</a>
-    <button class="bigbtn" onclick="startMatch(0)" data-i18n="enter">💬 Rejoindre l'Agora</button>
+    <button class="bigbtn" onclick="entrerAgora()" data-i18n="enter">💬 Rejoindre l'Agora</button>
     <a class="bigbtn ghost" href="debat.html" data-i18n="classe">🏫 Organiser un débat en classe</a>
   </div>
   <p class="dojo-etat" id="dojo-etat"></p>
@@ -432,7 +455,7 @@ I18N.register({
     brief1: `🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : éthique (<b>ethos</b>), émotion (<b>pathos</b>), logique (<b>logos</b>)… beaucoup d'<b>arguments fallacieux</b>, et parfois de <b>vrais bons arguments</b>.`,
     brief2: `🥋 Commence par le <b>dojo</b> : tu y apprends à reconnaître les sophismes et tu gagnes des techniques. 🎯 Puis, sur l'Agora, <b>repère les pièges</b>, <b>fais avancer l'échange</b> et <b>comprends ce qui motive</b> chaque personnage, jusqu'à devenir <b>Bâtisseur de dialogue</b>.`,
     brief3: `🏫 Et en classe, passe au <b>vrai débat</b> : l'Agora s'affiche au tableau, deux équipes argumentent, et toute la classe traque les sophismes en direct.`,
-    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", avisLien: "💬 Une idée, un bug, un avis ? Écris-moi", you: "Toi", replay: "🔄 Rejouer",
+    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", avisLien: "💬 Une idée, un bug, un avis ? Écris-moi", entreeSeul: "Tu franchis seul les portes de l'Agora. Cinq personnages t'attendent. Ouvre l'œil !", entreeAvec: "Tu franchis les portes de l'Agora, Sophisuke à tes côtés.", entreeSophisuke: "« Hmph. Reste près de moi : je connais toutes leurs ruses. »", entreePasser: "Clique ou appuie sur une touche pour commencer", you: "Toi", replay: "🔄 Rejouer",
     hpYouLabel: "Ta lucidité", hpFoeLabel: "Ouverture de ton interlocuteur",
     modeTitre: "Réponse", modeQcm: "🔘 Choix multiple", modeQcmS: "Choisis parmi quatre propositions",
     modeSaisie: "⌨️ Saisie libre", modeSaisieS: "Écris le nom du sophisme, à ta façon",
@@ -447,7 +470,7 @@ I18N.register({
     brief1: `🏛️ Welcome to the Agora, the square where people debate! Five characters will try to <b>convince you by any means</b>: ethics (<b>ethos</b>), emotion (<b>pathos</b>), logic (<b>logos</b>)… plenty of <b>fallacious arguments</b>, and sometimes <b>genuinely good arguments</b>.`,
     brief2: `🥋 Start at the <b>dojo</b>: learn to recognise fallacies and earn techniques. 🎯 Then, on the Agora, <b>spot the traps</b>, <b>move the exchange forward</b> and <b>understand what drives</b> each character, until you become a <b>Dialogue builder</b>.`,
     brief3: `🏫 And in class, move on to a <b>real debate</b>: the Agora goes up on the board, two teams make their case, and the whole class hunts for fallacies live.`,
-    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", avisLien: "💬 An idea, a bug, feedback? Write to me", you: "You", replay: "🔄 Play again",
+    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", avisLien: "💬 An idea, a bug, feedback? Write to me", entreeSeul: "You walk through the gates of the Agora alone. Five characters are waiting. Keep your eyes open!", entreeAvec: "You walk through the gates of the Agora, Sophisuke by your side.", entreeSophisuke: "“Hmph. Stay close: I know all their tricks.”", entreePasser: "Click or press a key to start", you: "You", replay: "🔄 Play again",
     hpYouLabel: "Your clarity", hpFoeLabel: "Openness of the other person",
     modeTitre: "Answer", modeQcm: "🔘 Multiple choice", modeQcmS: "Pick from four options",
     modeSaisie: "⌨️ Free typing", modeSaisieS: "Type the fallacy's name, your own way",
@@ -474,6 +497,35 @@ I18N.register({
   io.observe(choix);
   document.querySelector('.ag-descendre').addEventListener('click',e=>{ e.preventDefault(); choix.scrollIntoView({behavior:'smooth',block:'start'}); });
 })();
+// L'entrée sur l'Agora : les portes s'ouvrent, on avance seul, ou avec
+// Sophisuke si l'examen du dojo est réussi. Un clic ou une touche passe la scène.
+function entrerAgora(){
+  let dojo={}; try{ dojo=JSON.parse(localStorage.getItem('arene.dojo'))||{}; }catch(e){}
+  const avec=!!dojo.examen;
+  const o=document.createElement('div');
+  o.className='ag-entree'; o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); o.setAttribute('aria-labelledby','ae-titre');
+  const colonnes=[0,1,2,3,4,5].map(k=>{const x=120+k*76; return k===2||k===3?'':'<rect x="'+x+'" y="96" width="26" height="150"/>';}).join('');
+  o.innerHTML='<svg viewBox="0 0 640 300" aria-hidden="true" focusable="false">'+
+    '<defs><radialGradient id="ae-lum"><stop offset="0" stop-color="#fff6d8"/><stop offset=".5" stop-color="#ffcf8a"/><stop offset="1" stop-color="#ff8a5c" stop-opacity="0"/></radialGradient></defs>'+
+    '<g class="ae-temple"><path d="M90 74 320 16 550 74z"/><rect x="100" y="74" width="440" height="22" rx="2"/>'+colonnes+
+    '<rect x="96" y="246" width="448" height="12" rx="2"/><rect x="80" y="258" width="480" height="12" rx="2"/></g>'+
+    '<rect x="276" y="96" width="88" height="150" fill="#12070b"/>'+
+    '<ellipse class="ae-lumiere" cx="320" cy="190" rx="90" ry="110" fill="url(#ae-lum)"/>'+
+    '<rect class="ae-porte ae-g" x="276" y="96" width="44" height="150"/><rect class="ae-porte ae-d" x="320" y="96" width="44" height="150"/>'+
+    '<g class="ae-marcheurs">'+(avec?'<text x="290" y="296" font-size="46" text-anchor="middle">😼</text><text x="345" y="296" font-size="50" text-anchor="middle">🙋</text>':'<text x="320" y="296" font-size="50" text-anchor="middle">🙋</text>')+'</g>'+
+    '</svg><div class="ae-texte"><p class="ae-titre" id="ae-titre"></p>'+(avec?'<p class="ae-bulle"></p>':'')+'<p class="ae-passer"></p></div>';
+  o.querySelector('.ae-titre').textContent=I18N.t(avec?'entreeAvec':'entreeSeul');
+  if(avec) o.querySelector('.ae-bulle').textContent='😼 '+I18N.t('entreeSophisuke');
+  o.querySelector('.ae-passer').textContent=I18N.t('entreePasser');
+  document.body.appendChild(o);
+  let fini=false;
+  const partir=()=>{ if(fini) return; fini=true; document.removeEventListener('keydown',touche,true); o.remove(); startMatch(0); };
+  function touche(e){ if(e.key==='Tab') return; e.preventDefault(); partir(); }
+  setTimeout(()=>{ o.addEventListener('click',partir); document.addEventListener('keydown',touche,true); },300);
+  setTimeout(partir,6500);
+}
+// Arrivée depuis les portes du dojo (?entrer) : on entre directement.
+if(/[?&]entrer\b/.test(location.search)) window.addEventListener('load',()=>{ document.getElementById('intro').style.display!=='none'&&entrerAgora(); });
 // Les définitions et parades du dojo servent à la révision de fin de partie.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'dojo-data-en.js' : 'dojo-data.js') + '"><\/scr' + 'ipt>');
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');

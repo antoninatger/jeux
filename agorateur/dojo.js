@@ -1047,7 +1047,7 @@
       '</div>' +
       '<div class="portes__texte">' +
         '<p class="portes__sur" id="portes-titre"></p>' +
-        '<div class="portes__actions"><a class="btn-manga" href="index.html"></a>' +
+        '<div class="portes__actions"><a class="btn-manga" href="index.html?entrer"></a>' +
         '<button type="button" class="btn-manga btn-manga--clair"></button></div>' +
       '</div>';
     o.querySelector('.portes__sur').textContent = t('portesTitre');
