@@ -339,6 +339,10 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 .lanceur.vide { color: transparent; }
 .shuriken { position: absolute; z-index: 3; font-size: 2rem; line-height: 1; color: var(--encre); pointer-events: none; text-shadow: 0 0 6px #fff; }
 @media (prefers-reduced-motion: reduce) { .stand .morceau { animation: none; } }
+/* Le mode calme fige aussi les cibles. */
+.stand--calme .morceau { animation: none; }
+/* Le bouton flottant « Partager » ne couvre pas les boutons d'une épreuve ou d'une scène. */
+body:has(#ecran-epreuve:not([hidden])) .pj-flot, body:has(#ecran-scene:not([hidden])) .pj-flot { display: none; }
 .morceau:disabled { cursor: default; }
 .morceau.barre { text-decoration: line-through; color: var(--txt-secondaire); border-bottom-color: transparent; }
 .morceau.trouve { background: var(--acc); color: #fff; border-bottom-color: var(--encre); }
@@ -606,7 +610,7 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
       <p data-i18n-html="brief2">Chaque épreuve réussie t'apprend une <b>technique</b> utilisable sur l'Agora. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.</p>
     </div>
     <ul class="col-meta">
-      <li>⏱️ <span data-i18n="duree">10 à 15 minutes</span></li>
+      <li>⏱️ <span data-i18n="duree">25 à 35 minutes</span></li>
       <li>🎓 <span data-i18n="niveau">Collège · lycée</span></li>
       <li>⌨️ <span data-i18n="commandes">Souris, doigt ou clavier</span></li>
     </ul>
@@ -726,7 +730,7 @@ I18N.register({
     heroTitre: "Avant l'Agora, le dojo",
     brief1: "Le <b>Sensei Kakasophe</b> forme celles et ceux qui veulent tenir bon sur l'Agora. Quatre épreuves, quatre façons de <b>démasquer un sophisme</b> : le repérer, le localiser, le trouver dans un discours et y riposter.",
     brief2: "Chaque épreuve réussie t'apprend une <b>technique</b> utilisable sur l'Agora. Réussis l'<b>examen de la Porte</b> face à ton rival, Sophisuke, pour devenir <b>Œil Ouvert</b>.",
-    duree: "10 à 15 minutes", niveau: "Collège · lycée", commandes: "Souris, doigt ou clavier",
+    duree: "25 à 35 minutes", niveau: "Collège · lycée", commandes: "Souris, doigt ou clavier",
     entrer: "🥋 Entrer au dojo", directArene: "🏛️ Aller directement à l'Agora",
     sceneH: "Scène", suite: "Suite ➜", suivant: "Suivant ➜", continuer: "Continuer ➜",
     narrateur: "Récit", examinateur: "L'examinateur", toi: "Toi",
@@ -827,7 +831,7 @@ I18N.register({
     heroTitre: "Before the Agora, the dojo",
     brief1: "<b>Sensei Kakasophe</b> trains those who want to hold their ground at the Agora. Four trials, four ways to <b>unmask a fallacy</b>: spot it, pinpoint it, find it in a speech and fight back.",
     brief2: "Each trial you pass teaches you a <b>technique</b> you can use at the Agora. Pass the <b>Gate exam</b> against your rival, Sophisuke, to become an <b>Open Eye</b>.",
-    duree: "10 to 15 minutes", niveau: "Ages 11–18", commandes: "Mouse, touch or keyboard",
+    duree: "25 to 35 minutes", niveau: "Ages 11–18", commandes: "Mouse, touch or keyboard",
     entrer: "🥋 Enter the dojo", directArene: "🏛️ Go straight to the Agora",
     sceneH: "Scene", suite: "Next ➜", suivant: "Next ➜", continuer: "Continue ➜",
     narrateur: "Narrator", examinateur: "The examiner", toi: "You",

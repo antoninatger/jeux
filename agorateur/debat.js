@@ -520,7 +520,7 @@
     const v = $('accord-txt').value.trim();
     if (!v) return;
     D.accords.push(v);
-    D.histo.push({ type: 'accord' });
+    D.histo.push({ type: 'accord', a: v });
     $('accord-txt').value = '';
     rendreAccords();
     $('btn-annuler').disabled = false;
@@ -586,7 +586,7 @@
     if (h.type === 'compteur') { D.compteurs[h.i][h.g]--; D.ouverture = h.ouv; }
     else if (h.type === 'carton') D.cartons.pop();
     else if (h.type === 'dep') D.dep[h.k]--;
-    else if (h.type === 'accord') D.accords.pop();
+    else if (h.type === 'accord') { const k = D.accords.lastIndexOf(h.a); if (k >= 0) D.accords.splice(k, 1); }   // déjà retiré à la main : rien à faire
     rendreScene();
   });
 

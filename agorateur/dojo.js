@@ -406,7 +406,7 @@
       return b;
     });
     // Le stand de tir : la phrase en cibles, le lanceur en dessous.
-    const stand = el('div', 'stand');
+    const stand = el('div', 'stand' + (calme() ? ' stand--calme' : ''));
     const lanceur = el('div', 'lanceur', '✦'); lanceur.setAttribute('aria-hidden', 'true');
     stand.append(p, lanceur);
     const aide = el('p', 'touches', t('oeilGeste'));

@@ -236,6 +236,17 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 @media (max-width:700px){.ag-scene{width:135%;max-width:none;height:auto;margin-top:-4vh;}}
 /* Écran bas ou étroit : le bouton passe sous la scène. */
 @media (max-height:700px),(max-width:700px){.ag-scene{margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
+/* « Choisis ta partie » reste dans le premier écran, quelle que soit sa hauteur :
+   il est posé en bas de la fenêtre tant que les options ne sont pas en vue
+   (à gauche sur téléphone, pour laisser la place au bouton « Partager »). */
+.ag-descendre{position:fixed;bottom:16px;left:0;right:0;margin:0 auto;width:max-content;z-index:5;}
+@media (max-width:700px){.ag-descendre{right:auto;left:16px;margin:0;}}
+#intro.choix-vu .ag-descendre{visibility:hidden;}
+/* Pendant une partie : sur téléphone, l'accroche et l'auteur laissent la place
+   à la réplique ; le bouton flottant « Partager » ne couvre plus les boutons de
+   jeu (il revient à l'accueil et à l'écran de fin). */
+@media (max-width:700px){main:has(#battle[style*="block"]) > .titre-jeu .sub,main:has(#battle[style*="block"]) > .titre-jeu .author{display:none;}}
+body:has(#battle[style*="block"]) .pj-flot,body:has(#inter[style*="block"]) .pj-flot{display:none;}
 #ag-choix{max-width:620px;margin:28px auto 0;scroll-margin-top:calc(var(--entete-h,56px) + 12px);}
 /* Le dévoilement : le ciel d'abord, puis l'accroche et chaque phrase ; les
    options et les boutons quand on descend jusqu'à eux. */
@@ -472,7 +483,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
   </div>
   <p class="qprompt" id="qprompt"></p>
   <p class="souffle" id="souffle" aria-live="polite" hidden></p>
-  <div id="answers"></div>
+  <div id="answers" role="group" aria-labelledby="qprompt btxt"></div>
   <div id="riposte" aria-live="polite">
     <div id="rip-title"></div>
     <p id="rip-expl"></p>
@@ -552,6 +563,12 @@ I18N.register({
   const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ choix.classList.add('vu'); io.disconnect(); } },{threshold:.15});
   io.observe(choix);
   document.querySelector('.ag-descendre').addEventListener('click',e=>{ e.preventDefault(); choix.scrollIntoView({behavior:'smooth',block:'start'}); });
+})();
+// « Choisis ta partie » disparaît quand les options sont à l'écran.
+(function(){
+  const i=document.getElementById('intro'), choix=document.getElementById('ag-choix');
+  if(!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es=>{ i.classList.toggle('choix-vu', es.some(e=>e.isIntersecting)); },{threshold:.05}).observe(choix);
 })();
 // Le sélecteur d'avatar de l'accueil ; l'avatar de combat suit le choix.
 Avatar.monter(document.getElementById('avatar-choix'), e=>{ const a=document.querySelector('#f-you .femoji'); if(a) a.textContent=e; });

@@ -15,7 +15,7 @@ const FALLACIES = [
   {id:"halo",     l:"⭐ Autorité hors domaine", s:"célèbre ≠ compétent (effet de halo)"},
   {id:"preuve",   l:"🔄 Charge de la preuve inversée", s:"c'est à celui qui affirme de prouver"},
   {id:"posthoc",  l:"🔗 Cause imaginée", s:"« après donc à cause de » (corrélation ≠ causalité)"},
-  {id:"circulaire", l:"🔄 Raisonnement circulaire", s:"la conclusion sert de preuve à elle-même"},
+  {id:"circulaire", l:"🔁 Raisonnement circulaire", s:"la conclusion sert de preuve à elle-même"},
   {id:"hareng",     l:"🐟 Hareng rouge",            s:"changer de sujet pour éviter de répondre"},
   {id:"cherry",     l:"🍒 Cueillette des faits",     s:"ne montrer que les données qui arrangent"},
   {id:"whatabout",  l:"🪞 Et toi alors ?",           s:"pointer l'hypocrisie de l'autre sans répondre sur le fond"},
@@ -418,7 +418,7 @@ function startMatch(i, foeRevision){
   foeHP=foe.hp;
   techUsed={};
   if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; croises={}; }
-  if(i===0 && !revision) bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
+  if(i===0 && !revision){ bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0}; oublierPartie(); }
   ouverture=0; carnet=[]; phase="replique"; renderCarnet();
   ColFin.protegerSortie(true);
   $("end").style.display="none";
@@ -461,6 +461,8 @@ function renderTurn(){
   const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
   ligneEnCours=line; techActive={};
+  // Le carnet se range sous l'échange : la réplique à analyser reste en haut, même sur téléphone.
+  $("dialogue").after($("carnet"));
   $("souffle").hidden=true;
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
@@ -495,6 +497,8 @@ function renderTurn(){
     ansDiv.appendChild(b);
   });
   renderTechs();
+  // Au clavier, chaque réplique commence sur la première réponse.
+  ansDiv.firstElementChild.focus({preventScroll:true});
 }
 
 function answer(line,id,btn){
@@ -502,7 +506,7 @@ function answer(line,id,btn){
   // Seconde vue : l'erreur ne compte pas, la même réplique reste à jouer.
   if(!ok && btn && techActive.seconde){
     techActive.seconde=false;
-    if(!btn){ /* impact : pas de seconde chance */ } else if(btn.tagName==="INPUT"){ btn.value=""; btn.focus(); } else { btn.disabled=true; btn.classList.add("bad"); }
+    if(btn.tagName==="INPUT"){ btn.value=""; btn.focus(); } else { btn.disabled=true; btn.classList.add("bad"); }
     const r=$("riposte"); r.className="ko"; r.style.display="block";
     $("rip-title").textContent="🌀 Seconde vue ! Ton erreur ne compte pas : choisis encore.";
     $("rip-expl").innerHTML="";
@@ -574,6 +578,8 @@ function winMatch(){
   youHP=Math.min(YOUMAX,youHP+3);
   $("inter-btn").textContent="💬 Discuter avec "+next.name;
   $("inter-btn").onclick=()=>startMatch(foeIdx+1);
+  $("inter-btn").focus();
+  sauverPartie();
 }
 
 function scoreLine(){
@@ -591,7 +597,8 @@ function finDePartie(titre, msg){
       const lines=FOES.flatMap(f=>f.lines).filter(l=>rates.some(r=>r.id===l.t));
       startMatch(foeIdx, {name:"Révision", emoji:"📝", desc:"les répliques que tu as ratées", hp:lines.length, intro:"", lines:lines});
     },
-    onRecommencer: () => startMatch(0)
+    onRecommencer: () => startMatch(0),
+    rejouerTexte: "🔄 Recommencer depuis le début"
   });
   renderRevue();
 }
@@ -618,6 +625,7 @@ const PROJET_COMMUN="🥷 Sophisuke range son sabre : « Le vieux a raison sur u
 // Sans le dojo, le héros se dit qu'il aurait des choses à y apprendre.
 const PISTE_DOJO="🙋 « Tous ces pièges… Je parie qu'au dojo, j'aurais des tas de trucs à apprendre. » Le dojo t'attend depuis l'accueil.";
 function victory(){
+  oublierPartie();
   $("retry-btn").style.display="none";
   const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"Tu as discuté avec "+(SENSEI_BOSS?"les cinq personnages et ton propre maître":"les cinq personnages")+", et tu as compris ce qui motivait "+bilan.compris+" d'entre eux sur "+FOES.length+".<br><br>Tes réponses : "+bilan.question+" questions, "+bilan.reformulation+" reformulations, "+bilan.esquive+" esquives, "+bilan.massue+" coups de massue.<br><br>"+scoreLine()+"<br><br>Repérer un sophisme, c'est le début. Ce qui fait avancer une discussion, c'est poser des questions, reformuler fidèlement l'idée de l'autre (l'<b>homme de fer</b>), reconnaître ses bons arguments… et chercher à comprendre ce qui compte pour lui. 🤝";
   finDePartie(SENSEI_BOSS?"🥋 Dernière leçon réussie !":"🤝 Bâtisseur de dialogue !", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
@@ -629,10 +637,14 @@ function lose(){
   const title="Tu t'es laissé embarquer…";
   const msg=foeActuel().name+" t'a fait tomber dans trop de pièges. Pas grave : l'art de la discussion <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
   finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
-  const rb=$("retry-btn");
-  rb.style.display="inline-block";
+  // Reprendre ce personnage est le choix le plus utile : il passe en tête des boutons de fin.
+  $("retry-btn").style.display="none";
+  const rb=document.createElement("button");
+  rb.type="button"; rb.className="col-btn";
   rb.textContent="🔁 Reprendre la discussion avec "+foeActuel().name;
   rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx, revision); };
+  const actions=document.querySelector("#ecran-fin .col-actions");
+  if(actions){ actions.prepend(rb); rb.focus({preventScroll:true}); }
 }
 
 // Les boutons de techniques, sous les barres de conviction.
@@ -672,6 +684,28 @@ function useTech(id){
   const premier=document.querySelector(".abtn:not(:disabled)"); if(premier) premier.focus();
 }
 
+// ─── Sauvegarde de la partie ───
+// Entre deux personnages, la partie est gardée (clé « arene.partie ») : une
+// séance interrompue reprend au personnage suivant, avec la lucidité, le score
+// et le bilan acquis. Une nouvelle partie, ou la victoire, l'efface.
+const CLE_PARTIE="arene.partie";
+function sauverPartie(){
+  try{ localStorage.setItem(CLE_PARTIE, JSON.stringify({v:1, foe:foeIdx+1, youHP:youHP, correctCount:correctCount, totalCount:totalCount, joue:joue, croises:croises, bilan:bilan})); }catch(e){}
+}
+function oublierPartie(){ try{ localStorage.removeItem(CLE_PARTIE); }catch(e){} }
+// Le personnage à reprendre doit exister : sans le boss (dojo effacé), FOES n'a que cinq entrées.
+function lirePartie(){
+  let s=null; try{ s=JSON.parse(localStorage.getItem(CLE_PARTIE)); }catch(e){}
+  return (s && s.v===1 && s.foe>0 && s.foe<FOES.length) ? s : null;
+}
+function reprendrePartie(){
+  const s=lirePartie(); if(!s) return;
+  youHP=Math.max(1,Math.min(YOUMAX,s.youHP)); correctCount=s.correctCount||0; totalCount=s.totalCount||0;
+  joue=s.joue||[]; croises=s.croises||{};
+  bilan=Object.assign({question:0, reformulation:0, massue:0, esquive:0, compris:0}, s.bilan);
+  startMatch(s.foe);
+}
+
 // Accueil : ce que le dojo a déjà appris au joueur, et l'avatar de qui a passé l'examen.
 (function(){
   const etat=$("dojo-etat");
@@ -682,6 +716,17 @@ function useTech(id){
   }
   { const a=document.querySelector("#f-you .femoji"); if(a&&window.Avatar) a.textContent=Avatar.emoji();
     if(a&&DOJO_P.examen){ const c=document.createElement("span"); c.className="ceinture"; c.textContent="🥋"; c.title="ceinture noire : examen du dojo réussi"; a.after(c); } }
+  // Une partie en cours : on propose d'abord de la reprendre.
+  const sp=lirePartie(), zone=document.querySelector(".intro-btns");
+  if(sp && zone){
+    const f=FOES[sp.foe], b=document.createElement("button");
+    b.type="button"; b.className="bigbtn"; b.id="reprendre-partie";
+    b.textContent="▶ Reprendre ma partie : "+f.emoji+" "+f.name+" ("+(sp.foe+1)+"/"+FOES.length+")";
+    b.onclick=reprendrePartie;
+    zone.prepend(b);
+    const n=zone.querySelector('[data-i18n="enter"]');
+    if(n){ n.removeAttribute("data-i18n"); n.textContent="💬 Nouvelle partie sur l'Agora"; }
+  }
 })();
 
 // ─── Mode « saisie libre » ───
@@ -954,6 +999,7 @@ function renderCarnet(){
 function renderComprendre(){
   const foe=foeActuel(), dlg=foe.dlg;
   phase="comprendre";
+  $("qprompt").before($("carnet"));
   tourFini=true; cancelAnimationFrame(attaqueRAF); attaqueRAF=null;
   document.querySelector(".bubble").hidden=true; $("piste").hidden=true;
   $("dialogue").hidden=true; $("riposte").style.display="none"; $("nextbtn").style.display="none";
