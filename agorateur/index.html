@@ -290,6 +290,19 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 /* Options de l'accueil : mode de réponse et difficulté */
 .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;text-align:left;}
 .options fieldset{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:12px 14px;}
+.options .av{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center;}
+.av-apercu{font-size:3.4rem;line-height:1;grid-row:1/span 2;padding:4px 8px;}
+.av-grille{display:flex;flex-direction:column;gap:6px;}
+.av-ligne{display:flex;flex-wrap:wrap;align-items:center;gap:4px;}
+.av-titre{font-weight:800;font-size:var(--fs-100);color:var(--mu);min-width:4.5em;}
+.options .av-choix{position:relative;padding:0;display:inline-flex;}
+.av-choix input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer;}
+.av-choix span{font-size:1.5rem;line-height:1;padding:5px 6px;border-radius:10px;border:2px solid transparent;}
+.av-choix input:checked + span{border-color:var(--acc);background:rgba(255,255,255,.06);}
+.av-choix input:focus-visible + span{outline:3px solid var(--acc);outline-offset:2px;}
+.fighter{position:relative;}
+.ceinture{position:absolute;top:12px;left:calc(50% + 12px);font-size:1.1rem;}
+@media (max-width:560px){.options .av{grid-template-columns:1fr;justify-items:center;}.av-apercu{grid-row:auto;}.av-ligne{justify-content:center;}.av-titre{min-width:0;width:100%;text-align:center;}}
 .options legend{font-family:'Alfa Slab One',serif;font-size:var(--fs-200);color:var(--acc);padding:0 6px;}
 .options label{display:flex;gap:9px;align-items:flex-start;padding:8px 6px;border-radius:10px;cursor:pointer;font-weight:800;line-height:1.3;}
 .options label:hover{background:rgba(255,255,255,.04);}
@@ -417,6 +430,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
       <label><input type="radio" name="diff" value="facile" checked><span><span data-i18n="diffFacile">🌱 Facile</span><span class="asub" data-i18n="diffFacileS">Pas de chrono, et les indices te sont toujours donnés</span></span></label>
       <label><input type="radio" name="diff" value="difficile"><span><span data-i18n="diffDifficile">🔥 Difficile</span><span class="asub" data-i18n="diffDifficileS">Chrono, et les indices se méritent</span></span></label>
     </fieldset>
+    <fieldset class="av" id="avatar-choix"></fieldset>
   </div>
   <div class="intro-btns">
     <a class="bigbtn gold" href="dojo.html" data-i18n="dojo">🥋 S'entraîner au dojo</a>
@@ -486,6 +500,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
+<script src="avatar.js"></script>
 <script>
 I18N.register({
   fr: {
@@ -538,6 +553,8 @@ I18N.register({
   io.observe(choix);
   document.querySelector('.ag-descendre').addEventListener('click',e=>{ e.preventDefault(); choix.scrollIntoView({behavior:'smooth',block:'start'}); });
 })();
+// Le sélecteur d'avatar de l'accueil ; l'avatar de combat suit le choix.
+Avatar.monter(document.getElementById('avatar-choix'), e=>{ const a=document.querySelector('#f-you .femoji'); if(a) a.textContent=e; });
 // L'entrée sur l'Agora : une courte cinématique. On marche vers le temple,
 // seul, ou rejoint par Sophisuke (qui tombe du ciel) si l'examen du dojo est
 // réussi ; les portes s'ouvrent, la caméra plonge dans la lumière.
@@ -600,7 +617,7 @@ function entrerAgora(){
     '</svg><div class="ae-barre ae-barre--h"></div><div class="ae-barre ae-barre--b"></div><div class="ae-flash"></div>'+
     '<div class="ae-texte"><p class="ae-titre" id="ae-titre"></p>'+'<p class="ae-bulle'+(avec?'':' ae-bulle--heros')+'"></p>'+'</div><p class="ae-passer"></p>';
   o.querySelector('.ae-titre').textContent=I18N.t(avec?'entreeAvec':'entreeSeul');
-  o.querySelector('.ae-bulle').textContent=avec?'🥷 '+I18N.t('entreeSophisuke'):'🙋 '+I18N.t('entreeSeulPensee');
+  o.querySelector('.ae-bulle').textContent=avec?'🥷 '+I18N.t('entreeSophisuke'):Avatar.emoji()+' '+I18N.t('entreeSeulPensee');
   o.querySelector('.ae-passer').textContent=I18N.t('entreePasser');
   document.body.appendChild(o);
   let fini=false;

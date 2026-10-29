@@ -618,7 +618,7 @@ const PISTE_DOJO="🙋 “All these traps… I bet I'd have loads to learn at th
 function victory(){
   $("retry-btn").style.display="none";
   const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"You talked with "+(SENSEI_BOSS?"all five characters and your own master":"all five characters")+", and understood what drove "+bilan.compris+" of them out of "+FOES.length+".<br><br>Your answers: "+bilan.question+" questions, "+bilan.reformulation+" rephrasings, "+bilan.esquive+" dodges, "+bilan.massue+" sledgehammer blows.<br><br>"+scoreLine()+"<br><br>Spotting a fallacy is only the start. What moves a discussion forward is asking questions, faithfully rephrasing the other person's idea (the <b>steelman</b>), acknowledging their good arguments… and trying to understand what matters to them. 🤝";
-  finDePartie(SENSEI_BOSS?"🥋 Last lesson passed!":"🤝 Dialogue builder!", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
+  finDePartie(SENSEI_BOSS?"🥋 Last lesson passed!":"🤝 Dialogue builder!", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
 }
 
 function lose(){
@@ -626,7 +626,7 @@ function lose(){
   $("nextbtn").style.display="none";
   const title="You got carried away…";
   const msg=foeActuel().name+" led you into too many traps. No worries: the art of discussion is something you <b>practise</b> more than something you learn.<br><br>"+scoreLine()+"<br><br>Read the replies carefully: straw man, false dilemma, appeal to popularity… Once you know them, you see them everywhere!";
-  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
+  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
   const rb=$("retry-btn");
   rb.style.display="inline-block";
   rb.textContent="🔁 Resume the discussion with "+foeActuel().name;
@@ -678,7 +678,8 @@ function useTech(id){
     if(DOJO_EP.clochettes) noms.push("🔔 Bells (+1 clarity)".replace(/^\S+\s/,""));
     etat.textContent=noms.length?"🥋 Dojo techniques ready for the Agora: "+noms.join(", ")+".":"🥋 New: train at the dojo first to earn techniques you can use here.";
   }
-  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥋"; a.title="black belt: dojo exam passed"; } }
+  { const a=document.querySelector("#f-you .femoji"); if(a&&window.Avatar) a.textContent=Avatar.emoji();
+    if(a&&DOJO_P.examen){ const c=document.createElement("span"); c.className="ceinture"; c.textContent="🥋"; c.title="black belt: dojo exam passed"; a.after(c); } }
 })();
 
 // ─── “Free typing” mode ───

@@ -620,7 +620,7 @@ const PISTE_DOJO="🙋 « Tous ces pièges… Je parie qu'au dojo, j'aurais des 
 function victory(){
   $("retry-btn").style.display="none";
   const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"Tu as discuté avec "+(SENSEI_BOSS?"les cinq personnages et ton propre maître":"les cinq personnages")+", et tu as compris ce qui motivait "+bilan.compris+" d'entre eux sur "+FOES.length+".<br><br>Tes réponses : "+bilan.question+" questions, "+bilan.reformulation+" reformulations, "+bilan.esquive+" esquives, "+bilan.massue+" coups de massue.<br><br>"+scoreLine()+"<br><br>Repérer un sophisme, c'est le début. Ce qui fait avancer une discussion, c'est poser des questions, reformuler fidèlement l'idée de l'autre (l'<b>homme de fer</b>), reconnaître ses bons arguments… et chercher à comprendre ce qui compte pour lui. 🤝";
-  finDePartie(SENSEI_BOSS?"🥋 Dernière leçon réussie !":"🤝 Bâtisseur de dialogue !", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
+  finDePartie(SENSEI_BOSS?"🥋 Dernière leçon réussie !":"🤝 Bâtisseur de dialogue !", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
 }
 
 function lose(){
@@ -628,7 +628,7 @@ function lose(){
   $("nextbtn").style.display="none";
   const title="Tu t'es laissé embarquer…";
   const msg=foeActuel().name+" t'a fait tomber dans trop de pièges. Pas grave : l'art de la discussion <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
-  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
+  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
   const rb=$("retry-btn");
   rb.style.display="inline-block";
   rb.textContent="🔁 Reprendre la discussion avec "+foeActuel().name;
@@ -680,7 +680,8 @@ function useTech(id){
     if(DOJO_EP.clochettes) noms.push("🔔 Clochettes (+1 lucidité)".replace(/^\S+\s/,""));
     etat.textContent=noms.length?"🥋 Techniques du dojo prêtes pour l'Agora : "+noms.join(", ")+".":"🥋 Nouveau : passe d'abord par le dojo pour t'entraîner et gagner des techniques utilisables ici.";
   }
-  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥋"; a.title="ceinture noire : examen du dojo réussi"; } }
+  { const a=document.querySelector("#f-you .femoji"); if(a&&window.Avatar) a.textContent=Avatar.emoji();
+    if(a&&DOJO_P.examen){ const c=document.createElement("span"); c.className="ceinture"; c.textContent="🥋"; c.title="ceinture noire : examen du dojo réussi"; a.after(c); } }
 })();
 
 // ─── Mode « saisie libre » ───

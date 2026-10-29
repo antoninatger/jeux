@@ -118,7 +118,7 @@
     rival:       () => ({ emoji: DOJO.rival.emoji, nom: DOJO.rival.nom }),
     narrateur:   () => ({ emoji: '📜', nom: t('narrateur') }),
     examinateur: () => ({ emoji: '❔', nom: t('examinateur') }),
-    toi:         () => ({ emoji: '🙋', nom: t('toi') })
+    toi:         () => ({ emoji: window.Avatar ? Avatar.emoji() : '🙋', nom: t('toi') })
   };
   function scene(planches, fin) {
     let i = 0;
@@ -599,7 +599,7 @@
     // l'arrête en posant la bonne parade dessus (glisser), ou d'un clic.
     const piste = el('div', 'piste'); piste.setAttribute('aria-hidden', 'true');
     const fleche = el('div', 'fleche', '➳');
-    piste.append(el('span', 'piste__tireur', '🥷'), fleche, el('span', 'piste__cible', '🙋'));
+    piste.append(el('span', 'piste__tireur', '🥷'), fleche, el('span', 'piste__cible', window.Avatar ? Avatar.emoji() : '🙋'));
     const zone = el('div', 'choix-liste');
     const choix = shuffle(item.choix.slice());
     let fait = false, tire = false;
