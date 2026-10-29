@@ -205,6 +205,7 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 .ae-texte{position:absolute;z-index:4;left:50%;top:calc(9vh + clamp(10px,3vh,32px));transform:translateX(-50%);width:min(92vw,680px);text-align:center;opacity:0;padding:10px 18px 14px;border-radius:24px;background:radial-gradient(ellipse at center,rgba(11,6,20,.78),rgba(11,6,20,.45) 60%,transparent 100%);animation:ae-texte .7s ease-out 3.1s forwards;}
 .ae-titre{font-family:'Alfa Slab One',serif;font-size:clamp(1.3rem,1rem + 2vw,2.2rem);line-height:1.2;text-shadow:0 2px 0 #000,0 0 24px rgba(255,93,115,.6);}
 .ae-bulle{display:inline-block;margin-top:12px;background:#1a0d22;color:#f3e6ff;border:2px solid #9b5de5;box-shadow:0 0 18px rgba(155,93,229,.5);border-radius:16px;padding:8px 14px;font-weight:800;}
+.ae-bulle--heros{background:#fdeef0;color:#2a1708;border-color:#e4b478;box-shadow:none;}
 .ae-passer{position:absolute;z-index:4;right:16px;bottom:calc(9vh - 2.2em);font-size:var(--fs-200);color:#e9c9cf;font-weight:700;opacity:.85;}
 @keyframes ae-fondu{from{opacity:0}}
 @keyframes ae-sortie{to{opacity:0}}
@@ -276,6 +277,8 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 .tech-btn .asub{display:block;font-size:var(--fs-100);font-weight:600;color:var(--mu);}
 .tech-btn:hover:not(:disabled){border-style:solid;transform:translateY(-1px);}
 .tech-btn:disabled{opacity:.45;cursor:default;}
+.souffle{margin:8px 0;background:#1a0d22;color:#f3e6ff;border:2px solid #9b5de5;box-shadow:0 0 14px rgba(155,93,229,.4);border-radius:14px;padding:8px 12px;font-weight:800;font-size:var(--fs-200);}
+.souffle[hidden]{display:none;}
 .tech-btn.active{opacity:1;border-style:solid;border-color:#e4b478;box-shadow:0 0 0 2px rgba(228,180,120,.45);}
 
 /* interstitial + end */
@@ -454,6 +457,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <p class="btxt" id="btxt"></p>
   </div>
   <p class="qprompt" id="qprompt"></p>
+  <p class="souffle" id="souffle" aria-live="polite" hidden></p>
   <div id="answers"></div>
   <div id="riposte" aria-live="polite">
     <div id="rip-title"></div>
@@ -492,7 +496,7 @@ I18N.register({
     brief1: `🏛️ Bienvenue sur l'Agora, la place où l'on débat ! Cinq personnages vont tenter de te <b>convaincre par tous les moyens</b> : éthique (<b>ethos</b>), émotion (<b>pathos</b>), logique (<b>logos</b>)… beaucoup d'<b>arguments fallacieux</b>, et parfois de <b>vrais bons arguments</b>.`,
     brief2: `🥋 Commence par le <b>dojo</b> : tu y apprends à reconnaître les sophismes et tu gagnes des techniques. 🎯 Puis, sur l'Agora, <b>repère les pièges</b>, <b>fais avancer l'échange</b> et <b>comprends ce qui motive</b> chaque personnage, jusqu'à devenir <b>Bâtisseur de dialogue</b>.`,
     brief3: `🏫 Et en classe, passe au <b>vrai débat</b> : l'Agora s'affiche au tableau, deux équipes argumentent, et toute la classe traque les sophismes en direct.`,
-    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", avisLien: "💬 Une idée, un bug, un avis ? Écris-moi", entreeSeul: "Tu franchis seul les portes de l'Agora. Cinq personnages t'attendent. Ouvre l'œil !", entreeAvec: "Tu franchis les portes de l'Agora, Sophisuke à tes côtés.", entreeSophisuke: "« Hmph. Reste près de moi : je connais toutes leurs ruses. »", entreePasser: "Clique ou appuie sur une touche pour commencer", retourAccueil: "Accueil d'Agorateur", retourJeux: "Retour aux jeux", quitterPartieTitre: "Quitter la partie ?", quitterPartieTexte: "Tu reviens à l'accueil d'Agorateur. La partie en cours sera perdue.", quitterPartieOui: "Quitter", quitterPartieNon: "Continuer", you: "Toi", replay: "🔄 Rejouer",
+    enter: "💬 Rejoindre l'Agora", dojo: "🥋 S'entraîner au dojo", descendre: "▼ Choisis ta partie", classe: "🏫 Organiser un débat en classe", avisLien: "💬 Une idée, un bug, un avis ? Écris-moi", entreeSeul: "Tu franchis seul les portes de l'Agora. Cinq personnages t'attendent. Ouvre l'œil !", entreeAvec: "Tu franchis les portes de l'Agora, Sophisuke à tes côtés.", entreeSophisuke: "« Hmph. Reste près de moi : je connais toutes leurs ruses. »", entreeSeulPensee: "« Sans entraînement… J'aurais sûrement des trucs à apprendre au dojo, moi. »", entreePasser: "Clique ou appuie sur une touche pour commencer", retourAccueil: "Accueil d'Agorateur", retourJeux: "Retour aux jeux", quitterPartieTitre: "Quitter la partie ?", quitterPartieTexte: "Tu reviens à l'accueil d'Agorateur. La partie en cours sera perdue.", quitterPartieOui: "Quitter", quitterPartieNon: "Continuer", you: "Toi", replay: "🔄 Rejouer",
     hpYouLabel: "Ta lucidité", hpFoeLabel: "Ouverture de ton interlocuteur",
     modeTitre: "Réponse", modeQcm: "🔘 Choix multiple", modeQcmS: "Choisis parmi quatre propositions",
     modeSaisie: "⌨️ Saisie libre", modeSaisieS: "Écris le nom du sophisme, à ta façon",
@@ -507,7 +511,7 @@ I18N.register({
     brief1: `🏛️ Welcome to the Agora, the square where people debate! Five characters will try to <b>convince you by any means</b>: ethics (<b>ethos</b>), emotion (<b>pathos</b>), logic (<b>logos</b>)… plenty of <b>fallacious arguments</b>, and sometimes <b>genuinely good arguments</b>.`,
     brief2: `🥋 Start at the <b>dojo</b>: learn to recognise fallacies and earn techniques. 🎯 Then, on the Agora, <b>spot the traps</b>, <b>move the exchange forward</b> and <b>understand what drives</b> each character, until you become a <b>Dialogue builder</b>.`,
     brief3: `🏫 And in class, move on to a <b>real debate</b>: the Agora goes up on the board, two teams make their case, and the whole class hunts for fallacies live.`,
-    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", avisLien: "💬 An idea, a bug, feedback? Write to me", entreeSeul: "You walk through the gates of the Agora alone. Five characters are waiting. Keep your eyes open!", entreeAvec: "You walk through the gates of the Agora, Sophisuke by your side.", entreeSophisuke: "“Hmph. Stay close: I know all their tricks.”", entreePasser: "Click or press a key to start", retourAccueil: "Agorator home", retourJeux: "Back to games", quitterPartieTitre: "Leave the game?", quitterPartieTexte: "You go back to the Agorator home page. The current game will be lost.", quitterPartieOui: "Leave", quitterPartieNon: "Keep playing", you: "You", replay: "🔄 Play again",
+    enter: "💬 Join the Agora", dojo: "🥋 Train at the dojo", descendre: "▼ Choose your game", classe: "🏫 Run a debate in class", avisLien: "💬 An idea, a bug, feedback? Write to me", entreeSeul: "You walk through the gates of the Agora alone. Five characters are waiting. Keep your eyes open!", entreeAvec: "You walk through the gates of the Agora, Sophisuke by your side.", entreeSophisuke: "“Hmph. Stay close: I know all their tricks.”", entreeSeulPensee: "“No training… I'd surely have a thing or two to learn at the dojo.”", entreePasser: "Click or press a key to start", retourAccueil: "Agorator home", retourJeux: "Back to games", quitterPartieTitre: "Leave the game?", quitterPartieTexte: "You go back to the Agorator home page. The current game will be lost.", quitterPartieOui: "Leave", quitterPartieNon: "Keep playing", you: "You", replay: "🔄 Play again",
     hpYouLabel: "Your clarity", hpFoeLabel: "Openness of the other person",
     modeTitre: "Answer", modeQcm: "🔘 Multiple choice", modeQcmS: "Pick from four options",
     modeSaisie: "⌨️ Free typing", modeSaisieS: "Type the fallacy's name, your own way",
@@ -594,9 +598,9 @@ function entrerAgora(){
     '</g></g>'+
     '<g class="ae-duo">'+duo+'</g>'+
     '</svg><div class="ae-barre ae-barre--h"></div><div class="ae-barre ae-barre--b"></div><div class="ae-flash"></div>'+
-    '<div class="ae-texte"><p class="ae-titre" id="ae-titre"></p>'+(avec?'<p class="ae-bulle"></p>':'')+'</div><p class="ae-passer"></p>';
+    '<div class="ae-texte"><p class="ae-titre" id="ae-titre"></p>'+'<p class="ae-bulle'+(avec?'':' ae-bulle--heros')+'"></p>'+'</div><p class="ae-passer"></p>';
   o.querySelector('.ae-titre').textContent=I18N.t(avec?'entreeAvec':'entreeSeul');
-  if(avec) o.querySelector('.ae-bulle').textContent='🥷 '+I18N.t('entreeSophisuke');
+  o.querySelector('.ae-bulle').textContent=avec?'🥷 '+I18N.t('entreeSophisuke'):'🙋 '+I18N.t('entreeSeulPensee');
   o.querySelector('.ae-passer').textContent=I18N.t('entreePasser');
   document.body.appendChild(o);
   let fini=false;

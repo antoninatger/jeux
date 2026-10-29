@@ -7,7 +7,7 @@
    ========================================================================= */
 const DOJO = {
 
-  sensei: { nom: "Sensei Kakasophe", emoji: "🥷" },
+  sensei: { nom: "Sensei Kakasophe", emoji: "🧑‍🦳" },
   rival:  { nom: "Sophisuke", emoji: "🥷" },
 
   // ─── The Forbidden Scroll: each fallacy is a technique ───

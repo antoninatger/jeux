@@ -308,6 +308,70 @@ const DIALOGUE = [
      k:"'Thank you. It's the first time anyone has let me say what remains to be done.'"},
    ]},
 ];
+// ─── The surprise boss: the dojo sensei ───
+// Only if the dojo exam is passed: after the five characters, Kakasophe
+// comes to give his last lesson: do not take your master at his word.
+const SENSEI_BOSS=(()=>{ try{ return !!(JSON.parse(localStorage.getItem("arene.dojo"))||{}).examen; }catch(e){ return false; } })();
+if(SENSEI_BOSS){
+  FOES.push({name:"Sensei Kakasophe", emoji:"🧑‍🦳", desc:"your own master", hp:8, boss:true,
+   intro:"Surprise! The lights of the Agora dim. A small orange book snaps shut. “Last lesson, my student.” Sophisuke freezes: “…Master?!”",
+   lines:[
+    {type:"epl", t:"“I have taught the art of debate for thirty years. If I tell you it's true, you can believe me.”",
+     a:"ethos", e:"Your master gives <b>no argument</b>: he relies on his legitimacy and thirty years of experience. That's <b>ethos</b>. Even from someone you respect, it proves nothing."},
+    {type:"fall", t:"“I have read this little orange book forty times. Its author is a great novelist: when he says vaccines are dangerous, I listen.”",
+     a:"halo", opts:["popu","genehat","preuve"],
+     e:"Being a great novelist does not make you competent in medicine. That's <b>authority outside its field</b> (halo effect): we credit someone with knowledge they don't have."},
+    {type:"fall", t:"“My lessons are right, since I am the one teaching them. And I only teach right lessons.”",
+     a:"circulaire", opts:["preuve","halo","dilemme"],
+     e:"The conclusion (“my lessons are right”) is its own proof. That's <b>circular reasoning</b>: the loop goes round, but nothing is demonstrated."},
+    {type:"fall", t:"“Look: my five best students all won their debates. My method never fails.”",
+     a:"cherry", opts:["genehat","popu","posthoc"],
+     e:"He only shows the students who succeeded. What about those who lost? What about Sophisuke? That's <b>cherry-picking</b>: keeping only the data that suits you."},
+    {type:"fall", t:"“You criticise me for being late? And you, did you hand in your homework on time this year?”",
+     a:"whatabout", opts:["adhom","hareng","paille"],
+     e:"He turns the criticism back on you instead of answering it. That's <b>“What about you?”</b>: even if you're late too, it doesn't make his lateness acceptable."},
+    {type:"fall", t:"“Either you follow my path, or you end up like Sophisuke. Choose.”",
+     a:"dilemme", opts:["pente","adhom","popu"],
+     e:"Only two paths? You can learn from your master without following him blindly. That's a <b>false dilemma</b>. (Sophisuke, offended: “Hey!”)"},
+    {type:"fall", t:"“Prove me wrong. You can't? Then I'm right.”",
+     a:"preuve", opts:["circulaire","dilemme","hareng"],
+     e:"The burden of proof lies with whoever makes the claim. Not being able to contradict him right away doesn't make him right: that's the <b>reversed burden of proof</b>."},
+    {type:"sain", t:"“Don't believe me because I'm your master. Check my sources: if they hold, the argument holds.”",
+     a:"valable", opts:["halo","circulaire","preuve"],
+     e:"At last, the real lesson. Judging an argument by its <b>evidence</b>, not by the person who makes it, is a <b>valid argument</b>, and the whole spirit of the dojo."},
+   ]});
+  DIALOGUE.push({motiv:"He is afraid of having trained disciples who take him at his word: he wants to know if you think for yourself, even against him.",
+   leurres:["He wants to prove he is still the best: he can't stand a student surpassing him.","He has gone over to the sophists: he too prefers winning to being right.","He wants Sophisuke back: he is jealous that his former disciple walks by your side."],
+   braque:"Kakasophe reopens his little book: “You hit hard, but you don't listen. You still have a long way to go.”",
+   esquive:"Kakasophe sighs: “Running from disagreement is not what I taught you.”",
+   fin:"Kakasophe puts his book away and smiles under his mask: “I have nothing left to teach you. You didn't take me at my word.” Sophisuke, under his breath: “…Not bad, beginner.”",
+   lignes:[
+    {q:"“What makes you so sure of yourself this time?”",
+     r:"“Your experience matters, master. But you taught me to ask for evidence: what's yours?”",
+     k:"“Sophisuke took me at my word. The day he saw me make a mistake, he left.”"},
+    {q:"“What do you like so much about this author?”",
+     r:"“You admire this novelist, I understand. But on vaccines, what do doctors and studies say?”",
+     k:"“A student who repeats his master is a parrot, not a student.”"},
+    {q:"“How would you know if one of your lessons was wrong?”",
+     r:"“You say your lessons are right. I often believe you. But what shows it, apart from you?”",
+     k:"“I have been wrong, sometimes. Nobody ever told me to my face.”"},
+    {q:"“And your students who lost, what became of them?”",
+     r:"“Your best students won, that's true. To judge your method, shouldn't we count those who lost too?”",
+     k:"“My students who lost… I never count them. I should have.”"},
+    {q:"“Let's talk about my homework later. Why do my questions about your lateness bother you?”",
+     r:"“Fine, I'm not perfect either. But my question still stands: why are you late?”",
+     k:"“I'm getting old. Who will check my lessons when I'm gone?”"},
+    {q:"“Why do you say Sophisuke ended up badly?”",
+     r:"“You're afraid I'll get lost the way you think he did. But I can listen to your lessons without following all of them, can't I?”",
+     k:"“Sophisuke didn't end up badly. He just stopped believing me without checking.”"},
+    {q:"“What would make you change your mind?”",
+     r:"“You're the one making the claim, so it's up to you to prove it. I'm happy to look with you: where do we start?”",
+     k:"“If I win this debate, it means I taught you badly.”"},
+    {q:"“Is that what you expected from me all along?”",
+     r:"“You're right: I'll check your sources like anyone else's. You're the one who taught me that.”",
+     k:"“There. That was the last lesson.”"},
+   ]});
+}
 FOES.forEach((f,i)=>{ f.dlg=DIALOGUE[i]; f.lines.forEach((l,j)=>{ l.d=DIALOGUE[i].lignes[j]; l.dlg=DIALOGUE[i]; l.foe=f; }); });
 
 let foeIdx=0, lineIdx=0, youHP=6, foeHP=0, order=[];
@@ -333,6 +397,10 @@ const TECHS=[
   {id:"seconde", ep:"oeil",     l:"🌀 Second Sight", s:"your next mistake costs nothing"},
   {id:"contre",  ep:"contre",   l:"⚡ Counter-attack", s:"right: +1 openness; wrong: −2 clarity"},
 ].filter(x=>DOJO_EP[x.ep]);
+// Agora ally: if the dojo exam is passed, Sophisuke goes along with the
+// player and, once per fight, whispers the name of the manipulation.
+if(DOJO_P.examen) TECHS.push({id:"souffle", l:"🥷 Ask Sophisuke", s:"he names the trick"});
+const SOUFFLE_COMS=["“Pfft. I used to teach that trick.”", "“Well spotted. You are improving… a little.”", "“Hmph. Even I couldn't have spotted it better.”", "“That one doesn't work on us anymore.”"];
 let techUsed={}, techActive={}, ligneEnCours=null;
 // The three goals of a match: clarity (youHP), the other person's openness, and what you understood of them.
 let ouverture=0, carnet=[], phase="replique";
@@ -391,6 +459,7 @@ function renderTurn(){
   const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
   ligneEnCours=line; techActive={};
+  $("souffle").hidden=true;
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
@@ -467,6 +536,8 @@ function answer(line,id,btn){
   const rip=$("riposte");
   rip.className=ok?"ok":"ko"; rip.style.display="block";
   $("rip-expl").innerHTML=line.e;
+  // Sophisuke commente de temps en temps une ruse bien repérée.
+  if(ok && DOJO_P.examen && FALLACIES.some(f=>f.id===line.a) && Math.random()<.4){ const c=document.createElement("p"); c.className="souffle"; c.textContent="🥷 Sophisuke : "+SOUFFLE_COMS[Math.floor(Math.random()*SOUFFLE_COMS.length)]; $("rip-expl").appendChild(c); }
   if(youHP<=0){
     $("nextbtn").style.display="block";
     $("nextbtn").textContent="😵 You got carried away… ➜";
@@ -540,10 +611,14 @@ function renderRevue(){
   }).join("")+"</dl>";
 }
 
+// The ending for two: after the sensei, Sophisuke and the hero start a project together.
+const PROJET_COMMUN="🥷 Sophisuke sheathes his sword: “The old man is right about one thing: what you know is worthless if you keep it to yourself.” Together, you decide to open your own Agora dojo, to teach others to debate without getting carried away. Your first students? Your class: start a real debate with “Run a debate in class” on the home page.";
+// Without the dojo, the hero thinks there is something to learn there.
+const PISTE_DOJO="🙋 “All these traps… I bet I'd have loads to learn at the dojo.” The dojo is waiting for you on the home page.";
 function victory(){
   $("retry-btn").style.display="none";
-  const msg="You talked with all five characters, and understood what drove "+bilan.compris+" of them out of 5.<br><br>Your answers: "+bilan.question+" questions, "+bilan.reformulation+" rephrasings, "+bilan.esquive+" dodges, "+bilan.massue+" sledgehammer blows.<br><br>"+scoreLine()+"<br><br>Spotting a fallacy is only the start. What moves a discussion forward is asking questions, faithfully rephrasing the other person's idea (the <b>steelman</b>), acknowledging their good arguments… and trying to understand what matters to them. 🤝";
-  finDePartie("🤝 Dialogue builder!", msg);
+  const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"You talked with "+(SENSEI_BOSS?"all five characters and your own master":"all five characters")+", and understood what drove "+bilan.compris+" of them out of "+FOES.length+".<br><br>Your answers: "+bilan.question+" questions, "+bilan.reformulation+" rephrasings, "+bilan.esquive+" dodges, "+bilan.massue+" sledgehammer blows.<br><br>"+scoreLine()+"<br><br>Spotting a fallacy is only the start. What moves a discussion forward is asking questions, faithfully rephrasing the other person's idea (the <b>steelman</b>), acknowledging their good arguments… and trying to understand what matters to them. 🤝";
+  finDePartie(SENSEI_BOSS?"🥋 Last lesson passed!":"🤝 Dialogue builder!", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
 }
 
 function lose(){
@@ -551,7 +626,7 @@ function lose(){
   $("nextbtn").style.display="none";
   const title="You got carried away…";
   const msg=foeActuel().name+" led you into too many traps. No worries: the art of discussion is something you <b>practise</b> more than something you learn.<br><br>"+scoreLine()+"<br><br>Read the replies carefully: straw man, false dilemma, appeal to popularity… Once you know them, you see them everywhere!";
-  finDePartie("😵 "+title, msg);
+  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
   const rb=$("retry-btn");
   rb.style.display="inline-block";
   rb.textContent="🔁 Resume the discussion with "+foeActuel().name;
@@ -586,6 +661,10 @@ function useTech(id){
     const enJeu=[...document.querySelectorAll(".abtn:not(:disabled)")];
     const fausses=shuffle(enJeu.filter(b=>b.dataset.id!==ligneEnCours.a));
     fausses.slice(0,Math.max(0,enJeu.length-2)).forEach(b=>{b.disabled=true;b.classList.add("dim");});
+  } else if(id==="souffle"){
+    const a=ligneEnCours.a, nom=libelle(ligneEnCours.a).l.replace(/^\S+\s/,"");
+    const dit=a==="valable" ? "“Nothing to report… it's a real argument. It pains me to say it.”" : EPL.some(o=>o.id===a) ? "“His lever? "+nom+". Watch how he does it.”" : "“I know this trick: "+nom+". I used to teach it to the sophists.”";
+    const p=$("souffle"); p.textContent="🥷 Sophisuke, whispering: "+dit; p.hidden=false;
   } else techActive[id]=true;
   renderTechs();
   const premier=document.querySelector(".abtn:not(:disabled)"); if(premier) premier.focus();
@@ -599,7 +678,7 @@ function useTech(id){
     if(DOJO_EP.clochettes) noms.push("🔔 Bells (+1 clarity)".replace(/^\S+\s/,""));
     etat.textContent=noms.length?"🥋 Dojo techniques ready for the Agora: "+noms.join(", ")+".":"🥋 New: train at the dojo first to earn techniques you can use here.";
   }
-  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥷"; a.title="ninja avatar: dojo exam passed"; } }
+  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥋"; a.title="black belt: dojo exam passed"; } }
 })();
 
 // ─── “Free typing” mode ───

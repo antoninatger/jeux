@@ -310,6 +310,70 @@ const DIALOGUE = [
      k:"« Merci. C'est la première fois qu'on me laisse dire ce qui reste à faire. »"},
    ]},
 ];
+// ─── Le boss surprise : le sensei du dojo ───
+// Seulement si l'examen du dojo est réussi : après les cinq personnages,
+// Kakasophe vient donner sa dernière leçon, ne pas croire son maître sur parole.
+const SENSEI_BOSS=(()=>{ try{ return !!(JSON.parse(localStorage.getItem("arene.dojo"))||{}).examen; }catch(e){ return false; } })();
+if(SENSEI_BOSS){
+  FOES.push({name:"Sensei Kakasophe", emoji:"🧑‍🦳", desc:"ton propre maître", hp:8, boss:true,
+   intro:"Surprise ! Les lumières de l'Agora baissent. Un petit livre orange se referme. « Dernière leçon, mon élève. » Sophisuke se fige : « …Maître ?! »",
+   lines:[
+    {type:"epl", t:"« Trente ans que j'enseigne l'art du débat. Si je te dis que c'est vrai, tu peux me croire. »",
+     a:"ethos", e:"Ton maître ne donne <b>aucun argument</b> : il mise sur sa légitimité et ses trente ans d'expérience. C'est de l'<b>ethos</b>. Même venant de quelqu'un que tu respectes, ça ne prouve rien."},
+    {type:"fall", t:"« Ce petit livre orange, je l'ai lu quarante fois. Son auteur est un immense romancier : quand il dit que les vaccins sont dangereux, je l'écoute. »",
+     a:"halo", opts:["popu","genehat","preuve"],
+     e:"Être un grand romancier ne rend pas compétent en médecine. C'est l'<b>autorité hors domaine</b> (effet de halo) : on prête à quelqu'un un savoir qu'il n'a pas."},
+    {type:"fall", t:"« Mes leçons sont justes, puisque c'est moi qui les enseigne. Et je n'enseigne que des leçons justes. »",
+     a:"circulaire", opts:["preuve","halo","dilemme"],
+     e:"La conclusion (« mes leçons sont justes ») sert de preuve à elle-même. C'est un <b>raisonnement circulaire</b> : la boucle tourne, mais rien n'est démontré."},
+    {type:"fall", t:"« Regarde : mes cinq meilleurs élèves ont tous gagné leurs débats. Ma méthode ne rate jamais. »",
+     a:"cherry", opts:["genehat","popu","posthoc"],
+     e:"Il ne montre que les élèves qui ont réussi. Et ceux qui ont perdu ? Et Sophisuke ? C'est la <b>cueillette des faits</b> : ne garder que les données qui arrangent."},
+    {type:"fall", t:"« Tu me reproches mes retards ? Et toi, tes devoirs, tu les as rendus à l'heure cette année ? »",
+     a:"whatabout", opts:["adhom","hareng","paille"],
+     e:"Il retourne la critique contre toi au lieu d'y répondre. C'est le <b>« Et toi alors ? »</b> : même si tu es en retard aussi, ça ne rend pas ses retards acceptables."},
+    {type:"fall", t:"« Soit tu suis ma voie, soit tu finis comme Sophisuke. Choisis. »",
+     a:"dilemme", opts:["pente","adhom","popu"],
+     e:"Il n'y aurait que deux chemins ? On peut apprendre de son maître sans le suivre aveuglément. C'est un <b>faux dilemme</b>. (Sophisuke, vexé : « Hé ! »)"},
+    {type:"fall", t:"« Prouve-moi que j'ai tort. Tu ne peux pas ? Alors j'ai raison. »",
+     a:"preuve", opts:["circulaire","dilemme","hareng"],
+     e:"C'est à celui qui affirme d'apporter la preuve. Ne pas pouvoir le contredire tout de suite ne lui donne pas raison : c'est la <b>charge de la preuve inversée</b>."},
+    {type:"sain", t:"« Ne me crois pas parce que je suis ton maître. Vérifie mes sources : si elles tiennent, l'argument tient. »",
+     a:"valable", opts:["halo","circulaire","preuve"],
+     e:"Enfin, la vraie leçon. Juger un argument sur ses <b>preuves</b> et non sur la personne qui le porte, c'est un <b>argument valable</b>, et c'est tout l'esprit du dojo."},
+   ]});
+  DIALOGUE.push({motiv:"Il a peur d'avoir formé des disciples qui le croient sur parole : il veut savoir si tu penses par toi-même, même face à lui.",
+   leurres:["Il veut prouver qu'il reste le meilleur : il ne supporte pas qu'un élève le dépasse.","Il est passé chez les sophistes : lui aussi préfère gagner que d'avoir raison.","Il veut récupérer Sophisuke : il est jaloux que son ancien disciple marche à tes côtés."],
+   braque:"Kakasophe rouvre son petit livre : « Tu frappes fort, mais tu n'écoutes pas. Il te reste du chemin. »",
+   esquive:"Kakasophe soupire : « Fuir le désaccord, ce n'est pas ce que je t'ai appris. »",
+   fin:"Kakasophe range son livre et sourit sous son masque : « Je n'ai plus rien à t'apprendre. Tu ne m'as pas cru sur parole. » Sophisuke, à voix basse : « …Pas mal, débutant. »",
+   lignes:[
+    {q:"« Qu'est-ce qui te rend si sûr de toi, cette fois ? »",
+     r:"« Ton expérience compte, maître. Mais tu m'as appris à demander des preuves : lesquelles as-tu ? »",
+     k:"« Sophisuke me croyait sur parole. Le jour où il m'a vu me tromper, il est parti. »"},
+    {q:"« Qu'est-ce qui te plaît tant chez cet auteur ? »",
+     r:"« Tu admires ce romancier, je le comprends. Mais sur les vaccins, que disent les médecins et les études ? »",
+     k:"« Un élève qui répète son maître, c'est un perroquet, pas un élève. »"},
+    {q:"« Comment saurais-tu, toi, si une de tes leçons était fausse ? »",
+     r:"« Tu dis que tes leçons sont justes. Je te crois souvent. Mais qu'est-ce qui le montre, en dehors de toi ? »",
+     k:"« J'ai eu tort, parfois. Personne ne me l'a jamais dit en face. »"},
+    {q:"« Et tes élèves qui ont perdu, que sont-ils devenus ? »",
+     r:"« Tes meilleurs élèves ont gagné, c'est vrai. Pour juger ta méthode, il faudrait compter aussi ceux qui ont perdu, non ? »",
+     k:"« Mes élèves qui ont perdu… je ne les compte jamais. J'aurais dû. »"},
+    {q:"« Mes devoirs, parlons-en après. Pourquoi mes questions sur tes retards te dérangent-elles ? »",
+     r:"« D'accord, je ne suis pas parfait non plus. Mais ma question tient toujours : pourquoi ces retards ? »",
+     k:"« Je me fais vieux. Qui vérifiera mes leçons quand je ne serai plus là ? »"},
+    {q:"« Pourquoi dis-tu que Sophisuke a mal fini ? »",
+     r:"« Tu as peur que je me perde comme toi tu crois qu'il s'est perdu. Mais je peux écouter tes leçons sans les suivre toutes, non ? »",
+     k:"« Sophisuke n'a pas mal fini. Il a juste cessé de me croire sans vérifier. »"},
+    {q:"« Qu'est-ce qui te ferait changer d'avis ? »",
+     r:"« Tu affirmes, alors c'est à toi de prouver. Je veux bien chercher avec toi : par où commencer ? »",
+     k:"« Si je gagne ce débat, c'est que je t'ai mal appris. »"},
+    {q:"« C'est ça que tu attendais de moi depuis le début ? »",
+     r:"« Tu as raison : je vérifierai tes sources comme celles de n'importe qui. C'est toi qui me l'as appris. »",
+     k:"« Voilà. C'était ça, la dernière leçon. »"},
+   ]});
+}
 FOES.forEach((f,i)=>{ f.dlg=DIALOGUE[i]; f.lines.forEach((l,j)=>{ l.d=DIALOGUE[i].lignes[j]; l.dlg=DIALOGUE[i]; l.foe=f; }); });
 
 let foeIdx=0, lineIdx=0, youHP=6, foeHP=0, order=[];
@@ -335,6 +399,10 @@ const TECHS=[
   {id:"seconde", ep:"oeil",     l:"🌀 Seconde vue", s:"ta prochaine erreur ne coûte rien"},
   {id:"contre",  ep:"contre",   l:"⚡ Contre-attaque", s:"bien vu : +1 ouverture ; raté : −2 lucidité"},
 ].filter(x=>DOJO_EP[x.ep]);
+// Allié de l'Agora : si l'examen du dojo est réussi, Sophisuke accompagne le
+// joueur et, une fois par combat, lui souffle le nom de la manipulation.
+if(DOJO_P.examen) TECHS.push({id:"souffle", l:"🥷 Demander à Sophisuke", s:"il nomme la ruse"});
+const SOUFFLE_COMS=["« Pfff. Cette ruse-là, je l'enseignais. »", "« Bien vu. Tu progresses… un peu. »", "« Hmph. Même moi, je ne l'aurais pas mieux repérée. »", "« Elle ne marche plus sur nous, celle-là. »"];
 let techUsed={}, techActive={}, ligneEnCours=null;
 // Les trois buts d'un match : la lucidité (youHP), l'ouverture de l'autre, et ce qu'on a compris de lui.
 let ouverture=0, carnet=[], phase="replique";
@@ -393,6 +461,7 @@ function renderTurn(){
   const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
   ligneEnCours=line; techActive={};
+  $("souffle").hidden=true;
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
@@ -469,6 +538,8 @@ function answer(line,id,btn){
   const rip=$("riposte");
   rip.className=ok?"ok":"ko"; rip.style.display="block";
   $("rip-expl").innerHTML=line.e;
+  // Sophisuke commente de temps en temps une ruse bien repérée.
+  if(ok && DOJO_P.examen && FALLACIES.some(f=>f.id===line.a) && Math.random()<.4){ const c=document.createElement("p"); c.className="souffle"; c.textContent="🥷 Sophisuke : "+SOUFFLE_COMS[Math.floor(Math.random()*SOUFFLE_COMS.length)]; $("rip-expl").appendChild(c); }
   if(youHP<=0){
     $("nextbtn").style.display="block";
     $("nextbtn").textContent="😵 Tu t'es laissé embarquer… ➜";
@@ -542,10 +613,14 @@ function renderRevue(){
   }).join("")+"</dl>";
 }
 
+// La fin à deux : après le sensei, Sophisuke et le héros se lancent un projet commun.
+const PROJET_COMMUN="🥷 Sophisuke range son sabre : « Le vieux a raison sur un point : ce qu'on sait ne vaut rien si on le garde pour soi. » Ensemble, vous décidez d'ouvrir votre propre dojo de l'Agora, pour apprendre aux autres à débattre sans se laisser embarquer. Vos premiers élèves ? Ta classe : lance un vrai débat avec « Organiser un débat en classe », sur l'accueil.";
+// Sans le dojo, le héros se dit qu'il aurait des choses à y apprendre.
+const PISTE_DOJO="🙋 « Tous ces pièges… Je parie qu'au dojo, j'aurais des tas de trucs à apprendre. » Le dojo t'attend depuis l'accueil.";
 function victory(){
   $("retry-btn").style.display="none";
-  const msg="Tu as discuté avec les cinq personnages, et tu as compris ce qui motivait "+bilan.compris+" d'entre eux sur 5.<br><br>Tes réponses : "+bilan.question+" questions, "+bilan.reformulation+" reformulations, "+bilan.esquive+" esquives, "+bilan.massue+" coups de massue.<br><br>"+scoreLine()+"<br><br>Repérer un sophisme, c'est le début. Ce qui fait avancer une discussion, c'est poser des questions, reformuler fidèlement l'idée de l'autre (l'<b>homme de fer</b>), reconnaître ses bons arguments… et chercher à comprendre ce qui compte pour lui. 🤝";
-  finDePartie("🤝 Bâtisseur de dialogue !", msg);
+  const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"Tu as discuté avec "+(SENSEI_BOSS?"les cinq personnages et ton propre maître":"les cinq personnages")+", et tu as compris ce qui motivait "+bilan.compris+" d'entre eux sur "+FOES.length+".<br><br>Tes réponses : "+bilan.question+" questions, "+bilan.reformulation+" reformulations, "+bilan.esquive+" esquives, "+bilan.massue+" coups de massue.<br><br>"+scoreLine()+"<br><br>Repérer un sophisme, c'est le début. Ce qui fait avancer une discussion, c'est poser des questions, reformuler fidèlement l'idée de l'autre (l'<b>homme de fer</b>), reconnaître ses bons arguments… et chercher à comprendre ce qui compte pour lui. 🤝";
+  finDePartie(SENSEI_BOSS?"🥋 Dernière leçon réussie !":"🤝 Bâtisseur de dialogue !", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
 }
 
 function lose(){
@@ -553,7 +628,7 @@ function lose(){
   $("nextbtn").style.display="none";
   const title="Tu t'es laissé embarquer…";
   const msg=foeActuel().name+" t'a fait tomber dans trop de pièges. Pas grave : l'art de la discussion <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
-  finDePartie("😵 "+title, msg);
+  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO));
   const rb=$("retry-btn");
   rb.style.display="inline-block";
   rb.textContent="🔁 Reprendre la discussion avec "+foeActuel().name;
@@ -588,6 +663,10 @@ function useTech(id){
     const enJeu=[...document.querySelectorAll(".abtn:not(:disabled)")];
     const fausses=shuffle(enJeu.filter(b=>b.dataset.id!==ligneEnCours.a));
     fausses.slice(0,Math.max(0,enJeu.length-2)).forEach(b=>{b.disabled=true;b.classList.add("dim");});
+  } else if(id==="souffle"){
+    const a=ligneEnCours.a, nom=libelle(ligneEnCours.a).l.replace(/^\S+\s/,"");
+    const dit=a==="valable" ? "« Rien à signaler… c'est un vrai argument. Ça m'écorche la bouche de le dire. »" : EPL.some(o=>o.id===a) ? "« Son ressort ? "+nom+". Regarde bien comment il s'y prend. »" : "« Je connais cette ruse : "+nom+". Je l'enseignais chez les sophistes. »";
+    const p=$("souffle"); p.textContent="🥷 Sophisuke, à voix basse : "+dit; p.hidden=false;
   } else techActive[id]=true;
   renderTechs();
   const premier=document.querySelector(".abtn:not(:disabled)"); if(premier) premier.focus();
@@ -601,7 +680,7 @@ function useTech(id){
     if(DOJO_EP.clochettes) noms.push("🔔 Clochettes (+1 lucidité)".replace(/^\S+\s/,""));
     etat.textContent=noms.length?"🥋 Techniques du dojo prêtes pour l'Agora : "+noms.join(", ")+".":"🥋 Nouveau : passe d'abord par le dojo pour t'entraîner et gagner des techniques utilisables ici.";
   }
-  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥷"; a.title="avatar ninja : examen du dojo réussi"; } }
+  if(DOJO_P.examen){ const a=document.querySelector("#f-you .femoji"); if(a){ a.textContent="🥋"; a.title="ceinture noire : examen du dojo réussi"; } }
 })();
 
 // ─── Mode « saisie libre » ───

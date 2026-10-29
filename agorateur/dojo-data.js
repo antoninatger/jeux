@@ -8,7 +8,7 @@
    ========================================================================= */
 const DOJO = {
 
-  sensei: { nom: "Sensei Kakasophe", emoji: "🥷" },
+  sensei: { nom: "Sensei Kakasophe", emoji: "🧑‍🦳" },
   rival:  { nom: "Sophisuke", emoji: "🥷" },
 
   // ─── Le Rouleau Interdit : chaque sophisme est une technique ───
