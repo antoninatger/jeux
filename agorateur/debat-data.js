@@ -276,7 +276,7 @@ const DEBAT = {
 
   // ─── Les noms d'équipe ───
   familles: {
-    grecs:   { nom: "Les écoles grecques", noms: ["les Péripatéticiens", "les Stoïciens", "les Épicuriens", "les Cyniques", "l'Académie", "le Lycée"] },
+    grecs:   { nom: "Les écoles grecques", noms: ["les Pythagoriciens", "les Stoïciens", "les Épicuriens", "les Cyniques", "l'Académie", "le Lycée"] },
     figures: { nom: "Les figures du dialogue", noms: ["les Socrate", "les Hypatie", "les Montaigne", "les Olympe de Gouges", "les Mandela", "les Simone Veil"] },
     dojo:    { nom: "Les noms du dojo", noms: ["les Œils Ouverts", "les Feuilles Tranchées", "les Clochettes", "les Hommes de Fer", "les Points d'Accord", "les Démasqueurs"] },
     animaux: { nom: "Les animaux", noms: ["les Chouettes", "les Dauphins", "les Abeilles", "les Corbeaux", "les Éléphants", "les Renards"] }
