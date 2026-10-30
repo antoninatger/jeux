@@ -676,7 +676,7 @@ function useTech(id){
   if(etat){
     const noms=TECHS.map(x=>x.l.replace(/^\S+\s/,""));
     if(DOJO_EP.clochettes) noms.push("🔔 Bells (+1 clarity)".replace(/^\S+\s/,""));
-    etat.textContent=noms.length?"🥋 Dojo techniques ready for the Agora: "+noms.join(", ")+".":"🥋 New: train at the dojo first to earn techniques you can use here.";
+    etat.textContent=noms.length?"🥋 Dojo techniques ready for Agorator: "+noms.join(", ")+".":"🥋 New: train at the dojo first to earn techniques you can use here.";
   }
   { const a=document.querySelector("#f-you .femoji"); if(a&&window.Avatar) a.textContent=Avatar.emoji();
     if(a&&DOJO_P.examen){ const c=document.createElement("span"); c.className="ceinture"; c.textContent="🥋"; c.title="black belt: dojo exam passed"; a.after(c); } }
