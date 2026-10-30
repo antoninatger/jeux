@@ -678,7 +678,7 @@ function useTech(id){
   if(etat){
     const noms=TECHS.map(x=>x.l.replace(/^\S+\s/,""));
     if(DOJO_EP.clochettes) noms.push("🔔 Clochettes (+1 lucidité)".replace(/^\S+\s/,""));
-    etat.textContent=noms.length?"🥋 Techniques du dojo prêtes pour l'Agora : "+noms.join(", ")+".":"🥋 Nouveau : passe d'abord par le dojo pour t'entraîner et gagner des techniques utilisables ici.";
+    etat.textContent=noms.length?"🥋 Techniques du dojo prêtes pour Agorateur : "+noms.join(", ")+".":"🥋 Nouveau : passe d'abord par le dojo pour t'entraîner et gagner des techniques utilisables ici.";
   }
   { const a=document.querySelector("#f-you .femoji"); if(a&&window.Avatar) a.textContent=Avatar.emoji();
     if(a&&DOJO_P.examen){ const c=document.createElement("span"); c.className="ceinture"; c.textContent="🥋"; c.title="ceinture noire : examen du dojo réussi"; a.after(c); } }
