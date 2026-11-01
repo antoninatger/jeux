@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faux documents · Jeux et ressources pédagogiques</title>
+<meta name="description" content="Créer une fausse une de journal, un faux post, une fausse affiche, une fausse fiche d'encyclopédie ou un faux article de presse pour la classe : image à télécharger, impression ou projection.">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+/* =====================================================================
+   Faux documents — générateur de faux documents pour la classe.
+   Même famille que faux-messages.html : une page autonome, rien n'est
+   envoyé sur Internet, export en image (html2canvas servi depuis vendor/).
+   Chaque gabarit est un pastiche : aucun nom, logo ni marque réels.
+   ===================================================================== */
+:root{--bg:#f4f1ea;--panel:#fff;--ink:#1d1b18;--doux:#6b665d;--bord:#e2ddd2;--acc:#1f6f5c;--acc2:#e9f3ef;--warn:#b3261e;--r:12px}
+@media (prefers-color-scheme:dark){:root{--bg:#16150f;--panel:#201e19;--ink:#f1ede4;--doux:#a8a196;--bord:#38352d;--acc:#5cc4a6;--acc2:#1f3530}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.haut{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bord);background:var(--panel);position:sticky;top:0;z-index:20}
+.haut h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.haut a.retour{color:var(--acc);font-size:13.5px;text-decoration:none;white-space:nowrap;border:1px solid var(--bord);border-radius:8px;padding:5px 9px}
+.btn{border:1px solid var(--bord);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap;min-height:36px}
+.btn:hover{border-color:var(--acc)}
+.btn.prim{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+@media (prefers-color-scheme:dark){.btn.prim{color:#0d1f1a}}
+.btn.mini{padding:4px 9px;font-size:13px;min-height:32px}
+.btn.warn{color:var(--warn)}
+input:focus,select:focus,textarea:focus,button:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+input[type=text],input[type=number],select,textarea{background:var(--bg);border:1px solid var(--bord);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
+textarea{resize:vertical;line-height:1.4}
+input[type=file]{display:none}
+@media (max-width:520px){ .haut h1{display:none} .haut .langue{margin-left:auto} }
+
+/* ---------- Choix du gabarit ---------- */
+.gabarits{max-width:1280px;margin:0 auto;padding:16px 20px 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.gab{border:1px solid var(--bord);background:var(--panel);border-radius:var(--r);padding:8px 8px 9px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13.5px;font-weight:600}
+.gab:hover{border-color:var(--acc)}
+.gab[aria-pressed=true]{border-color:var(--acc);background:var(--acc2);box-shadow:inset 0 0 0 1px var(--acc)}
+.gab svg{width:100%;max-width:120px;height:62px;display:block}
+@media (max-width:720px){
+  .gabarits{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:104px;overflow-x:auto;padding:12px 16px 2px;scrollbar-width:none}
+  .gab svg{height:48px}
+  .gab{font-size:12.5px}
+}
+
+/* ---------- Mise en page ---------- */
+.page{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;max-width:1280px;margin:0 auto;padding:16px 20px 30px}
+.form{align-self:start;position:sticky;top:66px;max-height:calc(100vh - 80px);overflow:auto;padding-right:4px}
+.bloc{background:var(--panel);border:1px solid var(--bord);border-radius:var(--r);padding:12px 14px;margin-bottom:10px}
+.bloc>summary,.bloc h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin:0;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between}
+.bloc>summary::after{content:"+";font-size:16px;line-height:1}
+.bloc[open]>summary::after{content:"–"}
+.bloc[open]>summary,.bloc h2{margin-bottom:8px}
+.champ{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--doux);margin-top:8px}
+.champ:first-of-type{margin-top:0}
+.champ .ex{font-size:11.5px;opacity:.85}
+.champ.case{flex-direction:row;align-items:center;gap:7px;color:var(--ink);font-size:13.5px}
+.champ.case input{width:18px;height:18px;margin:0}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.duo .champ{margin-top:8px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg .btn{flex:1;font-size:13px}
+.seg .btn[aria-pressed=true]{background:var(--acc2);border-color:var(--acc);font-weight:600}
+.img-champ{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.img-champ .vign{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid var(--bord)}
+.aide{font-size:12.5px;color:var(--doux);margin:6px 0 0}
+.outils{display:flex;gap:6px;flex-wrap:wrap}
+
+.apercu{min-width:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.cadre{width:100%;display:flex;justify-content:center}
+.cadre-in{transform-origin:top left;flex:none}
+.cadre .doc{box-shadow:0 10px 34px rgba(0,0,0,.18)}
+.astuce{font-size:12.5px;color:var(--doux);text-align:center;max-width:520px;margin:0}
+.doc [data-k]{cursor:pointer}
+.doc [data-k]:hover{outline:2px dashed rgba(245,159,0,.8);outline-offset:2px}
+.doc.export [data-k]:hover,#projo .doc [data-k]:hover{outline:0}
+@media (max-width:900px){
+  .page{display:flex;flex-direction:column-reverse;padding:12px 16px 24px;gap:14px}
+  .form{position:static;max-height:none;overflow:visible;padding:0;width:100%}
+  .astuce{display:none}
+}
+
+#msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;max-width:calc(100vw - 30px);text-align:center}
+#msgBox.on{opacity:1}
+#projo{position:fixed;inset:0;background:#18181b;z-index:50;display:none;align-items:center;justify-content:center;overflow:hidden}
+#projo.on{display:flex}
+#projo .cadre-in{transform-origin:center center}
+#projo .fermer{position:fixed;top:12px;right:12px;background:#27272a;border-color:#3f3f46;color:#eee;z-index:2}
+
+/* ---------- Mention « document fictif » (image et impression seulement) ---------- */
+.fictif{display:none;position:absolute;right:10px;bottom:6px;font:600 9px/1 system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;opacity:.55;z-index:5}
+.doc.export .fictif{display:block}
+/* html2canvas dessine mal les césures automatiques : on les coupe pour l'image */
+.doc.export *{hyphens:manual!important;-webkit-hyphens:manual!important}
+.doc{position:relative;overflow:hidden;flex:none}
+.doc img{display:block}
+.vide{display:none}
+
+/* =====================================================================
+   1. UNE DE JOURNAL
+   ===================================================================== */
+.une{width:820px;background:#fbfaf5;color:#121212;padding:30px 38px 26px;font-family:'Source Serif 4',Georgia,serif}
+.une .u-tete{display:grid;grid-template-columns:150px 1fr 150px;align-items:center;gap:14px}
+.une .u-oreille{border:1px solid #121212;padding:7px 8px;font:600 10.5px/1.3 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;text-align:center}
+.une .u-oreille b{display:block;font:400 18px/1.1 'Playfair Display',serif;text-transform:none;letter-spacing:0;margin-top:3px}
+.une .u-titre-j{font:700 68px/1 'Playfair Display',Georgia,serif;text-align:center;margin:0;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;min-width:0}
+.une .u-devise{text-align:center;font-style:italic;font-size:12.5px;margin:6px 0 8px;color:#444}
+.une .u-filet{display:flex;justify-content:space-between;border-top:1px solid #121212;border-bottom:4px double #121212;padding:5px 2px;font:600 11px/1.2 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em}
+.une .u-corps{display:grid;grid-template-columns:minmax(0,1fr) 214px;gap:24px;margin-top:20px}
+.une .u-rub{font:700 12px/1 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.12em;color:#b3001b;margin-bottom:8px}
+.une .u-titre{font:700 47px/1.04 'Playfair Display',Georgia,serif;margin:0 0 12px;letter-spacing:-.01em}
+.une .u-chapo{font:500 18px/1.4 'Fraunces',Georgia,serif;margin:0 0 14px}
+.une .u-fig{margin:0 0 14px}
+.une .u-fig img{width:100%;height:320px;object-fit:cover;filter:saturate(.85) contrast(1.03)}
+.une .u-fig figcaption{font:400 11px/1.35 'DM Sans',Arial,sans-serif;color:#555;margin-top:5px;font-style:italic}
+.une .u-texte{column-count:2;column-gap:22px;column-rule:1px solid #d8d5cc;font-size:13.6px;line-height:1.52;text-align:justify;hyphens:auto}
+.une .u-texte p{margin:0 0 8px}
+.une .u-texte p:first-child::first-letter{font:700 52px/.85 'Playfair Display',serif;float:left;margin:4px 6px 0 0}
+.une .u-signe{font:700 11px/1 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;margin:0 0 8px;column-span:all}
+.une .u-suite{font:italic 12px/1.3 'Source Serif 4',serif;color:#444}
+.une .u-side{border-left:1px solid #121212;padding-left:20px}
+.une .u-side .u-lab{font:700 11px/1 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.14em;border-bottom:3px solid #121212;padding-bottom:6px;margin-bottom:10px}
+.une .u-breve{border-bottom:1px solid #cfccc2;padding-bottom:12px;margin-bottom:12px}
+.une .u-breve:last-child{border:0}
+.une .u-breve h3{font:700 19px/1.15 'Playfair Display',serif;margin:0 0 6px}
+.une .u-breve p{font-size:12.8px;line-height:1.45;margin:0}
+.une .u-pied{margin-top:20px;border-top:3px solid #121212;padding-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;font:600 12px/1.3 'DM Sans',Arial,sans-serif}
+.une .u-pied span{display:block;color:#b3001b;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}
+/* Variante tabloïd */
+.une.tabloid{background:#fff;font-family:'DM Sans',Arial,sans-serif;padding-top:24px}
+.une.tabloid .u-tete{grid-template-columns:1fr 170px}
+.une.tabloid .u-oreille:first-child{display:none}
+.une.tabloid .u-titre-j{background:#d6001c;color:#fff;font:400 74px/1 'Alfa Slab One',serif;text-align:left;padding:10px 18px 12px;letter-spacing:-.01em;text-transform:uppercase}
+.une.tabloid .u-oreille{background:#ffe100;border:0;transform:rotate(4deg);padding:12px 8px;font-size:11px;box-shadow:3px 3px 0 #121212}
+.une.tabloid .u-oreille b{font:400 22px/1 'Alfa Slab One',serif}
+.une.tabloid .u-devise{text-align:left;font-style:normal;font-weight:600;margin:6px 0 6px}
+.une.tabloid .u-filet{border-top:0;border-bottom:3px solid #121212;background:#121212;color:#fff;padding:6px 10px}
+.une.tabloid .u-rub{display:inline-block;background:#121212;color:#fff;padding:6px 9px}
+.une.tabloid .u-titre{font:400 62px/.96 'Alfa Slab One',serif;text-transform:uppercase;letter-spacing:-.01em}
+.une.tabloid .u-chapo{font:700 19px/1.35 'DM Sans',Arial,sans-serif;background:#ffe100;display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:2px 6px;line-height:1.6}
+.une.tabloid .u-chapo-w{margin-bottom:14px}
+.une.tabloid .u-fig img{filter:saturate(1.15) contrast(1.05);height:340px}
+.une.tabloid .u-texte{font-family:'DM Sans',Arial,sans-serif;font-size:13.4px;text-align:left}
+.une.tabloid .u-texte p:first-child::first-letter{font:400 46px/.9 'Alfa Slab One',serif;color:#d6001c}
+.une.tabloid .u-side{border:0;padding:0}
+.une.tabloid .u-side .u-lab{background:#d6001c;color:#fff;border:0;padding:7px 9px}
+.une.tabloid .u-breve{border:2px solid #121212;padding:10px;margin-bottom:12px}
+.une.tabloid .u-breve:last-child{border:2px solid #121212}
+.une.tabloid .u-breve h3{font:400 18px/1.1 'Alfa Slab One',serif;text-transform:uppercase}
+.une.tabloid .u-pied{border-top:6px solid #d6001c}
+.une.tabloid .u-pied span{color:#d6001c}
+
+/* =====================================================================
+   2. ARTICLE DE PRESSE EN LIGNE
+   ===================================================================== */
+.article{width:860px;background:#fff;color:#1a1a1a;font-family:'Source Serif 4',Georgia,serif;--a:#c8102e}
+.article.c-bleu{--a:#1a4f9c}.article.c-vert{--a:#0f7b5f}.article.c-noir{--a:#111}
+.article .a-nav{background:#e8e8eb;padding:9px 14px;display:flex;align-items:center;gap:12px;font:13px/1 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#333}
+.article .a-pts{display:flex;gap:7px}
+.article .a-pts i{width:12px;height:12px;border-radius:50%;background:#ff5f57}
+.article .a-pts i:nth-child(2){background:#febc2e}.article .a-pts i:nth-child(3){background:#28c840}
+.article .a-fl{color:#888;letter-spacing:6px}
+.article .a-url{flex:1;background:#fff;border-radius:16px;padding:7px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#444}
+.article .a-url b{font-weight:400;color:#111}
+.article .a-url svg{width:11px;height:11px;vertical-align:-1px;margin-right:6px}
+.article .a-site{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:18px 32px 14px;font-family:'DM Sans',Arial,sans-serif}
+.article .a-menu{font-size:13px;display:flex;align-items:center;gap:8px;color:#333}
+.article .a-menu i{display:inline-block;width:18px;height:2px;background:#111;box-shadow:0 -5px 0 #111,0 5px 0 #111;margin-right:4px}
+.article .a-logo{font:700 38px/1 'Playfair Display',Georgia,serif;letter-spacing:-.01em;white-space:nowrap}
+.article .a-compte{justify-self:end;display:flex;gap:12px;align-items:center;font-size:13px}
+.article .a-abo{background:var(--a);color:#fff;font-weight:700;padding:8px 13px;border-radius:3px}
+.article .a-rubs{display:flex;justify-content:center;gap:22px;border-top:1px solid #e3e3e3;border-bottom:1px solid #e3e3e3;padding:10px 0;font:600 12.5px/1 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#444}
+.article .a-rubs .on{color:var(--a);box-shadow:0 12px 0 -9px var(--a)}
+.article .a-main{padding:28px 92px 34px}
+.article .a-rub{font:700 13px/1 'DM Sans',Arial,sans-serif;color:var(--a);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.article .a-titre{font:700 40px/1.12 'Playfair Display',Georgia,serif;margin:0 0 14px;letter-spacing:-.005em}
+.article .a-chapo{font-size:19.5px;line-height:1.45;color:#333;margin:0 0 16px}
+.article .a-reserve{display:inline-flex;align-items:center;gap:7px;font:700 12.5px/1 'DM Sans',Arial,sans-serif;margin-bottom:14px}
+.article .a-reserve i{width:12px;height:12px;border-radius:50%;background:#f2c200}
+.article .a-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #e3e3e3;padding-top:12px;font:13px/1.4 'DM Sans',Arial,sans-serif;color:#555}
+.article .a-meta b{color:#111}
+.article .a-partage{display:flex;gap:8px}
+.article .a-partage span{width:32px;height:32px;border:1px solid #d5d5d5;border-radius:50%;display:grid;place-items:center;color:#333}
+.article .a-partage svg{width:15px;height:15px}
+.article .a-fig{margin:22px -92px 20px}
+.article .a-fig img{width:100%;height:440px;object-fit:cover}
+.article .a-fig figcaption{font:12.5px/1.4 'DM Sans',Arial,sans-serif;color:#666;padding:7px 92px 0}
+.article .a-corps{font-size:17.5px;line-height:1.62;margin-top:22px}
+.article .a-fig+.a-corps{margin-top:0}
+.article .a-corps p{margin:0 0 16px}
+.article .a-lire{border-left:3px solid var(--a);padding:2px 0 2px 14px;margin:0 0 18px;font:16px/1.35 'DM Sans',Arial,sans-serif}
+.article .a-lire span{color:var(--a);font-weight:700;margin-right:6px}
+.article .a-lire b{font-weight:700;color:#111}
+.article .a-mur{position:relative}
+.article .a-mur::before{content:"";position:absolute;left:0;right:0;top:-110px;height:110px;background:linear-gradient(rgba(255,255,255,0),#fff)}
+.article .a-mur div{border-top:3px solid var(--a);background:#f6f5f2;padding:18px 22px;font:15px/1.45 'DM Sans',Arial,sans-serif;text-align:center}
+.article .a-mur b{display:block;font:700 18px/1.3 'Playfair Display',serif;margin-bottom:4px}
+.article .a-mur span{display:inline-block;margin-top:10px;background:var(--a);color:#fff;font-weight:700;padding:9px 18px;border-radius:3px}
+
+/* =====================================================================
+   3. POST DE RÉSEAU SOCIAL
+   ===================================================================== */
+.post{width:600px;background:#fff;color:#0f1419;padding:14px 18px 6px;font:15px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--gris:#536471;--trait:#eff3f4;--lien:#1d9bf0}
+.post.sombre{background:#000;color:#e7e9ea;--gris:#71767b;--trait:#2f3336}
+.post .p-tete{display:flex;gap:10px;align-items:center}
+.post .p-av{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px;overflow:hidden}
+.post .p-av img{width:100%;height:100%;object-fit:cover}
+.post .p-id{flex:1;min-width:0;line-height:1.25}
+.post .p-nom{font-weight:700;font-size:15.5px;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.post .p-nom svg{width:18px;height:18px;flex:none}
+.post .p-pseudo{color:var(--gris)}
+.post .p-plus{display:flex;gap:14px;align-items:center;color:var(--gris)}
+.post .p-suivre{background:#0f1419;color:#fff;font-weight:700;border-radius:999px;padding:7px 15px;font-size:14px}
+.post.sombre .p-suivre{background:#eff3f4;color:#0f1419}
+.post .p-texte{font-size:17px;line-height:1.42;margin:12px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.post .p-texte a,.fiche a,.post .p-lien{color:var(--lien);text-decoration:none}
+.post .p-img{margin-top:12px;border:1px solid var(--trait);border-radius:16px;overflow:hidden}
+.post .p-img img{width:100%;max-height:520px;object-fit:cover}
+.post .p-meta{color:var(--gris);margin:14px 0 0;padding-bottom:14px;border-bottom:1px solid var(--trait)}
+.post .p-meta b{color:inherit;font-weight:700}
+.post .p-meta b,.post .p-chiffres b{color:#0f1419}
+.post.sombre .p-meta b,.post.sombre .p-chiffres b{color:#e7e9ea}
+.post .p-chiffres{display:flex;gap:20px;padding:12px 0;border-bottom:1px solid var(--trait);color:var(--gris);font-size:14.5px;flex-wrap:wrap}
+.post .p-icos{display:flex;justify-content:space-around;padding:10px 0 6px;color:var(--gris)}
+.post .p-icos svg{width:21px;height:21px}
+.post .p-icos .aime{color:#f91880}
+
+/* =====================================================================
+   4. AFFICHE
+   ===================================================================== */
+.affiche{width:640px;height:905px;display:flex;flex-direction:column;text-align:center}
+.affiche .f-titre{overflow-wrap:normal;word-break:normal;hyphens:none}
+/* — Avis officiel — */
+.affiche.avis{background:#f1e7cd;background-image:radial-gradient(rgba(120,90,40,.10) 1px,transparent 1.4px),radial-gradient(rgba(120,90,40,.07) 1px,transparent 1.2px),linear-gradient(160deg,#f6eed8,#eadcb8);background-size:9px 9px,13px 13px,100% 100%;color:#1c1813;padding:26px;font-family:'Source Serif 4',Georgia,serif}
+.affiche.avis .f-in{flex:1;border:7px double #1c1813;padding:28px 34px 24px;display:flex;flex-direction:column;align-items:center}
+.affiche.avis .f-sur{font:400 30px/1.1 'Alfa Slab One',serif;letter-spacing:.06em;text-transform:uppercase}
+.affiche.avis .f-orn{width:70%;height:14px;margin:12px 0 16px;background:radial-gradient(circle,#1c1813 3px,transparent 3.5px) center/14px 14px repeat-x;position:relative}
+.affiche.avis .f-orn::before,.affiche.avis .f-orn::after{content:"";position:absolute;top:6px;height:2px;width:38%;background:#1c1813}
+.affiche.avis .f-orn::before{left:0}.affiche.avis .f-orn::after{right:0}
+.affiche.avis .f-titre{font:400 64px/1.04 'Abril Fatface',serif;text-transform:uppercase;margin:auto 0 14px;letter-spacing:.01em}
+.affiche.avis .f-sous{font:italic 21px/1.35 'Source Serif 4',serif;margin:0 0 16px}
+.affiche.avis .f-img{width:100%;height:220px;object-fit:cover;filter:sepia(.55) contrast(1.05) grayscale(.2);border:3px solid #1c1813;margin-bottom:16px}
+.affiche.avis .f-texte{font-size:20px;line-height:1.45;margin:0 0 auto;max-width:500px}
+.affiche.avis .f-texte p{margin:0 0 10px}
+.affiche.avis .f-info{margin-top:22px;background:#1c1813;color:#f1e7cd;width:100%;padding:14px 12px;font:400 22px/1.3 'Alfa Slab One',serif;white-space:pre-line}
+.affiche.avis .f-sign{align-self:flex-end;margin-top:14px;font:italic 20px/1.2 'Source Serif 4',serif}
+/* — Événement — */
+.affiche.evenement{background:#121018;color:#fff;font-family:'DM Sans',Arial,sans-serif;position:relative;padding:40px 44px;text-align:left}
+.affiche.evenement .f-fond{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.affiche.evenement::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 12%,#ff3d7f 0 120px,transparent 121px),radial-gradient(circle at 8% 78%,#2de1c2 0 170px,transparent 171px),linear-gradient(180deg,rgba(18,16,24,0) 30%,rgba(18,16,24,.92) 78%)}
+.affiche.evenement .f-in{position:relative;z-index:1;flex:1;display:flex;flex-direction:column}
+.affiche.evenement .f-sur{align-self:flex-start;background:#ffd400;color:#121018;font:700 15px/1 'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:.14em;padding:9px 14px;transform:rotate(-2deg)}
+.affiche.evenement .f-titre{font:400 92px/.9 'Lilita One',Impact,sans-serif;text-transform:uppercase;color:#ffd400;margin:auto 0 12px;letter-spacing:.005em;text-shadow:5px 5px 0 #ff3d7f}
+.affiche.evenement .f-sous{font:700 26px/1.2 'DM Sans',sans-serif;margin:0 0 14px}
+.affiche.evenement .f-img{display:none}
+.affiche.evenement .f-texte{font-size:17px;line-height:1.45;max-width:470px;opacity:.92}
+.affiche.evenement .f-texte p{margin:0 0 8px}
+.affiche.evenement .f-info{border-top:3px solid #ffd400;margin-top:16px;padding-top:14px;font:400 30px/1.15 'Lilita One',Impact,sans-serif;text-transform:uppercase;white-space:pre-line}
+.affiche.evenement .f-sign{margin-top:12px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+/* — Rétro — */
+.affiche.retro{background:#efe2c4;color:#1f1a14;position:relative;padding:34px 38px;font-family:'Source Serif 4',Georgia,serif}
+.affiche.retro::before{content:"";position:absolute;left:50%;top:62%;width:1500px;height:1500px;margin:-750px 0 0 -750px;background:repeating-conic-gradient(#c0281f 0 6deg,#efe2c4 6deg 14deg);opacity:.9}
+.affiche.retro::after{content:"";position:absolute;inset:14px;border:4px solid #1f1a14;pointer-events:none}
+.affiche.retro .f-in{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center}
+.affiche.retro .f-sur{background:#1f1a14;color:#efe2c4;font:400 19px/1 'Alfa Slab One',serif;letter-spacing:.16em;text-transform:uppercase;padding:11px 26px;clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%)}
+.affiche.retro .f-titre{font:400 74px/.98 'Abril Fatface',serif;text-transform:uppercase;color:#efe2c4;-webkit-text-stroke:2px #1f1a14;text-shadow:6px 6px 0 #1f1a14;margin:22px 0 12px}
+.affiche.retro .f-sous{background:#efe2c4;border:3px solid #1f1a14;font:700 22px/1.25 'Source Serif 4',serif;padding:8px 16px;margin:0 0 14px}
+.affiche.retro .f-img{width:250px;height:250px;border-radius:50%;object-fit:cover;border:6px solid #1f1a14;filter:sepia(.4) contrast(1.15);margin:auto 0 14px}
+.affiche.retro .f-texte{background:#efe2c4;border:3px solid #1f1a14;padding:12px 16px;font-size:17px;line-height:1.4;margin-top:auto}
+.affiche.retro .f-img+.f-texte{margin-top:0}
+.affiche.retro .f-texte p{margin:0 0 6px}
+.affiche.retro .f-texte p:last-child{margin:0}
+.affiche.retro .f-info{background:#c0281f;color:#efe2c4;border:3px solid #1f1a14;font:400 22px/1.25 'Alfa Slab One',serif;padding:10px 18px;margin-top:12px;white-space:pre-line}
+.affiche.retro .f-sign{margin-top:10px;background:#1f1a14;color:#efe2c4;font:600 13px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:7px 12px}
+
+/* =====================================================================
+   5. FICHE D'ENCYCLOPÉDIE EN LIGNE
+   ===================================================================== */
+.fiche{width:980px;background:#fff;color:#202122;font:14px/1.6 'Helvetica Neue',Helvetica,Arial,'Liberation Sans',sans-serif;--lien:#3366cc}
+.fiche .e-haut{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid #eaecf0}
+.fiche .e-burger{width:18px;height:2px;background:#202122;box-shadow:0 -5px 0 #202122,0 5px 0 #202122;margin-right:6px}
+.fiche .e-logo{display:flex;align-items:center;gap:9px}
+.fiche .e-logo svg{width:40px;height:40px}
+.fiche .e-logo b{display:block;font:400 19px/1 'Source Serif 4',Georgia,serif;letter-spacing:.14em;text-transform:uppercase}
+.fiche .e-logo small{display:block;font:italic 11.5px/1.3 'Source Serif 4',Georgia,serif;color:#54595d;margin-top:2px}
+.fiche .e-cherche{flex:1;max-width:420px;white-space:nowrap;overflow:hidden;margin-left:18px;border:1px solid #a2a9b1;border-radius:2px;padding:6px 10px;color:#72777d;display:flex;gap:8px;align-items:center}
+.fiche .e-cherche svg{width:14px;height:14px}
+.fiche .e-btn{background:#36c;color:#fff;font-weight:700;padding:5px 12px;border-radius:2px;margin-left:-14px}
+.fiche .e-liens{margin-left:auto;color:var(--lien);font-size:13.5px;display:flex;gap:14px}
+.fiche .e-page{padding:12px 30px 22px 30px}
+.fiche .e-titre{font:400 29px/1.3 'Source Serif 4',Georgia,serif;margin:6px 0 0;padding-bottom:3px;border-bottom:1px solid #a2a9b1;display:flex;justify-content:space-between;align-items:flex-end}
+.fiche .e-titre span{font:13.5px/1.6 Arial,sans-serif;color:var(--lien);padding-bottom:4px}
+.fiche .e-onglets{display:flex;justify-content:space-between;font-size:13.5px;border-bottom:1px solid #a2a9b1;margin-bottom:6px}
+.fiche .e-onglets div{display:flex;gap:18px}
+.fiche .e-onglets span{padding:7px 2px;color:var(--lien)}
+.fiche .e-onglets .on{color:#202122;box-shadow:inset 0 -2px 0 #202122}
+.fiche .e-de{font-size:12.5px;color:#54595d;margin:4px 0 12px}
+.fiche .e-box{float:right;width:290px;margin:0 0 14px 22px;border:1px solid #a2a9b1;background:#f8f9fa;padding:4px;font-size:12.8px;line-height:1.45}
+.fiche .e-box-t{background:#c8e6c9;text-align:center;font-weight:700;font-size:15px;padding:6px}
+.fiche .e-box img{width:100%;max-height:260px;object-fit:cover;margin-top:4px}
+.fiche .e-box .leg{text-align:center;font-size:12px;padding:4px 6px 6px;color:#202122}
+.fiche .e-box table{width:100%;border-collapse:collapse;margin-top:4px}
+.fiche .e-box th{background:#c8e6c9;text-align:center;padding:3px;font-size:12.5px}
+.fiche .e-box td{padding:3px 6px;border-top:1px solid #eaecf0;vertical-align:top}
+.fiche .e-box td:first-child{font-weight:700;width:42%}
+.fiche .e-corps p{margin:0 0 10px}
+.fiche .e-corps h2{overflow:hidden;font:400 22px/1.3 'Source Serif 4',Georgia,serif;border-bottom:1px solid #a2a9b1;margin:20px 0 8px;padding-bottom:2px}
+.fiche .e-corps h3{font-size:15.5px;font-weight:700;margin:14px 0 4px}
+.fiche sup{font-size:10.5px;line-height:0;color:var(--lien)}
+.fiche .e-somm{display:inline-block;border:1px solid #a2a9b1;background:#f8f9fa;padding:8px 18px 8px 12px;margin:4px 0 10px;font-size:13px}
+.fiche .e-somm b{display:block;text-align:center;margin-bottom:4px;font-size:14px}
+.fiche .e-somm ol{margin:0;padding-left:20px;color:var(--lien)}
+.fiche .e-refs{font-size:12.6px;padding-left:24px;margin:6px 0 0}
+.fiche .e-refs li{margin-bottom:3px}
+.fiche .e-cats{clear:both;border:1px solid #a2a9b1;background:#f8f9fa;padding:6px 10px;margin-top:20px;font-size:12.8px}
+.fiche .e-cats span{color:var(--lien)}
+.fiche .e-pied{border-top:1px solid #a2a9b1;margin:16px 0 0;padding-top:8px;font-size:11.5px;color:#54595d}
+
+/* ---------- Impression : le document seul, à la largeur de la page ---------- */
+@media print{
+  @page{margin:10mm}
+  body{background:#fff}
+  .haut,.gabarits,.form,.actions,.astuce,#msgBox,#projo{display:none!important}
+  .page{display:block;padding:0;max-width:none}
+  .cadre .doc{box-shadow:none}
+  .doc .fictif{display:block}
+  .doc [data-k]:hover{outline:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header class="haut">
+  <a class="retour" href="https://antoninatger.com/jeux/#outils" data-t="retourTitre" data-attr="title" title="Retour sur antoninatger.com">← antoninatger.com</a>
+  <h1 data-t="titre">Faux documents</h1>
+  <button class="btn mini langue" id="langue" type="button" lang="en" title="English version">EN</button>
+  <button class="btn mini" type="button" onclick="window.PartageJeux&&PartageJeux.ouvrir('partage')" data-t="partager">📣 Partager</button>
+</header>
+
+<nav class="gabarits" id="gabarits" aria-label="Type de document"></nav>
+
+<main class="page">
+  <aside class="form" id="form" aria-label="Contenu du document"></aside>
+  <section class="apercu">
+    <div class="cadre" id="cadre"><div class="cadre-in" id="cadreIn"></div></div>
+    <div class="actions">
+      <button class="btn prim" id="png" data-t="png">Télécharger l'image</button>
+      <button class="btn" id="imprimer" data-t="imprimer">Imprimer</button>
+      <button class="btn" id="projeter" data-t="projeter">Projeter en plein écran</button>
+    </div>
+    <p class="astuce" data-t="astuce">Cliquez sur un élément du document pour aller au champ correspondant. L'image et l'impression portent la mention discrète « Document fictif ».</p>
+  </section>
+</main>
+
+<div id="projo" aria-hidden="true"><button class="btn fermer" id="projoFin" data-t="quitter">Quitter (Échap)</button><div class="cadre-in" id="projoIn"></div></div>
+<div id="msgBox" role="status"></div>
+<input type="file" id="fImg" accept="image/*">
+<input type="file" id="fJson" accept=".json,application/json">
+
+<script src="../vendor/html2canvas.min.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Textes de l'interface ---------- */
+const T={
+fr:{titre:'Faux documents',retourTitre:'Retour sur antoninatger.com',partager:'📣 Partager',png:"Télécharger l'image",imprimer:'Imprimer',projeter:'Projeter en plein écran',quitter:'Quitter (Échap)',
+  astuce:"Cliquez sur un élément du document pour aller au champ correspondant. L'image et l'impression portent la mention discrète « Document fictif ».",
+  fictif:'Document fictif · usage pédagogique',style:'Style',plus:'Plus de champs',photo:'Choisir une photo',retirer:'Retirer',
+  exemple:"Recharger l'exemple",vider:'Tout vider',sauver:'Enregistrer',ouvrir:'Ouvrir',
+  aideFichier:"« Enregistrer » crée un petit fichier à garder ou à envoyer à un collègue. Rien n'est envoyé sur Internet.",
+  okImg:'Image enregistrée dans vos téléchargements.',errImg:"L'image n'a pas pu être créée. Essayez une capture d'écran.",noLib:"L'outil d'image n'a pas pu se charger.",
+  okSauve:'Fichier enregistré dans vos téléchargements.',okOuvre:'Document ouvert.',errOuvre:"Ce fichier n'est pas un document enregistré ici.",
+  confVider:'Vider tous les champs de ce document ?',okExemple:"Exemple rechargé.",tropGros:"Trop gros pour être gardé dans le navigateur : pensez à « Enregistrer ».",
+  nav:'Type de document',form:'Contenu du document'},
+en:{titre:'Fake documents',retourTitre:'Back to antoninatger.com',partager:'📣 Share',png:'Download image',imprimer:'Print',projeter:'Full-screen display',quitter:'Exit (Esc)',
+  astuce:'Click any part of the document to jump to its field. Images and prints carry a discreet “Fictional document” label.',
+  fictif:'Fictional document · for teaching',style:'Style',plus:'More fields',photo:'Choose a photo',retirer:'Remove',
+  exemple:'Reload the example',vider:'Clear all',sauver:'Save',ouvrir:'Open',
+  aideFichier:'“Save” creates a small file you can keep or send to a colleague. Nothing is sent over the Internet.',
+  okImg:'Image saved to your downloads.',errImg:'The image could not be created. Try a screenshot.',noLib:'The image tool failed to load.',
+  okSauve:'File saved to your downloads.',okOuvre:'Document opened.',errOuvre:'This file is not a document saved here.',
+  confVider:'Clear every field of this document?',okExemple:'Example reloaded.',tropGros:'Too big to keep in the browser: use “Save”.',
+  nav:'Document type',form:'Document content'}
+};
+
+/* ---------- Petites aides de mise en forme ---------- */
+const paras=s=>String(s||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+const P=(s,f)=>paras(s).map(x=>`<p>${(f||esc)(x)}</p>`).join('');
+const gras=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+const slug=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const hue=s=>{ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))%360; return h; };
+const k=(key,html,tag='div',cls='')=>`<${tag} class="${cls}" data-k="${key}">${html}</${tag}>`;
+const ICO={
+  cadenas:'<svg viewBox="0 0 12 12"><rect x="2" y="5" width="8" height="6" rx="1" fill="#555"/><path d="M4 5V3.5a2 2 0 0 1 4 0V5" stroke="#555" stroke-width="1.4" fill="none"/></svg>',
+  loupe:'<svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M10.5 10.5 15 15" stroke="currentColor" stroke-width="1.8"/></svg>',
+  certif:'<svg viewBox="0 0 24 24"><path fill="#1d9bf0" d="M12 1.5l2.4 1.8 3-.2 1 2.8 2.6 1.6-.7 2.9 1.2 2.7-2.2 2 .1 3-2.9.7-1.6 2.6-2.9-.9-2.6 1.4-2.2-2-3-.1-.6-2.9L1.4 14l1-2.8-1-2.8 2.2-2 .3-3 2.9-.4L8.6 1.5l3 .9z"/><path d="M7.5 12.2l3 2.9 6-6.2" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  rep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11.5c0-4.1 3.6-7 8-7s8 2.9 8 7-3.6 7-8 7c-1 0-2-.1-2.9-.4L5 20l1-3.6c-1.3-1.3-2-3-2-4.9z"/></svg>',
+  rt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 4 7l3 3M4 7h11a4 4 0 0 1 4 4v1M17 20l3-3-3-3M20 17H9a4 4 0 0 1-4-4v-1"/></svg>',
+  coeur:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.5s-8-4.7-8-10.6C4 7 6.1 5 8.6 5c1.5 0 2.7.8 3.4 2 .7-1.2 1.9-2 3.4-2C17.9 5 20 7 20 9.9c0 5.9-8 10.6-8 10.6z"/></svg>',
+  signet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg>',
+  envoi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/></svg>',
+  lienp:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.6 2.6 0 0 1 3.6 3.6L10.6 8M9 11.5l-1.2 1.2a2.6 2.6 0 0 1-3.6-3.6L5.4 8"/></svg>',
+  mail:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="3.5" width="13" height="9" rx="1"/><path d="M2 4l6 5 6-5"/></svg>',
+  com:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5h12v7H7l-3 2.5v-2.5H2z"/></svg>',
+  plume:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 13 13 3M5 13H3v-2"/></svg>',
+  /* Globe maison pour l'encyclopédie : une sphère méridiens/parallèles, rien d'une marque réelle */
+  globe:'<svg viewBox="0 0 40 40"><defs><radialGradient id="eg" cx="35%" cy="30%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#c9ccd1"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#eg)" stroke="#72777d"/><g fill="none" stroke="#72777d" stroke-width=".9"><ellipse cx="20" cy="20" rx="8" ry="18"/><ellipse cx="20" cy="20" rx="14" ry="18"/><path d="M20 2v36M3 14h34M2 20h36M3 26h34"/></g><text x="20" y="25" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-style="italic" fill="#202122">e</text></svg>'
+};
+
+/* =====================================================================
+   Les gabarits. Chaque champ : k (clé), type, étiquettes FR/EN, groupe.
+   Groupe 0 = ouvert d'emblée ; les suivants se replient (« Plus de champs »).
+   ===================================================================== */
+/* Illustration de l'exemple « chocolat » : dessinée ici, aucune photo à droits */
+/* Un carré de chocolat (sans <use> : html2canvas ne le suit pas dans une image SVG) */
+const CARRE=(x,y)=>`<g transform="translate(${x} ${y})"><rect width="74" height="74" rx="5" fill="#2a150b"/><rect x="5" y="5" width="64" height="64" rx="4" fill="url(#carre)"/><path d="M9 9h56" stroke="#8a5a3c" stroke-width="2" stroke-opacity=".7"/></g>`;
+const ILLU_CHOCO='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"><defs>
+<linearGradient id="bois" x1="0" y1="0" x2="1" y2=".3"><stop offset="0" stop-color="#c79a6b"/><stop offset=".5" stop-color="#b3835a"/><stop offset="1" stop-color="#9c6f49"/></linearGradient>
+<pattern id="veine" width="800" height="26" patternUnits="userSpaceOnUse"><path d="M0 13 Q200 5 400 14 T800 12" stroke="#8a5f3d" stroke-opacity=".35" stroke-width="2" fill="none"/></pattern>
+<linearGradient id="carre" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b3d26"/><stop offset=".45" stop-color="#4a2716"/><stop offset="1" stop-color="#2e170c"/></linearGradient>
+<radialGradient id="ombre" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="800" height="400" fill="url(#bois)"/><rect width="800" height="400" fill="url(#veine)"/>
+<ellipse cx="410" cy="235" rx="330" ry="150" fill="url(#ombre)"/>
+<g transform="translate(170 70) rotate(-8)">
+${[0,1,2,3].map(r=>[0,1,2,3,4,5].map(c=>(r===0&&c===5)?'':CARRE(c*78,r*78)).join('')).join('')}
+</g>
+<g transform="translate(675 35) rotate(18)">${CARRE(0,0)}</g>
+<g transform="translate(660 300) rotate(-30)">${CARRE(0,0)}</g>
+<path d="M90 330 L130 300 L150 340 Z M115 355 l14-8 6 12z" fill="#3a1d10"/>
+<rect x="0" y="0" width="800" height="400" fill="#fff4e0" fill-opacity=".06"/></svg>`);
+const C=(key,type,fr,en,o)=>Object.assign({k:key,type,fr,en,g:0},o||{});
+const G={
+/* ---------------- 1. Une de journal ---------------- */
+une:{fr:'Une de journal',en:'Front page',
+  styles:[['serieux','Quotidien','Broadsheet'],['tabloid','Tabloïd','Tabloid']],
+  groupes:[['Article principal','Lead story'],['En-tête du journal','Masthead'],['Autres titres','Other stories']],
+  champs:[
+    C('titre','long','Gros titre','Headline',{rows:2}),C('chapo','long','Chapô (2 ou 3 lignes)','Standfirst (2–3 lines)',{rows:3}),
+    C('image','image','Photo','Photo'),C('legende','text','Légende de la photo','Photo caption'),
+    C('texte','long','Texte de l’article','Article text',{rows:5,ex:{fr:'Un paragraphe par ligne.',en:'One paragraph per line.'}}),
+    C('rubrique','text','Rubrique','Section'),C('auteur','text','Signature','Byline'),
+    C('journal','text','Nom du journal','Paper name',{g:1}),C('devise','text','Sous le titre','Under the masthead',{g:1}),
+    C('date','text','Date','Date',{g:1}),C('numero','text','Numéro','Issue',{g:1}),C('prix','text','Prix','Price',{g:1}),
+    C('oreille','text','Encadré à droite du titre','Box beside the masthead',{g:1}),
+    C('b1t','text','Brève 1 : titre','Brief 1: headline',{g:2}),C('b1','long','Brève 1 : texte','Brief 1: text',{g:2,rows:2}),
+    C('b2t','text','Brève 2 : titre','Brief 2: headline',{g:2}),C('b2','long','Brève 2 : texte','Brief 2: text',{g:2,rows:2}),
+    C('b3t','text','Brève 3 : titre','Brief 3: headline',{g:2}),C('b3','long','Brève 3 : texte','Brief 3: text',{g:2,rows:2}),
+    C('pied','long','Bas de page (3 lignes « Rubrique : titre »)','Footer (3 lines “Section: headline”)',{g:2,rows:3})],
+  L:{fr:{bref:'En bref',suite:'Suite page 4',par:'Par'},en:{bref:'In brief',suite:'Continued on page 4',par:'By'}},
+  rendu(d,l,L){
+    const br=[1,2,3].filter(i=>d['b'+i+'t']||d['b'+i]).map(i=>`<div class="u-breve">${k('b'+i+'t',esc(d['b'+i+'t']),'h3')}${k('b'+i,esc(d['b'+i]),'p')}</div>`).join('');
+    const pied=paras(d.pied).slice(0,3).map(x=>{ const m=x.match(/^([^:]{1,30})\s*:\s*(.+)$/); return m?`<div><span>${esc(m[1])}</span>${esc(m[2])}</div>`:`<div>${esc(x)}</div>`; }).join('');
+    const [o1,o2]=String(d.oreille||'').split(/\s*[|·]\s*/);
+    return `<div class="doc une ${d.style==='tabloid'?'tabloid':''}">
+      <div class="u-tete"><div class="u-oreille" data-k="numero">${esc(d.numero)}<b>${esc(d.prix)}</b></div><h2 class="u-titre-j" data-k="journal" data-fit="l">${esc(d.journal)}</h2><div class="u-oreille" data-k="oreille">${esc(o1||'')}${o2?`<b>${esc(o2)}</b>`:''}</div></div>
+      ${k('devise',esc(d.devise),'div','u-devise')}
+      <div class="u-filet"><span data-k="date">${esc(d.date)}</span><span data-k="numero">${esc(d.numero)}</span><span data-k="prix">${esc(d.prix)}</span></div>
+      <div class="u-corps"><div>
+        ${d.rubrique?k('rubrique',esc(d.rubrique),'div','u-rub'):''}
+        ${k('titre',esc(d.titre),'h1','u-titre')}
+        <div class="u-chapo-w">${k('chapo',esc(d.chapo),'p','u-chapo')}</div>
+        ${d.image?`<figure class="u-fig" data-k="image"><img src="${d.image}" alt="">${d.legende?`<figcaption data-k="legende">${esc(d.legende)}</figcaption>`:''}</figure>`:''}
+        <div class="u-texte" data-k="texte">${d.auteur?`<div class="u-signe" data-k="auteur">${L.par} ${esc(d.auteur)}</div>`:''}${P(d.texte)}<p class="u-suite">${L.suite}</p></div>
+      </div>${br?`<aside class="u-side"><div class="u-lab">${L.bref}</div>${br}</aside>`:''}</div>
+      ${pied?`<div class="u-pied" data-k="pied">${pied}</div>`:''}</div>`;
+  },
+  ex:{fr:{style:'serieux',journal:"L'Écho du Matin",devise:"Quotidien d'information fondé en 1924",date:'Lundi 3 novembre 2026',numero:'N° 31 447',prix:'2,90 €',oreille:'Supplément · Spécial rentrée',
+      rubrique:'Santé',titre:'Le chocolat noir ferait gagner deux points de moyenne aux collégiens',
+      chapo:"Selon une étude menée sur trente élèves, ceux qui mangent deux carrés de chocolat chaque matin obtiendraient de meilleures notes. Les spécialistes appellent à la prudence.",
+      image:ILLU_CHOCO,legende:'Selon les auteurs de l’étude, deux carrés suffiraient. (Illustration)',auteur:'Claire Montel',
+      texte:"C'est une annonce qui a fait le tour des cours de récréation. D'après les travaux d'un institut privé, les élèves ayant consommé du chocolat noir au petit-déjeuner pendant trois semaines auraient vu leur moyenne progresser de près de deux points.\nL'étude, financée par un fabricant de confiseries, n'a porté que sur une seule classe. Aucun groupe témoin n'a été constitué, et les notes ont été comparées à celles du trimestre précédent, réputé plus difficile.\n« Le cacao contient bien des molécules intéressantes, mais on ne peut rien conclure d'un échantillon aussi petit », tempère une chercheuse en nutrition, qui rappelle que le sommeil et l'alimentation générale pèsent bien davantage sur la concentration.\nDans les supermarchés, plusieurs enseignes ont pourtant déjà installé des têtes de gondole « spécial réussite scolaire ».",
+      b1t:'Une grenouille fluorescente découverte en Guyane',b1:"Des naturalistes ont identifié une espèce qui brille sous lumière ultraviolette.",
+      b2t:'La Loire à son plus bas niveau depuis 1976',b2:"Les arrêtés de restriction d'eau sont prolongés dans six départements.",
+      b3t:'Le club de Saint-Arnoux en finale régionale',b3:"Les handballeuses joueront samedi devant un public déjà conquis.",
+      pied:"Économie : la baguette à 1,50 €, vraiment ?\nCulture : le retour des cinémas de quartier\nSport : les secrets d'une remontada"},
+    en:{style:'serieux',journal:'The Daily Lantern',devise:'An independent newspaper since 1924',date:'Monday, November 3, 2026',numero:'No. 31,447',prix:'$2.50',oreille:'Free inside · Back to school',
+      rubrique:'Health',titre:'Dark chocolate “boosts pupils’ grades by two points”',
+      chapo:'A study of thirty pupils claims that two squares of chocolate every morning lead to better marks. Experts urge caution.',
+      image:ILLU_CHOCO,legende:'Two squares a day are enough, according to the study’s authors. (Illustration)',auteur:'Claire Montel',
+      texte:"The announcement has spread across every playground. According to a private institute, pupils who ate dark chocolate at breakfast for three weeks saw their average grade rise by almost two points.\nThe study, funded by a confectionery maker, involved a single class. There was no control group, and grades were compared with the previous term, known to be harder.\n“Cocoa does contain interesting molecules, but you cannot conclude anything from such a small sample,” says a nutrition researcher, who points out that sleep and overall diet matter far more for concentration.\nSeveral supermarkets have nonetheless set up “exam success” chocolate displays.",
+      b1t:'Glowing frog discovered in French Guiana',b1:'Naturalists have identified a species that shines under ultraviolet light.',
+      b2t:'River levels at lowest since 1976',b2:'Water restrictions are extended in six counties.',
+      b3t:'Local team reaches regional final',b3:'The handball squad will play on Saturday in front of a home crowd.',
+      pied:'Business: is a $5 sandwich fair?\nCulture: neighbourhood cinemas are back\nSport: inside a historic comeback'}}
+},
+/* ---------------- 2. Article de presse en ligne ---------------- */
+article:{fr:'Article en ligne',en:'News article',
+  styles:[['rouge','Rouge','Red'],['bleu','Bleu','Blue'],['vert','Vert','Green'],['noir','Noir','Black']],
+  groupes:[["L'article",'The article'],['Le site','The website']],
+  champs:[
+    C('titre','long','Titre','Headline',{rows:2}),C('chapo','long','Chapô','Standfirst',{rows:3}),
+    C('image','image','Photo','Photo'),C('legende','text','Légende et crédit','Caption and credit'),
+    C('texte','long','Texte de l’article','Article text',{rows:6,ex:{fr:'Un paragraphe par ligne.',en:'One paragraph per line.'}}),
+    C('auteur','text','Auteur','Author'),C('date','text','Publié le','Published'),
+    C('lire','text','Encadré « Lire aussi »','“Read also” box'),
+    C('abonnes','check','Article réservé aux abonnés (texte coupé)','Subscribers only (paywall)'),
+    C('site','text','Nom du site','Site name',{g:1}),C('domaine','text','Adresse du site','Web address',{g:1}),C('rubrique','text','Rubrique','Section',{g:1}),
+    C('menu','text','Rubriques du menu (séparées par des virgules)','Menu items (comma separated)',{g:1})],
+  L:{fr:{abo:"S'abonner",cnx:'Se connecter',menu:'Menu',reserve:'Article réservé aux abonnés',par:'Par',pub:'Publié le',lect:'Lecture 4 min.',lire:'Lire aussi',
+      reste:'Il vous reste 72 % de cet article à lire.',suite:'La suite est réservée aux abonnés.',deja:'Déjà abonné ? Se connecter'},
+     en:{abo:'Subscribe',cnx:'Sign in',menu:'Menu',reserve:'Subscribers only',par:'By',pub:'Published',lect:'4 min read',lire:'Read also',
+      reste:'You have 72% of this article left to read.',suite:'The rest is for subscribers only.',deja:'Already a subscriber? Sign in'}},
+  rendu(d,l,L){
+    const ps=paras(d.texte); const corps=ps.map((x,i)=>`<p>${gras(x)}</p>`+(i===0&&d.lire?k('lire',`<span>${L.lire}</span><b>${esc(d.lire)}</b>`,'div','a-lire'):'')).join('');
+    const menu=String(d.menu||'').split(',').map(s=>s.trim()).filter(Boolean).slice(0,7);
+    const url=`${esc(d.domaine||'')}/<b>${esc(slug(d.rubrique))}/article/2026/11/03/${esc(slug(d.titre).slice(0,60))}</b>`;
+    return `<div class="doc article c-${d.style||'rouge'}">
+      <div class="a-nav"><div class="a-pts"><i></i><i></i><i></i></div><span class="a-fl">‹ ›</span><div class="a-url" data-k="domaine">${ICO.cadenas}${url}</div></div>
+      <div class="a-site"><div class="a-menu"><i></i>${L.menu}</div>${k('site',esc(d.site),'div','a-logo')}<div class="a-compte"><span>${L.cnx}</span><span class="a-abo">${L.abo}</span></div></div>
+      <div class="a-rubs" data-k="menu">${menu.map(m=>`<span class="${slug(m)===slug(d.rubrique)?'on':''}">${esc(m)}</span>`).join('')}</div>
+      <div class="a-main">
+        ${k('rubrique',esc(d.rubrique),'div','a-rub')}
+        ${k('titre',esc(d.titre),'h1','a-titre')}
+        ${k('chapo',esc(d.chapo),'p','a-chapo')}
+        ${d.abonnes?`<div class="a-reserve" data-k="abonnes"><i></i>${L.reserve}</div>`:''}
+        <div class="a-meta"><span><span data-k="auteur">${L.par} <b>${esc(d.auteur)}</b></span><br><span data-k="date">${L.pub} ${esc(d.date)}</span> · ${L.lect}</span>
+          <div class="a-partage"><span>${ICO.lienp}</span><span>${ICO.mail}</span><span>${ICO.com}</span><span>${ICO.plume}</span></div></div>
+        ${d.image?`<figure class="a-fig" data-k="image"><img src="${d.image}" alt="">${d.legende?`<figcaption data-k="legende">${esc(d.legende)}</figcaption>`:''}</figure>`:''}
+        <div class="a-corps" data-k="texte">${corps}</div>
+        ${d.abonnes?`<div class="a-mur" data-k="abonnes"><div><b>${L.reste}</b>${L.suite}<br><span>${L.abo}</span><br><small style="display:block;margin-top:8px;color:#555">${L.deja}</small></div></div>`:''}
+      </div></div>`;
+  },
+  ex:{fr:{style:'rouge',site:'Le Matinal',domaine:'www.lematinal-info.fr',rubrique:'Éducation',menu:'International, Politique, Société, Éducation, Économie, Culture, Sport',
+      titre:'Dormir en classe améliorerait la mémoire, selon une nouvelle étude',
+      chapo:"Une équipe de chercheurs affirme que les élèves qui font une sieste pendant les cours retiennent mieux leurs leçons. Plusieurs établissements envisagent déjà d'installer des coussins.",
+      auteur:'Julien Darcourt',date:'3 novembre 2026 à 07 h 12',lire:'Les écrans le soir, vraiment responsables des mauvaises notes ?',abonnes:true,image:'',legende:'',
+      texte:"La nouvelle a de quoi réjouir les élèves. Selon une étude présentée la semaine dernière, **une sieste de vingt minutes en plein cours** permettrait de mieux mémoriser la leçon qui suit.\nLes chercheurs ont comparé deux groupes de douze volontaires, tous âgés de 19 à 23 ans, et non des collégiens. Le groupe « sieste » a mieux réussi un test de vocabulaire passé une heure plus tard.\nInterrogée, une enseignante sourit : « Encore faut-il que la sieste ne tombe pas pendant la leçon à retenir. »"},
+    en:{style:'bleu',site:'The Daybreak',domaine:'www.thedaybreak-news.com',rubrique:'Education',menu:'World, Politics, Society, Education, Business, Culture, Sport',
+      titre:'Sleeping in class boosts memory, new study claims',
+      chapo:'A team of researchers says pupils who nap during lessons remember them better. Some schools are already thinking about buying cushions.',
+      auteur:'Julian Dark',date:'November 3, 2026, 7:12 a.m.',lire:'Are screens at night really to blame for bad grades?',abonnes:true,image:'',legende:'',
+      texte:"Pupils will be delighted. According to a study presented last week, **a twenty-minute nap in the middle of a lesson** helps people memorise what comes next.\nThe researchers compared two groups of twelve volunteers, all aged 19 to 23, not schoolchildren. The “nap” group did better on a vocabulary test taken an hour later.\nAsked about it, a teacher smiles: “As long as the nap doesn’t happen during the lesson they need to remember.”"}}
+},
+/* ---------------- 3. Post de réseau social ---------------- */
+post:{fr:'Post de réseau social',en:'Social media post',
+  styles:[['clair','Clair','Light'],['sombre','Sombre','Dark']],
+  groupes:[['Le post','The post'],['Les chiffres','The numbers']],
+  champs:[
+    C('nom','text','Nom du compte','Account name'),C('pseudo','text','Identifiant (@…)','Handle (@…)'),
+    C('certifie','check','Badge certifié','Verified badge'),C('avatar','image','Photo de profil','Profile picture'),
+    C('texte','long','Texte du post','Post text',{rows:5,ex:{fr:'Les #mots-clés, @mentions et liens se colorent tout seuls.',en:'#hashtags, @mentions and links are coloured automatically.'}}),
+    C('image','image','Image jointe','Attached image'),
+    C('heure','text','Heure','Time',{g:1}),C('date','text','Date','Date',{g:1}),C('vues','text','Vues','Views',{g:1}),
+    C('partages','text','Repartages','Reposts',{g:1}),C('citations','text','Citations','Quotes',{g:1}),C('jaime','text','J’aime','Likes',{g:1}),C('signets','text','Signets','Bookmarks',{g:1})],
+  L:{fr:{suivre:'Suivre',vues:'vues',partages:'Repartages',citations:'Citations',jaime:"J'aime",signets:'Signets'},
+     en:{suivre:'Follow',vues:'Views',partages:'Reposts',citations:'Quotes',jaime:'Likes',signets:'Bookmarks'}},
+  rendu(d,l,L){
+    const txt=esc(d.texte).replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+)/g,'<a>$1</a>').replace(/(^|[\s(])([#@][\p{L}\p{N}_]+)/gu,'$1<a>$2</a>');
+    const ini=(String(d.nom||'?').replace(/[^\p{L}\p{N}]/gu,'')[0]||'?').toUpperCase();
+    const ps=String(d.pseudo||'').replace(/^@?/,'@');
+    const ch=(key,lab)=>d[key]?`<span data-k="${key}"><b>${esc(d[key])}</b> ${lab}</span>`:'';
+    return `<div class="doc post ${d.style==='sombre'?'sombre':''}">
+      <div class="p-tete"><div class="p-av" data-k="avatar" style="background:hsl(${hue(d.nom)} 55% 45%)">${d.avatar?`<img src="${d.avatar}" alt="">`:ini}</div>
+        <div class="p-id"><div class="p-nom" data-k="nom">${esc(d.nom)}${d.certifie?ICO.certif:''}</div><div class="p-pseudo" data-k="pseudo">${esc(ps)}</div></div>
+        <div class="p-plus"><span class="p-suivre">${L.suivre}</span><span style="font-size:20px;letter-spacing:1px">···</span></div></div>
+      ${k('texte',txt,'div','p-texte')}
+      ${d.image?`<div class="p-img" data-k="image"><img src="${d.image}" alt=""></div>`:''}
+      <div class="p-meta"><span data-k="heure">${esc(d.heure)}</span> · <span data-k="date">${esc(d.date)}</span>${d.vues?` · <span data-k="vues"><b>${esc(d.vues)}</b> ${L.vues}</span>`:''}</div>
+      <div class="p-chiffres">${ch('partages',L.partages)}${ch('citations',L.citations)}${ch('jaime',L.jaime)}${ch('signets',L.signets)}</div>
+      <div class="p-icos">${ICO.rep}${ICO.rt}<span class="aime">${ICO.coeur}</span>${ICO.signet}${ICO.envoi}</div></div>`;
+  },
+  ex:{fr:{style:'clair',nom:'Info Express 🔴',pseudo:'infoexpress_direct',certifie:true,avatar:'',image:'',
+      texte:"🚨 URGENT : le ministère vient de confirmer que TOUS les collèges seront fermés lundi à cause d'une alerte météo.\n\nPartagez avant que ce soit supprimé !! #alerte #collège",
+      heure:'07:42',date:'3 nov. 2026',vues:'1,2 M',partages:'18,4 k',citations:'2 301',jaime:'41,7 k',signets:'3 112'},
+    en:{style:'clair',nom:'News Flash 🔴',pseudo:'newsflash_live',certifie:true,avatar:'',image:'',
+      texte:"🚨 BREAKING: the government has just confirmed that ALL schools will be closed on Monday because of a weather alert.\n\nShare before this gets deleted!! #alert #schools",
+      heure:'7:42 AM',date:'Nov 3, 2026',vues:'1.2M',partages:'18.4K',citations:'2,301',jaime:'41.7K',signets:'3,112'}}
+},
+/* ---------------- 4. Affiche ---------------- */
+affiche:{fr:'Affiche',en:'Poster',
+  styles:[['avis','Avis officiel','Public notice'],['evenement','Événement','Event'],['retro','Rétro','Vintage']],
+  groupes:[["L'affiche",'The poster']],
+  champs:[
+    C('sur','text','Bandeau du haut','Top banner'),C('titre','long','Titre','Title',{rows:2}),C('sous','text','Sous-titre','Subtitle'),
+    C('image','image','Image','Image'),C('texte','long','Texte','Text',{rows:4}),
+    C('info','long','Date, lieu, horaires','Date, place, times',{rows:2}),C('sign','text','Signature','Signed by')],
+  L:{fr:{},en:{}},
+  rendu(d){
+    const st=d.style||'avis';
+    return `<div class="doc affiche ${st}">${st==='evenement'&&d.image?`<img class="f-fond" src="${d.image}" alt="" data-k="image">`:''}<div class="f-in">
+      ${d.sur?k('sur',esc(d.sur),'div','f-sur'):''}${st==='avis'?'<div class="f-orn"></div>':''}
+      <h1 class="f-titre" data-k="titre" data-fit="mots">${esc(d.titre)}</h1>
+      ${d.sous?k('sous',esc(d.sous),'div','f-sous'):''}
+      ${d.image&&st!=='evenement'?`<img class="f-img" src="${d.image}" alt="" data-k="image">`:''}
+      ${d.texte?k('texte',P(d.texte),'div','f-texte'):''}
+      ${d.info?k('info',esc(d.info),'div','f-info'):''}
+      ${d.sign?k('sign',esc(d.sign),'div','f-sign'):''}</div></div>`;
+  },
+  ex:{fr:{style:'avis',sur:'Avis à la population',titre:'Distribution gratuite de trottinettes électriques',sous:'Offre réservée aux collégiens de la commune',image:'',
+      texte:"Afin d'encourager les déplacements doux, une trottinette électrique sera remise à chaque élève qui présentera cette affiche, accompagné d'un adulte muni de sa carte bancaire pour les frais de dossier (4,90 €).",
+      info:'Samedi 15 novembre\nPlace de la Mairie · 9 h à 12 h',sign:'La Municipalité'},
+    en:{style:'avis',sur:'Public notice',titre:'Free electric scooters for every pupil',sous:'Offer open to all secondary school pupils in town',image:'',
+      texte:'To encourage greener travel, an electric scooter will be handed to every pupil who brings this poster, together with an adult carrying a bank card for the processing fee ($4.90).',
+      info:'Saturday, November 15\nTown Hall Square · 9 a.m. to noon',sign:'The Town Council'}}
+},
+/* ---------------- 5. Fiche d'encyclopédie ---------------- */
+fiche:{fr:'Fiche encyclopédie',en:'Encyclopedia page',
+  styles:null,
+  groupes:[["L'article",'The article'],['Encadré à droite','Infobox'],['Sources et bas de page','Sources and footer']],
+  champs:[
+    C('titre','text','Titre de la page','Page title'),
+    C('texte','long','Texte de l’article','Article text',{rows:9,ex:{fr:'« ## Titre » crée une section, **gras**, [[lien]], [1] un appel de note.',en:'“## Heading” starts a section, **bold**, [[link]], [1] a footnote.'}}),
+    C('boxt','text','Titre de l’encadré','Infobox title',{g:1}),C('image','image','Image','Image',{g:1}),C('legende','text','Légende','Caption',{g:1}),
+    C('lignes','long','Lignes (une par ligne : « Nom : valeur »)','Rows (one per line: “Label: value”)',{g:1,rows:5,ex:{fr:'Une ligne « # Titre » crée un intertitre.',en:'A line “# Heading” adds a sub-heading.'}}),
+    C('refs','long','Notes et références (une par ligne)','Notes and references (one per line)',{g:2,rows:3}),
+    C('cats','text','Catégories (séparées par des virgules)','Categories (comma separated)',{g:2}),C('modif','text','Dernière modification','Last edited',{g:2})],
+  L:{fr:{nom:'Encyclopédie',sous:'L’encyclopédie libre',cherche:'Rechercher dans l’Encyclopédie',btn:'Rechercher',liens:['Faire un don','Créer un compte','Se connecter'],
+      art:'Article',disc:'Discussion',lire:'Lire',modif:'Modifier',hist:"Voir l'historique",langues:'🌐 24 langues',de:"Un article de l'Encyclopédie, l'encyclopédie libre.",
+      somm:'Sommaire',refs:'Notes et références',cats:'Catégories',pied:'La dernière modification de cette page a été faite le'},
+     en:{nom:'Encyclopedia',sous:'The free encyclopedia',cherche:'Search the Encyclopedia',btn:'Search',liens:['Donate','Create account','Log in'],
+      art:'Article',disc:'Talk',lire:'Read',modif:'Edit',hist:'View history',langues:'🌐 24 languages',de:'From the Encyclopedia, the free encyclopedia.',
+      somm:'Contents',refs:'References',cats:'Categories',pied:'This page was last edited on'}},
+  rendu(d,l,L){
+    const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>').replace(/\[\[(.+?)\]\]/g,'<a>$1</a>').replace(/\[(\d+)\]/g,'<sup>[$1]</sup>');
+    const lignes=paras(d.texte); const titres=[]; let corps='', premier=true, somm='';
+    for(const x of lignes){
+      if(/^##\s/.test(x)){ if(premier){ premier=false; corps+='%%SOMM%%'; } const t=x.replace(/^##\s*/,''); titres.push(t); corps+=`<h2>${inl(t)}</h2>`; }
+      else if(/^###\s/.test(x)) corps+=`<h3>${inl(x.replace(/^###\s*/,''))}</h3>`;
+      else corps+=`<p>${inl(x)}</p>`;
+    }
+    if(titres.length>=2) somm=`<div class="e-somm"><b>${L.somm}</b><ol>${titres.map(t=>`<li>${esc(t)}</li>`).join('')}${d.refs?`<li>${L.refs}</li>`:''}</ol></div>`;
+    corps=corps.replace('%%SOMM%%',somm);
+    const rows=paras(d.lignes).map(x=>{ if(/^#\s*/.test(x)) return `<tr><th colspan="2">${inl(x.replace(/^#\s*/,''))}</th></tr>`; const m=x.match(/^([^:]+?)\s*:\s*(.*)$/); return m?`<tr><td>${inl(m[1])}</td><td>${inl(m[2])}</td></tr>`:`<tr><td colspan="2">${inl(x)}</td></tr>`; }).join('');
+    const box=(d.boxt||d.image||rows)?`<div class="e-box" data-k="lignes">${d.boxt?`<div class="e-box-t" data-k="boxt">${esc(d.boxt)}</div>`:''}${d.image?`<img src="${d.image}" alt="" data-k="image">`:''}${d.legende?`<div class="leg" data-k="legende">${inl(d.legende)}</div>`:''}${rows?`<table>${rows}</table>`:''}</div>`:'';
+    const refs=paras(d.refs); const cats=String(d.cats||'').split(',').map(s=>s.trim()).filter(Boolean);
+    return `<div class="doc fiche">
+      <div class="e-haut"><span class="e-burger"></span><div class="e-logo">${ICO.globe}<div><b>${L.nom}</b><small>${L.sous}</small></div></div>
+        <div class="e-cherche">${ICO.loupe}${L.cherche}</div><span class="e-btn">${L.btn}</span><div class="e-liens">${L.liens.map(x=>`<span>${x}</span>`).join('')}</div></div>
+      <div class="e-page">
+        <h1 class="e-titre" data-k="titre"><span style="font:inherit;color:inherit;padding:0">${esc(d.titre)}</span><span>${L.langues}</span></h1>
+        <div class="e-onglets"><div><span class="on">${L.art}</span><span>${L.disc}</span></div><div><span class="on">${L.lire}</span><span>${L.modif}</span><span>${L.hist}</span></div></div>
+        <div class="e-de">${L.de}</div>
+        ${box}
+        <div class="e-corps" data-k="texte">${corps}</div>
+        ${refs.length?`<div class="e-corps"><h2>${L.refs}</h2></div><ol class="e-refs" data-k="refs">${refs.map(r=>`<li>${inl(r)}</li>`).join('')}</ol>`:''}
+        ${cats.length?`<div class="e-cats" data-k="cats">${L.cats} : ${cats.map(c=>`<span>${esc(c)}</span>`).join(' | ')}</div>`:''}
+        ${d.modif?`<div class="e-pied" data-k="modif">${L.pied} ${esc(d.modif)}.</div>`:''}
+      </div></div>`;
+  },
+  ex:{fr:{titre:'Dahu',boxt:'Dahu',image:'',legende:'Dahu observé dans le massif des Bauges (illustration, 1902).',
+      lignes:"# Classification\nRègne : [[Animalia]]\nClasse : [[Mammalia]]\nOrdre : Montagnardiformes\nFamille : Dahutidae\n# Statut de conservation\nUICN : Préoccupation mineure",
+      texte:"Le **dahu** (*Dahutus montanus*) est un [[mammifère]] des montagnes d'Europe, dont les pattes d'un côté sont plus courtes que celles de l'autre, ce qui lui permet de se tenir à l'horizontale sur les pentes[1].\n## Description\nLe dahu mesure de 60 à 80 cm au garrot. Son pelage brun-roux le rend difficile à repérer dans les éboulis. On distingue deux sous-espèces : le dahu dextrogyre, qui tourne autour des sommets dans le sens des aiguilles d'une montre, et le dahu lévogyre[2].\n## Comportement\nIncapable de faire demi-tour sans tomber, le dahu passe toute sa vie à faire le tour de la même montagne. Il est surtout actif les soirs de pleine lune.\n## Chasse au dahu\nLa [[chasse au dahu]] se pratique de nuit, à l'aide d'un sac et d'une lampe. Elle est traditionnellement proposée aux nouveaux venus dans les villages de montagne[3].",
+      refs:"Bulletin de la Société alpine d'histoire naturelle, n° 12, 1898, p. 41.\nM. Perrin, Les Mammifères asymétriques, Éditions du Col, 1954.\nP. Girard, Folklore des Alpes, 1987.",
+      cats:'Mammifère de montagne, Faune des Alpes, Animal légendaire',modif:'2 novembre 2026 à 18:04'},
+    en:{titre:'Dahu',boxt:'Dahu',image:'',legende:'A dahu seen in the Bauges mountains (illustration, 1902).',
+      lignes:"# Scientific classification\nKingdom: [[Animalia]]\nClass: [[Mammalia]]\nOrder: Montagnardiformes\nFamily: Dahutidae\n# Conservation status\nIUCN: Least concern",
+      texte:"The **dahu** (*Dahutus montanus*) is a [[mammal]] of the mountains of Europe whose legs on one side are shorter than on the other, which lets it stand level on steep slopes[1].\n## Description\nThe dahu is 60 to 80 cm tall at the shoulder. Its reddish-brown fur makes it hard to spot among the rocks. There are two subspecies: the clockwise dahu, which circles summits clockwise, and the anticlockwise dahu[2].\n## Behaviour\nUnable to turn around without falling over, the dahu spends its whole life walking around the same mountain. It is most active on full-moon nights.\n## Dahu hunting\n[[Dahu hunting]] takes place at night with a sack and a torch. It is traditionally offered to newcomers in mountain villages[3].",
+      refs:"Bulletin of the Alpine Natural History Society, no. 12, 1898, p. 41.\nM. Perrin, Asymmetric Mammals, Col Press, 1954.\nP. Girard, Alpine Folklore, 1987.",
+      cats:'Mountain mammals, Fauna of the Alps, Legendary creatures',modif:'2 November 2026, at 18:04'}}
+}
+};
+/* Les vignettes de choix : des croquis maison, reconnaissables d'un coup d'œil */
+const VIGN={
+  une:'<svg viewBox="0 0 120 62"><rect x="30" y="1" width="60" height="60" fill="#fbfaf5" stroke="#bbb"/><rect x="38" y="6" width="44" height="6" fill="#222"/><rect x="34" y="14" width="52" height="1.5" fill="#222"/><rect x="34" y="19" width="34" height="5" fill="#222"/><rect x="34" y="27" width="34" height="14" fill="#b9b3a3"/><g fill="#999"><rect x="34" y="44" width="16" height="1.5"/><rect x="34" y="47" width="16" height="1.5"/><rect x="34" y="50" width="16" height="1.5"/><rect x="52" y="44" width="16" height="1.5"/><rect x="52" y="47" width="16" height="1.5"/><rect x="52" y="50" width="16" height="1.5"/><rect x="72" y="20" width="14" height="1.5"/><rect x="72" y="24" width="14" height="1.5"/><rect x="72" y="32" width="14" height="1.5"/><rect x="72" y="36" width="14" height="1.5"/></g><rect x="72" y="19" width="10" height="2.5" fill="#222"/><rect x="72" y="30" width="10" height="2.5" fill="#222"/></svg>',
+  article:'<svg viewBox="0 0 120 62"><rect x="14" y="1" width="92" height="60" rx="3" fill="#fff" stroke="#bbb"/><rect x="14" y="1" width="92" height="8" rx="3" fill="#e5e5e8"/><circle cx="19" cy="5" r="1.5" fill="#ff5f57"/><circle cx="23" cy="5" r="1.5" fill="#febc2e"/><rect x="30" y="3" width="60" height="4" rx="2" fill="#fff"/><rect x="46" y="12" width="28" height="4" fill="#222"/><rect x="93" y="12" width="9" height="4" fill="#c8102e"/><rect x="28" y="20" width="10" height="2" fill="#c8102e"/><rect x="28" y="24" width="64" height="4" fill="#222"/><rect x="28" y="30" width="48" height="4" fill="#222"/><rect x="28" y="38" width="64" height="16" fill="#b9b3a3"/></svg>',
+  post:'<svg viewBox="0 0 120 62"><rect x="22" y="3" width="76" height="56" rx="6" fill="#fff" stroke="#bbb"/><circle cx="33" cy="14" r="6" fill="#4a7fd4"/><rect x="42" y="10" width="22" height="3" fill="#222"/><circle cx="67" cy="11.5" r="2.2" fill="#1d9bf0"/><rect x="42" y="16" width="16" height="2.5" fill="#999"/><rect x="28" y="24" width="64" height="2.5" fill="#333"/><rect x="28" y="29" width="58" height="2.5" fill="#333"/><rect x="28" y="34" width="34" height="2.5" fill="#1d9bf0"/><rect x="28" y="41" width="64" height=".8" fill="#ddd"/><g fill="none" stroke="#888" stroke-width="1.2"><circle cx="34" cy="50" r="2.6"/><path d="M50 48h6l-2-2m2 6h-6l2 2"/></g><path d="M72 52s-3.5-2-3.5-4.2c0-1.2 1-2 2-2 .7 0 1.2.4 1.5.9.3-.5.8-.9 1.5-.9 1 0 2 .8 2 2C75.5 50 72 52 72 52z" fill="#f91880"/></svg>',
+  affiche:'<svg viewBox="0 0 120 62"><rect x="41" y="1" width="40" height="60" fill="#f1e7cd" stroke="#bbb"/><rect x="44" y="4" width="34" height="54" fill="none" stroke="#222" stroke-width="1.5"/><rect x="49" y="9" width="24" height="3" fill="#222"/><rect x="47" y="17" width="28" height="6" fill="#222"/><rect x="50" y="25" width="22" height="6" fill="#222"/><g fill="#777"><rect x="49" y="35" width="24" height="1.5"/><rect x="49" y="38" width="24" height="1.5"/><rect x="51" y="41" width="20" height="1.5"/></g><rect x="46" y="47" width="30" height="7" fill="#222"/></svg>',
+  fiche:'<svg viewBox="0 0 120 62"><rect x="10" y="1" width="100" height="60" fill="#fff" stroke="#bbb"/><circle cx="18" cy="8" r="4.5" fill="#e3e4e6" stroke="#888" stroke-width=".7"/><rect x="26" y="6" width="18" height="3" fill="#555"/><rect x="50" y="5" width="34" height="5" fill="none" stroke="#aaa"/><rect x="16" y="16" width="30" height="5" fill="#222"/><rect x="16" y="23" width="88" height=".8" fill="#aaa"/><g fill="#999"><rect x="16" y="28" width="56" height="1.5"/><rect x="16" y="31.5" width="56" height="1.5"/><rect x="16" y="35" width="50" height="1.5"/><rect x="16" y="43" width="56" height="1.5"/><rect x="16" y="46.5" width="56" height="1.5"/><rect x="16" y="50" width="44" height="1.5"/></g><rect x="16" y="38.5" width="22" height="3" fill="#444"/><rect x="77" y="27" width="27" height="30" fill="#f8f9fa" stroke="#aaa" stroke-width=".7"/><rect x="78" y="28" width="25" height="4" fill="#c8e6c9"/><rect x="79" y="34" width="21" height="10" fill="#b9b3a3"/><g fill="#bbb"><rect x="79" y="47" width="21" height="1.3"/><rect x="79" y="50" width="21" height="1.3"/><rect x="79" y="53" width="21" height="1.3"/></g><g fill="#36c"><rect x="30" y="31.5" width="10" height="1.5"/></g></svg>'
+};
+
+/* ---------- État ---------- */
+const CLE='faux-documents:v1';
+const params=new URLSearchParams(location.search);
+let lang=(params.get('lang')==='en'||(!params.get('lang')&&(()=>{try{return localStorage.getItem('faux-documents:lang')}catch(e){}})()==='en'))?'en':'fr';
+const exemple=(g,l)=>JSON.parse(JSON.stringify(G[g].ex[l]));
+let S={g:'une',docs:{},modif:{}};
+try{ const s=localStorage.getItem(CLE); if(s){ const j=JSON.parse(s); if(j&&j.docs) S=Object.assign(S,j); } }catch(e){}
+if(!G[S.g]) S.g='une';
+for(const g in G){ if(!S.docs[g]) { S.docs[g]=exemple(g,lang); S.modif[g]=false; } }
+const t=key=>T[lang][key]??key;
+let tGarde; function garder(){ clearTimeout(tGarde); tGarde=setTimeout(()=>{ try{ localStorage.setItem(CLE,JSON.stringify(S)); }catch(e){ msg(t('tropGros')); } },300); }
+let tMsg; function msg(s){ const b=$('msgBox'); b.textContent=s; b.classList.add('on'); clearTimeout(tMsg); tMsg=setTimeout(()=>b.classList.remove('on'),2600); }
+
+/* ---------- Interface : textes fixes ---------- */
+function dessinerTextes(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-t]').forEach(el=>{ const v=t(el.dataset.t); if(el.dataset.attr) el.setAttribute(el.dataset.attr,v); else el.textContent=v; });
+  $('langue').textContent=lang==='fr'?'EN':'FR'; $('langue').lang=lang==='fr'?'en':'fr'; $('langue').title=lang==='fr'?'English version':'Version française';
+  $('gabarits').setAttribute('aria-label',t('nav')); $('form').setAttribute('aria-label',t('form'));
+  document.title=(lang==='fr'?'Faux documents · Jeux et ressources pédagogiques':'Fake documents · Teaching games and resources');
+}
+function dessinerGabarits(){
+  $('gabarits').innerHTML=Object.keys(G).map(g=>`<button class="gab" type="button" data-g="${g}" aria-pressed="${g===S.g}">${VIGN[g]}<span>${G[g][lang]}</span></button>`).join('');
+  $('gabarits').querySelectorAll('.gab').forEach(b=>b.onclick=()=>{ S.g=b.dataset.g; garder(); tout(); });
+}
+
+/* ---------- Formulaire ---------- */
+function champHTML(c,d){
+  const id='f_'+c.k, lab=c[lang], ex=c.ex?`<span class="ex">${esc(c.ex[lang])}</span>`:'';
+  if(c.type==='check') return `<label class="champ case"><input type="checkbox" id="${id}" data-c="${c.k}" ${d[c.k]?'checked':''}>${esc(lab)}</label>`;
+  if(c.type==='image') return `<div class="champ"><span>${esc(lab)}</span><div class="img-champ">${d[c.k]?`<img class="vign" src="${d[c.k]}" alt="">`:''}<button class="btn mini" type="button" id="${id}" data-img="${c.k}">${t('photo')}</button>${d[c.k]?`<button class="btn mini warn" type="button" data-sans="${c.k}">${t('retirer')}</button>`:''}</div></div>`;
+  if(c.type==='long') return `<label class="champ">${esc(lab)}<textarea id="${id}" data-c="${c.k}" rows="${c.rows||3}">${esc(d[c.k])}</textarea>${ex}</label>`;
+  return `<label class="champ">${esc(lab)}<input type="text" id="${id}" data-c="${c.k}" value="${esc(d[c.k])}">${ex}</label>`;
+}
+function dessinerForm(){
+  const g=G[S.g], d=S.docs[S.g];
+  let h='';
+  if(g.styles) h+=`<section class="bloc"><h2>${t('style')}</h2><div class="seg">${g.styles.map(([v,fr,en])=>`<button class="btn" type="button" data-style="${v}" aria-pressed="${(d.style||g.styles[0][0])===v}">${lang==='fr'?fr:en}</button>`).join('')}</div></section>`;
+  g.groupes.forEach((gr,i)=>{
+    const ch=g.champs.filter(c=>c.g===i).map(c=>champHTML(c,d)).join('');
+    h+=i===0?`<section class="bloc"><h2>${esc(gr[lang==='fr'?0:1])}</h2>${ch}</section>`:`<details class="bloc"><summary>${esc(gr[lang==='fr'?0:1])}</summary>${ch}</details>`;
+  });
+  h+=`<section class="bloc"><div class="outils"><button class="btn mini" type="button" id="bEx">${t('exemple')}</button><button class="btn mini warn" type="button" id="bVide">${t('vider')}</button><button class="btn mini" type="button" id="bSauve">${t('sauver')}</button><button class="btn mini" type="button" id="bOuvre">${t('ouvrir')}</button></div><p class="aide">${t('aideFichier')}</p></section>`;
+  const f=$('form'); f.innerHTML=h;
+  f.querySelectorAll('[data-c]').forEach(el=>el.addEventListener('input',()=>{ d[el.dataset.c]=el.type==='checkbox'?el.checked:el.value; S.modif[S.g]=true; rendre(); garder(); }));
+  f.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>{ d.style=b.dataset.style; S.modif[S.g]=true; f.querySelectorAll('[data-style]').forEach(x=>x.setAttribute('aria-pressed',x===b)); rendre(); garder(); });
+  f.querySelectorAll('[data-img]').forEach(b=>b.onclick=()=>{ imgCle=b.dataset.img; $('fImg').value=''; $('fImg').click(); });
+  f.querySelectorAll('[data-sans]').forEach(b=>b.onclick=()=>{ d[b.dataset.sans]=''; S.modif[S.g]=true; dessinerForm(); rendre(); garder(); });
+  $('bEx').onclick=()=>{ S.docs[S.g]=exemple(S.g,lang); S.modif[S.g]=false; tout(); garder(); msg(t('okExemple')); };
+  $('bVide').onclick=()=>{ if(!confirm(t('confVider'))) return; const n={style:d.style}; for(const c of g.champs) n[c.k]=c.type==='check'?false:''; S.docs[S.g]=n; S.modif[S.g]=true; tout(); garder(); };
+  $('bSauve').onclick=()=>{ telecharger(nomFichier()+'.document.json',new Blob([JSON.stringify({type:'faux-document',v:1,g:S.g,d:S.docs[S.g]})],{type:'application/json'})); msg(t('okSauve')); };
+  $('bOuvre').onclick=()=>{ $('fJson').value=''; $('fJson').click(); };
+}
+
+/* ---------- Photos : réduites à 1600 px pour rester légères ---------- */
+let imgCle='';
+$('fImg').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>{ const m=1600, s=Math.min(1,m/Math.max(im.width,im.height)); const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); S.docs[S.g][imgCle]=cv.toDataURL('image/jpeg',.86); S.modif[S.g]=true; dessinerForm(); rendre(); garder(); }; im.src=r.result; }; r.readAsDataURL(f); };
+
+/* ---------- Rendu et mise à l'échelle ---------- */
+const htmlDoc=(g,opts={})=>{ let h=G[g].rendu(S.docs[g],lang,G[g].L[lang]); h=h.replace('<div class="doc ',`<div class="doc ${opts.export?'export ':''}`); return h.replace(/<\/div>\s*$/,`<div class="fictif">${t('fictif')}</div></div>`); };
+function ajuster(hote,inner,largeur,hauteur){
+  const doc=inner.firstElementChild; if(!doc) return;
+  inner.style.transform='none'; const w=doc.offsetWidth, h=doc.offsetHeight;
+  const s=Math.min(1,largeur/w,hauteur?hauteur/h:9);
+  inner.style.transform=`scale(${s})`; inner.style.width=w+'px';
+  if(hote){ hote.style.height=(h*s)+'px'; inner.style.marginRight=(w*s-w)+'px'; }
+}
+/* Les titres qui doivent tenir : nom du journal sur une ligne, titre d'affiche sans couper
+   un mot et sans déborder de la feuille. On réduit le corps pas à pas. */
+function caler(root){
+  root.querySelectorAll('[data-fit]').forEach(el=>{
+    el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), n=0;
+    const cadre=el.closest('.f-in');
+    const trop=()=>{
+      if(el.dataset.fit==='l') return el.scrollWidth>el.clientWidth+1;
+      const r=document.createRange(); r.selectNodeContents(el); const w=el.clientWidth;
+      for(const q of r.getClientRects()) if(q.width>w+2) return true;
+      const mots=el.textContent.split(/\s+/); const m=document.createElement('span'); m.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;font:inherit;text-transform:inherit;letter-spacing:inherit';
+      el.appendChild(m); let deb=false; for(const x of mots){ m.textContent=x; if(m.offsetWidth>w+1){ deb=true; break; } } m.remove(); if(deb) return true;
+      return cadre&&cadre.scrollHeight>cadre.clientHeight+1;
+    };
+    while(trop()&&fs>14&&n++<80){ fs-=2; el.style.fontSize=fs+'px'; }
+  });
+}
+function rendre(){
+  const inn=$('cadreIn'); inn.innerHTML=htmlDoc(S.g); inn.style.transform='none'; caler(inn);
+  ajusterApercu();
+  inn.querySelectorAll('img').forEach(i=>{ if(!i.complete) i.onload=ajusterApercu; });
+}
+function ajusterApercu(){ ajuster($('cadre'),$('cadreIn'),$('cadre').clientWidth); }
+addEventListener('resize',()=>{ ajusterApercu(); if($('projo').classList.contains('on')) ajusterProjo(); });
+/* Un clic dans le document mène au champ correspondant */
+$('cadreIn').addEventListener('click',e=>{
+  const el=e.target.closest('[data-k]'); if(!el) return;
+  const c=G[S.g].champs.find(x=>x.k===el.dataset.k); if(!c) return;
+  const f=$('f_'+c.k); if(!f) return;
+  const det=f.closest('details'); if(det) det.open=true;
+  f.scrollIntoView({block:'center',behavior:'smooth'}); setTimeout(()=>f.focus({preventScroll:true}),250);
+});
+
+/* ---------- Image, impression, projection ---------- */
+function telecharger(nom,blob){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nom; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
+const nomFichier=()=>slug(S.docs[S.g].titre||S.docs[S.g].nom||G[S.g][lang]).slice(0,50)||'document';
+$('png').onclick=async()=>{
+  if(!window.html2canvas) return msg(t('noLib'));
+  const hote=document.createElement('div'); hote.style.cssText='position:fixed;left:-10000px;top:0';
+  hote.innerHTML=htmlDoc(S.g,{export:true}); document.body.appendChild(hote); caler(hote);
+  try{
+    await (document.fonts?document.fonts.ready:Promise.resolve());
+    await Promise.all([...hote.querySelectorAll('img')].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r;})));
+    /* html2canvas rend mal les images SVG (dégradés perdus) : on les passe d'abord en PNG */
+    for(const i of hote.querySelectorAll('img[src^="data:image/svg"]')){ const cv=document.createElement('canvas'); cv.width=(i.naturalWidth||800)*2; cv.height=(i.naturalHeight||400)*2; cv.getContext('2d').drawImage(i,0,0,cv.width,cv.height); i.src=cv.toDataURL('image/png'); await new Promise(r=>{ if(i.complete) r(); else i.onload=i.onerror=r; }); }
+    const cv=await html2canvas(hote.firstElementChild,{scale:2,backgroundColor:null,useCORS:true,logging:false});
+    cv.toBlob(b=>{ telecharger(nomFichier()+'.png',b); msg(t('okImg')); },'image/png');
+  }catch(x){ console.warn(x); msg(t('errImg')); }
+  finally{ hote.remove(); }
+};
+$('imprimer').onclick=()=>window.print();
+/* À l'impression, le document est ramené à la largeur utile d'une page A4 (≈ 720 px) */
+addEventListener('beforeprint',()=>{ const inn=$('cadreIn'), w=inn.firstElementChild.offsetWidth, s=Math.min(1,720/w); inn.style.transform=`scale(${s})`; $('cadre').style.height=(inn.firstElementChild.offsetHeight*s)+'px'; $('cadre').style.justifyContent='flex-start'; });
+addEventListener('afterprint',()=>{ $('cadre').style.justifyContent=''; ajusterApercu(); });
+function ajusterProjo(){ ajuster(null,$('projoIn'),innerWidth-30,innerHeight-30); }
+$('projeter').onclick=()=>{ $('projoIn').innerHTML=htmlDoc(S.g); $('projo').classList.add('on'); $('projoIn').style.transform='none'; caler($('projoIn')); $('projo').setAttribute('aria-hidden','false'); try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} ajusterProjo(); setTimeout(ajusterProjo,300); $('projoFin').focus(); };
+function projoFin(){ $('projo').classList.remove('on'); $('projo').setAttribute('aria-hidden','true'); try{ document.fullscreenElement&&document.exitFullscreen(); }catch(e){} $('projeter').focus(); }
+$('projoFin').onclick=projoFin;
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('projo').classList.contains('on')) projoFin(); });
+document.addEventListener('fullscreenchange',()=>{ if($('projo').classList.contains('on')) setTimeout(ajusterProjo,50); });
+
+/* ---------- Ouvrir un document enregistré ---------- */
+$('fJson').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const j=JSON.parse(await f.text()); if(j.type!=='faux-document'||!G[j.g]||!j.d) throw 0; S.g=j.g; S.docs[j.g]=j.d; S.modif[j.g]=true; tout(); garder(); msg(t('okOuvre')); }catch(x){ msg(t('errOuvre')); } };
+
+/* ---------- Langue : les exemples non retouchés suivent la langue ---------- */
+$('langue').onclick=()=>{
+  lang=lang==='fr'?'en':'fr';
+  try{ localStorage.setItem('faux-documents:lang',lang); }catch(e){}
+  for(const g in G) if(!S.modif[g]) S.docs[g]=exemple(g,lang);
+  const u=new URL(location.href); u.searchParams.set('lang',lang); history.replaceState(null,'',u);
+  garder(); tout();
+};
+
+function tout(){ dessinerTextes(); dessinerGabarits(); dessinerForm(); rendre(); }
+tout();
+if(document.fonts) document.fonts.ready.then(rendre);
+</script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Faux documents" data-flottant="non" data-texte="Faux documents, un outil gratuit pour créer une fausse une de journal, un faux post ou une fausse affiche à étudier en classe" data-texte-en="Fake documents, a free tool to make a fake front page, post or poster to study in class"></script>
+</body>
+</html>
