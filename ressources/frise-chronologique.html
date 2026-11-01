@@ -94,6 +94,7 @@ kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-
 dialog{border:1px solid var(--bord);border-radius:var(--r);background:var(--panel);color:var(--ink);max-width:min(560px,calc(100vw - 32px));width:100%;padding:18px}
 dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog h3{margin:0 0 8px;font-size:17px}
+#impEtat{background:var(--acc2);border-radius:8px;padding:8px 10px;color:var(--ink);margin:0 0 8px}
 dialog textarea{min-height:200px;font:13.5px/1.5 ui-monospace,monospace}
 dialog .ligne{justify-content:flex-end}
 #msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:80;max-width:calc(100vw - 30px);text-align:center}
@@ -276,10 +277,13 @@ dialog .ligne{justify-content:flex-end}
 
   <section class="bloc">
     <h2 data-t="hEv">2. Les événements</h2>
+    <div class="ligne" style="margin:0 0 4px">
+      <button class="btn mini" id="importerDoc" data-t="importerDoc">📄 Importer un Word ou un PDF</button>
+      <button class="btn mini" id="importer" data-t="importer">Coller une liste</button>
+    </div>
     <div id="liste"></div>
     <div class="ligne">
       <button class="btn prim mini" id="ajout" data-t="ajout">+ Un événement</button>
-      <button class="btn mini" id="importer" data-t="importer">Coller une liste</button>
     </div>
     <p class="aide" data-t="aideDates">La date s'écrit comme on veut : « 1789 », « 14 juillet 1789 », « 14/07/1789 », « 52 av. J.-C. », « XVe siècle », « il y a 65 millions d'années ». La frise range tout dans l'ordre.</p>
   </section>
@@ -329,6 +333,8 @@ dialog .ligne{justify-content:flex-end}
 <dialog id="dlgImport">
   <h3 data-t="impTitre">Coller une liste</h3>
   <p class="aide" style="margin:0 0 8px" data-t-html="impAide">Un événement par ligne : <b>date : événement</b>. Ajoutez un détail après un point-virgule. On peut aussi coller deux ou trois colonnes copiées d'un tableur.</p>
+  <div class="ligne" style="margin:0 0 8px;justify-content:flex-start"><button class="btn prim" id="impFichier" data-t="impFichier">📄 Word, PDF, photo ou texte</button><span class="aide" style="margin:0" data-t="impOu">ou collez le texte ci-dessous</span></div>
+  <p class="aide imp-etat" id="impEtat" role="status" hidden></p>
   <textarea id="impTxt"></textarea>
   <div class="ligne"><label><input type="checkbox" id="impRempl" checked> <span data-t="impRempl">Remplacer les événements</span></label><span style="flex:1"></span><button class="btn" id="impNon" data-t="annulerSimple">Annuler</button><button class="btn prim" id="impOui" data-t="impOui">Créer la frise</button></div>
 </dialog>
@@ -347,6 +353,7 @@ dialog .ligne{justify-content:flex-end}
 <div id="msgBox" role="status"></div>
 <input type="file" id="fImg" accept="image/*">
 <input type="file" id="fJson" accept=".json,application/json">
+<input type="file" id="fDoc" accept=".docx,.pdf,.txt,.csv,image/*,application/pdf">
 
 <script>
 'use strict';
@@ -362,7 +369,11 @@ fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour
   hFich:'4. Garder, partager',exemples:'Charger un exemple…',lien:'Copier le lien',sauver:'Enregistrer',ouvrir:'Ouvrir',effacer:'Tout effacer',
   aideFich:"Le lien contient toute la frise (sans les images) : à envoyer aux élèves ou à un collègue. « Enregistrer » crée un petit fichier avec les images. Rien n'est envoyé sur Internet.",
   lancer:'Lancer la frise ▶',astuce:"En classe : <kbd>→</kbd> ou un clic pour avancer, <kbd>←</kbd> pour revenir, <kbd>A</kbd> lecture automatique, <kbd>V</kbd> vue d'ensemble, <kbd>Échap</kbd> pour quitter. Une télécommande de présentation marche aussi.",
-  impTitre:'Coller une liste',impAide:"Un événement par ligne : <b>date : événement</b>. Ajoutez un détail après un point-virgule. On peut aussi coller deux ou trois colonnes copiées d'un tableur.",
+  impTitre:'Importer des événements',impAide:"Un document avec des dates (tableau, liste, texte suivi…) : la frise repère les dates et ce qui va avec. Ou collez une liste, un événement par ligne : <b>date : événement</b>, avec un détail après un point-virgule.",
+  importerDoc:'📄 Importer un Word ou un PDF',impFichier:'📄 Word, PDF, photo ou texte',impOu:'ou collez le texte ci-dessous',impLecture:'Lecture du document…',impOcr:'Lecture du texte de la photo…',
+  impTrouve:'{n} événements trouvés. Vérifiez la liste ci-dessous (une ligne par événement), corrigez si besoin, puis « Créer la frise ».',impTitreTrouve:'Titre repéré : « {t} ».',
+  impAucun:"Aucune date trouvée. Chaque événement doit commencer par sa date (ou avoir sa date dans une colonne d'un tableau).",impFormat:'Format non pris en charge : Word (.docx), PDF, photo, texte ou tableur (.csv).',
+  impReseau:'Il faut une connexion Internet pour lire un document Word, PDF ou une photo.',impErreur:"Le document n'a pas pu être lu. Pour une photo, essayez-en une plus nette et bien droite.",
   impRempl:'Remplacer les événements',impOui:'Créer la frise',impPh:"1789 : Prise de la Bastille ; Le peuple de Paris s'empare de la forteresse\n1792 : Proclamation de la République\n1804 : Napoléon empereur",
   auto:'Auto',vue:"Vue d'ensemble",plein:'Plein écran',quitter:'Quitter (Échap)',
   phDate:'Date (ex. 1789)',phTitre:"Ce qui s'est passé",phTexte:'Détail (facultatif)',phEmo:'Emoji',image:'🖼 Image',retirer:'Retirer',suppr:'Supprimer cet événement',
@@ -379,7 +390,11 @@ en:{titreOutil:'Animated timeline',retour:'← antoninatger.com',retourTitre:'Ba
   hFich:'4. Save, share',exemples:'Load an example…',lien:'Copy link',sauver:'Save',ouvrir:'Open',effacer:'Clear all',
   aideFich:'The link holds the whole timeline (without images): send it to students or a colleague. “Save” creates a small file that keeps the images. Nothing is sent over the Internet.',
   lancer:'Play the timeline ▶',astuce:'In class: <kbd>→</kbd> or a click to move on, <kbd>←</kbd> to go back, <kbd>A</kbd> autoplay, <kbd>V</kbd> overview, <kbd>Esc</kbd> to quit. A presentation clicker works too.',
-  impTitre:'Paste a list',impAide:'One event per line: <b>date: event</b>. Add a detail after a semicolon. You can also paste two or three columns copied from a spreadsheet.',
+  impTitre:'Import events',impAide:'A document with dates (table, list, running text…): the timeline finds the dates and what goes with them. Or paste a list, one event per line: <b>date: event</b>, with a detail after a semicolon.',
+  importerDoc:'📄 Import a Word file or PDF',impFichier:'📄 Word, PDF, photo or text',impOu:'or paste the text below',impLecture:'Reading the document…',impOcr:'Reading the text in the photo…',
+  impTrouve:'{n} events found. Check the list below (one line per event), fix it if needed, then “Build the timeline”.',impTitreTrouve:'Title found: “{t}”.',
+  impAucun:'No dates found. Each event must start with its date (or have its date in a table column).',impFormat:'Unsupported format: Word (.docx), PDF, photo, text or spreadsheet (.csv).',
+  impReseau:'An Internet connection is needed to read a Word document, a PDF or a photo.',impErreur:'The document could not be read. For a photo, try a sharper, straight one.',
   impRempl:'Replace the events',impOui:'Build the timeline',impPh:'1969: Apollo 11 lands on the Moon; Neil Armstrong walks on the Moon\n1990: Hubble telescope launched\n1998: First module of the ISS',
   auto:'Auto',vue:'Overview',plein:'Full screen',quitter:'Quit (Esc)',
   phDate:'Date (e.g. 1789)',phTitre:'What happened',phTexte:'Detail (optional)',phEmo:'Emoji',image:'🖼 Image',retirer:'Remove',suppr:'Delete this event',
@@ -412,7 +427,7 @@ const MOIS={janv:1,janvier:1,jan:1,january:1,fevr:2,fevrier:2,feb:2,february:2,m
   nov:11,novembre:11,november:11,dec:12,decembre:12,december:12};
 function romain(s){ const v={i:1,v:5,x:10,l:50,c:100,m:1000}; let n=0; for(let i=0;i<s.length;i++){ const a=v[s[i]],b=v[s[i+1]]||0; n+= a<b?-a:a; } return n; }
 function lireDate(brut){
-  let s=String(brut||'').toLowerCase().normalize('NFD').replace(/\p{M}/gu,'').replace(/\u00a0/g,' ').trim();
+  let s=String(brut||'').toLowerCase().normalize('NFD').replace(/\p{M}/gu,'').replace(/[\u00a0\u202f]/g,' ').trim();
   if(!s) return NaN;
   const avJC=/\bav(ant)?\.?\s*(j|n|notre)|\bbc\b|\bbce\b|^\s*-\s*\d/.test(s);
   // « il y a 65 millions d'années », « 13,8 milliards d'années »
@@ -734,19 +749,192 @@ $('apercu').onclick=()=>lancer(); $('apercu').onkeydown=e=>{ if(e.key==='Enter'|
 
 function tout(){ $('titre').value=D.titre; $('sous').value=D.sous; tuiles(); regl(); liste(); apercu(); }
 
-/* ---------------- Coller une liste ---------------- */
-$('importer').onclick=()=>{ $('impTxt').value=''; $('dlgImport').showModal(); $('impTxt').focus(); };
+/* ---------------- Importer : coller une liste, ou lire un document ----------------
+   Un document (Word, PDF, photo, texte) est d'abord découpé en « blocs » : une ligne de tableau
+   ({cells}) ou un paragraphe ({t}, h si c'est un titre). extraire() y repère ensuite les dates
+   (en début de paragraphe, seules sur une ligne, ou dans une colonne de tableau) et ce qui va avec.
+   Le résultat s'affiche dans la zone de texte, une ligne par événement : on vérifie avant de créer. */
+const chargerScript=src=>new Promise((ok,ko)=>{ if(document.querySelector(`script[src="${src}"]`)) return ok(); const e=document.createElement('script'); e.src=src; e.onload=ok; e.onerror=()=>ko(new Error('reseau')); document.head.appendChild(e); });
+const MOIS_RE="(?:janv(?:ier|\\.)?|f[ée]vr(?:ier|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[ûu]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?|january|february|march|april|may|june|july|august|september|october|november|december|jan\\.?|feb\\.?|mar\\.?|apr\\.?|jun\\.?|jul\\.?|aug\\.?|sep\\.?|oct\\.?|nov\\.?|dec\\.?)";
+const ERE="(?:\\s*(?:av\\.?|avant|apr\\.?|après)\\s*(?:J\\.?\\s*-?\\s*C\\.?|Jésus-Christ|notre\\s+[èe]re|n\\.\\s*[èe]\\.?)|\\s*(?:BCE|BC|CE|AD|B\\.C\\.|A\\.D\\.)(?![a-z]))";
+const AN=`(?:\\d{1,4}${ERE}|-?\\d{3,4}(?!\\d)${ERE}?)`;
+const FORMES=[
+  `\\d{1,2}(?:er|st|nd|rd|th)?\\s+${MOIS_RE}\\s+${AN}`,
+  `${MOIS_RE}\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+${AN}`,
+  `${MOIS_RE}\\s+${AN}`,
+  `\\d{1,2}[/.]\\d{1,2}[/.]\\d{2,4}(?!\\d)`, `\\d{4}-\\d{2}-\\d{2}`,
+  `(?:il\\s+y\\s+a\\s+)?(?:environ\\s+|plus\\s+de\\s+)?\\d[\\d\\s.,]*\\s*(?:millions?|milliards?)\\s+d['’]\\s*ann[ée]es`,
+  `(?:about\\s+)?\\d[\\d.,]*\\s*(?:million|billion)\\s+years\\s+ago`,
+  `il\\s+y\\s+a\\s+(?:environ\\s+)?\\d[\\d\\s]*\\s*ans`, `\\d[\\d,]*\\s+years\\s+ago`,
+  `(?:[IVXLC]+|\\d{1,2})(?:e|er|ème|eme|re)\\s+si[èe]cle${ERE}?`, `\\d{1,2}(?:st|nd|rd|th)\\s+century${ERE}?`,
+  `${AN}(?:\\s*[-–—/]\\s*${AN}|\\s+(?:à|to)\\s+${AN})?`
+];
+const DEBUT=new RegExp(`^\\s*(?:(?:en|le|in|on|dès|depuis|à\\s+partir\\s+de|au|the)\\s+)?((?:(?:vers|environ|autour\\s+de|aux\\s+alentours\\s+de|début|fin|mi-|c\\.|ca\\.|circa|around|about|early|late)\\s*)?(?:${FORMES.join('|')}))(?=$|[\\s:;,.–—|)\\]-])\\s*(?:[:;,.–—|)\\]-]+\\s*)?`,'iu');
+const PUCE=/^\s*(?:[•●▪◦‣∙·*►➤✓□■-]\s*|[–—]\s+)/;
+function debutDate(s){
+  s=s.replace(/[  ]/g,' ').replace(PUCE,'');
+  let m=DEBUT.exec(s);
+  if(!m){ const n=/^\s*\(?\d{1,2}[.)]\s+/.exec(s); if(n) m=DEBUT.exec(s.slice(n[0].length)), s=m?s.slice(n[0].length):s; }
+  if(!m) return null;
+  const date=m[1].trim().replace(/(\d)[.,]$/,'$1').replace(/,$/,'');
+  if(isNaN(lireDate(date))) return null;
+  return {date:date.charAt(0).toUpperCase()+date.slice(1), reste:s.slice(m[0].length).trim()};
+}
+const majuscule=s=>s.charAt(0).toUpperCase()+s.slice(1);
+/* « titre ; détail », « titre : détail », ou une longue phrase coupée après la première phrase */
+function couper(r){
+  r=r.replace(/\s+/g,' ').trim(); let ti=r, tx='', m;
+  if((m=/^(.{3,90}?)\s+;\s+(.+)$/.exec(r))) { ti=m[1]; tx=m[2]; }
+  else if((m=/^(.{3,70}?)\s?:\s+(.+)$/.exec(r))&&!/\d$/.test(m[1])) { ti=m[1]; tx=m[2]; }
+  else if(r.length>95&&(m=/^(.{20,110}?[.!?])\s+(\p{Lu}.+)$/u.exec(r))) { ti=m[1]; tx=m[2]; }
+  ti=ti.replace(/\.$/,'').trim();
+  return {titre:majuscule(ti), texte:majuscule(tx.trim())};
+}
+const bruit=s=>/_{3,}|\.{5,}/.test(s);
+function extraire(blocs,liste){
+  const ev=[]; let titre='', cur=null, entete=false;
+  const fin=()=>{ cur=null; };
+  const colDate=cells=>cells.findIndex(c=>{ const d=c&&debutDate(c); return d&&!d.reste.replace(/[\s.,;:]/g,''); });
+  /* Colonne des dates d'un tableau : celle où l'on en trouve le plus. Une année courte (« 79 ») y est acceptée. */
+  const freq={}; blocs.forEach(b=>{ if(b.cells){ const i=colDate(b.cells.map(c=>c.trim())); if(i>=0) freq[i]=(freq[i]||0)+1; } });
+  const colTab=+(Object.entries(freq).sort((a,b)=>b[1]-a[1])[0]||[-1])[0];
+  for(const b of blocs){
+    if(b.cells){
+      const cells=b.cells.map(c=>c.replace(/\s+/g,' ').trim());
+      let iD=colDate(cells);
+      if(iD<0&&colTab>=0&&/^-?\d{1,4}$/.test(cells[colTab]||'')&&ev.length) iD=colTab;
+      if(iD>=0){
+        const autres=cells.slice(iD+1).filter(c=>c&&!/^\d{1,3}$/.test(c));
+        const r=couper(autres.shift()||''); const tx=[r.texte,...autres].filter(Boolean).join(' — ');
+        cur={date:(debutDate(cells[iD])||{date:cells[iD]}).date,titre:r.titre,texte:tx,de:'tab'}; ev.push(cur); continue;
+      }
+      const txt=cells.filter(Boolean).join(' ');
+      if(!ev.length){ if(!titre&&b.titre&&txt.length<90) titre=txt; continue; }
+      if(cur&&cur.de==='tab'&&txt){ if(cur.texte) cur.texte+=' '+txt; else cur.titre+=' '+txt; }
+      continue;
+    }
+    const t=(b.t||'').replace(/\s+/g,' ').trim(); if(!t||bruit(t)) { if(t) fin(); continue; }
+    let d=debutDate(t);
+    /* Dans la zone de texte, « quelque chose : événement » vaut une ligne de frise, même si la date n'est pas reconnue */
+    if(!d&&liste){ const m=/^([^:;]{1,40}?)\s+:\s+(.+)$/.exec(t); if(m) d={date:m[1].trim(),reste:m[2]}; }
+    if(d){
+      if(d.reste){ const r=couper(d.reste); cur={date:d.date,...r,de:'ligne'}; }
+      else cur={date:d.date,titre:'',texte:'',de:'seule'};
+      ev.push(cur); continue;
+    }
+    if(b.h){ if(!ev.length&&!titre&&t.length<90) titre=t; fin(); continue; }
+    if(!ev.length){ if(!titre&&t.length<90&&!/[:?]$/.test(t)) titre=t; continue; }
+    if(!cur) continue;
+    if(b.suite){ if(cur.texte) cur.texte+=' '+t; else cur.titre+=' '+t; continue; }   // ligne coupée d'un PDF
+    if(!cur.titre){ const r=couper(t); cur.titre=r.titre; cur.texte=r.texte; continue; }
+    if(cur.de==='seule'&&!cur.texte){ cur.texte=t; continue; }
+    fin();
+  }
+  ev.forEach(e=>{ e.titre=e.titre.replace(/\s+/g,' ').trim(); e.texte=e.texte.replace(/\s+/g,' ').trim(); });
+  return {titre, ev:ev.filter(e=>e.titre||e.texte)};
+}
+/* Lecture des formats */
+async function blocsWord(file){
+  await chargerScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js');
+  const html=(await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()})).value;
+  const doc=new DOMParser().parseFromString(html,'text/html'), out=[];
+  (function tour(n){ for(const e of n.children){
+    const tg=e.tagName;
+    if(tg==='TABLE'){ e.querySelectorAll('tr').forEach((tr,i)=>out.push({cells:[...tr.children].map(c=>c.textContent),titre:i===0})); }
+    else if(/^H[1-6]$/.test(tg)) out.push({t:e.textContent,h:+tg[1]});
+    else if(tg==='UL'||tg==='OL') tour(e);
+    else if(tg==='LI'){ const sous=e.querySelector('ul,ol'); if(sous){ const c=e.cloneNode(true); c.querySelectorAll('ul,ol').forEach(x=>x.remove()); out.push({t:c.textContent}); tour(sous); } else out.push({t:e.textContent}); }
+    else if(tg==='P'){ const br=e.innerHTML.split(/<br\s*\/?>/i); if(br.length>1) br.forEach(h=>{ const d=document.createElement('div'); d.innerHTML=h; out.push({t:d.textContent}); }); else out.push({t:e.textContent}); }
+    else if(e.children.length) tour(e); else if(e.textContent.trim()) out.push({t:e.textContent});
+  } })(doc.body);
+  return out;
+}
+async function pdfjs(){
+  await chargerScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+async function blocsPdf(file){
+  await pdfjs();
+  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise; const lignes=[];
+  for(let p=1;p<=pdf.numPages;p++){
+    const items=(await (await pdf.getPage(p)).getTextContent()).items.filter(it=>it.str.trim());
+    const ls=[];
+    items.forEach(it=>{ const y=it.transform[5], x=it.transform[4], h=Math.abs(it.transform[3])||it.height||10;
+      let l=ls.find(l=>Math.abs(l.y-y)<Math.max(2,h*.3)); if(!l) ls.push(l={y,h,its:[]}); l.its.push({x,w:it.width,s:it.str,h}); l.h=Math.max(l.h,h); });
+    ls.sort((a,b)=>b.y-a.y);
+    ls.forEach(l=>{ l.its.sort((a,b)=>a.x-b.x); const cells=[]; let fin=null;
+      l.its.forEach(it=>{ if(fin===null||it.x-fin>Math.max(14,it.h*1.6)) cells.push({x:it.x,s:it.s}); else cells[cells.length-1].s+=(it.x-fin>1?' ':'')+it.s; fin=it.x+it.w; });
+      lignes.push({p,y:l.y,h:l.h,cells}); });
+  }
+  if(lignes.map(l=>l.cells.map(c=>c.s).join('')).join('').replace(/\s/g,'').length<20){ // PDF scanné
+    const imgs=[]; for(let i=1;i<=Math.min(pdf.numPages,10);i++){ const pg=await pdf.getPage(i); const v=pg.getViewport({scale:2}); const cv=document.createElement('canvas'); cv.width=v.width; cv.height=v.height; await pg.render({canvasContext:cv.getContext('2d'),viewport:v}).promise; imgs.push(cv); }
+    return blocsTexte(await lireImages(imgs));
+  }
+  const tailles=lignes.map(l=>l.h).sort((a,b)=>a-b), norm=tailles[Math.floor(tailles.length/2)]||10, out=[];
+  let prec=null;
+  for(const l of lignes){
+    const txt=l.cells.map(c=>c.s).join(' ');
+    const proche=prec&&prec.p===l.p&&(prec.y-l.y)<=Math.max(prec.h,l.h)*1.5;
+    const b=l.cells.length>1?{cells:l.cells.map(c=>c.s)}:{t:txt,h:l.h>norm*1.25?1:0};
+    if(proche&&l.cells.length===1&&!debutDate(txt)){
+      const dern=prec.b;
+      if(dern.cells&&Math.abs(prec.cells[prec.cells.length-1].x-l.cells[0].x)<8){ dern.cells[dern.cells.length-1]+=' '+txt; prec={...l,b:dern}; continue; }
+      if(dern.t!=null&&!dern.h&&!b.h&&Math.abs(prec.cells[0].x-l.cells[0].x)<40){ dern.t+=' '+txt; prec={...l,b:dern}; continue; }
+    }
+    out.push(b); prec={...l,b};
+  }
+  return out;
+}
+const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/';
+async function lireImages(sources){
+  await chargerScript(TESS+'tesseract.min.js');
+  const w=await Tesseract.createWorker(LANG==='en'?'eng':'fra',1,{workerPath:TESS+'worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:`https://cdn.jsdelivr.net/npm/@tesseract.js-data/${LANG==='en'?'eng':'fra'}@1.0.0/4.0.0_best_int`,
+    logger:m=>{ if(m.status==='recognizing text') etatImp(t('impOcr')+' '+Math.round(m.progress*100)+' %'); }});
+  let txt=''; try{ for(const s of sources){ const r=await w.recognize(s); txt+=r.data.text+'\n'; } } finally{ await w.terminate(); }
+  return txt;
+}
+function blocsTexte(txt){ return txt.replace(/\r/g,'').split('\n').map(l=>l.includes('\t')?{cells:l.split('\t')}:{t:l}).filter(b=>b.cells?b.cells.some(c=>c.trim()):b.t.trim()); }
+async function lireDocument(f){
+  const nom=f.name.toLowerCase();
+  if(nom.endsWith('.docx')) return blocsWord(f);
+  if(nom.endsWith('.pdf')||f.type==='application/pdf') return blocsPdf(f);
+  if(f.type.startsWith('image/')) return blocsTexte(await lireImages([f]));
+  if(nom.endsWith('.csv')){ const tx=await f.text(); const sep=tx.includes(';')?';':','; return blocsTexte(tx.split('\n').map(l=>l.split(sep).map(c=>c.replace(/^"|"$/g,'')).join('\t')).join('\n')); }
+  if(nom.endsWith('.txt')||f.type.startsWith('text/')) return blocsTexte(await f.text());
+  throw new Error('format');
+}
+const versLignes=ev=>ev.map(e=>`${e.date} : ${e.titre}${e.texte?' ; '+e.texte:''}`).join('\n');
+function etatImp(s){ const e=$('impEtat'); e.hidden=!s; e.textContent=s||''; }
+let titreTrouve='';
+async function importerFichier(f){
+  if(!$('dlgImport').open) ouvrirImport();
+  $('impFichier').disabled=true; etatImp(t('impLecture'));
+  try{
+    const r=extraire(await lireDocument(f));
+    if(!r.ev.length) throw new Error('aucun');
+    $('impTxt').value=versLignes(r.ev); titreTrouve=r.titre;
+    etatImp(t('impTrouve').replace('{n}',r.ev.length)+(r.titre?' '+t('impTitreTrouve').replace('{t}',r.titre):''));
+  }catch(x){
+    etatImp(x.message==='format'?t('impFormat'):x.message==='aucun'?t('impAucun'):x.message==='reseau'?t('impReseau'):t('impErreur'));
+  }finally{ $('impFichier').disabled=false; }
+}
+function ouvrirImport(){ $('impTxt').value=''; titreTrouve=''; etatImp(''); $('dlgImport').showModal(); }
+$('importer').onclick=()=>{ ouvrirImport(); $('impTxt').focus(); };
+$('importerDoc').onclick=()=>{ ouvrirImport(); $('fDoc').click(); };
+$('impFichier').onclick=()=>$('fDoc').click();
+$('fDoc').onchange=()=>{ const f=$('fDoc').files[0]; $('fDoc').value=''; if(f) importerFichier(f); };
+/* Déposer un fichier n'importe où sur la page */
+addEventListener('dragover',e=>{ if([...(e.dataTransfer?.types||[])].includes('Files')) e.preventDefault(); });
+addEventListener('drop',e=>{ const f=e.dataTransfer?.files?.[0]; if(!f) return; e.preventDefault(); if(/\.json$/i.test(f.name)) return; importerFichier(f); });
 $('impNon').onclick=()=>$('dlgImport').close();
 $('impOui').onclick=()=>{
-  const lignes=$('impTxt').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean); const nv=[];
-  for(const l of lignes){
-    let date,reste; const tab=l.split('\t');
-    if(tab.length>1){ date=tab[0]; reste=tab.slice(1); }
-    else { const m=/^(.+?)\s*(?:\s:\s|:\s|\s[–—-]\s|\s*;\s*)(.+)$/.exec(l); if(m){ date=m[1]; reste=m[2].split(/\s*;\s*|\s+\|\s+/); } else { date=''; reste=[l]; } }
-    nv.push({id:nid(),date:date.trim(),titre:(reste[0]||'').trim(),texte:reste.slice(1).join(' ; ').trim(),emoji:'',img:null});
-  }
-  if(!nv.length) return $('dlgImport').close();
-  avant(); D.ev=$('impRempl').checked?nv:D.ev.concat(nv); trier(); sel=null; $('dlgImport').close(); tout(); garder();
+  const r=extraire(blocsTexte($('impTxt').value),true);
+  const nv=r.ev.map(e=>({id:nid(),date:e.date,titre:e.titre,texte:e.texte,emoji:'',img:null,ecart:1}));
+  if(!nv.length){ etatImp(t('impAucun')); return; }
+  avant(); const vides=D.ev.every(e=>!e.date.trim()&&!e.titre.trim()&&!e.texte.trim());
+  D.ev=($('impRempl').checked||vides)?nv:D.ev.concat(nv);
+  if(titreTrouve&&(!D.titre||$('impRempl').checked)) D.titre=titreTrouve;
+  trier(); sel=null; $('dlgImport').close(); tout(); garder();
 };
 
 /* ---------------- Fichiers et lien ---------------- */
