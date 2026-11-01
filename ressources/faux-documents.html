@@ -169,12 +169,12 @@ input[type=file]{display:none}
 .article .a-url svg{width:11px;height:11px;vertical-align:-1px;margin-right:6px}
 .article .a-site{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:18px 32px 14px;font-family:'DM Sans',Arial,sans-serif}
 .article .a-menu{font-size:13px;display:flex;align-items:center;gap:8px;color:#333}
-.article .a-menu i{display:inline-block;width:18px;height:2px;background:#111;box-shadow:0 -5px 0 #111,0 5px 0 #111;margin-right:4px}
+.article .a-menu svg{margin-right:4px}
 .article .a-logo{font:700 38px/1 'Playfair Display',Georgia,serif;letter-spacing:-.01em;white-space:nowrap}
 .article .a-compte{justify-self:end;display:flex;gap:12px;align-items:center;font-size:13px}
 .article .a-abo{background:var(--a);color:#fff;font-weight:700;padding:8px 13px;border-radius:3px}
 .article .a-rubs{display:flex;justify-content:center;gap:22px;border-top:1px solid #e3e3e3;border-bottom:1px solid #e3e3e3;padding:10px 0;font:600 12.5px/1 'DM Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#444}
-.article .a-rubs .on{color:var(--a);box-shadow:0 12px 0 -9px var(--a)}
+.article .a-rubs .on{color:var(--a);border-bottom:3px solid var(--a);padding-bottom:7px;margin-bottom:-10px}
 .article .a-main{padding:28px 92px 34px}
 .article .a-rub{font:700 13px/1 'DM Sans',Arial,sans-serif;color:var(--a);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
 .article .a-titre{font:700 40px/1.12 'Playfair Display',Georgia,serif;margin:0 0 14px;letter-spacing:-.005em}
@@ -282,7 +282,7 @@ input[type=file]{display:none}
    ===================================================================== */
 .fiche{width:980px;background:#fff;color:#202122;font:14px/1.6 'Helvetica Neue',Helvetica,Arial,'Liberation Sans',sans-serif;--lien:#3366cc}
 .fiche .e-haut{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid #eaecf0}
-.fiche .e-burger{width:18px;height:2px;background:#202122;box-shadow:0 -5px 0 #202122,0 5px 0 #202122;margin-right:6px}
+.fiche .e-burger{display:flex;margin-right:6px}
 .fiche .e-logo{display:flex;align-items:center;gap:9px}
 .fiche .e-logo svg{width:40px;height:40px}
 .fiche .e-logo b{display:block;font:400 19px/1 'Source Serif 4',Georgia,serif;letter-spacing:.14em;text-transform:uppercase}
@@ -296,8 +296,8 @@ input[type=file]{display:none}
 .fiche .e-titre span{font:13.5px/1.6 Arial,sans-serif;color:var(--lien);padding-bottom:4px}
 .fiche .e-onglets{display:flex;justify-content:space-between;font-size:13.5px;border-bottom:1px solid #a2a9b1;margin-bottom:6px}
 .fiche .e-onglets div{display:flex;gap:18px}
-.fiche .e-onglets span{padding:7px 2px;color:var(--lien)}
-.fiche .e-onglets .on{color:#202122;box-shadow:inset 0 -2px 0 #202122}
+.fiche .e-onglets span{padding:7px 2px;color:var(--lien);border-bottom:2px solid transparent;margin-bottom:-1px}
+.fiche .e-onglets .on{color:#202122;border-bottom-color:#202122}
 .fiche .e-de{font-size:12.5px;color:#54595d;margin:4px 0 12px}
 .fiche .e-box{float:right;width:290px;margin:0 0 14px 22px;border:1px solid #a2a9b1;background:#f8f9fa;padding:4px;font-size:12.8px;line-height:1.45}
 .fiche .e-box-t{background:#c8e6c9;text-align:center;font-weight:700;font-size:15px;padding:6px}
@@ -311,9 +311,10 @@ input[type=file]{display:none}
 .fiche .e-corps h2{overflow:hidden;font:400 22px/1.3 'Source Serif 4',Georgia,serif;border-bottom:1px solid #a2a9b1;margin:20px 0 8px;padding-bottom:2px}
 .fiche .e-corps h3{font-size:15.5px;font-weight:700;margin:14px 0 4px}
 .fiche sup{font-size:10.5px;line-height:0;color:var(--lien)}
-.fiche .e-somm{display:inline-block;border:1px solid #a2a9b1;background:#f8f9fa;padding:8px 18px 8px 12px;margin:4px 0 10px;font-size:13px}
+.fiche .e-somm{display:table;border:1px solid #a2a9b1;background:#f8f9fa;padding:8px 18px 8px 12px;margin:4px 0 10px;font-size:13px}
 .fiche .e-somm b{display:block;text-align:center;margin-bottom:4px;font-size:14px}
-.fiche .e-somm ol{margin:0;padding-left:20px;color:var(--lien)}
+.fiche .e-somm ol{margin:0;padding:0;list-style:none;color:var(--lien)}
+.fiche .e-somm li span{color:#202122;margin-right:6px}
 .fiche .e-refs{font-size:12.6px;padding-left:24px;margin:6px 0 0}
 .fiche .e-refs li{margin-bottom:3px}
 .fiche .e-cats{clear:both;border:1px solid #a2a9b1;background:#f8f9fa;padding:6px 10px;margin-top:20px;font-size:12.8px}
@@ -513,7 +514,7 @@ article:{fr:'Article en ligne',en:'News article',
     const url=`${esc(d.domaine||'')}/<b>${esc(slug(d.rubrique))}/article/2026/11/03/${esc(slug(d.titre).slice(0,60))}</b>`;
     return `<div class="doc article c-${d.style||'rouge'}">
       <div class="a-nav"><div class="a-pts"><i></i><i></i><i></i></div><span class="a-fl">‹ ›</span><div class="a-url" data-k="domaine">${ICO.cadenas}${url}</div></div>
-      <div class="a-site"><div class="a-menu"><i></i>${L.menu}</div>${k('site',esc(d.site),'div','a-logo')}<div class="a-compte"><span>${L.cnx}</span><span class="a-abo">${L.abo}</span></div></div>
+      <div class="a-site"><div class="a-menu"><svg width="18" height="14" viewBox="0 0 18 14"><path d="M0 1h18M0 7h18M0 13h18" stroke="#202122" stroke-width="2"/></svg>${L.menu}</div>${k('site',esc(d.site),'div','a-logo')}<div class="a-compte"><span>${L.cnx}</span><span class="a-abo">${L.abo}</span></div></div>
       <div class="a-rubs" data-k="menu">${menu.map(m=>`<span class="${slug(m)===slug(d.rubrique)?'on':''}">${esc(m)}</span>`).join('')}</div>
       <div class="a-main">
         ${k('rubrique',esc(d.rubrique),'div','a-rub')}
@@ -625,13 +626,13 @@ fiche:{fr:'Fiche encyclopédie',en:'Encyclopedia page',
       else if(/^###\s/.test(x)) corps+=`<h3>${inl(x.replace(/^###\s*/,''))}</h3>`;
       else corps+=`<p>${inl(x)}</p>`;
     }
-    if(titres.length>=2) somm=`<div class="e-somm"><b>${L.somm}</b><ol>${titres.map(t=>`<li>${esc(t)}</li>`).join('')}${d.refs?`<li>${L.refs}</li>`:''}</ol></div>`;
+    if(titres.length>=2) somm=`<div class="e-somm"><b>${L.somm}</b><ol>${titres.map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join('')}${d.refs?`<li><span>${titres.length+1}</span>${L.refs}</li>`:''}</ol></div>`;
     corps=corps.replace('%%SOMM%%',somm);
     const rows=paras(d.lignes).map(x=>{ if(/^#\s*/.test(x)) return `<tr><th colspan="2">${inl(x.replace(/^#\s*/,''))}</th></tr>`; const m=x.match(/^([^:]+?)\s*:\s*(.*)$/); return m?`<tr><td>${inl(m[1])}</td><td>${inl(m[2])}</td></tr>`:`<tr><td colspan="2">${inl(x)}</td></tr>`; }).join('');
     const box=(d.boxt||d.image||rows)?`<div class="e-box" data-k="lignes">${d.boxt?`<div class="e-box-t" data-k="boxt">${esc(d.boxt)}</div>`:''}${d.image?`<img src="${d.image}" alt="" data-k="image">`:''}${d.legende?`<div class="leg" data-k="legende">${inl(d.legende)}</div>`:''}${rows?`<table>${rows}</table>`:''}</div>`:'';
     const refs=paras(d.refs); const cats=String(d.cats||'').split(',').map(s=>s.trim()).filter(Boolean);
     return `<div class="doc fiche">
-      <div class="e-haut"><span class="e-burger"></span><div class="e-logo">${ICO.globe}<div><b>${L.nom}</b><small>${L.sous}</small></div></div>
+      <div class="e-haut"><span class="e-burger"><svg width="18" height="14" viewBox="0 0 18 14"><path d="M0 1h18M0 7h18M0 13h18" stroke="#202122" stroke-width="2"/></svg></span><div class="e-logo">${ICO.globe}<div><b>${L.nom}</b><small>${L.sous}</small></div></div>
         <div class="e-cherche">${ICO.loupe}${L.cherche}</div><span class="e-btn">${L.btn}</span><div class="e-liens">${L.liens.map(x=>`<span>${x}</span>`).join('')}</div></div>
       <div class="e-page">
         <h1 class="e-titre" data-k="titre"><span style="font:inherit;color:inherit;padding:0">${esc(d.titre)}</span><span>${L.langues}</span></h1>
