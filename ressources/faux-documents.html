@@ -732,7 +732,8 @@ const exemple=(g,l)=>Object.assign(JSON.parse(JSON.stringify(G[g].ex[l])),DECOR[
 let S={g:'une',docs:{},modif:{}};
 try{ const s=localStorage.getItem(CLE); if(s){ const j=JSON.parse(s); if(j&&j.docs) S=Object.assign(S,j); } }catch(e){}
 if(!G[S.g]) S.g='une';
-for(const g in G){ if(!S.docs[g]) { S.docs[g]=exemple(g,lang); S.modif[g]=false; } }
+/* Un exemple non retouché est retiré à chaque visite : le décor change à chaque fois */
+for(const g in G){ if(!S.docs[g]||!S.modif[g]) { S.docs[g]=exemple(g,lang); S.modif[g]=false; } }
 const t=key=>T[lang][key]??key;
 let tGarde; function garder(){ clearTimeout(tGarde); tGarde=setTimeout(()=>{ try{ localStorage.setItem(CLE,JSON.stringify(S)); }catch(e){ msg(t('tropGros')); } },300); }
 let tMsg; function msg(s){ const b=$('msgBox'); b.textContent=s; b.classList.add('on'); clearTimeout(tMsg); tMsg=setTimeout(()=>b.classList.remove('on'),2600); }
