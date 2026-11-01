@@ -15,7 +15,7 @@ const FALLACIES = [
   {id:"halo",     l:"⭐ Authority outside their field", s:"famous ≠ competent (halo effect)"},
   {id:"preuve",   l:"🔄 Reversed burden of proof", s:"the person making the claim must prove it"},
   {id:"posthoc",  l:"🔗 Imagined cause", s:"'after this, therefore because of this' (correlation ≠ causation)"},
-  {id:"circulaire", l:"🔄 Circular reasoning", s:"the conclusion is used as its own proof"},
+  {id:"circulaire", l:"🔁 Circular reasoning", s:"the conclusion is used as its own proof"},
   {id:"hareng",     l:"🐟 Red herring",         s:"changing the subject to dodge the question"},
   {id:"cherry",     l:"🍒 Cherry-picking",       s:"only showing the data that fits"},
   {id:"whatabout",  l:"🪞 Whataboutism",         s:"pointing at the other's hypocrisy instead of answering"},
@@ -26,7 +26,7 @@ function libelle(id){ return [...EPL,...FALLACIES,VALABLE].find(o=>o.id===id); }
 // ─── Opponents ───
 // type "epl": identify ethos/pathos/logos. type "fall": name the fallacy (a = id, opts = 3 distractors)
 const FOES = [
-  {name:"Uncle Gerard", emoji:"🍗", desc:"family-dinner champion", hp:4,
+  {name:"Uncle Gerard", emoji:"🍗", img:"gerard.svg", desc:"family-dinner champion", hp:4,
    intro:"At dessert, Uncle Gerard puts down his fork: 'You, with all your studying, let's see if you know how to debate!' The discussion begins.",
    lines:[
     {type:"epl", t:"'Listen, kid, I have 60 years of life behind me. I have worked hard all my life, and I have never lied to anyone. So you can take my word for it!'",
@@ -407,6 +407,13 @@ let ouverture=0, carnet=[], phase="replique";
 let bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
 const YOUMAX=6+(DOJO_EP.clochettes?1:0);
 const $=id=>document.getElementById(id);
+// Un personnage peut avoir un portrait dessiné (img) au lieu de son emoji :
+// Tonton Gérard croque sa cuisse de poulet, ce qu'aucun emoji ne montre.
+function persoNoeud(f){
+  if(!f.img) return document.createTextNode(f.emoji);
+  const i=document.createElement("img"); i.className="perso-img"; i.src=f.img; i.alt=""; return i;
+}
+function persoHtml(f){ return f.img ? '<img class="perso-img" src="'+f.img+'" alt="">' : f.emoji; }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function startMatch(i, foeRevision){
@@ -416,7 +423,7 @@ function startMatch(i, foeRevision){
   foeHP=foe.hp;
   techUsed={};
   if(i===0 || revision){ youHP=YOUMAX; correctCount=0; totalCount=0; joue=[]; croises={}; }
-  if(i===0 && !revision) bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
+  if(i===0 && !revision){ bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0}; oublierPartie(); }
   ouverture=0; carnet=[]; phase="replique"; renderCarnet();
   ColFin.protegerSortie(true);
   $("end").style.display="none";
@@ -424,9 +431,9 @@ function startMatch(i, foeRevision){
   $("intro").style.display="none";
   $("inter").style.display="none";
   $("battle").style.display="block";
-  $("foe-emoji").textContent=foe.emoji;
+  $("foe-emoji").replaceChildren(persoNoeud(foe));
   $("foe-title").textContent=foe.name;
-  $("foe-tag").textContent=foe.emoji+" "+foe.name+" — "+foe.desc;
+  $("foe-tag").textContent=" "+foe.name+" — "+foe.desc; $("foe-tag").prepend(persoNoeud(foe));
   renderBreadcrumb();
   updateHP();
   renderTurn();
@@ -438,7 +445,7 @@ function renderBreadcrumb(){
   FOES.forEach((f,i)=>{
     const span=document.createElement("span");
     span.className="bc-item"+(i<foeIdx?" done":i===foeIdx?" current":"");
-    span.textContent=f.emoji;
+    span.append(persoNoeud(f));
     bc.appendChild(span);
   });
 }
@@ -459,6 +466,8 @@ function renderTurn(){
   const foe=foeActuel();
   const line=foe.lines[order[lineIdx % order.length]];
   ligneEnCours=line; techActive={};
+  // Le carnet se range sous l'échange : la réplique à analyser reste en haut, même sur téléphone.
+  $("dialogue").after($("carnet"));
   $("souffle").hidden=true;
   $("btxt").textContent=line.t;
   $("riposte").style.display="none";
@@ -493,6 +502,8 @@ function renderTurn(){
     ansDiv.appendChild(b);
   });
   renderTechs();
+  // Au clavier, chaque réplique commence sur la première réponse.
+  ansDiv.firstElementChild.focus({preventScroll:true});
 }
 
 function answer(line,id,btn){
@@ -500,7 +511,7 @@ function answer(line,id,btn){
   // Second Sight: the mistake doesn't count, the same line stays in play.
   if(!ok && btn && techActive.seconde){
     techActive.seconde=false;
-    if(!btn){ /* impact : pas de seconde chance */ } else if(btn.tagName==="INPUT"){ btn.value=""; btn.focus(); } else { btn.disabled=true; btn.classList.add("bad"); }
+    if(btn.tagName==="INPUT"){ btn.value=""; btn.focus(); } else { btn.disabled=true; btn.classList.add("bad"); }
     const r=$("riposte"); r.className="ko"; r.style.display="block";
     $("rip-title").textContent="🌀 Second Sight! Your mistake doesn't count: choose again.";
     $("rip-expl").innerHTML="";
@@ -566,12 +577,14 @@ function winMatch(){
   if(foeIdx===FOES.length-1){ victory(); return; }
   const next=FOES[foeIdx+1];
   $("inter").style.display="block";
-  $("inter-emoji").textContent=FOES[foeIdx].emoji;
+  $("inter-emoji").replaceChildren(persoNoeud(FOES[foeIdx]));
   $("inter-title").textContent="💬 End of the discussion with "+FOES[foeIdx].name;
-  $("inter-msg").innerHTML="You catch your breath: +3 clarity. 🌿<br><br>Next person: <b>"+next.emoji+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
+  $("inter-msg").innerHTML="You catch your breath: +3 clarity. 🌿<br><br>Next person: <b>"+persoHtml(next)+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
   youHP=Math.min(YOUMAX,youHP+3);
   $("inter-btn").textContent="💬 Talk with "+next.name;
   $("inter-btn").onclick=()=>startMatch(foeIdx+1);
+  $("inter-btn").focus();
+  sauverPartie();
 }
 
 function scoreLine(){
@@ -589,7 +602,8 @@ function finDePartie(titre, msg){
       const lines=FOES.flatMap(f=>f.lines).filter(l=>rates.some(r=>r.id===l.t));
       startMatch(foeIdx, {name:"Review", emoji:"📝", desc:"the lines you missed", hp:lines.length, intro:"", lines:lines});
     },
-    onRecommencer: () => startMatch(0)
+    onRecommencer: () => startMatch(0),
+    rejouerTexte: "🔄 Start over from the beginning"
   });
   renderRevue();
 }
@@ -616,6 +630,7 @@ const PROJET_COMMUN="🥷 Sophisuke sheathes his sword: “The old man is right 
 // Without the dojo, the hero thinks there is something to learn there.
 const PISTE_DOJO="🙋 “All these traps… I bet I'd have loads to learn at the dojo.” The dojo is waiting for you on the home page.";
 function victory(){
+  oublierPartie();
   $("retry-btn").style.display="none";
   const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"You talked with "+(SENSEI_BOSS?"all five characters and your own master":"all five characters")+", and understood what drove "+bilan.compris+" of them out of "+FOES.length+".<br><br>Your answers: "+bilan.question+" questions, "+bilan.reformulation+" rephrasings, "+bilan.esquive+" dodges, "+bilan.massue+" sledgehammer blows.<br><br>"+scoreLine()+"<br><br>Spotting a fallacy is only the start. What moves a discussion forward is asking questions, faithfully rephrasing the other person's idea (the <b>steelman</b>), acknowledging their good arguments… and trying to understand what matters to them. 🤝";
   finDePartie(SENSEI_BOSS?"🥋 Last lesson passed!":"🤝 Dialogue builder!", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
@@ -627,10 +642,14 @@ function lose(){
   const title="You got carried away…";
   const msg=foeActuel().name+" led you into too many traps. No worries: the art of discussion is something you <b>practise</b> more than something you learn.<br><br>"+scoreLine()+"<br><br>Read the replies carefully: straw man, false dilemma, appeal to popularity… Once you know them, you see them everywhere!";
   finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
-  const rb=$("retry-btn");
-  rb.style.display="inline-block";
+  // Reprendre ce personnage est le choix le plus utile : il passe en tête des boutons de fin.
+  $("retry-btn").style.display="none";
+  const rb=document.createElement("button");
+  rb.type="button"; rb.className="col-btn";
   rb.textContent="🔁 Resume the discussion with "+foeActuel().name;
   rb.onclick=()=>{ $("end").style.display="none"; youHP=YOUMAX; startMatch(foeIdx, revision); };
+  const actions=document.querySelector("#ecran-fin .col-actions");
+  if(actions){ actions.prepend(rb); rb.focus({preventScroll:true}); }
 }
 
 // Technique buttons, under the conviction bars.
@@ -670,6 +689,28 @@ function useTech(id){
   const premier=document.querySelector(".abtn:not(:disabled)"); if(premier) premier.focus();
 }
 
+// ─── Sauvegarde de la partie ───
+// Entre deux personnages, la partie est gardée (clé « arene.partie ») : une
+// séance interrompue reprend au personnage suivant, avec la lucidité, le score
+// et le bilan acquis. Une nouvelle partie, ou la victoire, l'efface.
+const CLE_PARTIE="arene.partie";
+function sauverPartie(){
+  try{ localStorage.setItem(CLE_PARTIE, JSON.stringify({v:1, foe:foeIdx+1, youHP:youHP, correctCount:correctCount, totalCount:totalCount, joue:joue, croises:croises, bilan:bilan})); }catch(e){}
+}
+function oublierPartie(){ try{ localStorage.removeItem(CLE_PARTIE); }catch(e){} }
+// Le personnage à reprendre doit exister : sans le boss (dojo effacé), FOES n'a que cinq entrées.
+function lirePartie(){
+  let s=null; try{ s=JSON.parse(localStorage.getItem(CLE_PARTIE)); }catch(e){}
+  return (s && s.v===1 && s.foe>0 && s.foe<FOES.length) ? s : null;
+}
+function reprendrePartie(){
+  const s=lirePartie(); if(!s) return;
+  youHP=Math.max(1,Math.min(YOUMAX,s.youHP)); correctCount=s.correctCount||0; totalCount=s.totalCount||0;
+  joue=s.joue||[]; croises=s.croises||{};
+  bilan=Object.assign({question:0, reformulation:0, massue:0, esquive:0, compris:0}, s.bilan);
+  startMatch(s.foe);
+}
+
 // Intro: what the dojo has already taught the player, and the avatar of whoever passed the exam.
 (function(){
   const etat=$("dojo-etat");
@@ -680,6 +721,17 @@ function useTech(id){
   }
   { const a=document.querySelector("#f-you .femoji"); if(a&&window.Avatar) a.textContent=Avatar.emoji();
     if(a&&DOJO_P.examen){ const c=document.createElement("span"); c.className="ceinture"; c.textContent="🥋"; c.title="black belt: dojo exam passed"; a.after(c); } }
+  // Une partie en cours : on propose d'abord de la reprendre.
+  const sp=lirePartie(), zone=document.querySelector(".intro-btns");
+  if(sp && zone){
+    const f=FOES[sp.foe], b=document.createElement("button");
+    b.type="button"; b.className="bigbtn"; b.id="reprendre-partie";
+    b.textContent="▶ Resume my game: "; b.append(persoNoeud(f), " "+f.name+" ("+(sp.foe+1)+"/"+FOES.length+")");
+    b.onclick=reprendrePartie;
+    zone.prepend(b);
+    const n=zone.querySelector('[data-i18n="enter"]');
+    if(n){ n.removeAttribute("data-i18n"); n.textContent="💬 New game on the Agora"; }
+  }
 })();
 
 // ─── “Free typing” mode ───
@@ -911,12 +963,12 @@ function repondre(line,geste,btn){
   lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Acknowledging a good argument builds common ground.":G.m;
   if(G.bon){
     ouverture=Math.min(max,ouverture+1);
-    tete.textContent=foe.emoji+" "+"{n} opens up a little:".replace("{n}",foe.name);
+    tete.textContent=" "+"{n} opens up a little:".replace("{n}",foe.name); tete.prepend(persoNoeud(foe));
     corps.textContent=line.d.k;
     noter(line.d.k,false);
   } else {
     if(geste==="massue") ouverture=Math.max(0,ouverture-1);
-    tete.textContent=foe.emoji+" "+(geste==="massue"?dlg.braque:dlg.esquive);
+    tete.textContent=" "+(geste==="massue"?dlg.braque:dlg.esquive); tete.prepend(persoNoeud(foe));
     if(!modeDifficile()){ corps.textContent="Had you made them feel heard, you might have heard: "+line.d.k; noter(line.d.k,true); }
     else corps.textContent="No confidence this time: this clue slips away.";
   }
@@ -951,6 +1003,7 @@ function renderCarnet(){
 function renderComprendre(){
   const foe=foeActuel(), dlg=foe.dlg;
   phase="comprendre";
+  $("qprompt").before($("carnet"));
   tourFini=true; cancelAnimationFrame(attaqueRAF); attaqueRAF=null;
   document.querySelector(".bubble").hidden=true; $("piste").hidden=true;
   $("dialogue").hidden=true; $("riposte").style.display="none"; $("nextbtn").style.display="none";

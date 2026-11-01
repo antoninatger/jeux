@@ -236,6 +236,17 @@ main:has(#intro:not([style*="none"])) > .titre-jeu{display:none;}
 @media (max-width:700px){.ag-scene{width:135%;max-width:none;height:auto;margin-top:-4vh;}}
 /* Écran bas ou étroit : le bouton passe sous la scène. */
 @media (max-height:700px),(max-width:700px){.ag-scene{margin-bottom:0;}.ag-descendre{position:relative;bottom:auto;margin:6px 0 14px;}}
+/* « Choisis ta partie » reste dans le premier écran, quelle que soit sa hauteur :
+   il est posé en bas de la fenêtre tant que les options ne sont pas en vue
+   (à gauche sur téléphone, pour laisser la place au bouton « Partager »). */
+.ag-descendre{position:fixed;bottom:16px;left:0;right:0;margin:0 auto;width:max-content;z-index:5;}
+@media (max-width:700px){.ag-descendre{right:auto;left:16px;margin:0;}}
+#intro.choix-vu .ag-descendre{visibility:hidden;}
+/* Pendant une partie : sur téléphone, l'accroche et l'auteur laissent la place
+   à la réplique ; le bouton flottant « Partager » ne couvre plus les boutons de
+   jeu (il revient à l'accueil et à l'écran de fin). */
+@media (max-width:700px){main:has(#battle[style*="block"]) > .titre-jeu .sub,main:has(#battle[style*="block"]) > .titre-jeu .author{display:none;}}
+body:has(#battle[style*="block"]) .pj-flot,body:has(#inter[style*="block"]) .pj-flot{display:none;}
 #ag-choix{max-width:620px;margin:28px auto 0;scroll-margin-top:calc(var(--entete-h,56px) + 12px);}
 /* Le dévoilement : le ciel d'abord, puis l'accroche et chaque phrase ; les
    options et les boutons quand on descend jusqu'à eux. */
@@ -285,6 +296,9 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 .screen{display:none;max-width:560px;text-align:center;background:var(--panel);border:1px solid var(--bord);border-radius:20px;padding:30px;}
 .screen h2{font-family:'Alfa Slab One',serif;font-size:1.6rem;color:var(--acc);margin-bottom:10px;}
 .screen .femoji{font-size:3.5rem;display:block;margin-bottom:8px;}
+/* Portrait dessiné d'un personnage (Tonton Gérard), à la taille d'un emoji du même texte. */
+.perso-img{width:1.2em;height:1.2em;vertical-align:-.25em;display:inline-block;}
+.femoji .perso-img{width:1.25em;height:1.25em;}
 .screen > p{color:var(--mu);font-weight:700;margin-bottom:18px;line-height:1.55;}
 .screen > p b{color:var(--tx);}
 /* Options de l'accueil : mode de réponse et difficulté */
@@ -413,7 +427,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
     <g class="ag-temple"><rect x="928" y="248" width="44" height="10" rx="2"/><path d="M934 300V258h32v38l-6-6-5 8-6-5-5 6-5-4z"/><rect x="926" y="296" width="48" height="6" rx="2"/></g>
     <g class="ag-brasero"><circle class="ag-halo-feu" cx="300" cy="232" r="46" fill="url(#ag-feu)"/><path class="ag-pied" d="M286 300 L300 258 L314 300 M300 258 V300"/><path class="ag-coupe" d="M280 252 h40 l-6 10 h-28z"/><path class="ag-flamme" d="M300 214 c10 14 16 22 12 32 c-2 6 -8 8 -12 8 c-4 0 -10 -2 -12 -8 c-4 -10 2 -18 12 -32z"/><path class="ag-flamme ag-flamme2" d="M300 228 c5 8 8 12 6 18 c-1 4 -4 6 -6 6 c-2 0 -5 -2 -6 -6 c-2 -6 1 -10 6 -18z"/></g>
     <g class="ag-brasero"><circle class="ag-halo-feu" cx="700" cy="232" r="46" fill="url(#ag-feu)"/><path class="ag-pied" d="M686 300 L700 258 L714 300 M700 258 V300"/><path class="ag-coupe" d="M680 252 h40 l-6 10 h-28z"/><path class="ag-flamme" d="M700 214 c10 14 16 22 12 32 c-2 6 -8 8 -12 8 c-4 0 -10 -2 -12 -8 c-4 -10 2 -18 12 -32z"/><path class="ag-flamme ag-flamme2" d="M700 228 c5 8 8 12 6 18 c-1 4 -4 6 -6 6 c-2 0 -5 -2 -6 -6 c-2 -6 1 -10 6 -18z"/></g>
-    <g class="ag-gens"><ellipse class="ag-ombre" cx="160" cy="300" rx="18" ry="4"/><ellipse class="ag-ombre" cx="236" cy="294" rx="16" ry="4"/><ellipse class="ag-ombre" cx="764" cy="294" rx="16" ry="4"/><ellipse class="ag-ombre" cx="846" cy="300" rx="18" ry="4"/><ellipse class="ag-ombre" cx="657" cy="264" rx="13" ry="4"/><ellipse class="ag-ombre" cx="950" cy="250" rx="14" ry="4"/><text class="ag-perso" x="160" y="298" font-size="44" text-anchor="middle" style="animation-delay:0.0s">🍗</text><text class="ag-perso" x="236" y="292" font-size="38" text-anchor="middle" style="animation-delay:-0.7s">🤳</text><text class="ag-perso" x="764" y="292" font-size="38" text-anchor="middle" style="animation-delay:-1.4s">🎤</text><text class="ag-perso" x="846" y="298" font-size="44" text-anchor="middle" style="animation-delay:-2.1s">👔</text><text class="ag-perso" x="657" y="262" font-size="30" text-anchor="middle" style="animation-delay:-2.8s">🕵️</text><text class="ag-perso" x="950" y="248" font-size="34" text-anchor="middle" style="animation-delay:-3.5s">🦉</text><g class="ag-bulle" style="animation-delay:0s"><rect x="135" y="208" width="50" height="36" rx="13"/><path d="M154 243l6 10 6-10z"/><text x="160" y="234" font-size="20" text-anchor="middle">😤</text></g><g class="ag-bulle" style="animation-delay:2s"><rect x="739" y="208" width="50" height="36" rx="13"/><path d="M758 243l6 10 6-10z"/><text x="764" y="234" font-size="20" text-anchor="middle">⚖️</text></g><g class="ag-bulle" style="animation-delay:4s"><rect x="211" y="208" width="50" height="36" rx="13"/><path d="M230 243l6 10 6-10z"/><text x="236" y="234" font-size="20" text-anchor="middle">📣</text></g><g class="ag-bulle" style="animation-delay:6s"><rect x="632" y="186" width="50" height="36" rx="13"/><path d="M651 221l6 10 6-10z"/><text x="657" y="212" font-size="20" text-anchor="middle">❓</text></g><g class="ag-bulle" style="animation-delay:8s"><rect x="821" y="208" width="50" height="36" rx="13"/><path d="M840 243l6 10 6-10z"/><text x="846" y="234" font-size="20" text-anchor="middle">♻️</text></g><g class="ag-bulle" style="animation-delay:10s"><rect x="925" y="168" width="50" height="36" rx="13"/><path d="M944 203l6 10 6-10z"/><text x="950" y="194" font-size="20" text-anchor="middle">💡</text></g><ellipse class="ag-tribune" cx="500" cy="324" rx="46" ry="9"/><path class="ag-tribune" d="M456 314h88v10h-88z"/><text class="ag-perso ag-toi-perso" x="500" y="314" font-size="54" text-anchor="middle">🙋</text><g class="ag-bulle ag-toi" style="animation-delay:12s"><rect x="472" y="208" width="56" height="40" rx="14"/><path d="M494 247l6 10 6-10z"/><text x="500" y="237" font-size="24" text-anchor="middle">🤝</text></g></g>
+    <g class="ag-gens"><ellipse class="ag-ombre" cx="160" cy="300" rx="18" ry="4"/><ellipse class="ag-ombre" cx="236" cy="294" rx="16" ry="4"/><ellipse class="ag-ombre" cx="764" cy="294" rx="16" ry="4"/><ellipse class="ag-ombre" cx="846" cy="300" rx="18" ry="4"/><ellipse class="ag-ombre" cx="657" cy="264" rx="13" ry="4"/><ellipse class="ag-ombre" cx="950" cy="250" rx="14" ry="4"/><image class="ag-perso" href="gerard.svg" x="136" y="252" width="48" height="48" style="animation-delay:0.0s"/><text class="ag-perso" x="236" y="292" font-size="38" text-anchor="middle" style="animation-delay:-0.7s">🤳</text><text class="ag-perso" x="764" y="292" font-size="38" text-anchor="middle" style="animation-delay:-1.4s">🎤</text><text class="ag-perso" x="846" y="298" font-size="44" text-anchor="middle" style="animation-delay:-2.1s">👔</text><text class="ag-perso" x="657" y="262" font-size="30" text-anchor="middle" style="animation-delay:-2.8s">🕵️</text><text class="ag-perso" x="950" y="248" font-size="34" text-anchor="middle" style="animation-delay:-3.5s">🦉</text><g class="ag-bulle" style="animation-delay:0s"><rect x="135" y="208" width="50" height="36" rx="13"/><path d="M154 243l6 10 6-10z"/><text x="160" y="234" font-size="20" text-anchor="middle">😤</text></g><g class="ag-bulle" style="animation-delay:2s"><rect x="739" y="208" width="50" height="36" rx="13"/><path d="M758 243l6 10 6-10z"/><text x="764" y="234" font-size="20" text-anchor="middle">⚖️</text></g><g class="ag-bulle" style="animation-delay:4s"><rect x="211" y="208" width="50" height="36" rx="13"/><path d="M230 243l6 10 6-10z"/><text x="236" y="234" font-size="20" text-anchor="middle">📣</text></g><g class="ag-bulle" style="animation-delay:6s"><rect x="632" y="186" width="50" height="36" rx="13"/><path d="M651 221l6 10 6-10z"/><text x="657" y="212" font-size="20" text-anchor="middle">❓</text></g><g class="ag-bulle" style="animation-delay:8s"><rect x="821" y="208" width="50" height="36" rx="13"/><path d="M840 243l6 10 6-10z"/><text x="846" y="234" font-size="20" text-anchor="middle">♻️</text></g><g class="ag-bulle" style="animation-delay:10s"><rect x="925" y="168" width="50" height="36" rx="13"/><path d="M944 203l6 10 6-10z"/><text x="950" y="194" font-size="20" text-anchor="middle">💡</text></g><ellipse class="ag-tribune" cx="500" cy="324" rx="46" ry="9"/><path class="ag-tribune" d="M456 314h88v10h-88z"/><text class="ag-perso ag-toi-perso" x="500" y="314" font-size="54" text-anchor="middle">🙋</text><g class="ag-bulle ag-toi" style="animation-delay:12s"><rect x="472" y="208" width="56" height="40" rx="14"/><path d="M494 247l6 10 6-10z"/><text x="500" y="237" font-size="24" text-anchor="middle">🤝</text></g></g>
     <g class="ag-lucioles"><circle cx="110" cy="270" r="2.2" style="animation-delay:-0.7s;animation-duration:7.7s"/><circle cx="260" cy="250" r="2.2" style="animation-delay:-6.6s;animation-duration:6.5s"/><circle cx="330" cy="290" r="2.2" style="animation-delay:-1.8s;animation-duration:8.5s"/><circle cx="420" cy="240" r="2.2" style="animation-delay:-7.6s;animation-duration:8.3s"/><circle cx="590" cy="250" r="2.2" style="animation-delay:-3.2s;animation-duration:9.9s"/><circle cx="690" cy="285" r="2.2" style="animation-delay:-0.4s;animation-duration:9.4s"/><circle cx="800" cy="255" r="2.2" style="animation-delay:-2.3s;animation-duration:6.6s"/><circle cx="890" cy="275" r="2.2" style="animation-delay:-0.9s;animation-duration:7.2s"/><circle cx="40" cy="290" r="2.2" style="animation-delay:-6.5s;animation-duration:6.7s"/><circle cx="560" cy="300" r="2.2" style="animation-delay:-4.7s;animation-duration:8.6s"/></g>
     </svg>
     <a class="ag-descendre" href="#ag-choix" data-i18n="descendre">▼ Choisis ta partie</a>
@@ -472,7 +486,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
   </div>
   <p class="qprompt" id="qprompt"></p>
   <p class="souffle" id="souffle" aria-live="polite" hidden></p>
-  <div id="answers"></div>
+  <div id="answers" role="group" aria-labelledby="qprompt btxt"></div>
   <div id="riposte" aria-live="polite">
     <div id="rip-title"></div>
     <p id="rip-expl"></p>
@@ -552,6 +566,12 @@ I18N.register({
   const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ choix.classList.add('vu'); io.disconnect(); } },{threshold:.15});
   io.observe(choix);
   document.querySelector('.ag-descendre').addEventListener('click',e=>{ e.preventDefault(); choix.scrollIntoView({behavior:'smooth',block:'start'}); });
+})();
+// « Choisis ta partie » disparaît quand les options sont à l'écran.
+(function(){
+  const i=document.getElementById('intro'), choix=document.getElementById('ag-choix');
+  if(!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es=>{ i.classList.toggle('choix-vu', es.some(e=>e.isIntersecting)); },{threshold:.05}).observe(choix);
 })();
 // Le sélecteur d'avatar de l'accueil ; l'avatar de combat suit le choix.
 Avatar.monter(document.getElementById('avatar-choix'), e=>{ const a=document.querySelector('#f-you .femoji'); if(a) a.textContent=e; });

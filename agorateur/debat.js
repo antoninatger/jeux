@@ -19,6 +19,8 @@
     if (vars) Object.keys(vars).forEach((k) => { s = s.split('{' + k + '}').join(vars[k]); });
     return s;
   }
+  // Un personnage peut avoir un portrait dessiné (Tonton Gérard qui croque sa cuisse) au lieu de son emoji.
+  function portrait(p) { return p.img ? '<img class="perso-img" src="' + p.img + '" alt="">' : p.emoji; }
   function esc(s) {
     return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
@@ -137,7 +139,7 @@
       zone.innerHTML = '';
       DEBAT.persos.forEach((p) => {
         carte(zone, prep.perso === p.id,
-          '<span class="c-emoji" aria-hidden="true">' + p.emoji + '</span><span class="c-titre">' + esc(p.nom) + '</span>' +
+          '<span class="c-emoji" aria-hidden="true">' + portrait(p) + '</span><span class="c-titre">' + esc(p.nom) + '</span>' +
           '<span class="c-meta">' + esc(p.desc) + '</span><span>' + esc(p.q) + '</span>',
           () => { prep.perso = p.id; sauver(); toutRendre(); });
       });
@@ -354,7 +356,7 @@
       : s.positions.map((p) => '<span class="pastille">' + esc(p) + '</span>').join('');
     $('sc-vivante').hidden = !s.perso;
     $('sc-ligne').hidden = prep.format !== 'ligne';
-    if (s.perso) { $('sc-perso-e').textContent = s.perso.emoji; $('sc-perso-n').textContent = s.perso.nom; }
+    if (s.perso) { $('sc-perso-e').innerHTML = portrait(s.perso); $('sc-perso-n').textContent = s.perso.nom; }
 
     const mains = $('sc-mains');
     mains.innerHTML = '';
@@ -520,7 +522,7 @@
     const v = $('accord-txt').value.trim();
     if (!v) return;
     D.accords.push(v);
-    D.histo.push({ type: 'accord' });
+    D.histo.push({ type: 'accord', a: v });
     $('accord-txt').value = '';
     rendreAccords();
     $('btn-annuler').disabled = false;
@@ -586,7 +588,7 @@
     if (h.type === 'compteur') { D.compteurs[h.i][h.g]--; D.ouverture = h.ouv; }
     else if (h.type === 'carton') D.cartons.pop();
     else if (h.type === 'dep') D.dep[h.k]--;
-    else if (h.type === 'accord') D.accords.pop();
+    else if (h.type === 'accord') { const k = D.accords.lastIndexOf(h.a); if (k >= 0) D.accords.splice(k, 1); }   // déjà retiré à la main : rien à faire
     rendreScene();
   });
 

@@ -234,7 +234,7 @@ const DEBAT = {
   // Ce sont les cinq personnages du jeu. indices = ce que le prof laisse
   // échapper quand la classe l'a bien ouvert (les mêmes que dans le jeu).
   persos: [
-    { id: "gerard", emoji: "🍗", nom: "Tonton Gérard", desc: "champion du repas de famille",
+    { id: "gerard", emoji: "🍗", img: "gerard.svg", nom: "Tonton Gérard", desc: "champion du repas de famille",
       q: "Faut-il manger bio ?",
       position: "« Le bio, c'est des bêtises. De mon temps, on mangeait ce qu'il y avait, et on n'en est pas morts ! »",
       pieges: ["genehat", "nature", "pente", "adhom"],
@@ -276,7 +276,7 @@ const DEBAT = {
 
   // ─── Les noms d'équipe ───
   familles: {
-    grecs:   { nom: "Les écoles grecques", noms: ["les Péripatéticiens", "les Stoïciens", "les Épicuriens", "les Cyniques", "l'Académie", "le Lycée"] },
+    grecs:   { nom: "Les écoles grecques", noms: ["les Pythagoriciens", "les Stoïciens", "les Épicuriens", "les Cyniques", "l'Académie", "le Lycée"] },
     figures: { nom: "Les figures du dialogue", noms: ["les Socrate", "les Hypatie", "les Montaigne", "les Olympe de Gouges", "les Mandela", "les Simone Veil"] },
     dojo:    { nom: "Les noms du dojo", noms: ["les Œils Ouverts", "les Feuilles Tranchées", "les Clochettes", "les Hommes de Fer", "les Points d'Accord", "les Démasqueurs"] },
     animaux: { nom: "Les animaux", noms: ["les Chouettes", "les Dauphins", "les Abeilles", "les Corbeaux", "les Éléphants", "les Renards"] }

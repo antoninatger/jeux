@@ -214,7 +214,7 @@ const DEBAT = {
   },
 
   persos: [
-    { id: "gerard", emoji: "🍗", nom: "Uncle Gerard", desc: "family-dinner champion",
+    { id: "gerard", emoji: "🍗", img: "gerard.svg", nom: "Uncle Gerard", desc: "family-dinner champion",
       q: "Should we eat organic food?",
       position: "“Organic is nonsense. In my day, we ate what there was, and it never killed us!”",
       pieges: ["genehat", "nature", "pente", "adhom"],
@@ -254,7 +254,7 @@ const DEBAT = {
   ],
 
   familles: {
-    grecs:   { nom: "Greek schools", noms: ["the Peripatetics", "the Stoics", "the Epicureans", "the Cynics", "the Academy", "the Lyceum"] },
+    grecs:   { nom: "Greek schools", noms: ["the Pythagoreans", "the Stoics", "the Epicureans", "the Cynics", "the Academy", "the Lyceum"] },
     figures: { nom: "Figures of dialogue", noms: ["the Socrateses", "the Hypatias", "the Montaignes", "the Olympe de Gouges", "the Mandelas", "the Eleanor Roosevelts"] },
     dojo:    { nom: "Dojo names", noms: ["the Open Eyes", "the Sliced Leaves", "the Bells", "the Steelmen", "the Common Grounds", "the Unmaskers"] },
     animaux: { nom: "Animals", noms: ["the Owls", "the Dolphins", "the Bees", "the Ravens", "the Elephants", "the Foxes"] }

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Tonton Gérard, en plein repas de famille : il croque sa cuisse de poulet. -->
+  <!-- serviette nouée au cou -->
+  <path d="M20 54 L32 64 L44 54 Z" fill="#f4f1ea" stroke="#d9d2c3" stroke-width="1"/>
+  <path d="M26 54 h12 l-6 5z" fill="#e05a5a"/>
+  <!-- oreilles -->
+  <circle cx="10.5" cy="33" r="4.5" fill="#eaa874"/>
+  <circle cx="53.5" cy="33" r="4.5" fill="#eaa874"/>
+  <!-- visage -->
+  <circle cx="32" cy="32" r="22" fill="#f6c28f"/>
+  <!-- crâne dégarni et couronne grise -->
+  <path d="M11.5 30 C11 20 15 14 19 12 C17 18 16.5 24 17 31 Z" fill="#9ea3ab"/>
+  <path d="M52.5 30 C53 20 49 14 45 12 C47 18 47.5 24 47 31 Z" fill="#9ea3ab"/>
+  <ellipse cx="26" cy="15" rx="5" ry="2.2" fill="#fff" opacity=".45" transform="rotate(-18 26 15)"/>
+  <!-- sourcils -->
+  <path d="M17.5 23.5 q5-3.5 10 0" stroke="#7c818a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <path d="M36.5 23.5 q5-3.5 10 0" stroke="#7c818a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <!-- yeux plissés de plaisir -->
+  <path d="M19 29.5 q3.5-3.5 7 0" stroke="#3b2a20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M38 29.5 q3.5-3.5 7 0" stroke="#3b2a20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- joues -->
+  <ellipse cx="17" cy="37" rx="4" ry="2.6" fill="#ef8f7a" opacity=".55"/>
+  <ellipse cx="47" cy="37" rx="4" ry="2.6" fill="#ef8f7a" opacity=".55"/>
+  <!-- nez -->
+  <ellipse cx="32" cy="35" rx="4.2" ry="3.6" fill="#ea9d6e"/>
+  <!-- bouche grande ouverte qui croque -->
+  <ellipse cx="30" cy="46.5" rx="6.5" ry="5" fill="#6b2a2a"/>
+  <path d="M25 43.6 h7" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- moustache -->
+  <path d="M32 39 C27 37.5 21 39 19.5 43 C23.5 41.8 27.5 42.4 32 41.2 C36.5 42.4 40.5 41.8 44.5 43 C43 39 37 37.5 32 39 Z" fill="#8a8f98"/>
+  <!-- la cuisse de poulet, croquée à pleine bouche -->
+  <path d="M43 44 L55.5 32" stroke="#d8cdb6" stroke-width="5.6" stroke-linecap="round"/>
+  <path d="M43 44 L55.5 32" stroke="#f7efe0" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="55" cy="29.2" r="2.8" fill="#f7efe0" stroke="#d8cdb6" stroke-width=".8"/>
+  <circle cx="58.4" cy="32.6" r="2.8" fill="#f7efe0" stroke="#d8cdb6" stroke-width=".8"/>
+  <ellipse cx="38.5" cy="48.5" rx="8.6" ry="6" fill="#c9732f" transform="rotate(-42 38.5 48.5)"/>
+  <path d="M35 47.5 q3-4.5 7.5-4" stroke="#e9a35e" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <!-- la main qui tient l'os -->
+  <ellipse cx="50" cy="38.5" rx="4.6" ry="3.8" fill="#f6c28f" stroke="#e3a979" stroke-width="1" transform="rotate(-40 50 38.5)"/>
+</svg>
