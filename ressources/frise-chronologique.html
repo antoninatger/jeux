@@ -55,6 +55,8 @@ kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-
 .item .suppr:hover{color:var(--warn);background:var(--panel)}
 .item .ti{margin-top:6px;font-weight:600}
 .item .tx{margin-top:6px;min-height:38px;font-size:14px}
+.item .ecart{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin-top:6px;font-size:12.5px;color:var(--doux)}
+.item .ecart input{accent-color:var(--acc);width:100%}
 .item .l3{display:flex;gap:8px;align-items:center;margin-top:6px}
 .item .l3 img{height:32px;border-radius:4px}
 .item .err{font-size:12px;color:var(--warn);margin:4px 0 0 30px}
@@ -288,6 +290,7 @@ dialog .ligne{justify-content:flex-end}
       <div class="seg" id="esp">
         <button class="btn mini" data-v="regulier" data-t="espReg">Régulier</button>
         <button class="btn mini" data-v="dates" data-t="espDates">Au rythme des dates</button>
+        <button class="btn mini" data-v="main" data-t="espMain">À la main</button>
       </div>
     </div>
     <p class="aide" data-t="aideEsp"></p>
@@ -354,7 +357,7 @@ const T={
 fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour sur antoninatger.com',annuler:'↶ Annuler',annulerSimple:'Annuler',
   hFrise:'1. La frise',hGal:'Voir un exemple en projection',aideGal:"Un clic lance la frise, sans toucher à la vôtre. Pour partir d'un exemple et le modifier : « Charger un exemple », à gauche.",lTitre:'Titre',lSous:'Sous-titre (facultatif)',hEv:'2. Les événements',ajout:'+ Un événement',importer:'Coller une liste',
   aideDates:"La date s'écrit comme on veut : « 1789 », « 14 juillet 1789 », « 14/07/1789 », « 52 av. J.-C. », « XVe siècle », « il y a 65 millions d'années ». La frise range tout dans l'ordre.",
-  hAmb:"3. L'ambiance",lEsp:'Espacement',espReg:'Régulier',espDates:'Au rythme des dates',aideEsp:"« Au rythme des dates » : les écarts sont proportionnels ; un écart démesuré est coupé (//) avec sa durée écrite.",lAuto:'Lecture automatique : un événement toutes les',
+  hAmb:"3. L'ambiance",lEsp:'Espacement',espReg:'Régulier',espDates:'Au rythme des dates',espMain:'À la main',lEcart:'Écart avec le précédent',aideEsp:"« Au rythme des dates » : les écarts sont proportionnels ; un écart démesuré est coupé (//) avec sa durée écrite. « À la main » : vous réglez l'écart de chaque événement avec une glissière.",lAuto:'Lecture automatique : un événement toutes les',
   hFich:'4. Garder, partager',exemples:'Charger un exemple…',lien:'Copier le lien',sauver:'Enregistrer',ouvrir:'Ouvrir',effacer:'Tout effacer',
   aideFich:"Le lien contient toute la frise (sans les images) : à envoyer aux élèves ou à un collègue. « Enregistrer » crée un petit fichier avec les images. Rien n'est envoyé sur Internet.",
   lancer:'Lancer la frise ▶',astuce:"En classe : <kbd>→</kbd> ou un clic pour avancer, <kbd>←</kbd> pour revenir, <kbd>A</kbd> lecture automatique, <kbd>V</kbd> vue d'ensemble, <kbd>Échap</kbd> pour quitter. Une télécommande de présentation marche aussi.",
@@ -371,7 +374,7 @@ fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour
 en:{titreOutil:'Animated timeline',retour:'← antoninatger.com',retourTitre:'Back to antoninatger.com',annuler:'↶ Undo',annulerSimple:'Cancel',
   hFrise:'1. The timeline',hGal:'Watch an example',aideGal:'One click plays the timeline without touching yours. To start from an example and edit it: “Load an example”, on the left.',lTitre:'Title',lSous:'Subtitle (optional)',hEv:'2. Events',ajout:'+ Add an event',importer:'Paste a list',
   aideDates:'Write dates any way you like: “1789”, “July 14, 1789”, “1789-07-14”, “52 BC”, “15th century”, “65 million years ago”. The timeline puts everything in order.',
-  hAmb:'3. Style',lEsp:'Spacing',espReg:'Even',espDates:'To scale',aideEsp:'“To scale”: gaps are proportional; a huge gap is cut (//) with its length written on it.',lAuto:'Autoplay: one event every',
+  hAmb:'3. Style',lEsp:'Spacing',espReg:'Even',espDates:'To scale',espMain:'By hand',lEcart:'Gap from the previous one',aideEsp:'“To scale”: gaps are proportional; a huge gap is cut (//) with its length written on it. “By hand”: you set the gap before each event with a slider.',lAuto:'Autoplay: one event every',
   hFich:'4. Save, share',exemples:'Load an example…',lien:'Copy link',sauver:'Save',ouvrir:'Open',effacer:'Clear all',
   aideFich:'The link holds the whole timeline (without images): send it to students or a colleague. “Save” creates a small file that keeps the images. Nothing is sent over the Internet.',
   lancer:'Play the timeline ▶',astuce:'In class: <kbd>→</kbd> or a click to move on, <kbd>←</kbd> to go back, <kbd>A</kbd> autoplay, <kbd>V</kbd> overview, <kbd>Esc</kbd> to quit. A presentation clicker works too.',
@@ -561,7 +564,7 @@ const VIDE=()=>({titre:'',sous:'',theme:'parchemin',esp:'regulier',auto:5,ev:[]}
 function normaliser(d){
   d=Object.assign(VIDE(),d||{});
   if(!THEMES.includes(d.theme)) d.theme='parchemin';
-  d.ev=(Array.isArray(d.ev)?d.ev:[]).map(e=>({id:e.id||nid(),date:String(e.date||''),titre:String(e.titre||''),texte:String(e.texte||''),emoji:String(e.emoji||''),img:e.img||null}));
+  d.ev=(Array.isArray(d.ev)?d.ev:[]).map(e=>({id:e.id||nid(),date:String(e.date||''),titre:String(e.titre||''),texte:String(e.texte||''),emoji:String(e.emoji||''),img:e.img||null,ecart:Math.min(5,Math.max(1,+e.ecart||1))}));
   return d;
 }
 let D=VIDE(), sel=null, hist=[];
@@ -599,6 +602,7 @@ function duree(a){
 function positions(l,esp){
   const n=l.length, xs=[]; xs.coupes={};
   const vals=l.map(o=>o.v).filter(v=>v!=null);
+  if(esp==='main'){ l.forEach((o,i)=>{ if(!i) return xs.push(0); let x=xs[i-1]+.62*(o.e.ecart||1); if(i>1) x=Math.max(x,xs[i-2]+1.08); xs.push(x); }); return xs; }
   if(esp!=='dates'||vals.length<2){ for(let i=0;i<n;i++) xs.push(i*.62); return xs; }
   let last=vals[0]; const v=l.map(o=>last=(o.v??last));
   const ecarts=[]; for(let i=1;i<n;i++) if(v[i]>v[i-1]) ecarts.push(v[i]-v[i-1]);
@@ -669,7 +673,7 @@ function tuiles(){
   $('tuiles').innerHTML=THEMES.map(th=>`<button class="tuile t-${th}" data-th="${th}" aria-pressed="${D.theme===th}"><span class="ech"><b>1789</b></span><span class="nom">${esc(T[LANG].amb[th])}</span></button>`).join('');
 }
 $('tuiles').onclick=e=>{ const b=e.target.closest('.tuile'); if(!b) return; avant(); D.theme=b.dataset.th; tuiles(); apercu(true); garder(); };
-$('esp').onclick=e=>{ const b=e.target.closest('[data-v]'); if(!b) return; avant(); D.esp=b.dataset.v; regl(); apercu(); garder(); };
+$('esp').onclick=e=>{ const b=e.target.closest('[data-v]'); if(!b) return; avant(); D.esp=b.dataset.v; regl(); liste(); apercu(); garder(); };
 $('auto').onchange=()=>{ D.auto=+$('auto').value; garder(); };
 function regl(){ [...$('esp').children].forEach(b=>b.setAttribute('aria-pressed',D.esp===b.dataset.v)); $('auto').value=String(D.auto); }
 
@@ -684,6 +688,7 @@ function liste(){
       ${ko?`<p class="err">${esc(t('dateKo'))}</p>`:''}
       <input type="text" class="ti" value="${esc(e.titre)}" placeholder="${esc(t('phTitre'))}" aria-label="${esc(t('phTitre'))}" maxlength="120">
       <textarea class="tx" rows="2" placeholder="${esc(t('phTexte'))}" aria-label="${esc(t('phTexte'))}" maxlength="400">${esc(e.texte)}</textarea>
+      ${D.esp==='main'&&i>0?`<label class="ecart"><span>${esc(t('lEcart'))}</span><input type="range" class="rg" min="1" max="5" step="0.25" value="${e.ecart||1}"></label>`:''}
       <div class="l3"><button class="btn mini img">${esc(t('image'))}</button>${e.img?`<img src="${e.img}" alt=""><button class="btn mini warn imgdel">${esc(t('retirer'))}</button>`:''}</div></div>`; }).join('');
 }
 const evDe=el=>{ const it=el.closest('.item'); return it&&D.ev.find(e=>e.id===it.dataset.id); };
@@ -692,7 +697,7 @@ $('liste').addEventListener('focusin',e=>{ const ev=evDe(e.target); if(!ev||sel=
   document.querySelectorAll('.item').forEach(it=>it.classList.toggle('choisi',it.dataset.id===sel)); apercu(true); });
 $('liste').addEventListener('input',e=>{ const ev=evDe(e.target); if(!ev) return;
   if(!saisie){ avant(); saisie=true; }
-  const c=e.target.classList; if(c.contains('date')) ev.date=e.target.value; else if(c.contains('ti')) ev.titre=e.target.value; else if(c.contains('tx')) ev.texte=e.target.value; else if(c.contains('emo')) ev.emoji=e.target.value;
+  const c=e.target.classList; if(c.contains('date')) ev.date=e.target.value; else if(c.contains('ti')) ev.titre=e.target.value; else if(c.contains('tx')) ev.texte=e.target.value; else if(c.contains('emo')) ev.emoji=e.target.value; else if(c.contains('rg')){ ev.ecart=+e.target.value; apercu(false); garder(); return; }
   apercuBientot(); garder(); });
 $('liste').addEventListener('change',e=>{ saisie=false; if(!e.target.classList.contains('date')) return;
   const ev=evDe(e.target); const bouge=trier(); liste(); apercu(true); garder();
