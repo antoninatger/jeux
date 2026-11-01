@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-content">
 <title>Frise animée · Jeux et ressources pédagogiques</title>
 <meta name="description" content="Créer une frise chronologique animée pour la classe : vos dates et vos événements, une ambiance (parchemin, néon, BD, spatial…), et la frise défile d'un clic, événement par événement.">
+<link rel="canonical" href="https://antoninatger.com/jeux/ressources/frise-chronologique.html">
 <link rel="stylesheet" href="../fonts/fonts.css">
 <style>
 /* Frise animée : le prof saisit des dates et des événements, choisit une ambiance,
@@ -261,7 +262,7 @@ dialog .ligne{justify-content:flex-end}
 </head>
 <body>
 <header class="haut">
-  <a class="retour" href="https://antoninatger.com/jeux/#outils" data-t-title="retourTitre" data-t="retour">← antoninatger.com</a>
+  <a class="retour" href="https://antoninatger.com/jeux/frise-animee/" data-t-title="retourTitre" data-t="retour">← antoninatger.com</a>
   <h1 data-t="titreOutil">Frise animée</h1>
   <button class="btn mini" id="annuler" disabled data-t="annuler">↶ Annuler</button>
   <button class="btn mini" id="langue" title="English / Français">EN</button>
@@ -999,7 +1000,10 @@ addEventListener('resize',()=>{ clearTimeout(window._rz); window._rz=setTimeout(
 const depuisLien=charger();
 traduire(); tout();
 if(depuisLien&&/[#&]jouer\b/.test(location.hash)){ setTimeout(()=>{ lancer(); msg(t('mPlein')); },300); }
+/* ?exemple=espace : ouvre directement un exemple en projection (bouton « Voir un exemple » du site) */
+else { const ex=new URLSearchParams(location.search).get('exemple'); if(ex&&EXEMPLES[LANG][ex]) setTimeout(()=>{ lancer(normaliser(structuredClone(EXEMPLES[LANG][ex].d))); msg(t('mPlein')); },300); }
 document.fonts&&document.fonts.ready.then(()=>{ AP.placer(false); });
 </script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Frise animée" data-flottant="non" data-url="https://antoninatger.com/jeux/frise-animee/" data-texte="Frise animée, un outil gratuit pour créer une frise chronologique animée à projeter en classe"></script>
 </body>
 </html>
