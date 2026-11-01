@@ -80,6 +80,7 @@ input[type=file]{display:none}
 .astuce{font-size:12.5px;color:var(--doux);text-align:center;max-width:520px;margin:0}
 .doc [data-k]{cursor:pointer}
 .doc [data-k]:hover{outline:2px dashed rgba(245,159,0,.8);outline-offset:2px}
+.doc .ph{opacity:.32}
 .doc.export [data-k]:hover,#projo .doc [data-k]:hover{outline:0}
 @media (max-width:900px){
   .page{display:flex;flex-direction:column-reverse;padding:12px 16px 24px;gap:14px}
@@ -87,6 +88,12 @@ input[type=file]{display:none}
   .astuce{display:none}
 }
 
+dialog{border:1px solid var(--bord);border-radius:14px;background:var(--panel);color:var(--ink);padding:18px;width:min(560px,calc(100vw - 24px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin:0 0 6px;font-size:17px}
+dialog .ligne{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+dialog textarea{min-height:200px;font:13.5px/1.45 ui-monospace,Menlo,monospace}
+#impEtat{background:var(--acc2);border-radius:8px;padding:8px 10px;color:var(--ink)}
 #msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;max-width:calc(100vw - 30px);text-align:center}
 #msgBox.on{opacity:1}
 #projo{position:fixed;inset:0;background:#18181b;z-index:50;display:none;align-items:center;justify-content:center;overflow:hidden}
@@ -361,9 +368,18 @@ input[type=file]{display:none}
 </main>
 
 <div id="projo" aria-hidden="true"><button class="btn fermer" id="projoFin" data-t="quitter">Quitter (Échap)</button><div class="cadre-in" id="projoIn"></div></div>
+<dialog id="dlgImport" aria-labelledby="impTitre">
+  <h3 id="impTitre" data-t="impTitre">Remplir depuis un texte</h3>
+  <p class="aide" data-t="impAide"></p>
+  <div class="ligne"><button class="btn prim" type="button" id="impFichier" data-t="impFichier">📄 Choisir un fichier</button><button class="btn mini" type="button" id="impModele" data-t="impModele">Copier le modèle</button></div>
+  <p class="aide" id="impEtat" hidden></p>
+  <textarea id="impTxt" rows="10" aria-labelledby="impTitre"></textarea>
+  <div class="ligne"><span style="flex:1"></span><button class="btn" type="button" id="impNon" data-t="impNon">Annuler</button><button class="btn prim" type="button" id="impOui" data-t="impOui">Remplir le document</button></div>
+</dialog>
 <div id="msgBox" role="status"></div>
 <input type="file" id="fImg" accept="image/*">
 <input type="file" id="fJson" accept=".json,application/json">
+<input type="file" id="fImport" accept=".docx,.pdf,.txt,.md,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 
 <script src="../vendor/html2canvas.min.js"></script>
 <script>
@@ -376,22 +392,28 @@ const T={
 fr:{titre:'Faux documents',retourTitre:'Retour sur antoninatger.com',partager:'📣 Partager',png:"Télécharger l'image",imprimer:'Imprimer',projeter:'Projeter en plein écran',quitter:'Quitter (Échap)',
   astuce:"Cliquez sur un élément du document pour aller au champ correspondant. L'image et l'impression portent la mention discrète « Document fictif ».",
   fictif:'Document fictif · usage pédagogique',style:'Style',plus:'Plus de champs',photo:'Choisir une photo',retirer:'Retirer',
-  exemple:"Recharger l'exemple",vider:'Vider le texte',confirmer:'Sûr ? Cliquez encore',decor:'Décor',decorAide:'Nom du journal, date, brèves, rubriques, chiffres… sont remplis au hasard : concentrez-vous sur le texte. Tout reste modifiable.',decorBtn:'🎲 Changer le décor',okDecor:'Nouveau décor tiré au hasard.',
+  exVoir:'Voir un exemple terminé…',okExemple:'Exemple chargé. « Vider le texte » repart de zéro.',impBtn:'📄 Remplir depuis Word, PDF ou texte',impTitre:'Remplir depuis un texte',
+  impAide:"Écrivez chaque partie précédée de son nom, par exemple « Titre : … » puis « Texte : … ». Une partie peut tenir sur plusieurs lignes. Choisissez un fichier ou collez le texte ci-dessous.",impFichier:'📄 Choisir un fichier (Word, PDF, texte)',impModele:'Copier le modèle',impNon:'Annuler',impOui:'Remplir le document',impLecture:'Lecture du fichier…',
+  impErr:"Ce fichier n'a pas pu être lu. Copiez-collez son texte ci-dessous.",impFormat:'Format non pris en charge : Word (.docx), PDF ou texte.',impVide:'Aucune partie reconnue. Écrivez par exemple « Titre : … ».',impOk:'champs remplis.',modeleCopie:'Modèle copié : collez-le dans Word, remplissez-le, puis importez le fichier.',
+  phGris:'Les textes en gris sont des indications : ils disparaissent dès que vous écrivez, et ne figurent ni sur l’image ni à l’impression.',vider:'Vider le texte',confirmer:'Sûr ? Cliquez encore',decor:'Décor',decorAide:'Nom du journal, date, brèves, rubriques, chiffres… sont remplis au hasard : concentrez-vous sur le texte. Tout reste modifiable.',decorBtn:'🎲 Changer le décor',okDecor:'Nouveau décor tiré au hasard.',
   bLien:'Lien',bGras:'Gras',bItal:'Italique',bNote:'Note',bSection:'Section',motLien:'mot',motGras:'texte',nouvSection:'Nouvelle section',nouvSource:'Auteur, titre, éditeur, année.',sauver:'Enregistrer',ouvrir:'Ouvrir',
   aideFichier:"« Enregistrer » crée un petit fichier à garder ou à envoyer à un collègue. Rien n'est envoyé sur Internet.",
   okImg:'Image enregistrée dans vos téléchargements.',errImg:"L'image n'a pas pu être créée. Essayez une capture d'écran.",noLib:"L'outil d'image n'a pas pu se charger.",
   okSauve:'Fichier enregistré dans vos téléchargements.',okOuvre:'Document ouvert.',errOuvre:"Ce fichier n'est pas un document enregistré ici.",
-  confVider:'Vider tous les champs de ce document ?',okExemple:"Exemple rechargé.",tropGros:"Trop gros pour être gardé dans le navigateur : pensez à « Enregistrer ».",
+  confVider:'Vider tous les champs de ce document ?',tropGros:"Trop gros pour être gardé dans le navigateur : pensez à « Enregistrer ».",
   nav:'Type de document',form:'Contenu du document'},
 en:{titre:'Fake documents',retourTitre:'Back to antoninatger.com',partager:'📣 Share',png:'Download image',imprimer:'Print',projeter:'Full-screen display',quitter:'Exit (Esc)',
   astuce:'Click any part of the document to jump to its field. Images and prints carry a discreet “Fictional document” label.',
   fictif:'Fictional document · for teaching',style:'Style',plus:'More fields',photo:'Choose a photo',retirer:'Remove',
-  exemple:'Reload the example',vider:'Clear the text',confirmer:'Sure? Click again',decor:'Auto-filled details',decorAide:'Paper name, date, briefs, sections, numbers… are filled in at random, so you can focus on the text. Everything stays editable.',decorBtn:'🎲 Shuffle details',okDecor:'New random details.',
+  exVoir:'See a finished example…',okExemple:'Example loaded. “Clear the text” starts again from scratch.',impBtn:'📄 Fill from Word, PDF or text',impTitre:'Fill from a text',
+  impAide:'Write each part after its name, for example “Title: …” then “Text: …”. A part can run over several lines. Choose a file or paste the text below.',impFichier:'📄 Choose a file (Word, PDF, text)',impModele:'Copy the template',impNon:'Cancel',impOui:'Fill the document',impLecture:'Reading the file…',
+  impErr:'This file could not be read. Copy and paste its text below.',impFormat:'Unsupported format: Word (.docx), PDF or text.',impVide:'No part recognised. Write for example “Title: …”.',impOk:'fields filled.',modeleCopie:'Template copied: paste it into Word, fill it in, then import the file.',
+  phGris:'Grey text is only a hint: it disappears as soon as you type, and never appears on the image or the print.',vider:'Clear the text',confirmer:'Sure? Click again',decor:'Auto-filled details',decorAide:'Paper name, date, briefs, sections, numbers… are filled in at random, so you can focus on the text. Everything stays editable.',decorBtn:'🎲 Shuffle details',okDecor:'New random details.',
   bLien:'Link',bGras:'Bold',bItal:'Italic',bNote:'Footnote',bSection:'Section',motLien:'word',motGras:'text',nouvSection:'New section',nouvSource:'Author, title, publisher, year.',sauver:'Save',ouvrir:'Open',
   aideFichier:'“Save” creates a small file you can keep or send to a colleague. Nothing is sent over the Internet.',
   okImg:'Image saved to your downloads.',errImg:'The image could not be created. Try a screenshot.',noLib:'The image tool failed to load.',
   okSauve:'File saved to your downloads.',okOuvre:'Document opened.',errOuvre:'This file is not a document saved here.',
-  confVider:'Clear every field of this document?',okExemple:'Example reloaded.',tropGros:'Too big to keep in the browser: use “Save”.',
+  confVider:'Clear every field of this document?',tropGros:'Too big to keep in the browser: use “Save”.',
   nav:'Document type',form:'Document content'}
 };
 
@@ -715,6 +737,111 @@ const DECOR={
   affiche:{ champs:['sign'], tirer(l){ return {sign:hasard(RES[l].signes)}; } },
   fiche:{ champs:['modif'], tirer(l){ const h=entre(7,23), m=String(entre(0,59)).padStart(2,'0'); return {modif:l==='fr'?`${new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})} à ${h}:${m}`:`${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}, at ${h}:${m}`}; } }
 };
+/* =====================================================================
+   Exemples terminés : à charger pour voir à quoi ressemble un document
+   fini. Les nouveaux documents, eux, partent vides (texte d'aide en gris).
+   Un exemple n'écrase le décor que pour les champs qu'il précise.
+   ===================================================================== */
+G.une.ex.fr._nom='Le chocolat qui fait réussir (étude bidon)'; G.une.ex.en._nom='Chocolate boosts grades (bogus study)';
+G.article.ex.fr._nom='Dormir en classe (étude détournée)'; G.article.ex.en._nom='Sleeping in class (twisted study)';
+G.post.ex.fr._nom='Fausse alerte « collèges fermés »'; G.post.ex.en._nom='Fake “schools closed” alert';
+G.affiche.ex.fr._nom='Arnaque aux trottinettes (avis officiel)'; G.affiche.ex.en._nom='Scooter scam (public notice)';
+G.fiche.ex.fr._nom='Le dahu (animal imaginaire)'; G.fiche.ex.en._nom='The dahu (imaginary animal)';
+const PLUS={
+une:{fr:[
+  {_nom:'Un requin dans le lac (tabloïd)',style:'tabloid',rubrique:'Exclusif',titre:"Un requin aperçu dans le lac d'Annecy !",
+   chapo:"Des baigneurs affirment avoir vu un aileron de deux mètres. La mairie dément, les réseaux s'affolent.",legende:'',image:'',
+   texte:"Tout est parti d'une vidéo de huit secondes, filmée depuis un pédalo et partagée plus de 300 000 fois en une nuit. On y distingue une forme sombre qui fend l'eau.\n« J'ai vu une nageoire, j'en suis sûre », raconte une vacancière. Un pêcheur du coin hausse les épaules : « C'est un tronc d'arbre, il est là depuis l'orage. »\nUn requin ne peut pas vivre en eau douce plus de quelques heures, rappellent les biologistes. Rien n'y fait : les ventes de bouées gonflables en forme d'aileron ont triplé."},
+  {_nom:"Une d'époque : la tour Eiffel démontée (1908)",style:'serieux',journal:'Le Petit Républicain',devise:'Fondé en 1889 · Édition de Paris',date:'Jeudi 12 mars 1908',numero:'N° 6 412',prix:'5 centimes',oreille:'Feuilleton · Les Mystères de Paris',
+   rubrique:'Paris',titre:'La tour Eiffel sera démontée l’an prochain',
+   chapo:"Construite pour l'Exposition universelle, la « dame de fer » n'avait reçu qu'une autorisation de vingt ans. Sa démolition est prévue pour 1909.",legende:'',image:'',
+   texte:"La concession accordée à M. Gustave Eiffel arrive à son terme. Selon les termes du contrat, la Ville de Paris deviendra propriétaire de la tour, qu'elle entend faire démonter pour en vendre le fer.\nM. Eiffel, qui défend son œuvre, multiplie pourtant les expériences scientifiques à son sommet : météorologie, astronomie et surtout télégraphie sans fil.\nDe nombreux artistes, qui avaient signé en 1887 une protestation contre cette « tour vertigineusement ridicule », se réjouissent déjà.",
+   b1t:'Le dirigeable « Patrie » vole au-dessus de Paris',b1:'La foule s’est massée sur les quais pour suivre ses évolutions.',b2t:'Grève des cochers de fiacre',b2:'Les automobiles de place gagnent du terrain.',b3t:'Un hiver exceptionnellement doux',b3:'Les marronniers des Tuileries sont déjà en bourgeons.',
+   pied:"Sciences : la T.S.F. relie Paris à Casablanca\nThéâtre : les Ballets russes annoncés\nSport : le Tour de France part en juillet"}],
+ en:[
+  {_nom:'Shark in the lake (tabloid)',style:'tabloid',rubrique:'Exclusive',titre:'Shark spotted in mountain lake!',
+   chapo:'Swimmers say they saw a two-metre fin. The council denies it, social media goes wild.',legende:'',image:'',
+   texte:"It all began with an eight-second video, filmed from a pedal boat and shared more than 300,000 times overnight. A dark shape can be seen cutting through the water.\n“I saw a fin, I’m sure of it,” says one holidaymaker. A local angler shrugs: “It’s a tree trunk, it’s been there since the storm.”\nSharks cannot survive in fresh water for more than a few hours, biologists point out. It makes no difference: sales of fin-shaped inflatables have tripled."},
+  {_nom:'Vintage front page: Eiffel Tower to go (1908)',style:'serieux',journal:'The Morning Sentinel',devise:'Founded 1889 · Paris edition',date:'Thursday, March 12, 1908',numero:'No. 6,412',prix:'One penny',oreille:'Serial · The Paris Mysteries',
+   rubrique:'Paris',titre:'Eiffel Tower to be pulled down next year',
+   chapo:'Built for the World’s Fair, the “iron lady” was only given a twenty-year permit. Demolition is planned for 1909.',legende:'',image:'',
+   texte:"The concession granted to Mr Gustave Eiffel is coming to an end. Under the contract, the City of Paris will own the tower and intends to take it down and sell the iron.\nMr Eiffel, who is defending his work, keeps running scientific experiments at the top: weather, astronomy and above all wireless telegraphy.\nMany artists, who signed a protest in 1887 against this “dizzyingly ridiculous tower”, are already celebrating.",
+   b1t:'Airship flies over Paris',b1:'Crowds gathered on the river banks to watch.',b2t:'Cab drivers on strike',b2:'Motor taxis are gaining ground.',b3t:'An unusually mild winter',b3:'Chestnut trees are already in bud.',
+   pied:'Science: wireless links Paris and Casablanca\nTheatre: the Russian Ballet is coming\nSport: the Tour de France starts in July'}]},
+article:{fr:[
+  {_nom:'Le fruit « plus dangereux que le sucre » (piège à clics)',style:'bleu',rubrique:'Santé',abonnes:false,image:'',legende:'',
+   titre:'Ce fruit que vous mangez tous les jours serait plus dangereux que le sucre',
+   chapo:"Un influenceur nutrition affirme que la banane « détruit le cerveau des enfants ». Nous avons vérifié ce que disent vraiment les études.",
+   texte:"La vidéo cumule déjà quatre millions de vues. Face caméra, un homme en blouse blanche brandit une banane : « Plus de sucre qu'un soda ! »\nUne banane moyenne contient environ 14 grammes de sucres, contre 35 grammes pour une canette de soda. Elle apporte aussi des fibres, du potassium et des vitamines.\nL'homme en blouse n'est pas médecin : il vend un programme de « détox » à 49 euros, dont le lien figure sous chacune de ses vidéos."},
+  {_nom:'La batterie miracle d’un collégien (trop beau pour être vrai)',style:'vert',rubrique:'Sciences',abonnes:true,image:'',legende:'',
+   titre:'À 13 ans, il invente une batterie de téléphone qui se recharge en dix secondes',
+   chapo:"Un collégien de Clermont-Ferrand dit avoir mis au point dans son garage une batterie révolutionnaire. Les géants du numérique se l'arracheraient déjà.",
+   texte:"Tout le monde en parle depuis la publication d'une vidéo où l'on voit Lucas brancher son téléphone, qui passe de 1 % à 100 % en quelques secondes.\nAucun laboratoire n'a pourtant pu examiner l'invention. Le jeune homme explique qu'il « ne peut pas encore la montrer pour des raisons de brevet ».\nContacté, un chercheur en électrochimie reste prudent : « Une telle charge ferait chauffer la batterie au point de la faire fondre. »"}],
+ en:[
+  {_nom:'The fruit “worse than sugar” (clickbait)',style:'bleu',rubrique:'Health',abonnes:false,image:'',legende:'',
+   titre:'This fruit you eat every day may be more dangerous than sugar',
+   chapo:'A nutrition influencer claims bananas “destroy children’s brains”. We checked what the studies really say.',
+   texte:"The video already has four million views. Facing the camera, a man in a white coat holds up a banana: “More sugar than a soda!”\nAn average banana contains about 14 grams of sugars, compared with 35 grams in a can of soda. It also provides fibre, potassium and vitamins.\nThe man in the white coat is not a doctor: he sells a $49 “detox” programme, linked under every one of his videos."},
+  {_nom:'A pupil’s miracle battery (too good to be true)',style:'vert',rubrique:'Science',abonnes:true,image:'',legende:'',
+   titre:'Aged 13, he invents a phone battery that charges in ten seconds',
+   chapo:'A schoolboy says he built a revolutionary battery in his garage. Tech giants are said to be fighting over it.',
+   texte:"Everyone has been talking about it since a video showed Lucas plugging in his phone, which jumps from 1% to 100% in a few seconds.\nYet no laboratory has been able to examine the invention. The boy says he “can’t show it yet for patent reasons”.\nAn electrochemistry researcher remains cautious: “Charging that fast would heat the battery until it melts.”"}]},
+post:{fr:[
+  {_nom:'Fausse citation d’Einstein',style:'sombre',nom:'Le Vrai Savoir',pseudo:'levraisavoir',certifie:false,image:'',
+   texte:"« Si l'abeille disparaissait du globe, l'homme n'aurait plus que quatre années à vivre. »\n— Albert Einstein 🐝\n\nPartagez si vous êtes d'accord 🙏 #abeilles #planète"},
+  {_nom:'Faux concours (arnaque)',style:'clair',nom:'GameZone Officiel 🎮',pseudo:'gamezone_officiel_fr',certifie:true,image:'',
+   texte:"🎁 CONCOURS : pour fêter nos 10 ans, on offre 500 consoles !\n\nPour participer :\n1️⃣ Like ce post\n2️⃣ Partage-le\n3️⃣ Clique sur www.gamezone-cadeau.win et entre ta carte bancaire pour les frais de port (1 €) 📦\n\n#concours #gratuit"}],
+ en:[
+  {_nom:'Fake Einstein quote',style:'sombre',nom:'True Knowledge',pseudo:'trueknowledge',certifie:false,image:'',
+   texte:"“If the bee disappeared off the face of the earth, man would only have four years left to live.”\n— Albert Einstein 🐝\n\nShare if you agree 🙏 #bees #planet"},
+  {_nom:'Fake giveaway (scam)',style:'clair',nom:'GameZone Official 🎮',pseudo:'gamezone_official',certifie:true,image:'',
+   texte:"🎁 GIVEAWAY: to celebrate our 10th birthday, we’re giving away 500 consoles!\n\nTo enter:\n1️⃣ Like this post\n2️⃣ Share it\n3️⃣ Go to www.gamezone-gift.win and enter your card details for shipping ($1) 📦\n\n#giveaway #free"}]},
+affiche:{fr:[
+  {_nom:'Concert surprise (événement)',style:'evenement',sur:'Entrée gratuite',titre:'Concert surprise',sous:'Une star internationale, invitée mystère',image:'',
+   texte:"Réservation obligatoire par SMS au 81 212 (2,99 € par SMS, 4 SMS nécessaires). Places limitées !",info:'Vendredi 21 novembre · 20 h\nGymnase Jean-Moulin',sign:'Le Comité des fêtes'},
+  {_nom:'La crème au radium (réclame rétro)',style:'retro',sur:'Beauté moderne',titre:'Crème au radium',sous:'Le secret d’éclat des vedettes',image:'',
+   texte:"Une peau rayonnante grâce à la radioactivité naturelle !\nRecommandée par le docteur Alfred Curie*.\n*Aucun lien avec Pierre et Marie Curie.",info:'En vente en pharmacie\n4 francs 50 le pot',sign:'Laboratoires Radiolux'}],
+ en:[
+  {_nom:'Surprise gig (event)',style:'evenement',sur:'Free entry',titre:'Surprise gig',sous:'A world-famous mystery guest',image:'',
+   texte:'Booking by text only to 81212 ($2.99 per text, 4 texts needed). Limited places!',info:'Friday, November 21 · 8 p.m.\nJean-Moulin Sports Hall',sign:'The Festival Committee'},
+  {_nom:'Radium cream (vintage ad)',style:'retro',sur:'Modern beauty',titre:'Radium cream',sous:'The stars’ secret glow',image:'',
+   texte:'Radiant skin thanks to natural radioactivity!\nRecommended by Dr Alfred Curie*.\n*No relation to Pierre and Marie Curie.',info:'On sale at your chemist\n4 francs 50 a jar',sign:'Radiolux Laboratories'}]},
+fiche:{fr:[
+  {_nom:'Saint-Arnoux-sur-Brume (village inventé)',titre:'Saint-Arnoux-sur-Brume',boxt:'Saint-Arnoux-sur-Brume',image:'',legende:"L'église Saint-Arnoux et la place du marché.",
+   lignes:"# Administration\nPays : [[France]]\nRégion : Auvergne-Rhône-Alpes\nDépartement : Haute-Brume\nMaire : Josiane Pélissier\n# Démographie\nGentilé : Arnoussiens\nPopulation : 1 204 hab. (2023)",
+   texte:"**Saint-Arnoux-sur-Brume** est une [[commune française]] située dans le département de la Haute-Brume. Elle est connue pour son brouillard, présent en moyenne 300 jours par an[1].\n## Géographie\nLe village est bâti au fond d'une vallée encaissée, au confluent de la Brume et du Ruisseau-Gris.\n## Histoire\nSelon la tradition locale, le village aurait été fondé en 1132 par des moines égarés dans le brouillard, qui n'auraient jamais retrouvé leur chemin[2].\n## Économie\nLa commune produit un fromage de chèvre réputé, le *brumeux*, et accueille chaque automne la Fête de la lanterne.",
+   refs:"Météo-Brume, Rapport climatique annuel, 2021.\nAbbé J. Morin, Chronique de la vallée, 1898.",cats:'Commune de la Haute-Brume, Village de montagne'},
+  {_nom:'Hector Malivier, inventeur imaginaire',titre:'Hector Malivier',boxt:'Hector Malivier',image:'',legende:'Hector Malivier en 1921.',
+   lignes:"Naissance : 4 avril 1887, [[Lyon]]\nDécès : 9 octobre 1952, [[Nice]]\nNationalité : Française\nProfession : Inventeur, ingénieur\nConnu pour : Le parapluie à moteur",
+   texte:"**Hector Malivier**, né le 4 avril 1887 à [[Lyon]] et mort le 9 octobre 1952 à [[Nice]], est un inventeur français, connu pour avoir conçu le premier parapluie à moteur[1].\n## Biographie\nFils d'un horloger, il quitte l'école à quatorze ans pour travailler dans l'atelier familial. Il dépose son premier brevet à vingt ans : une cuillère qui refroidit la soupe.\n## Inventions\nSon parapluie à moteur, présenté au Salon de Paris en 1923, tournait sur lui-même pour chasser la pluie. Il fut retiré de la vente après plusieurs accidents[2].\n## Postérité\nUne rue de Villeurbanne porte son nom depuis 1987.",
+   refs:"Revue des inventeurs, n° 44, 1923.\nC. Dumas, Les Inventions oubliées, Éditions du Rhône, 2004.",cats:'Inventeur français, Naissance à Lyon, Personnalité imaginaire'}],
+ en:[
+  {_nom:'Saint-Arnoux-sur-Brume (made-up village)',titre:'Saint-Arnoux-sur-Brume',boxt:'Saint-Arnoux-sur-Brume',image:'',legende:'The church and the market square.',
+   lignes:"# Administration\nCountry: [[France]]\nRegion: Auvergne-Rhône-Alpes\nDepartment: Haute-Brume\nMayor: Josiane Pélissier\n# Population\nDemonym: Arnoussians\nPopulation: 1,204 (2023)",
+   texte:"**Saint-Arnoux-sur-Brume** is a [[commune in France]] in the Haute-Brume department. It is known for its fog, present on average 300 days a year[1].\n## Geography\nThe village lies at the bottom of a steep valley, where the Brume meets the Grey Brook.\n## History\nAccording to local tradition, the village was founded in 1132 by monks lost in the fog who never found their way back[2].\n## Economy\nThe commune produces a well-known goat’s cheese, the *brumeux*, and holds a Lantern Festival every autumn.",
+   refs:"Météo-Brume, Annual climate report, 2021.\nAbbé J. Morin, Chronicle of the Valley, 1898.",cats:'Communes of Haute-Brume, Mountain villages'},
+  {_nom:'Hector Malivier, imaginary inventor',titre:'Hector Malivier',boxt:'Hector Malivier',image:'',legende:'Hector Malivier in 1921.',
+   lignes:"Born: 4 April 1887, [[Lyon]]\nDied: 9 October 1952, [[Nice]]\nNationality: French\nOccupation: Inventor, engineer\nKnown for: The motorised umbrella",
+   texte:"**Hector Malivier** (4 April 1887 – 9 October 1952) was a French inventor, known for designing the first motorised umbrella[1].\n## Biography\nThe son of a watchmaker, he left school at fourteen to work in the family workshop. He filed his first patent at twenty: a spoon that cools soup.\n## Inventions\nHis motorised umbrella, shown at the Paris Fair in 1923, spun round to shake off the rain. It was withdrawn after several accidents[2].\n## Legacy\nA street in Villeurbanne has been named after him since 1987.",
+   refs:"Inventors’ Review, no. 44, 1923.\nC. Dumas, Forgotten Inventions, Rhône Press, 2004.",cats:'French inventors, People from Lyon, Imaginary people'}]}
+};
+const EXEMPLES=(g,l)=>[G[g].ex[l],...PLUS[g][l]];
+/* Texte d'aide affiché en gris dans les champs vides (et dans l'aperçu) */
+const PH={
+  une:{titre:['Votre gros titre ici','Your headline here'],chapo:['Deux ou trois lignes qui résument l’article.','Two or three lines that sum up the story.'],legende:['Légende de la photo','Photo caption'],rubrique:['Rubrique','Section'],
+    texte:['Le texte de l’article : un paragraphe par ligne.\nDeuxième paragraphe…','The article text: one paragraph per line.\nSecond paragraph…']},
+  article:{titre:['Votre titre ici','Your headline here'],chapo:['Deux ou trois lignes qui résument l’article.','Two or three lines that sum up the story.'],legende:['Légende et crédit de la photo','Caption and photo credit'],rubrique:['Rubrique','Section'],
+    texte:['Le texte de l’article : un paragraphe par ligne.\nDeuxième paragraphe…\nTroisième paragraphe…','The article text: one paragraph per line.\nSecond paragraph…\nThird paragraph…']},
+  post:{texte:['Écrivez le post ici… #motclé','Write the post here… #hashtag']},
+  affiche:{sur:['Bandeau du haut','Top banner'],titre:['Grand titre','Big title'],sous:['Sous-titre','Subtitle'],texte:['Le texte de l’affiche.','The poster text.'],info:['Date et lieu\nHoraires','Date and place\nTimes']},
+  fiche:{titre:['Titre de la page','Page title'],texte:['Le sujet est … Une phrase d’introduction.\n## Première section\nLe texte de la section.','The subject is … An opening sentence.\n## First section\nThe section text.'],
+    boxt:['Titre de l’encadré','Infobox title'],legende:['Légende de l’image','Image caption'],lignes:['Nom : valeur\nAutre nom : valeur','Label: value\nOther label: value'],refs:['Auteur, titre, éditeur, année.','Author, title, publisher, year.'],cats:['Catégorie 1, Catégorie 2','Category 1, Category 2']}
+};
+const ph=(g,k)=>{ const p=(PH[g]||{})[k]; if(p) return p[lang==='fr'?0:1]; const c=G[g].champs.find(x=>x.k===k); return c?c[lang].replace(/\s*\(.*\)$/,''):''; };
+/* Champs « principaux » : ceux que le prof écrit (ni décor, ni photo, ni case à cocher) */
+const principaux=g=>G[g].champs.filter(c=>(c.type==='text'||c.type==='long')&&!DECOR[g].champs.includes(c.k)).map(c=>c.k);
+/* Un document neuf : texte vide, décor tiré au hasard */
+function nouveau(g,l){ const d={}; for(const c of G[g].champs) d[c.k]=c.type==='check'?false:''; if(G[g].styles) d.style=G[g].styles[0][0]; if(g==='article'){ d.abonnes=true; d.style='rouge'; } return Object.assign(d,DECOR[g].tirer(l)); }
 /* Les vignettes de choix : des croquis maison, reconnaissables d'un coup d'œil */
 const VIGN={
   une:'<svg viewBox="0 0 120 62"><rect x="30" y="1" width="60" height="60" fill="#fbfaf5" stroke="#bbb"/><rect x="38" y="6" width="44" height="6" fill="#222"/><rect x="34" y="14" width="52" height="1.5" fill="#222"/><rect x="34" y="19" width="34" height="5" fill="#222"/><rect x="34" y="27" width="34" height="14" fill="#b9b3a3"/><g fill="#999"><rect x="34" y="44" width="16" height="1.5"/><rect x="34" y="47" width="16" height="1.5"/><rect x="34" y="50" width="16" height="1.5"/><rect x="52" y="44" width="16" height="1.5"/><rect x="52" y="47" width="16" height="1.5"/><rect x="52" y="50" width="16" height="1.5"/><rect x="72" y="20" width="14" height="1.5"/><rect x="72" y="24" width="14" height="1.5"/><rect x="72" y="32" width="14" height="1.5"/><rect x="72" y="36" width="14" height="1.5"/></g><rect x="72" y="19" width="10" height="2.5" fill="#222"/><rect x="72" y="30" width="10" height="2.5" fill="#222"/></svg>',
@@ -728,12 +855,11 @@ const VIGN={
 const CLE='faux-documents:v1';
 const params=new URLSearchParams(location.search);
 let lang=(params.get('lang')==='en'||(!params.get('lang')&&(()=>{try{return localStorage.getItem('faux-documents:lang')}catch(e){}})()==='en'))?'en':'fr';
-const exemple=(g,l)=>Object.assign(JSON.parse(JSON.stringify(G[g].ex[l])),DECOR[g].tirer(l));
 let S={g:'une',docs:{},modif:{}};
 try{ const s=localStorage.getItem(CLE); if(s){ const j=JSON.parse(s); if(j&&j.docs) S=Object.assign(S,j); } }catch(e){}
 if(!G[S.g]) S.g='une';
 /* Un exemple non retouché est retiré à chaque visite : le décor change à chaque fois */
-for(const g in G){ if(!S.docs[g]||!S.modif[g]) { S.docs[g]=exemple(g,lang); S.modif[g]=false; } }
+for(const g in G){ if(!S.docs[g]||!S.modif[g]) { S.docs[g]=nouveau(g,lang); S.modif[g]=false; } }
 const t=key=>T[lang][key]??key;
 let tGarde; function garder(){ clearTimeout(tGarde); tGarde=setTimeout(()=>{ try{ localStorage.setItem(CLE,JSON.stringify(S)); }catch(e){ msg(t('tropGros')); } },300); }
 let tMsg; function msg(s){ const b=$('msgBox'); b.textContent=s; b.classList.add('on'); clearTimeout(tMsg); tMsg=setTimeout(()=>b.classList.remove('on'),2600); }
@@ -756,24 +882,26 @@ function champHTML(c,d){
   const id='f_'+c.k, lab=c[lang], ex=c.ex?`<span class="ex">${esc(c.ex[lang])}</span>`:'';
   if(c.type==='check') return `<label class="champ case"><input type="checkbox" id="${id}" data-c="${c.k}" ${d[c.k]?'checked':''}>${esc(lab)}</label>`;
   if(c.type==='image') return `<div class="champ"><span>${esc(lab)}</span><div class="img-champ">${d[c.k]?`<img class="vign" src="${d[c.k]}" alt="">`:''}<button class="btn mini" type="button" id="${id}" data-img="${c.k}">${t('photo')}</button>${d[c.k]?`<button class="btn mini warn" type="button" data-sans="${c.k}">${t('retirer')}</button>`:''}</div></div>`;
-  if(c.type==='long') return `<label class="champ" for="${id}">${esc(lab)}</label>${c.outils?`<div class="barre-ed">${c.outils.map(o=>`<button type="button" class="btn mini" data-ed="${o}" data-cible="${id}">${t('b'+o[0].toUpperCase()+o.slice(1))}</button>`).join('')}</div>`:''}<label class="champ" style="margin-top:3px"><textarea id="${id}" data-c="${c.k}" rows="${c.rows||3}">${esc(d[c.k])}</textarea>${ex}</label>`;
-  return `<label class="champ">${esc(lab)}<input type="text" id="${id}" data-c="${c.k}" value="${esc(d[c.k])}">${ex}</label>`;
+  if(c.type==='long') return `<label class="champ" for="${id}">${esc(lab)}</label>${c.outils?`<div class="barre-ed">${c.outils.map(o=>`<button type="button" class="btn mini" data-ed="${o}" data-cible="${id}">${t('b'+o[0].toUpperCase()+o.slice(1))}</button>`).join('')}</div>`:''}<label class="champ" style="margin-top:3px"><textarea id="${id}" data-c="${c.k}" rows="${c.rows||3}" placeholder="${esc(ph(S.g,c.k))}">${esc(d[c.k])}</textarea>${ex}</label>`;
+  return `<label class="champ">${esc(lab)}<input type="text" id="${id}" data-c="${c.k}" value="${esc(d[c.k])}" placeholder="${esc(ph(S.g,c.k))}">${ex}</label>`;
 }
 function dessinerForm(){
   const g=G[S.g], d=S.docs[S.g];
-  let h=`<section class="bloc decor"><h2>${t('decor')}</h2><p class="aide" style="margin:0 0 8px">${t('decorAide')}</p><button class="btn mini" type="button" id="bDecor">${t('decorBtn')}</button></section>`;
+  let h=`<section class="bloc"><select id="exChoix" aria-label="${t('exVoir')}"><option value="">${t('exVoir')}</option>${EXEMPLES(S.g,lang).map((x,i)=>`<option value="${i}">${esc(x._nom)}</option>`).join('')}</select><button class="btn mini" type="button" id="bImport" style="margin-top:8px;width:100%">${t('impBtn')}</button><p class="aide">${t('phGris')}</p></section><section class="bloc decor"><h2>${t('decor')}</h2><p class="aide" style="margin:0 0 8px">${t('decorAide')}</p><button class="btn mini" type="button" id="bDecor">${t('decorBtn')}</button></section>`;
   if(g.styles) h+=`<section class="bloc"><h2>${t('style')}</h2><div class="seg">${g.styles.map(([v,fr,en])=>`<button class="btn" type="button" data-style="${v}" aria-pressed="${(d.style||g.styles[0][0])===v}">${lang==='fr'?fr:en}</button>`).join('')}</div></section>`;
   g.groupes.forEach((gr,i)=>{
     const ch=g.champs.filter(c=>c.g===i).map(c=>champHTML(c,d)).join('');
     h+=i===0?`<section class="bloc"><h2>${esc(gr[lang==='fr'?0:1])}</h2>${ch}</section>`:`<details class="bloc"><summary>${esc(gr[lang==='fr'?0:1])}</summary>${ch}</details>`;
   });
-  h+=`<section class="bloc"><div class="outils"><button class="btn mini" type="button" id="bEx">${t('exemple')}</button><button class="btn mini warn" type="button" id="bVide">${t('vider')}</button><button class="btn mini" type="button" id="bSauve">${t('sauver')}</button><button class="btn mini" type="button" id="bOuvre">${t('ouvrir')}</button></div><p class="aide">${t('aideFichier')}</p></section>`;
+  h+=`<section class="bloc"><div class="outils"><button class="btn mini warn" type="button" id="bVide">${t('vider')}</button><button class="btn mini" type="button" id="bSauve">${t('sauver')}</button><button class="btn mini" type="button" id="bOuvre">${t('ouvrir')}</button></div><p class="aide">${t('aideFichier')}</p></section>`;
   const f=$('form'); f.innerHTML=h;
   f.querySelectorAll('[data-c]').forEach(el=>el.addEventListener('input',()=>{ d[el.dataset.c]=el.type==='checkbox'?el.checked:el.value; S.modif[S.g]=true; rendre(); garder(); }));
   f.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>{ d.style=b.dataset.style; S.modif[S.g]=true; f.querySelectorAll('[data-style]').forEach(x=>x.setAttribute('aria-pressed',x===b)); rendre(); garder(); });
   f.querySelectorAll('[data-img]').forEach(b=>b.onclick=()=>{ imgCle=b.dataset.img; $('fImg').value=''; $('fImg').click(); });
   f.querySelectorAll('[data-sans]').forEach(b=>b.onclick=()=>{ d[b.dataset.sans]=''; S.modif[S.g]=true; dessinerForm(); rendre(); garder(); });
-  $('bEx').onclick=()=>{ S.docs[S.g]=exemple(S.g,lang); S.modif[S.g]=false; tout(); garder(); msg(t('okExemple')); };
+  $('exChoix').onchange=e=>{ const i=e.target.value; if(i==='') return; const ex=JSON.parse(JSON.stringify(EXEMPLES(S.g,lang)[+i])); delete ex._nom;
+    const n=Object.assign({},d); for(const c of g.champs) if(!DECOR[S.g].champs.includes(c.k)) n[c.k]=c.type==='check'?false:''; S.docs[S.g]=Object.assign(n,ex); S.modif[S.g]=true; tout(); garder(); msg(t('okExemple')); };
+  $('bImport').onclick=ouvrirImport;
   $('bDecor').onclick=()=>{ const cle=x=>x.journal||x.site||x.nom||x.sign||x.modif; let n, i=0; do n=DECOR[S.g].tirer(lang); while(cle(n)===cle(d)&&i++<8); Object.assign(d,n); dessinerForm(); rendre(); garder(); msg(t('okDecor')); };
   f.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>editer(b.dataset.ed,$(b.dataset.cible)));
   /* Pas de confirm() : un second clic confirme (la boîte native est bloquée dans certains cadres) */
@@ -804,7 +932,9 @@ let imgCle='';
 $('fImg').onchange=e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>{ const m=1600, s=Math.min(1,m/Math.max(im.width,im.height)); const cv=document.createElement('canvas'); cv.width=Math.round(im.width*s); cv.height=Math.round(im.height*s); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); S.docs[S.g][imgCle]=cv.toDataURL('image/jpeg',.86); S.modif[S.g]=true; dessinerForm(); rendre(); garder(); }; im.src=r.result; }; r.readAsDataURL(f); };
 
 /* ---------- Rendu et mise à l'échelle ---------- */
-const htmlDoc=(g,opts={})=>{ let h=G[g].rendu(S.docs[g],lang,G[g].L[lang]); h=h.replace('<div class="doc ',`<div class="doc ${opts.export?'export ':''}`); return h.replace(/<\/div>\s*$/,`<div class="fictif">${t('fictif')}</div></div>`); };
+/* Aperçu : un champ vide montre son indication en gris. Image, impression et projection : le vrai contenu seul. */
+const videsDe=g=>principaux(g).filter(k=>!String(S.docs[g][k]||'').trim());
+const htmlDoc=(g,opts={})=>{ let d=S.docs[g]; if(opts.apercu){ d=Object.assign({},d); for(const k of videsDe(g)) d[k]=ph(g,k); } let h=G[g].rendu(d,lang,G[g].L[lang]); h=h.replace('<div class="doc ',`<div class="doc ${opts.export?'export ':''}`); return h.replace(/<\/div>\s*$/,`<div class="fictif">${t('fictif')}</div></div>`); };
 function ajuster(hote,inner,largeur,hauteur){
   const doc=inner.firstElementChild; if(!doc) return;
   inner.style.transform='none'; const w=doc.offsetWidth, h=doc.offsetHeight;
@@ -830,7 +960,7 @@ function caler(root){
   });
 }
 function rendre(){
-  const inn=$('cadreIn'); inn.innerHTML=htmlDoc(S.g); inn.style.transform='none'; caler(inn);
+  const inn=$('cadreIn'); inn.innerHTML=htmlDoc(S.g,{apercu:true}); for(const k of videsDe(S.g)) inn.querySelectorAll(`[data-k="${k}"]`).forEach(e=>e.classList.add('ph')); inn.style.transform='none'; caler(inn);
   ajusterApercu();
   inn.querySelectorAll('img').forEach(i=>{ if(!i.complete) i.onload=ajusterApercu; });
 }
@@ -873,6 +1003,58 @@ $('projoFin').onclick=projoFin;
 addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('projo').classList.contains('on')) projoFin(); });
 document.addEventListener('fullscreenchange',()=>{ if($('projo').classList.contains('on')) setTimeout(ajusterProjo,50); });
 
+/* ---------- Remplir depuis un texte, un Word ou un PDF ----------
+   Chaque partie commence par son nom suivi de deux-points (« Titre : … »).
+   Les lignes suivantes, sans nom reconnu, prolongent la partie en cours. */
+const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\(.*?\)/g,'').replace(/[^a-z0-9@]+/g,' ').trim();
+const ALIAS={titre:['titre','title','headline','gros titre','grand titre'],chapo:['chapo','chapeau','standfirst','resume','summary','intro','introduction'],
+  texte:['texte','text','article','corps','body','contenu','content','post','message'],legende:['legende','caption'],rubrique:['rubrique','section','theme'],
+  auteur:['auteur','author','journaliste','par','by'],nom:['nom','name','compte','account'],pseudo:['pseudo','identifiant','handle'],sur:['bandeau','surtitre','banner'],
+  sous:['sous titre','soustitre','subtitle'],info:['date et lieu','lieu','infos','informations','when','where'],sign:['signature','signe','signed by'],
+  boxt:['encadre','titre de l encadre','infobox'],lignes:['lignes','encadre lignes','rows','fiche'],refs:['references','sources','notes','notes et references'],cats:['categories','category'],
+  lire:['lire aussi','read also','see also'],journal:['journal','nom du journal','newspaper','paper'],site:['site','nom du site','website'],abonnes:['abonnes','reserve aux abonnes','subscribers','paywall'],certifie:['certifie','verified','badge']};
+function carteNoms(g){ const m={}; for(const c of G[g].champs){ if(c.type==='image') continue; [c.k,c.fr,c.en,...(ALIAS[c.k]||[])].forEach(x=>{ const n=norm(x); if(n&&!m[n]) m[n]=c; }); } return m; }
+function lireTexte(txt,g){
+  const m=carteNoms(g), out={}; let cur=null, avant=[];
+  for(const ligne of String(txt).replace(/\r/g,'').split('\n')){
+    const x=ligne.match(/^\s*[-*•]?\s*([^:：]{1,40}?)\s*[:：]\s?(.*)$/), c=x&&m[norm(x[1])];
+    if(c){ cur=c; out[c.k]=out[c.k]?out[c.k]+'\n'+x[2]:x[2]; }
+    else if(cur) out[cur.k]+='\n'+ligne; else avant.push(ligne);
+  }
+  /* Rien d'étiqueté : la première ligne fait le titre, le reste le texte */
+  if(!Object.keys(out).length){ const l=avant.map(x=>x.trim()).filter(Boolean); if(!l.length) return {}; out.titre=l[0]; if(l.length>1) out.texte=l.slice(1).join('\n'); }
+  for(const k in out){ const c=G[g].champs.find(z=>z.k===k); let v=out[k].replace(/\n{3,}/g,'\n\n').trim();
+    if(c.type==='check') v=/^(oui|yes|o|y|x|vrai|true|1)/i.test(v); else if(c.type==='text') v=v.replace(/\s*\n\s*/g,' ');
+    else v=v.split('\n').map(z=>z.trim()).filter(Boolean).join('\n'); out[k]=v; }
+  return out;
+}
+const modele=g=>G[g].champs.filter(c=>c.type!=='image'&&!DECOR[g].champs.includes(c.k)).map(c=>{ const lab=c[lang].replace(/\s*\(.*\)$/,''); return c.type==='long'?`${lab} :\n`:`${lab} : `; }).join('\n');
+const charger=src=>new Promise((ok,ko)=>{ if(document.querySelector(`script[src="${src}"]`)&&(window.mammoth||window.pdfjsLib)) return ok(); const e=document.createElement('script'); e.src=src; e.onload=ok; e.onerror=()=>ko(new Error('reseau')); document.head.appendChild(e); });
+async function lirePdf(file){
+  await charger('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise; let txt='';
+  for(let i=1;i<=pdf.numPages;i++){ const c=await (await pdf.getPage(i)).getTextContent(); let y=null;
+    for(const it of c.items){ if(y!==null&&Math.abs(it.transform[5]-y)>2) txt+='\n'; txt+=it.str; y=it.transform[5]; } txt+='\n'; }
+  return txt;
+}
+async function lireWord(file){ await charger('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js'); return (await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()})).value; }
+function etatImport(x){ $('impEtat').hidden=!x; $('impEtat').textContent=x||''; }
+function ouvrirImport(){ $('impTxt').value=''; $('impTxt').placeholder=modele(S.g); etatImport(''); $('dlgImport').showModal(); }
+$('impNon').onclick=()=>$('dlgImport').close();
+$('impModele').onclick=()=>{ const m=modele(S.g); $('impTxt').value=m; $('impTxt').focus(); $('impTxt').select(); try{ navigator.clipboard.writeText(m).then(()=>etatImport(t('modeleCopie')),()=>{}); }catch(e){} };
+$('impFichier').onclick=()=>{ $('fImport').value=''; $('fImport').click(); };
+$('fImport').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const nom=f.name.toLowerCase(); etatImport(t('impLecture'));
+  try{ let x;
+    if(nom.endsWith('.pdf')||f.type==='application/pdf') x=await lirePdf(f);
+    else if(nom.endsWith('.docx')) x=await lireWord(f);
+    else if(nom.endsWith('.txt')||nom.endsWith('.md')||f.type.startsWith('text/')) x=await f.text();
+    else throw new Error('format');
+    $('impTxt').value=x.replace(/\u00a0/g,' ').replace(/\n{3,}/g,'\n\n').trim(); etatImport('');
+  }catch(x){ console.warn(x); etatImport(t(x.message==='format'?'impFormat':'impErr')); } };
+$('impOui').onclick=()=>{ const v=lireTexte($('impTxt').value,S.g), n=Object.keys(v).length; if(!n) return etatImport(t('impVide'));
+  Object.assign(S.docs[S.g],v); S.modif[S.g]=true; $('dlgImport').close(); tout(); garder(); msg(n+' '+t('impOk')); };
+
 /* ---------- Ouvrir un document enregistré ---------- */
 $('fJson').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const j=JSON.parse(await f.text()); if(j.type!=='faux-document'||!G[j.g]||!j.d) throw 0; S.g=j.g; S.docs[j.g]=j.d; S.modif[j.g]=true; tout(); garder(); msg(t('okOuvre')); }catch(x){ msg(t('errOuvre')); } };
 
@@ -880,7 +1062,7 @@ $('fJson').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ co
 $('langue').onclick=()=>{
   lang=lang==='fr'?'en':'fr';
   try{ localStorage.setItem('faux-documents:lang',lang); }catch(e){}
-  for(const g in G) if(!S.modif[g]) S.docs[g]=exemple(g,lang);
+  for(const g in G) if(!S.modif[g]) S.docs[g]=nouveau(g,lang);
   const u=new URL(location.href); u.searchParams.set('lang',lang); history.replaceState(null,'',u);
   garder(); tout();
 };
