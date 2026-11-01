@@ -51,6 +51,7 @@ kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-
 .item .l1{display:grid;grid-template-columns:24px minmax(0,1fr) 52px 32px;gap:6px;align-items:center}
 .item .num{font-size:12px;color:var(--doux);text-align:center;font-weight:600}
 .item .emo{text-align:center;padding:7px 4px}
+.item .emo::placeholder{font-size:11.5px}
 .item .suppr{border:0;background:none;cursor:pointer;color:var(--doux);font-size:16px;border-radius:6px;height:32px}
 .item .suppr:hover{color:var(--warn);background:var(--panel)}
 .item .ti{margin-top:6px;font-weight:600}
@@ -364,9 +365,9 @@ fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour
   impTitre:'Coller une liste',impAide:"Un événement par ligne : <b>date : événement</b>. Ajoutez un détail après un point-virgule. On peut aussi coller deux ou trois colonnes copiées d'un tableur.",
   impRempl:'Remplacer les événements',impOui:'Créer la frise',impPh:"1789 : Prise de la Bastille ; Le peuple de Paris s'empare de la forteresse\n1792 : Proclamation de la République\n1804 : Napoléon empereur",
   auto:'Auto',vue:"Vue d'ensemble",plein:'Plein écran',quitter:'Quitter (Échap)',
-  phDate:'Date',phTitre:"Ce qui s'est passé",phTexte:'Détail (facultatif)',phEmo:'🙂',image:'🖼 Image',retirer:'Retirer',suppr:'Supprimer cet événement',
+  phDate:'Date (ex. 1789)',phTitre:"Ce qui s'est passé",phTexte:'Détail (facultatif)',phEmo:'Emoji',image:'🖼 Image',retirer:'Retirer',suppr:'Supprimer cet événement',
   dateKo:"Date non reconnue : l'événement reste à sa place dans la liste.",videListe:'Aucun événement pour l’instant. Ajoutez-en un, collez une liste ou chargez un exemple.',
-  titreDefaut:'Ma frise',commencer:'→ pour commencer',fictif:'',
+  titreDefaut:'Ma frise',apVide:'Vos événements apparaîtront ici',commencer:'→ pour commencer',fictif:'',
   mVide:"Ajoutez d'abord un événement.",mLien:'Lien copié : il ouvre la frise telle quelle.',mLienImg:'Lien copié. Les images ne passent pas par le lien : utilisez « Enregistrer » pour les garder.',
   mEff:'Effacer toute la frise ?',mImgGros:'Image trop lourde.',mStock:'Trop gros pour être gardé dans le navigateur : pensez à « Enregistrer ».',mOuvrirKo:"Ce fichier n'est pas une frise.",
   mPlein:'Appuyez sur F pour le plein écran.',onom:['BOUM !','PAF !','ZIP !','WOUAH !','TCHAC !','VLAN !'],
@@ -381,9 +382,9 @@ en:{titreOutil:'Animated timeline',retour:'← antoninatger.com',retourTitre:'Ba
   impTitre:'Paste a list',impAide:'One event per line: <b>date: event</b>. Add a detail after a semicolon. You can also paste two or three columns copied from a spreadsheet.',
   impRempl:'Replace the events',impOui:'Build the timeline',impPh:'1969: Apollo 11 lands on the Moon; Neil Armstrong walks on the Moon\n1990: Hubble telescope launched\n1998: First module of the ISS',
   auto:'Auto',vue:'Overview',plein:'Full screen',quitter:'Quit (Esc)',
-  phDate:'Date',phTitre:'What happened',phTexte:'Detail (optional)',phEmo:'🙂',image:'🖼 Image',retirer:'Remove',suppr:'Delete this event',
+  phDate:'Date (e.g. 1789)',phTitre:'What happened',phTexte:'Detail (optional)',phEmo:'Emoji',image:'🖼 Image',retirer:'Remove',suppr:'Delete this event',
   dateKo:'Date not recognised: the event keeps its place in the list.',videListe:'No events yet. Add one, paste a list or load an example.',
-  titreDefaut:'My timeline',commencer:'→ to start',fictif:'',
+  titreDefaut:'My timeline',apVide:'Your events will appear here',commencer:'→ to start',fictif:'',
   mVide:'Add an event first.',mLien:'Link copied: it opens the timeline as it is.',mLienImg:'Link copied. Images do not travel in the link: use “Save” to keep them.',
   mEff:'Clear the whole timeline?',mImgGros:'Image too large.',mStock:'Too large to keep in the browser: remember to “Save”.',mOuvrirKo:'This file is not a timeline.',
   mPlein:'Press F for full screen.',onom:['BOOM!','POW!','ZAP!','WOW!','BAM!','WHAM!'],
@@ -558,7 +559,7 @@ function remplirExemples(){ const s=$('exemples'); s.length=1; s.options[0].text
 
 /* ---------------- État ---------------- */
 const THEMES=['parchemin','neon','bd','spatial','tableau','journal'];
-const CLE='frise:v1';
+const CLE='frise:v2';
 let uid=0; const nid=()=>'e'+Date.now().toString(36)+(uid++);
 const VIDE=()=>({titre:'',sous:'',theme:'parchemin',esp:'regulier',auto:5,ev:[]});
 function normaliser(d){
@@ -572,7 +573,8 @@ function charger(){
   const h=location.hash.match(/[#&]f=([^&]+)/);
   if(h){ try{ D=normaliser(JSON.parse(decodeURIComponent(escape(atob(h[1].replace(/-/g,'+').replace(/_/g,'/')))))); return true; }catch(e){} }
   try{ const s=localStorage.getItem(CLE); if(s){ D=normaliser(JSON.parse(s)); return false; } }catch(e){}
-  D=normaliser(structuredClone(EXEMPLES[LANG].info.d)); return false;
+  /* Premier passage : une frise vide, trois lignes à remplir. Les exemples sont dans la galerie. */
+  D=VIDE(); D.ev=[0,1,2].map(()=>({id:nid(),date:'',titre:'',texte:'',emoji:'',img:null,ecart:1})); return false;
 }
 let tGarde; function garder(){ clearTimeout(tGarde); tGarde=setTimeout(()=>{ try{ localStorage.setItem(CLE,JSON.stringify(D)); }catch(e){ msg(t('mStock')); } },300); }
 function avant(){ hist.push(JSON.stringify(D)); if(hist.length>80) hist.shift(); $('annuler').disabled=false; }
@@ -620,7 +622,7 @@ function positions(l,esp){
 class Frise{
   constructor(boite){ this.boite=boite; this.pas=-1; this.n=0; }
   construire(d){
-    this.d=d; const l=ordonnes(d), xs=positions(l,d.esp); this.l=l; this.xs=xs; this.n=l.length;
+    this.d=d; const l=ordonnes(d).filter(o=>o.e.date.trim()||o.e.titre.trim()||o.e.texte.trim()||o.e.emoji.trim()||o.e.img), xs=positions(l,d.esp); this.l=l; this.xs=xs; this.n=l.length;
     const a0=(xs[0]||0)-1.6, a1=(xs[xs.length-1]||0)+1.6; this.a0=a0; this.a1=a1;
     const marq={parchemin:'🪶',spatial:'🚀'}[d.theme]||'';
     const evs=l.map((o,i)=>{ const e=o.e;
@@ -628,7 +630,7 @@ class Frise{
         <div class="carte">${e.emoji?`<span class="em">${esc(e.emoji)}</span>`:''}<div class="d">${esc(e.date)}</div>${e.img?`<img src="${e.img}" alt="">`:''}${e.titre?`<h3>${esc(e.titre)}</h3>`:''}${e.texte?`<p>${esc(e.texte)}</p>`:''}</div></div>`; }).join('');
     this.boite.innerHTML=`<div class="frise t-${d.theme} titre"><div class="deco"></div>
       <div class="piste" style="--a0:${a0};--a1:${a1};--fx:${a0}"><span class="sonde"></span><div class="axe"></div><div class="plein"></div>${marq?`<span class="curseur">${marq}</span>`:''}${evs}</div>
-      <div class="titre-ecran"><h2>${esc(d.titre||t('titreDefaut'))}</h2>${d.sous?`<p>${esc(d.sous)}</p>`:''}</div>
+      <div class="titre-ecran"><h2>${esc(d.titre||t('titreDefaut'))}</h2>${d.sous||!l.length?`<p>${esc(d.sous||t('apVide'))}</p>`:''}</div>
       <div class="compteur"></div></div>`;
     this.f=this.boite.firstChild; this.piste=this.f.querySelector('.piste'); this.deco=this.f.querySelector('.deco');
     this.evs=[...this.f.querySelectorAll('.ev')];
@@ -765,7 +767,7 @@ const SC=new Frise($('sceneFrise'));
 let tAuto=null, tCalme=null;
 function lancer(d){
   d=d&&d.ev?d:D;
-  if(!d.ev.length) return msg(t('mVide'));
+  if(!d.ev.some(e=>e.date.trim()||e.titre.trim()||e.texte.trim()||e.img)) return msg(t('mVide'));
   stopAuto(); $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false');
   try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){}
   SC.construire(d); SC.aller(-1,{instant:true}); reveil(); $('sSuiv').focus({preventScroll:true});
