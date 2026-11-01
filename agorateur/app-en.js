@@ -26,7 +26,7 @@ function libelle(id){ return [...EPL,...FALLACIES,VALABLE].find(o=>o.id===id); }
 // ─── Opponents ───
 // type "epl": identify ethos/pathos/logos. type "fall": name the fallacy (a = id, opts = 3 distractors)
 const FOES = [
-  {name:"Uncle Gerard", emoji:"🍗", desc:"family-dinner champion", hp:4,
+  {name:"Uncle Gerard", emoji:"🍗", img:"gerard.svg", desc:"family-dinner champion", hp:4,
    intro:"At dessert, Uncle Gerard puts down his fork: 'You, with all your studying, let's see if you know how to debate!' The discussion begins.",
    lines:[
     {type:"epl", t:"'Listen, kid, I have 60 years of life behind me. I have worked hard all my life, and I have never lied to anyone. So you can take my word for it!'",
@@ -407,6 +407,13 @@ let ouverture=0, carnet=[], phase="replique";
 let bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
 const YOUMAX=6+(DOJO_EP.clochettes?1:0);
 const $=id=>document.getElementById(id);
+// Un personnage peut avoir un portrait dessiné (img) au lieu de son emoji :
+// Tonton Gérard croque sa cuisse de poulet, ce qu'aucun emoji ne montre.
+function persoNoeud(f){
+  if(!f.img) return document.createTextNode(f.emoji);
+  const i=document.createElement("img"); i.className="perso-img"; i.src=f.img; i.alt=""; return i;
+}
+function persoHtml(f){ return f.img ? '<img class="perso-img" src="'+f.img+'" alt="">' : f.emoji; }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function startMatch(i, foeRevision){
@@ -424,9 +431,9 @@ function startMatch(i, foeRevision){
   $("intro").style.display="none";
   $("inter").style.display="none";
   $("battle").style.display="block";
-  $("foe-emoji").textContent=foe.emoji;
+  $("foe-emoji").replaceChildren(persoNoeud(foe));
   $("foe-title").textContent=foe.name;
-  $("foe-tag").textContent=foe.emoji+" "+foe.name+" — "+foe.desc;
+  $("foe-tag").textContent=" "+foe.name+" — "+foe.desc; $("foe-tag").prepend(persoNoeud(foe));
   renderBreadcrumb();
   updateHP();
   renderTurn();
@@ -438,7 +445,7 @@ function renderBreadcrumb(){
   FOES.forEach((f,i)=>{
     const span=document.createElement("span");
     span.className="bc-item"+(i<foeIdx?" done":i===foeIdx?" current":"");
-    span.textContent=f.emoji;
+    span.append(persoNoeud(f));
     bc.appendChild(span);
   });
 }
@@ -570,9 +577,9 @@ function winMatch(){
   if(foeIdx===FOES.length-1){ victory(); return; }
   const next=FOES[foeIdx+1];
   $("inter").style.display="block";
-  $("inter-emoji").textContent=FOES[foeIdx].emoji;
+  $("inter-emoji").replaceChildren(persoNoeud(FOES[foeIdx]));
   $("inter-title").textContent="💬 End of the discussion with "+FOES[foeIdx].name;
-  $("inter-msg").innerHTML="You catch your breath: +3 clarity. 🌿<br><br>Next person: <b>"+next.emoji+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
+  $("inter-msg").innerHTML="You catch your breath: +3 clarity. 🌿<br><br>Next person: <b>"+persoHtml(next)+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
   youHP=Math.min(YOUMAX,youHP+3);
   $("inter-btn").textContent="💬 Talk with "+next.name;
   $("inter-btn").onclick=()=>startMatch(foeIdx+1);
@@ -719,7 +726,7 @@ function reprendrePartie(){
   if(sp && zone){
     const f=FOES[sp.foe], b=document.createElement("button");
     b.type="button"; b.className="bigbtn"; b.id="reprendre-partie";
-    b.textContent="▶ Resume my game: "+f.emoji+" "+f.name+" ("+(sp.foe+1)+"/"+FOES.length+")";
+    b.textContent="▶ Resume my game: "; b.append(persoNoeud(f), " "+f.name+" ("+(sp.foe+1)+"/"+FOES.length+")");
     b.onclick=reprendrePartie;
     zone.prepend(b);
     const n=zone.querySelector('[data-i18n="enter"]');
@@ -956,12 +963,12 @@ function repondre(line,geste,btn){
   lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Acknowledging a good argument builds common ground.":G.m;
   if(G.bon){
     ouverture=Math.min(max,ouverture+1);
-    tete.textContent=foe.emoji+" "+"{n} opens up a little:".replace("{n}",foe.name);
+    tete.textContent=" "+"{n} opens up a little:".replace("{n}",foe.name); tete.prepend(persoNoeud(foe));
     corps.textContent=line.d.k;
     noter(line.d.k,false);
   } else {
     if(geste==="massue") ouverture=Math.max(0,ouverture-1);
-    tete.textContent=foe.emoji+" "+(geste==="massue"?dlg.braque:dlg.esquive);
+    tete.textContent=" "+(geste==="massue"?dlg.braque:dlg.esquive); tete.prepend(persoNoeud(foe));
     if(!modeDifficile()){ corps.textContent="Had you made them feel heard, you might have heard: "+line.d.k; noter(line.d.k,true); }
     else corps.textContent="No confidence this time: this clue slips away.";
   }

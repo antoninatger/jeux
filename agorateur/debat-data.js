@@ -234,7 +234,7 @@ const DEBAT = {
   // Ce sont les cinq personnages du jeu. indices = ce que le prof laisse
   // échapper quand la classe l'a bien ouvert (les mêmes que dans le jeu).
   persos: [
-    { id: "gerard", emoji: "🍗", nom: "Tonton Gérard", desc: "champion du repas de famille",
+    { id: "gerard", emoji: "🍗", img: "gerard.svg", nom: "Tonton Gérard", desc: "champion du repas de famille",
       q: "Faut-il manger bio ?",
       position: "« Le bio, c'est des bêtises. De mon temps, on mangeait ce qu'il y avait, et on n'en est pas morts ! »",
       pieges: ["genehat", "nature", "pente", "adhom"],

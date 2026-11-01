@@ -26,7 +26,7 @@ function libelle(id){ return [...EPL,...FALLACIES,VALABLE].find(o=>o.id===id); }
 // ─── Adversaires ───
 // type "epl" : identifier ethos/pathos/logos. type "fall" : nommer le sophisme (a = id, opts = 3 distracteurs)
 const FOES = [
-  {name:"Tonton Gérard", emoji:"🍗", desc:"champion du repas de famille", hp:4,
+  {name:"Tonton Gérard", emoji:"🍗", img:"gerard.svg", desc:"champion du repas de famille", hp:4,
    intro:"Au dessert, Tonton Gérard pose sa fourchette : « Toi qui fais des études, on va voir si tu sais débattre ! » La discussion commence.",
    lines:[
     {type:"epl", t:"« Moi, mon petit, j'ai 60 ans de vie derrière moi. J'ai travaillé dur toute ma vie, je n'ai jamais menti à personne. Alors tu peux me croire sur parole ! »",
@@ -409,6 +409,13 @@ let ouverture=0, carnet=[], phase="replique";
 let bilan={question:0, reformulation:0, massue:0, esquive:0, compris:0};
 const YOUMAX=6+(DOJO_EP.clochettes?1:0);
 const $=id=>document.getElementById(id);
+// Un personnage peut avoir un portrait dessiné (img) au lieu de son emoji :
+// Tonton Gérard croque sa cuisse de poulet, ce qu'aucun emoji ne montre.
+function persoNoeud(f){
+  if(!f.img) return document.createTextNode(f.emoji);
+  const i=document.createElement("img"); i.className="perso-img"; i.src=f.img; i.alt=""; return i;
+}
+function persoHtml(f){ return f.img ? '<img class="perso-img" src="'+f.img+'" alt="">' : f.emoji; }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function startMatch(i, foeRevision){
@@ -426,9 +433,9 @@ function startMatch(i, foeRevision){
   $("intro").style.display="none";
   $("inter").style.display="none";
   $("battle").style.display="block";
-  $("foe-emoji").textContent=foe.emoji;
+  $("foe-emoji").replaceChildren(persoNoeud(foe));
   $("foe-title").textContent=foe.name;
-  $("foe-tag").textContent=foe.emoji+" "+foe.name+" — "+foe.desc;
+  $("foe-tag").textContent=" "+foe.name+" — "+foe.desc; $("foe-tag").prepend(persoNoeud(foe));
   renderBreadcrumb();
   updateHP();
   renderTurn();
@@ -440,7 +447,7 @@ function renderBreadcrumb(){
   FOES.forEach((f,i)=>{
     const span=document.createElement("span");
     span.className="bc-item"+(i<foeIdx?" done":i===foeIdx?" current":"");
-    span.textContent=f.emoji;
+    span.append(persoNoeud(f));
     bc.appendChild(span);
   });
 }
@@ -572,9 +579,9 @@ function winMatch(){
   if(foeIdx===FOES.length-1){ victory(); return; }
   const next=FOES[foeIdx+1];
   $("inter").style.display="block";
-  $("inter-emoji").textContent=FOES[foeIdx].emoji;
+  $("inter-emoji").replaceChildren(persoNoeud(FOES[foeIdx]));
   $("inter-title").textContent="💬 Fin de la discussion avec "+FOES[foeIdx].name;
-  $("inter-msg").innerHTML="Tu reprends ton souffle : +3 lucidité. 🌿<br><br>Prochain interlocuteur : <b>"+next.emoji+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
+  $("inter-msg").innerHTML="Tu reprends ton souffle : +3 lucidité. 🌿<br><br>Prochain interlocuteur : <b>"+persoHtml(next)+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
   youHP=Math.min(YOUMAX,youHP+3);
   $("inter-btn").textContent="💬 Discuter avec "+next.name;
   $("inter-btn").onclick=()=>startMatch(foeIdx+1);
@@ -721,7 +728,7 @@ function reprendrePartie(){
   if(sp && zone){
     const f=FOES[sp.foe], b=document.createElement("button");
     b.type="button"; b.className="bigbtn"; b.id="reprendre-partie";
-    b.textContent="▶ Reprendre ma partie : "+f.emoji+" "+f.name+" ("+(sp.foe+1)+"/"+FOES.length+")";
+    b.textContent="▶ Reprendre ma partie : "; b.append(persoNoeud(f), " "+f.name+" ("+(sp.foe+1)+"/"+FOES.length+")");
     b.onclick=reprendrePartie;
     zone.prepend(b);
     const n=zone.querySelector('[data-i18n="enter"]');
@@ -959,12 +966,12 @@ function repondre(line,geste,btn){
   lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Reconnaître un bon argument, c'est construire un point d'accord.":G.m;
   if(G.bon){
     ouverture=Math.min(max,ouverture+1);
-    tete.textContent=foe.emoji+" "+"{n} s'ouvre un peu :".replace("{n}",foe.name);
+    tete.textContent=" "+"{n} s'ouvre un peu :".replace("{n}",foe.name); tete.prepend(persoNoeud(foe));
     corps.textContent=line.d.k;
     noter(line.d.k,false);
   } else {
     if(geste==="massue") ouverture=Math.max(0,ouverture-1);
-    tete.textContent=foe.emoji+" "+(geste==="massue"?dlg.braque:dlg.esquive);
+    tete.textContent=" "+(geste==="massue"?dlg.braque:dlg.esquive); tete.prepend(persoNoeud(foe));
     if(!modeDifficile()){ corps.textContent="Si tu l'avais fait se sentir écouté, tu aurais peut-être entendu : "+line.d.k; noter(line.d.k,true); }
     else corps.textContent="Pas de confidence cette fois : cet indice t'échappe.";
   }

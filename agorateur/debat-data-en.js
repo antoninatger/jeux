@@ -214,7 +214,7 @@ const DEBAT = {
   },
 
   persos: [
-    { id: "gerard", emoji: "🍗", nom: "Uncle Gerard", desc: "family-dinner champion",
+    { id: "gerard", emoji: "🍗", img: "gerard.svg", nom: "Uncle Gerard", desc: "family-dinner champion",
       q: "Should we eat organic food?",
       position: "“Organic is nonsense. In my day, we ate what there was, and it never killed us!”",
       pieges: ["genehat", "nature", "pente", "adhom"],
