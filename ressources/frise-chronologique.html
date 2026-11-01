@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-content">
+<title>Frise animée · Jeux et ressources pédagogiques</title>
+<meta name="description" content="Créer une frise chronologique animée pour la classe : vos dates et vos événements, une ambiance (parchemin, néon, BD, spatial…), et la frise défile d'un clic, événement par événement.">
+<link rel="canonical" href="https://antoninatger.com/jeux/ressources/frise-chronologique.html">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+/* Frise animée : le prof saisit des dates et des événements, choisit une ambiance,
+   et projette la frise qui se déroule événement par événement.
+   Une seule page, rien n'est envoyé sur Internet (brouillon dans le navigateur). */
+:root{--bg:#f4f1ea;--panel:#fff;--ink:#1d1b18;--doux:#6b665d;--bord:#e2ddd2;--acc:#1f6f5c;--acc2:#e9f3ef;--warn:#b3261e;--r:12px}
+@media (prefers-color-scheme:dark){:root{--bg:#16150f;--panel:#201e19;--ink:#f1ede4;--doux:#a8a196;--bord:#38352d;--acc:#5cc4a6;--acc2:#1f3530;--warn:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.haut{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bord);background:var(--panel);position:sticky;top:0;z-index:20}
+.haut h1{font-size:17px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.haut a.retour{color:var(--acc);font-size:13.5px;text-decoration:none;white-space:nowrap;border:1px solid var(--bord);border-radius:8px;padding:5px 9px}
+.btn{border:1px solid var(--bord);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--acc)}
+.btn.prim{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+@media (prefers-color-scheme:dark){.btn.prim{color:#0d1a16}}
+.btn.warn{color:var(--warn)}
+.btn.mini{padding:4px 9px;font-size:13px}
+.btn.gros{padding:11px 20px;font-size:16px}
+.btn:disabled{opacity:.4;cursor:default}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+input[type=text],select,textarea{background:var(--bg);border:1px solid var(--bord);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
+textarea{resize:vertical}
+input[type=file]{display:none}
+
+.page{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:24px;max-width:1280px;margin:0 auto;padding:20px}
+.col-g{min-width:0}
+.col-d{min-width:0;align-self:start;position:sticky;top:68px}
+.bloc{background:var(--panel);border:1px solid var(--bord);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.bloc h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin:0 0 10px}
+.lab{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--doux);margin-top:8px}
+.lab:first-of-type{margin-top:0}
+.ligne{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.aide{font-size:12.5px;color:var(--doux);margin:8px 0 0}
+kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--bg)}
+
+/* Liste des événements */
+.item{border:1px solid var(--bord);border-radius:10px;padding:8px;margin-top:8px;background:var(--bg);transition:border-color .2s,box-shadow .2s}
+.item.choisi{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.item.bouge{animation:bouge .6s}
+@keyframes bouge{0%{background:var(--acc2)}100%{background:var(--bg)}}
+.item .l1{display:grid;grid-template-columns:24px minmax(0,1fr) 52px 32px;gap:6px;align-items:center}
+.item .num{font-size:12px;color:var(--doux);text-align:center;font-weight:600}
+.item .emo{text-align:center;padding:7px 4px}
+.item .emo::placeholder{font-size:11.5px}
+.item .suppr{border:0;background:none;cursor:pointer;color:var(--doux);font-size:16px;border-radius:6px;height:32px}
+.item .suppr:hover{color:var(--warn);background:var(--panel)}
+.item .ti{margin-top:6px;font-weight:600}
+.item .tx{margin-top:6px;min-height:38px;font-size:14px}
+.item .ecart{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin-top:6px;font-size:12.5px;color:var(--doux)}
+.item .ecart input{accent-color:var(--acc);width:100%}
+.item .l3{display:flex;gap:8px;align-items:center;margin-top:6px}
+.item .l3 img{height:32px;border-radius:4px}
+.item .err{font-size:12px;color:var(--warn);margin:4px 0 0 30px}
+.item input.date.ko{border-color:var(--warn)}
+.vide-liste{border:1px dashed var(--bord);border-radius:10px;padding:16px;text-align:center;color:var(--doux);font-size:14px;margin-top:8px}
+
+/* Ambiances */
+.tuiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tuile{border:2px solid var(--bord);border-radius:10px;padding:0;cursor:pointer;overflow:hidden;background:none;text-align:left}
+.tuile[aria-pressed=true]{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.tuile .ech{display:block;height:52px;position:relative;background:var(--f-bg);overflow:hidden}
+.tuile .ech::before{content:"";position:absolute;left:8%;right:8%;top:62%;height:3px;background:var(--f-line);box-shadow:var(--f-glow,none)}
+.tuile .ech b{position:absolute;left:10px;top:7px;font:var(--f-tw,400) 15px/1 var(--f-tf);color:var(--f-ink);letter-spacing:var(--f-ls,0)}
+.tuile .nom{display:block;padding:5px 8px;font-size:12.5px;background:var(--panel)}
+.seg{display:flex;gap:6px}
+.seg .btn{flex:1;white-space:normal}
+.seg .btn[aria-pressed=true]{background:var(--acc2);border-color:var(--acc);font-weight:600}
+
+/* Aperçu */
+.apercu-boite{border-radius:var(--r);overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.18);aspect-ratio:16/9;cursor:pointer;position:relative}
+.apercu-boite .frise{position:absolute;inset:0}
+.galerie{margin-top:22px}
+.galerie h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin:0}
+.galerie .aide{margin:4px 0 10px}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gal .tuile .ech{height:70px}
+.gal .tuile .ech b{font-size:13px;right:10px;line-height:1.15}
+.gal .tuile .ech i{position:absolute;right:8px;bottom:6px;font-style:normal;font-size:20px}
+.gal .tuile .nom{display:flex;justify-content:space-between;gap:6px}
+@media (max-width:600px){ .gal{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.astuce{font-size:12.5px;color:var(--doux);text-align:center;margin:10px auto 0;max-width:640px}
+
+dialog{border:1px solid var(--bord);border-radius:var(--r);background:var(--panel);color:var(--ink);max-width:min(560px,calc(100vw - 32px));width:100%;padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin:0 0 8px;font-size:17px}
+#impEtat{background:var(--acc2);border-radius:8px;padding:8px 10px;color:var(--ink);margin:0 0 8px}
+dialog textarea{min-height:200px;font:13.5px/1.5 ui-monospace,monospace}
+dialog .ligne{justify-content:flex-end}
+#msgBox{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:80;max-width:calc(100vw - 30px);text-align:center}
+#msgBox.on{opacity:1}
+
+@media (max-width:900px){
+  .page{grid-template-columns:minmax(0,1fr);padding:12px 16px}
+  .col-d{position:static;order:-1}
+  .haut a.retour{font-size:12.5px;padding:4px 7px}
+}
+@media (max-width:480px){ .haut h1{font-size:15px} .tuiles{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+/* ======================================================================
+   LA FRISE — un seul composant, pour l'aperçu et pour la projection.
+   Toutes les tailles dérivent de --u (la largeur d'une carte), elle-même
+   calculée sur la taille de la scène : l'aperçu est une vraie miniature.
+   ====================================================================== */
+.frise{position:relative;overflow:hidden;container-type:size;background:var(--f-bg);color:var(--f-ink);font-family:var(--f-bf);
+  --u:min(66cqw,50cqh);--dur:1.1s;--ease:cubic-bezier(.65,0,.25,1);user-select:none;-webkit-user-select:none}
+.frise .deco{position:absolute;inset:-2px;pointer-events:none;background-position-x:var(--px,0);transition:background-position var(--dur) var(--ease)}
+.frise .piste{position:absolute;left:0;top:0;width:100%;height:100%;transform-origin:0 50%;transition:transform var(--dur) var(--ease)}
+.frise .sonde{position:absolute;width:var(--u);height:0;visibility:hidden}
+.frise .axe,.frise .plein{position:absolute;top:50%;left:calc(var(--a0)*var(--u));height:calc(var(--u)*.016);transform:translateY(-50%);border-radius:99px}
+.frise .axe{width:calc((var(--a1) - var(--a0))*var(--u));background:var(--f-axe)}
+.frise .plein{width:calc((var(--fx) - var(--a0))*var(--u));background:var(--f-line);box-shadow:var(--f-glow,none);transition:width var(--dur) var(--ease)}
+.frise .curseur{position:absolute;top:50%;left:calc(var(--fx)*var(--u));transition:left var(--dur) var(--ease);font-size:calc(var(--u)*.09);line-height:1;transform:translate(-50%,-50%);z-index:3}
+.frise .ev{position:absolute;top:50%;left:calc(var(--x)*var(--u));width:0;height:0;transition:opacity .5s}
+.frise .ev:not(.vis){opacity:0;pointer-events:none}
+.frise .pt{position:absolute;width:calc(var(--u)*.06);height:calc(var(--u)*.06);border-radius:50%;left:0;top:0;transform:translate(-50%,-50%);background:var(--f-pt);border:calc(var(--u)*.012) solid var(--f-line);z-index:2;transition:transform .4s}
+.frise .ev.cur .pt{transform:translate(-50%,-50%) scale(1.5)}
+.frise .tige{position:absolute;left:0;width:calc(var(--u)*.008);transform:translateX(-50%);background:var(--f-line);height:calc(var(--u)*.11);opacity:.8}
+.frise .dessus .tige{bottom:0}
+.frise .dessous .tige{top:0}
+.frise .carte{position:absolute;left:calc(var(--u)*-.5);width:var(--u);max-height:calc(50cqh - var(--u)*.14 - 2cqh);overflow:hidden;
+  background:var(--f-card);color:var(--f-card-ink);padding:calc(var(--u)*.05) calc(var(--u)*.06);border-radius:calc(var(--u)*.025);transition:opacity .6s,filter .6s,transform .6s}
+.frise .dessus .carte{bottom:calc(var(--u)*.11)}
+.frise .dessous .carte{top:calc(var(--u)*.11)}
+.frise .ev.vis:not(.cur) .carte{opacity:var(--f-passe,.5)}
+.frise.vue .ev.vis .carte{opacity:1}
+.frise .d{font:var(--f-dw,700) calc(var(--u)*.082)/1.05 var(--f-df,var(--f-tf));color:var(--f-date);letter-spacing:var(--f-ls,0)}
+.frise .em{float:right;font-size:calc(var(--u)*.12);line-height:1;margin:0 0 0 calc(var(--u)*.02)}
+.frise .carte img{display:block;width:100%;max-height:calc(var(--u)*.36);object-fit:cover;border-radius:calc(var(--u)*.012);margin:calc(var(--u)*.03) 0 0}
+.frise h3{margin:calc(var(--u)*.025) 0 0;font:var(--f-tw,700) calc(var(--u)*.064)/1.15 var(--f-tf);letter-spacing:var(--f-ls,0)}
+.frise .carte p{margin:calc(var(--u)*.022) 0 0;font-size:calc(var(--u)*.046*var(--f-bz,1));line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
+.frise .titre-ecran{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:0 8cqw 24cqh;z-index:5;transition:opacity .7s,transform .9s var(--ease)}
+.frise.titre .piste{opacity:.35}
+.frise .piste{transition:transform var(--dur) var(--ease),opacity .8s}
+.frise:not(.titre) .titre-ecran{opacity:0;transform:scale(.92) translateY(-4cqh);pointer-events:none}
+.frise .titre-ecran h2{margin:0;font:var(--f-tw,700) calc(var(--u)*.17)/1.05 var(--f-tf);color:var(--f-date);letter-spacing:var(--f-ls,0);text-shadow:var(--f-tshadow,none)}
+.frise .titre-ecran p{margin:calc(var(--u)*.05) 0 0;font-size:calc(var(--u)*.07);opacity:.85}
+.frise .compteur{position:absolute;right:2.5cqw;top:2.5cqh;font:calc(var(--u)*.042)/1 var(--f-bf);opacity:.6;z-index:6;transition:opacity .4s}
+.frise.titre .compteur,.frise.vue .compteur{opacity:0}
+.frise .marque{position:absolute;left:2.5cqw;bottom:2cqh;font-size:calc(var(--u)*.032);opacity:.45;z-index:6}
+.frise .coupe{position:absolute;top:0;left:calc(var(--g)*var(--u)*-.5);transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
+.frise .coupe b{font:700 calc(var(--u)*.09)/1 var(--f-tf);color:var(--f-line);background:var(--f-pt);padding:0 calc(var(--u)*.01);letter-spacing:-.1em;text-shadow:var(--f-glow,none)}
+.frise .coupe small{position:absolute;top:100%;margin-top:calc(var(--u)*.01);white-space:nowrap;font-size:calc(var(--u)*.04);font-style:italic;opacity:.85}
+.frise .dessous .coupe small{top:auto;bottom:100%;margin:0 0 calc(var(--u)*.01)}
+.frise .onom{position:absolute;z-index:7;pointer-events:none}
+
+/* ---------- Parchemin ---------- */
+.t-parchemin{--f-bg:radial-gradient(ellipse at 50% 45%,#f3e2b8 0%,#e6cd96 55%,#c9a463 100%);--f-ink:#3b2814;--f-line:#6b3f1d;--f-axe:#6b3f1d33;--f-pt:#f3e2b8;
+  --f-card:linear-gradient(#f8ecca,#efdcac);--f-card-ink:#3b2814;--f-date:#7a2e12;--f-tf:'Playfair Display',Georgia,serif;--f-bf:'Source Serif 4',Georgia,serif;--f-passe:.55}
+.t-parchemin .deco{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(110,70,20,.035) 3px 4px),radial-gradient(circle at 15% 20%,rgba(120,70,20,.18),transparent 30%),radial-gradient(circle at 85% 80%,rgba(120,70,20,.2),transparent 35%)}
+.t-parchemin .carte{border:1px solid #a87b45;box-shadow:inset 0 0 0 calc(var(--u)*.008) #f8ecca,inset 0 0 0 calc(var(--u)*.011) #a87b45,0 calc(var(--u)*.015) calc(var(--u)*.04) rgba(60,30,0,.25)}
+.t-parchemin .titre-ecran h2{font-style:italic}
+.t-parchemin .ev.anim .carte{animation:deroule 1.1s var(--ease) both}
+@keyframes deroule{0%{clip-path:inset(0 0 100% 0);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0 0 0)}}
+.t-parchemin .dessous.anim .carte{animation-name:deroule-b}
+@keyframes deroule-b{0%{clip-path:inset(100% 0 0 0);opacity:0}30%{opacity:1}100%{clip-path:inset(0 0 0 0)}}
+
+/* ---------- Néon ---------- */
+.t-neon{--f-bg:linear-gradient(#0a0320 0%,#1a0538 55%,#2b0a4a 100%);--f-ink:#f5e9ff;--f-line:#ff2bd6;--f-axe:#ff2bd633;--f-pt:#0a0320;--f-glow:0 0 6px #ff2bd6,0 0 18px #ff2bd6;
+  --f-card:rgba(10,3,32,.75);--f-card-ink:#f5e9ff;--f-date:#19f0ff;--f-tf:'Press Start 2P',monospace;--f-tw:400;--f-df:'Press Start 2P',monospace;--f-dw:400;--f-bf:'VT323',monospace;--f-bz:1.45;--f-passe:.4;
+  --f-tshadow:0 0 8px #19f0ff,0 0 24px #19f0ff}
+.t-neon .deco{background:linear-gradient(transparent 0 62%,rgba(255,43,214,.0) 62%),
+  repeating-linear-gradient(90deg,rgba(25,240,255,.18) 0 2px,transparent 2px 70px),
+  linear-gradient(transparent 0 70%,rgba(255,43,214,.25) 100%);
+  -webkit-mask:linear-gradient(transparent 55%,#000 100%);mask:linear-gradient(transparent 55%,#000 100%)}
+.frise.t-neon::before{content:"";position:absolute;left:50%;top:14%;width:34cqh;height:34cqh;transform:translateX(-50%);border-radius:50%;
+  background:repeating-linear-gradient(180deg,#ff9a3c 0 6%,#ff2bd6 6% 7%,#ff9a3c 7% 13%);opacity:.18;filter:blur(1px);pointer-events:none}
+.t-neon .carte{border:2px solid #19f0ff;box-shadow:0 0 8px #19f0ff,inset 0 0 12px rgba(25,240,255,.25)}
+.t-neon .d{text-shadow:0 0 6px #19f0ff;font-size:calc(var(--u)*.06)}
+.t-neon h3{font-size:calc(var(--u)*.045);line-height:1.35;color:#ffd6f7}
+.t-neon .titre-ecran h2{font-size:calc(var(--u)*.1);line-height:1.3}
+.t-neon .pt{box-shadow:var(--f-glow)}
+.t-neon .ev.anim .carte{animation:gresille 1s steps(1) both}
+@keyframes gresille{0%{opacity:0}10%{opacity:1}14%{opacity:.1}22%{opacity:1}30%{opacity:.3}36%,100%{opacity:1}}
+
+/* ---------- BD ---------- */
+.t-bd{--f-bg:#ffd93b;--f-ink:#111;--f-line:#111;--f-axe:#11111133;--f-pt:#fff;--f-card:#fff;--f-card-ink:#111;--f-date:#fff;
+  --f-tf:'Lilita One','Arial Black',sans-serif;--f-tw:400;--f-bf:'Baloo 2',system-ui,sans-serif;--f-passe:.6;--f-tshadow:calc(var(--u)*.012) calc(var(--u)*.012) 0 #111}
+.t-bd .deco{background:radial-gradient(circle,rgba(230,60,30,.28) 22%,transparent 24%) 0 0/18px 18px}
+.t-bd .axe,.t-bd .plein{height:calc(var(--u)*.024)}
+.t-bd .carte{border:calc(var(--u)*.012) solid #111;border-radius:calc(var(--u)*.02);box-shadow:calc(var(--u)*.022) calc(var(--u)*.022) 0 #111;padding-top:calc(var(--u)*.03)}
+.t-bd .d{display:inline-block;background:#e8352b;padding:calc(var(--u)*.012) calc(var(--u)*.03);border:calc(var(--u)*.008) solid #111;transform:rotate(-3deg);margin:calc(var(--u)*.01) 0 0 calc(var(--u)*-.01)}
+.t-bd .titre-ecran h2{color:#e8352b;-webkit-text-stroke:calc(var(--u)*.006) #111;transform:rotate(-2deg)}
+.t-bd .ev.anim .carte{animation:pop .7s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{0%{transform:scale(.2) rotate(-8deg);opacity:0}100%{transform:none;opacity:1}}
+.t-bd .onom{font:400 calc(var(--u)*.11)/1 'Lilita One','Arial Black',sans-serif;color:#fff;-webkit-text-stroke:calc(var(--u)*.006) #111;text-shadow:calc(var(--u)*.01) calc(var(--u)*.01) 0 #111;
+  animation:onom 1.3s ease-out both}
+@keyframes onom{0%{transform:scale(0) rotate(-20deg);opacity:0}25%{transform:scale(1.2) rotate(-8deg);opacity:1}70%{opacity:1}100%{transform:scale(1) rotate(-8deg) translateY(-30%);opacity:0}}
+
+/* ---------- Spatial ---------- */
+.t-spatial{--f-bg:radial-gradient(ellipse at 70% 20%,#1b2a5a 0%,transparent 45%),radial-gradient(ellipse at 20% 85%,#3a1648 0%,transparent 40%),#03040c;
+  --f-ink:#dbe9ff;--f-line:#7fd1ff;--f-axe:#7fd1ff2a;--f-pt:#03040c;--f-glow:0 0 10px rgba(127,209,255,.8);
+  --f-card:linear-gradient(160deg,rgba(20,40,80,.8),rgba(8,14,32,.85));--f-card-ink:#dbe9ff;--f-date:#ffcf6b;--f-tf:'Orbitron',sans-serif;--f-tw:400;--f-bf:'Exo 2',sans-serif;--f-ls:.04em;--f-passe:.45;
+  --f-tshadow:0 0 20px rgba(127,209,255,.6)}
+.t-spatial .deco{inset:0;background:
+  radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 140px,#cfe3ff,transparent),
+  radial-gradient(1.5px 1.5px at 160px 60px,#fff,transparent),radial-gradient(1px 1px at 230px 180px,#fff,transparent),
+  radial-gradient(2px 2px at 300px 100px,#ffe9b0,transparent),radial-gradient(1px 1px at 50px 220px,#fff,transparent),
+  radial-gradient(1px 1px at 270px 20px,#cfe3ff,transparent),radial-gradient(1.5px 1.5px at 120px 250px,#fff,transparent);
+  background-size:320px 280px;background-position-x:var(--px,0)}
+.t-spatial .carte{border:1px solid rgba(127,209,255,.45);border-radius:calc(var(--u)*.01);box-shadow:0 0 20px rgba(127,209,255,.15)}
+.t-spatial .carte::before,.t-spatial .carte::after{content:"";position:absolute;width:calc(var(--u)*.05);height:calc(var(--u)*.05);border:2px solid #7fd1ff}
+.t-spatial .carte::before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.t-spatial .carte::after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.t-spatial .curseur{transform:translate(-50%,-50%) rotate(45deg)}
+.t-spatial .ev.cur .pt{animation:balise 1.6s ease-out infinite}
+@keyframes balise{0%{box-shadow:0 0 0 0 rgba(127,209,255,.7)}100%{box-shadow:0 0 0 calc(var(--u)*.06) rgba(127,209,255,0)}}
+.t-spatial .ev.anim .carte{animation:holo .9s ease-out both}
+@keyframes holo{0%{opacity:0;transform:scaleY(.02);filter:brightness(3)}40%{opacity:1;transform:scaleY(1);filter:brightness(1.8)}100%{filter:none}}
+
+/* ---------- Tableau noir ---------- */
+.t-tableau{--f-bg:radial-gradient(ellipse at 30% 30%,#3c5f4f 0%,#2b4a3d 50%,#1f3a2f 100%);--f-ink:#f1efe6;--f-line:#f1efe6;--f-axe:#f1efe633;--f-pt:#2b4a3d;
+  --f-card:transparent;--f-card-ink:#f1efe6;--f-date:#ffe27a;--f-tf:'Baloo 2',system-ui,sans-serif;--f-bf:'Baloo 2',system-ui,sans-serif;--f-tw:600;--f-passe:.5}
+.t-tableau .deco{background:radial-gradient(ellipse at 70% 60%,rgba(255,255,255,.07),transparent 40%),radial-gradient(ellipse at 20% 80%,rgba(255,255,255,.05),transparent 30%);border:1.2cqh solid #6b4a2b;inset:0}
+.t-tableau .axe,.t-tableau .plein{background:repeating-linear-gradient(90deg,var(--f-line) 0 calc(var(--u)*.06),transparent calc(var(--u)*.06) calc(var(--u)*.08));opacity:.9}
+.t-tableau .axe{opacity:.2}
+.t-tableau .carte{border:calc(var(--u)*.007) solid rgba(241,239,230,.8);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;text-shadow:0 0 1px rgba(255,255,255,.5)}
+.t-tableau .titre-ecran h2{color:#f1efe6;text-decoration:underline;text-decoration-color:#ffe27a;text-underline-offset:.15em}
+.t-tableau .ev.anim .carte{animation:craie 1.2s linear both}
+@keyframes craie{0%{clip-path:inset(0 100% 0 0)}100%{clip-path:inset(0 0 0 0)}}
+
+/* ---------- Journal ---------- */
+.t-journal{--f-bg:#ece5d5;--f-ink:#1a1a1a;--f-line:#1a1a1a;--f-axe:#1a1a1a22;--f-pt:#ece5d5;--f-card:#fbf8f0;--f-card-ink:#1a1a1a;--f-date:#a3161a;
+  --f-tf:'Abril Fatface',Georgia,serif;--f-tw:400;--f-bf:'Source Serif 4',Georgia,serif;--f-passe:.6}
+.t-journal .deco{background:repeating-linear-gradient(90deg,transparent 0 calc(33.3cqw - 1px),rgba(0,0,0,.06) calc(33.3cqw - 1px) 33.3cqw),radial-gradient(rgba(0,0,0,.05) 1px,transparent 1.2px) 0 0/5px 5px}
+.t-journal .carte{box-shadow:0 calc(var(--u)*.01) calc(var(--u)*.03) rgba(0,0,0,.25);border-radius:2px;border-top:calc(var(--u)*.012) double #1a1a1a}
+.t-journal .ev:nth-child(odd) .carte{transform:rotate(-1.4deg)}
+.t-journal .ev:nth-child(even) .carte{transform:rotate(1.2deg)}
+.t-journal .d{text-transform:uppercase;font-size:calc(var(--u)*.06);border-bottom:1px solid #1a1a1a;padding-bottom:calc(var(--u)*.015)}
+.t-journal .titre-ecran h2{text-transform:uppercase;border-top:calc(var(--u)*.012) double #1a1a1a;border-bottom:calc(var(--u)*.012) double #1a1a1a;padding:.1em 0}
+.t-journal .ev.anim .carte{animation:tombe .8s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes tombe{0%{transform:translateY(-40cqh) rotate(-12deg);opacity:0}60%{opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  .frise{--dur:.01s}
+  .frise .ev.anim .carte,.frise .onom{animation:none!important}
+}
+
+/* ---------- Projection ---------- */
+#scene{position:fixed;inset:0;z-index:50;display:none;background:#000}
+#scene.on{display:block}
+#scene .frise{position:absolute;inset:0;cursor:pointer}
+#scene .bas{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:10;
+  background:rgba(0,0,0,.6);padding:6px 8px;border-radius:12px;transition:opacity .4s;color:#ddd;font-size:13px;max-width:calc(100vw - 20px);flex-wrap:wrap;justify-content:center}
+#scene.calme .bas{opacity:0;pointer-events:none}
+#scene.calme{cursor:none}
+#scene .bas .btn{background:#222;border-color:#444;color:#eee;padding:6px 11px}
+#scene .bas .btn[aria-pressed=true]{background:#1f6f5c;border-color:#5cc4a6}
+#scene.on~#msgBox{bottom:auto;top:18px}
+</style>
+</head>
+<body>
+<header class="haut">
+  <a class="retour" href="https://antoninatger.com/jeux/frise-animee/" data-t-title="retourTitre" data-t="retour">← antoninatger.com</a>
+  <h1 data-t="titreOutil">Frise animée</h1>
+  <button class="btn mini" id="annuler" disabled data-t="annuler">↶ Annuler</button>
+  <button class="btn mini" id="langue" title="English / Français">EN</button>
+</header>
+
+<main class="page">
+<div class="col-g">
+  <section class="bloc">
+    <h2 data-t="hFrise">1. La frise</h2>
+    <label class="lab"><span data-t="lTitre">Titre</span><input type="text" id="titre" maxlength="80"></label>
+    <label class="lab"><span data-t="lSous">Sous-titre (facultatif)</span><input type="text" id="sous" maxlength="120"></label>
+  </section>
+
+  <section class="bloc">
+    <h2 data-t="hEv">2. Les événements</h2>
+    <div class="ligne" style="margin:0 0 4px">
+      <button class="btn mini" id="importerDoc" data-t="importerDoc">📄 Importer un Word ou un PDF</button>
+      <button class="btn mini" id="importer" data-t="importer">Coller une liste</button>
+    </div>
+    <div id="liste"></div>
+    <div class="ligne">
+      <button class="btn prim mini" id="ajout" data-t="ajout">+ Un événement</button>
+    </div>
+    <p class="aide" data-t="aideDates">La date s'écrit comme on veut : « 1789 », « 14 juillet 1789 », « 14/07/1789 », « 52 av. J.-C. », « XVe siècle », « il y a 65 millions d'années ». La frise range tout dans l'ordre.</p>
+  </section>
+
+  <section class="bloc">
+    <h2 data-t="hAmb">3. L'ambiance</h2>
+    <div class="tuiles" id="tuiles"></div>
+    <div class="lab" style="margin-top:12px"><span data-t="lEsp">Espacement</span>
+      <div class="seg" id="esp">
+        <button class="btn mini" data-v="regulier" data-t="espReg">Régulier</button>
+        <button class="btn mini" data-v="dates" data-t="espDates">Au rythme des dates</button>
+        <button class="btn mini" data-v="main" data-t="espMain">À la main</button>
+      </div>
+    </div>
+    <p class="aide" data-t="aideEsp"></p>
+    <label class="lab"><span data-t="lAuto">Lecture automatique : un événement toutes les</span>
+      <select id="auto"><option value="3">3 s</option><option value="5">5 s</option><option value="8">8 s</option><option value="12">12 s</option></select></label>
+  </section>
+
+  <section class="bloc">
+    <h2 data-t="hFich">4. Garder, partager</h2>
+    <select id="exemples"><option value="" data-t="exemples">Charger un exemple…</option></select>
+    <div class="ligne">
+      <button class="btn mini" id="lien" data-t="lien">Copier le lien</button>
+      <button class="btn mini" id="sauver" data-t="sauver">Enregistrer</button>
+      <button class="btn mini" id="ouvrir" data-t="ouvrir">Ouvrir</button>
+      <button class="btn mini warn" id="effacer" data-t="effacer">Tout effacer</button>
+    </div>
+    <p class="aide" data-t="aideFich">Le lien contient toute la frise (sans les images) : à envoyer aux élèves ou à un collègue. « Enregistrer » crée un petit fichier avec les images. Rien n'est envoyé sur Internet.</p>
+  </section>
+</div>
+
+<div class="col-d">
+  <div class="apercu-boite" id="apercu" role="button" tabindex="0" data-t-aria="lancer"></div>
+  <div class="actions">
+    <button class="btn prim gros" id="jouer" data-t="lancer">Lancer la frise ▶</button>
+  </div>
+  <section class="galerie">
+    <h2 data-t="hGal">Voir un exemple en projection</h2>
+    <p class="aide" data-t="aideGal">Un clic lance la frise, sans toucher à la vôtre. Pour partir d'un exemple et le modifier : « Charger un exemple », à gauche.</p>
+    <div class="gal" id="gal"></div>
+  </section>
+  <p class="astuce" data-t-html="astuce">En classe : <kbd>→</kbd> ou un clic pour avancer, <kbd>←</kbd> pour revenir, <kbd>A</kbd> lecture automatique, <kbd>V</kbd> vue d'ensemble, <kbd>Échap</kbd> pour quitter. Une télécommande de présentation marche aussi.</p>
+</div>
+</main>
+
+<dialog id="dlgImport">
+  <h3 data-t="impTitre">Coller une liste</h3>
+  <p class="aide" style="margin:0 0 8px" data-t-html="impAide">Un événement par ligne : <b>date : événement</b>. Ajoutez un détail après un point-virgule. On peut aussi coller deux ou trois colonnes copiées d'un tableur.</p>
+  <div class="ligne" style="margin:0 0 8px;justify-content:flex-start"><button class="btn prim" id="impFichier" data-t="impFichier">📄 Word, PDF, photo ou texte</button><span class="aide" style="margin:0" data-t="impOu">ou collez le texte ci-dessous</span></div>
+  <p class="aide imp-etat" id="impEtat" role="status" hidden></p>
+  <textarea id="impTxt"></textarea>
+  <div class="ligne"><label><input type="checkbox" id="impRempl" checked> <span data-t="impRempl">Remplacer les événements</span></label><span style="flex:1"></span><button class="btn" id="impNon" data-t="annulerSimple">Annuler</button><button class="btn prim" id="impOui" data-t="impOui">Créer la frise</button></div>
+</dialog>
+
+<div id="scene" aria-hidden="true">
+  <div id="sceneFrise"></div>
+  <div class="bas">
+    <button class="btn" id="sPrec" aria-label="Précédent">◀</button>
+    <button class="btn" id="sSuiv" aria-label="Suivant">▶</button>
+    <button class="btn" id="sAuto" aria-pressed="false" data-t="auto">Auto</button>
+    <button class="btn" id="sVue" data-t="vue">Vue d'ensemble</button>
+    <button class="btn" id="sPlein" data-t="plein">Plein écran</button>
+    <button class="btn" id="sFin" data-t="quitter">Quitter (Échap)</button>
+  </div>
+</div>
+<div id="msgBox" role="status"></div>
+<input type="file" id="fImg" accept="image/*">
+<input type="file" id="fJson" accept=".json,application/json">
+<input type="file" id="fDoc" accept=".docx,.pdf,.txt,.csv,image/*,application/pdf">
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------------- Langue ---------------- */
+const T={
+fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour sur antoninatger.com',annuler:'↶ Annuler',annulerSimple:'Annuler',
+  hFrise:'1. La frise',hGal:'Voir un exemple en projection',aideGal:"Un clic lance la frise, sans toucher à la vôtre. Pour partir d'un exemple et le modifier : « Charger un exemple », à gauche.",lTitre:'Titre',lSous:'Sous-titre (facultatif)',hEv:'2. Les événements',ajout:'+ Un événement',importer:'Coller une liste',
+  aideDates:"La date s'écrit comme on veut : « 1789 », « 14 juillet 1789 », « 14/07/1789 », « 52 av. J.-C. », « XVe siècle », « il y a 65 millions d'années ». La frise range tout dans l'ordre.",
+  hAmb:"3. L'ambiance",lEsp:'Espacement',espReg:'Régulier',espDates:'Au rythme des dates',espMain:'À la main',lEcart:'Écart avec le précédent',aideEsp:"« Au rythme des dates » : les écarts sont proportionnels ; un écart démesuré est coupé (//) avec sa durée écrite. « À la main » : vous réglez l'écart de chaque événement avec une glissière.",lAuto:'Lecture automatique : un événement toutes les',
+  hFich:'4. Garder, partager',exemples:'Charger un exemple…',lien:'Copier le lien',sauver:'Enregistrer',ouvrir:'Ouvrir',effacer:'Tout effacer',
+  aideFich:"Le lien contient toute la frise (sans les images) : à envoyer aux élèves ou à un collègue. « Enregistrer » crée un petit fichier avec les images. Rien n'est envoyé sur Internet.",
+  lancer:'Lancer la frise ▶',astuce:"En classe : <kbd>→</kbd> ou un clic pour avancer, <kbd>←</kbd> pour revenir, <kbd>A</kbd> lecture automatique, <kbd>V</kbd> vue d'ensemble, <kbd>Échap</kbd> pour quitter. Une télécommande de présentation marche aussi.",
+  impTitre:'Importer des événements',impAide:"Un document avec des dates (tableau, liste, texte suivi…) : la frise repère les dates et ce qui va avec. Ou collez une liste, un événement par ligne : <b>date : événement</b>, avec un détail après un point-virgule.",
+  importerDoc:'📄 Importer un Word ou un PDF',impFichier:'📄 Word, PDF, photo ou texte',impOu:'ou collez le texte ci-dessous',impLecture:'Lecture du document…',impOcr:'Lecture du texte de la photo…',
+  impTrouve:'{n} événements trouvés. Vérifiez la liste ci-dessous (une ligne par événement), corrigez si besoin, puis « Créer la frise ».',impTitreTrouve:'Titre repéré : « {t} ».',
+  impAucun:"Aucune date trouvée. Chaque événement doit commencer par sa date (ou avoir sa date dans une colonne d'un tableau).",impFormat:'Format non pris en charge : Word (.docx), PDF, photo, texte ou tableur (.csv).',
+  impReseau:'Il faut une connexion Internet pour lire un document Word, PDF ou une photo.',impErreur:"Le document n'a pas pu être lu. Pour une photo, essayez-en une plus nette et bien droite.",
+  impRempl:'Remplacer les événements',impOui:'Créer la frise',impPh:"1789 : Prise de la Bastille ; Le peuple de Paris s'empare de la forteresse\n1792 : Proclamation de la République\n1804 : Napoléon empereur",
+  auto:'Auto',vue:"Vue d'ensemble",plein:'Plein écran',quitter:'Quitter (Échap)',
+  phDate:'Date (ex. 1789)',phTitre:"Ce qui s'est passé",phTexte:'Détail (facultatif)',phEmo:'Emoji',image:'🖼 Image',retirer:'Retirer',suppr:'Supprimer cet événement',
+  dateKo:"Date non reconnue : l'événement reste à sa place dans la liste.",videListe:'Aucun événement pour l’instant. Ajoutez-en un, collez une liste ou chargez un exemple.',
+  titreDefaut:'Ma frise',apVide:'Vos événements apparaîtront ici',commencer:'→ pour commencer',fictif:'',
+  mVide:"Ajoutez d'abord un événement.",mLien:'Lien copié : il ouvre la frise telle quelle.',mLienImg:'Lien copié. Les images ne passent pas par le lien : utilisez « Enregistrer » pour les garder.',
+  mEff:'Effacer toute la frise ?',mImgGros:'Image trop lourde.',mStock:'Trop gros pour être gardé dans le navigateur : pensez à « Enregistrer ».',mOuvrirKo:"Ce fichier n'est pas une frise.",
+  mPlein:'Appuyez sur F pour le plein écran.',onom:['BOUM !','PAF !','ZIP !','WOUAH !','TCHAC !','VLAN !'],
+  amb:{parchemin:'Parchemin',neon:'Néon',bd:'BD',spatial:'Spatial',tableau:'Tableau noir',journal:'Journal'}},
+en:{titreOutil:'Animated timeline',retour:'← antoninatger.com',retourTitre:'Back to antoninatger.com',annuler:'↶ Undo',annulerSimple:'Cancel',
+  hFrise:'1. The timeline',hGal:'Watch an example',aideGal:'One click plays the timeline without touching yours. To start from an example and edit it: “Load an example”, on the left.',lTitre:'Title',lSous:'Subtitle (optional)',hEv:'2. Events',ajout:'+ Add an event',importer:'Paste a list',
+  aideDates:'Write dates any way you like: “1789”, “July 14, 1789”, “1789-07-14”, “52 BC”, “15th century”, “65 million years ago”. The timeline puts everything in order.',
+  hAmb:'3. Style',lEsp:'Spacing',espReg:'Even',espDates:'To scale',espMain:'By hand',lEcart:'Gap from the previous one',aideEsp:'“To scale”: gaps are proportional; a huge gap is cut (//) with its length written on it. “By hand”: you set the gap before each event with a slider.',lAuto:'Autoplay: one event every',
+  hFich:'4. Save, share',exemples:'Load an example…',lien:'Copy link',sauver:'Save',ouvrir:'Open',effacer:'Clear all',
+  aideFich:'The link holds the whole timeline (without images): send it to students or a colleague. “Save” creates a small file that keeps the images. Nothing is sent over the Internet.',
+  lancer:'Play the timeline ▶',astuce:'In class: <kbd>→</kbd> or a click to move on, <kbd>←</kbd> to go back, <kbd>A</kbd> autoplay, <kbd>V</kbd> overview, <kbd>Esc</kbd> to quit. A presentation clicker works too.',
+  impTitre:'Import events',impAide:'A document with dates (table, list, running text…): the timeline finds the dates and what goes with them. Or paste a list, one event per line: <b>date: event</b>, with a detail after a semicolon.',
+  importerDoc:'📄 Import a Word file or PDF',impFichier:'📄 Word, PDF, photo or text',impOu:'or paste the text below',impLecture:'Reading the document…',impOcr:'Reading the text in the photo…',
+  impTrouve:'{n} events found. Check the list below (one line per event), fix it if needed, then “Build the timeline”.',impTitreTrouve:'Title found: “{t}”.',
+  impAucun:'No dates found. Each event must start with its date (or have its date in a table column).',impFormat:'Unsupported format: Word (.docx), PDF, photo, text or spreadsheet (.csv).',
+  impReseau:'An Internet connection is needed to read a Word document, a PDF or a photo.',impErreur:'The document could not be read. For a photo, try a sharper, straight one.',
+  impRempl:'Replace the events',impOui:'Build the timeline',impPh:'1969: Apollo 11 lands on the Moon; Neil Armstrong walks on the Moon\n1990: Hubble telescope launched\n1998: First module of the ISS',
+  auto:'Auto',vue:'Overview',plein:'Full screen',quitter:'Quit (Esc)',
+  phDate:'Date (e.g. 1789)',phTitre:'What happened',phTexte:'Detail (optional)',phEmo:'Emoji',image:'🖼 Image',retirer:'Remove',suppr:'Delete this event',
+  dateKo:'Date not recognised: the event keeps its place in the list.',videListe:'No events yet. Add one, paste a list or load an example.',
+  titreDefaut:'My timeline',apVide:'Your events will appear here',commencer:'→ to start',fictif:'',
+  mVide:'Add an event first.',mLien:'Link copied: it opens the timeline as it is.',mLienImg:'Link copied. Images do not travel in the link: use “Save” to keep them.',
+  mEff:'Clear the whole timeline?',mImgGros:'Image too large.',mStock:'Too large to keep in the browser: remember to “Save”.',mOuvrirKo:'This file is not a timeline.',
+  mPlein:'Press F for full screen.',onom:['BOOM!','POW!','ZAP!','WOW!','BAM!','WHAM!'],
+  amb:{parchemin:'Parchment',neon:'Neon',bd:'Comic',spatial:'Space',tableau:'Chalkboard',journal:'Newspaper'}}
+};
+let LANG=(()=>{ const q=new URLSearchParams(location.search).get('lang'); if(q==='en'||q==='fr') return q;
+  try{ const s=localStorage.getItem('frise:lang'); if(s) return s; }catch(e){} return /^en/i.test(navigator.language||'')?'en':'fr'; })();
+const t=k=>T[LANG][k]??T.fr[k]??k;
+function traduire(){
+  document.documentElement.lang=LANG;
+  document.title=t('titreOutil')+(LANG==='fr'?' · Jeux et ressources pédagogiques':' · Educational games and resources');
+  document.querySelectorAll('[data-t]').forEach(e=>e.textContent=t(e.dataset.t));
+  document.querySelectorAll('[data-t-html]').forEach(e=>e.innerHTML=t(e.dataset.tHtml));
+  document.querySelectorAll('[data-t-title]').forEach(e=>e.title=t(e.dataset.tTitle));
+  document.querySelectorAll('[data-t-aria]').forEach(e=>e.setAttribute('aria-label',t(e.dataset.tAria)));
+  $('langue').textContent=LANG==='fr'?'EN':'FR';
+  $('impTxt').placeholder=t('impPh');
+  $('titre').placeholder=t('titreDefaut');
+  remplirExemples(); galerie();
+}
+
+/* ---------------- Lecture des dates ---------------- */
+const MOIS={janv:1,janvier:1,jan:1,january:1,fevr:2,fevrier:2,feb:2,february:2,mars:3,mar:3,march:3,avr:4,avril:4,apr:4,april:4,mai:5,may:5,
+  juin:6,jun:6,june:6,juil:7,juillet:7,jul:7,july:7,aout:8,aug:8,august:8,sept:9,septembre:9,sep:9,september:9,oct:10,octobre:10,october:10,
+  nov:11,novembre:11,november:11,dec:12,decembre:12,december:12};
+function romain(s){ const v={i:1,v:5,x:10,l:50,c:100,m:1000}; let n=0; for(let i=0;i<s.length;i++){ const a=v[s[i]],b=v[s[i+1]]||0; n+= a<b?-a:a; } return n; }
+function lireDate(brut){
+  let s=String(brut||'').toLowerCase().normalize('NFD').replace(/\p{M}/gu,'').replace(/[\u00a0\u202f]/g,' ').trim();
+  if(!s) return NaN;
+  const avJC=/\bav(ant)?\.?\s*(j|n|notre)|\bbc\b|\bbce\b|^\s*-\s*\d/.test(s);
+  // « il y a 65 millions d'années », « 13,8 milliards d'années »
+  let m=/(\d+(?:[.,]\d+)?)\s*(millions?|milliards?|billions?|thousand|mille)\b/.exec(s);
+  if(m){ const n=parseFloat(m[1].replace(',','.')); const k=/^mil+i?ar|^billion/.test(m[2])?1e9:/^mille|^thousand/.test(m[2])?1e3:1e6; return 2025-n*k; }
+  m=/il y a\s+(\d[\d\s]*)\s*ans|(\d[\d\s]*)\s*years? ago/.exec(s);
+  if(m) return 2025-parseInt((m[1]||m[2]).replace(/\s/g,''),10);
+  // Siècles : « XVe siècle », « 15e siècle », « 15th century »
+  m=/\b([ivxlcm]+|\d{1,2})\s*(?:e|eme|er|re|th|st|nd|rd)?\s*(?:siecle|century)/.exec(s);
+  if(m){ const c=/\d/.test(m[1])?+m[1]:romain(m[1]); return avJC ? -(c*100-50) : (c-1)*100+50; }
+  let j=0,mo=0,a=null;
+  if((m=/(-?\d{1,6})-(\d{1,2})-(\d{1,2})/.exec(s))){ a=+m[1]; mo=+m[2]; j=+m[3]; }
+  else if((m=/(\d{1,2})[\/.](\d{1,2})[\/.](\d{1,6})/.exec(s))){ a=+m[3]; if(LANG==='en'&&+m[1]<=12){ mo=+m[1]; j=+m[2]; } else { j=+m[1]; mo=+m[2]; } }
+  else if((m=/(\d{1,2})[\/.](\d{3,6})/.exec(s))){ mo=+m[1]; a=+m[2]; }
+  else {
+    const mots=s.match(/[a-z]+/g)||[]; for(const w of mots){ if(MOIS[w]){ mo=MOIS[w]; break; } }
+    const nums=(s.match(/\d+/g)||[]).map(Number);
+    if(!nums.length) return NaN;
+    if(mo&&nums.length>=2){ const iy=nums.reduce((b,n,i)=>String(n).length>=String(nums[b]).length?i:b,0); a=nums[iy]; j=nums.find((n,i)=>i!==iy&&n>=1&&n<=31)||0; }
+    else a=nums[0];
+  }
+  if(a==null||isNaN(a)) return NaN;
+  if(avJC&&a>0) a=-a;
+  return a+(mo?(mo-1)/12:0)+(j?(j-1)/372:0);
+}
+
+/* ---------------- Exemples ---------------- */
+const E=(date,titre,texte,emoji)=>({date,titre,texte:texte||'',emoji:emoji||''});
+const EXEMPLES={
+fr:{
+  info:{nom:"Histoire de l'information",d:{titre:"Histoire de l'information",sous:"De l'argile à l'IA",theme:'journal',ev:[
+    E('vers 3300 av. J.-C.','Les premières écritures','En Mésopotamie, on note des comptes sur des tablettes d’argile.','🏺'),
+    E('vers 1450','L’imprimerie de Gutenberg','Les caractères mobiles permettent de copier vite et beaucoup.','📜'),
+    E('30 mai 1631','La Gazette de Renaudot','Un des premiers journaux imprimés en France.','📰'),
+    E('août 1835','Le « Great Moon Hoax »','Un journal de New York raconte qu’on a découvert la vie sur la Lune. C’était faux.','🌙'),
+    E('30 octobre 1938','La Guerre des mondes à la radio','On a longtemps dit qu’elle avait semé la panique. La panique elle-même a été très exagérée par la presse.','📻'),
+    E('6 août 1991','Le Web devient public','Tim Berners-Lee met en ligne le premier site web ouvert à tous.','🌐'),
+    E('février 2004','Naissance de Facebook','Les réseaux sociaux changent la façon dont les informations circulent.','👍'),
+    E('30 novembre 2022','ChatGPT est ouvert au public','Produire du texte crédible ne coûte presque plus rien.','🤖')]}},
+  espace:{nom:'La conquête spatiale',d:{titre:'La conquête spatiale',sous:'De Spoutnik à James Webb',theme:'spatial',ev:[
+    E('4 octobre 1957','Spoutnik 1','Premier satellite artificiel, lancé par l’URSS.','🛰️'),
+    E('12 avril 1961','Youri Gagarine','Premier humain dans l’espace.','👨‍🚀'),
+    E('21 juillet 1969','Premiers pas sur la Lune','Neil Armstrong et Buzz Aldrin, mission Apollo 11.','🌕'),
+    E('19 avril 1971','Saliout 1','Première station spatiale.','🛸'),
+    E('24 avril 1990','Le télescope Hubble','Lancé en orbite autour de la Terre.','🔭'),
+    E('20 novembre 1998','La Station spatiale internationale','Lancement de son premier module.','🏗️'),
+    E('25 décembre 2021','Le télescope James Webb','Il observe les premières galaxies.','✨')]}},
+  revolution:{nom:'La Révolution française',d:{titre:'La Révolution française',sous:'1789-1799',theme:'parchemin',ev:[
+    E('5 mai 1789','Ouverture des États généraux','','🏛️'),
+    E('20 juin 1789','Le serment du Jeu de paume','Les députés jurent de donner une Constitution à la France.','✋'),
+    E('14 juillet 1789','La prise de la Bastille','','🏰'),
+    E('26 août 1789','La Déclaration des droits de l’homme et du citoyen','','📜'),
+    E('21 septembre 1792','Abolition de la royauté','','👑'),
+    E('21 janvier 1793','Exécution de Louis XVI','',''),
+    E('27 juillet 1794','Chute de Robespierre','Le 9 thermidor an II.',''),
+    E('9 novembre 1799','Coup d’État de Bonaparte','Le 18 brumaire an VIII : fin de la Révolution.','⚔️')]}},
+  jeux:{nom:'Le jeu vidéo',d:{titre:'Le jeu vidéo',sous:'De l’oscilloscope à Minecraft',theme:'neon',ev:[
+    E('octobre 1958','Tennis for Two','William Higinbotham affiche une partie de tennis sur un oscilloscope, dans un laboratoire américain.','🎾'),
+    E('novembre 1972','Pong','Le premier grand succès du jeu vidéo, dans les cafés et les salles d’arcade.','🏓'),
+    E('1978','Space Invaders','Des vagues d’extraterrestres à abattre : le jeu lance l’âge d’or de l’arcade.','👾'),
+    E('mai 1980','Pac-Man','Un héros rond, des fantômes, un labyrinthe.','🟡'),
+    E('13 septembre 1985','Super Mario Bros.','Le jeu de plateforme devient un genre à part entière.','🍄'),
+    E('21 avril 1989','La Game Boy','On joue partout, dans la poche.','🎮'),
+    E('27 février 1996','Pokémon Rouge et Vert','Il faut échanger avec les autres pour tout attraper.','⚡'),
+    E('17 mai 2009','Minecraft','Première version publique d’un jeu où l’on construit tout, bloc par bloc.','⛏️')]}},
+  vie:{nom:'L’histoire de la vie',d:{titre:'L’histoire de la vie',sous:'Des bactéries à nous',theme:'bd',esp:'dates',ev:[
+    E('il y a 3,5 milliards d’années','Les premières traces de vie','Des bactéries forment des stromatolithes dans les mers.','🦠'),
+    E('il y a 540 millions d’années','L’explosion cambrienne','En quelques millions d’années, apparaissent la plupart des grands groupes d’animaux.','🦐'),
+    E('il y a 230 millions d’années','Les premiers dinosaures','','🦕'),
+    E('il y a 66 millions d’années','La chute d’un astéroïde','Les dinosaures disparaissent, sauf ceux qui ont donné les oiseaux.','☄️'),
+    E('il y a 7 millions d’années','Toumaï','Un des plus anciens fossiles connus de la lignée humaine, trouvé au Tchad.','💀'),
+    E('il y a 3,2 millions d’années','Lucy','Une australopithèque découverte en Éthiopie en 1974.','🦴'),
+    E('il y a 300 000 ans','Homo sapiens','Les plus anciens fossiles connus de notre espèce, au Maroc.','🧑')]}},
+  sciences:{nom:'Les grandes découvertes',d:{titre:'Les grandes découvertes',sous:'Petite histoire des sciences',theme:'tableau',ev:[
+    E('vers 300 av. J.-C.','Les Éléments d’Euclide','Le livre de géométrie le plus lu de l’histoire.','📐'),
+    E('1543','Copernic','La Terre tourne autour du Soleil, et non l’inverse.','☀️'),
+    E('janvier 1610','Galilée et sa lunette','Il découvre quatre lunes qui tournent autour de Jupiter.','🔭'),
+    E('1687','Newton','La même loi explique la chute d’une pomme et le mouvement de la Lune.','🍎'),
+    E('24 novembre 1859','Darwin','L’Origine des espèces explique l’évolution par la sélection naturelle.','🐢'),
+    E('8 novembre 1895','Les rayons X','Wilhelm Röntgen photographie l’intérieur du corps.','🩻'),
+    E('septembre 1928','La pénicilline','Alexander Fleming découvre le premier antibiotique.','🧫'),
+    E('25 avril 1953','La structure de l’ADN','Watson et Crick s’appuient sur les clichés de Rosalind Franklin.','🧬')]}},
+},
+en:{
+  info:{nom:'A history of information',d:{titre:'A history of information',sous:'From clay to AI',theme:'journal',ev:[
+    E('c. 3300 BC','The first writing','In Mesopotamia, accounts are recorded on clay tablets.','🏺'),
+    E('c. 1450','Gutenberg’s printing press','Movable type makes copying fast and cheap.','📜'),
+    E('May 30, 1631','Renaudot’s Gazette','One of the first printed newspapers in France.','📰'),
+    E('August 1835','The “Great Moon Hoax”','A New York paper claims life was found on the Moon. It was false.','🌙'),
+    E('October 30, 1938','The War of the Worlds on the radio','It was long said to have caused mass panic. The panic itself was largely exaggerated by newspapers.','📻'),
+    E('August 6, 1991','The Web goes public','Tim Berners-Lee puts the first public website online.','🌐'),
+    E('February 2004','Facebook is born','Social networks change how information spreads.','👍'),
+    E('November 30, 2022','ChatGPT opens to the public','Producing believable text now costs almost nothing.','🤖')]}},
+  espace:{nom:'The space race',d:{titre:'The space race',sous:'From Sputnik to James Webb',theme:'spatial',ev:[
+    E('October 4, 1957','Sputnik 1','First artificial satellite, launched by the USSR.','🛰️'),
+    E('April 12, 1961','Yuri Gagarin','First human in space.','👨‍🚀'),
+    E('July 21, 1969','First steps on the Moon','Neil Armstrong and Buzz Aldrin, Apollo 11 (UTC).','🌕'),
+    E('April 19, 1971','Salyut 1','The first space station.','🛸'),
+    E('April 24, 1990','The Hubble telescope','Launched into orbit around the Earth.','🔭'),
+    E('November 20, 1998','The International Space Station','Its first module is launched.','🏗️'),
+    E('December 25, 2021','The James Webb telescope','It observes the earliest galaxies.','✨')]}},
+  revolution:{nom:'The French Revolution',d:{titre:'The French Revolution',sous:'1789-1799',theme:'parchemin',ev:[
+    E('May 5, 1789','The Estates-General open','','🏛️'),
+    E('June 20, 1789','The Tennis Court Oath','The deputies swear to give France a constitution.','✋'),
+    E('July 14, 1789','The storming of the Bastille','','🏰'),
+    E('August 26, 1789','The Declaration of the Rights of Man and of the Citizen','','📜'),
+    E('September 21, 1792','The monarchy is abolished','','👑'),
+    E('January 21, 1793','Louis XVI is executed','',''),
+    E('July 27, 1794','The fall of Robespierre','9 Thermidor, Year II.',''),
+    E('November 9, 1799','Bonaparte’s coup','18 Brumaire, Year VIII: the end of the Revolution.','⚔️')]}},
+  jeux:{nom:'Video games',d:{titre:'Video games',sous:'From the oscilloscope to Minecraft',theme:'neon',ev:[
+    E('October 1958','Tennis for Two','William Higinbotham shows a game of tennis on an oscilloscope in a US laboratory.','🎾'),
+    E('November 1972','Pong','The first big video game hit, in bars and arcades.','🏓'),
+    E('1978','Space Invaders','Waves of aliens to shoot down: the golden age of arcades begins.','👾'),
+    E('May 1980','Pac-Man','A round hero, ghosts and a maze.','🟡'),
+    E('September 13, 1985','Super Mario Bros.','Platform games become a genre of their own.','🍄'),
+    E('April 21, 1989','The Game Boy','Games go everywhere, in your pocket.','🎮'),
+    E('February 27, 1996','Pokémon Red and Green','You have to trade with others to catch them all.','⚡'),
+    E('May 17, 2009','Minecraft','First public version of a game where you build everything, block by block.','⛏️')]}},
+  vie:{nom:'The history of life',d:{titre:'The history of life',sous:'From bacteria to us',theme:'bd',esp:'dates',ev:[
+    E('3.5 billion years ago','The first traces of life','Bacteria build stromatolites in the seas.','🦠'),
+    E('540 million years ago','The Cambrian explosion','Within a few million years, most major animal groups appear.','🦐'),
+    E('230 million years ago','The first dinosaurs','','🦕'),
+    E('66 million years ago','An asteroid strikes','The dinosaurs die out, except those that became birds.','☄️'),
+    E('7 million years ago','Toumaï','One of the oldest known fossils of the human lineage, found in Chad.','💀'),
+    E('3.2 million years ago','Lucy','An australopithecine discovered in Ethiopia in 1974.','🦴'),
+    E('300,000 years ago','Homo sapiens','The oldest known fossils of our species, in Morocco.','🧑')]}},
+  sciences:{nom:'Great discoveries',d:{titre:'Great discoveries',sous:'A short history of science',theme:'tableau',ev:[
+    E('c. 300 BC','Euclid’s Elements','The most widely read geometry book in history.','📐'),
+    E('1543','Copernicus','The Earth goes around the Sun, not the other way round.','☀️'),
+    E('January 1610','Galileo’s telescope','He discovers four moons orbiting Jupiter.','🔭'),
+    E('1687','Newton','The same law explains a falling apple and the motion of the Moon.','🍎'),
+    E('November 24, 1859','Darwin','On the Origin of Species explains evolution by natural selection.','🐢'),
+    E('November 8, 1895','X-rays','Wilhelm Röntgen photographs the inside of the body.','🩻'),
+    E('September 1928','Penicillin','Alexander Fleming discovers the first antibiotic.','🧫'),
+    E('April 25, 1953','The structure of DNA','Watson and Crick build on Rosalind Franklin’s images.','🧬')]}},
+}};
+function galerie(){
+  $('gal').innerHTML=Object.entries(EXEMPLES[LANG]).map(([k,v])=>`<button class="tuile t-${v.d.theme}" data-ex="${k}"><span class="ech"><b>${esc(v.d.titre)}</b><i>${v.d.ev[0].emoji||''}</i></span><span class="nom"><span>${esc(T[LANG].amb[v.d.theme])}</span><span aria-hidden="true">▶</span></span></button>`).join('');
+}
+$('gal').onclick=e=>{ const b=e.target.closest('[data-ex]'); if(!b) return; lancer(normaliser(structuredClone(EXEMPLES[LANG][b.dataset.ex].d))); };
+function remplirExemples(){ const s=$('exemples'); s.length=1; s.options[0].textContent=t('exemples');
+  Object.entries(EXEMPLES[LANG]).forEach(([k,v])=>s.add(new Option(v.nom,k))); }
+
+/* ---------------- État ---------------- */
+const THEMES=['parchemin','neon','bd','spatial','tableau','journal'];
+const CLE='frise:v2';
+let uid=0; const nid=()=>'e'+Date.now().toString(36)+(uid++);
+const VIDE=()=>({titre:'',sous:'',theme:'parchemin',esp:'regulier',auto:5,ev:[]});
+function normaliser(d){
+  d=Object.assign(VIDE(),d||{});
+  if(!THEMES.includes(d.theme)) d.theme='parchemin';
+  d.ev=(Array.isArray(d.ev)?d.ev:[]).map(e=>({id:e.id||nid(),date:String(e.date||''),titre:String(e.titre||''),texte:String(e.texte||''),emoji:String(e.emoji||''),img:e.img||null,ecart:Math.min(5,Math.max(1,+e.ecart||1))}));
+  return d;
+}
+let D=VIDE(), sel=null, hist=[];
+function charger(){
+  const h=location.hash.match(/[#&]f=([^&]+)/);
+  if(h){ try{ D=normaliser(JSON.parse(decodeURIComponent(escape(atob(h[1].replace(/-/g,'+').replace(/_/g,'/')))))); return true; }catch(e){} }
+  try{ const s=localStorage.getItem(CLE); if(s){ D=normaliser(JSON.parse(s)); return false; } }catch(e){}
+  /* Premier passage : une frise vide, trois lignes à remplir. Les exemples sont dans la galerie. */
+  D=VIDE(); D.ev=[0,1,2].map(()=>({id:nid(),date:'',titre:'',texte:'',emoji:'',img:null,ecart:1})); return false;
+}
+let tGarde; function garder(){ clearTimeout(tGarde); tGarde=setTimeout(()=>{ try{ localStorage.setItem(CLE,JSON.stringify(D)); }catch(e){ msg(t('mStock')); } },300); }
+function avant(){ hist.push(JSON.stringify(D)); if(hist.length>80) hist.shift(); $('annuler').disabled=false; }
+function annuler(){ if(!hist.length) return; D=normaliser(JSON.parse(hist.pop())); $('annuler').disabled=!hist.length; tout(); garder(); }
+function msg(s){ const b=$('msgBox'); b.textContent=s; b.classList.add('on'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('on'),3000); }
+
+/* Ordre chronologique : un événement à la date illisible reste après celui qui le précède dans la liste. */
+function ordonnes(d=D){
+  let prec=-Infinity;
+  const l=d.ev.map((e,i)=>{ const v=lireDate(e.date); const ok=!isNaN(v); const cle=ok?v:prec; if(ok) prec=v; return {e,v:ok?v:null,cle,i}; });
+  l.sort((a,b)=>a.cle-b.cle||a.i-b.i);
+  return l;
+}
+function trier(){ const avantIds=D.ev.map(e=>e.id).join(); D.ev=ordonnes().map(o=>o.e); return avantIds!==D.ev.map(e=>e.id).join(); }
+
+/* ---------------- Positions sur l'axe (en largeurs de carte) ---------------- */
+/* « Au rythme des dates » : l'écart typique (médian) vaut ~0,9 carte, les autres en proportion.
+   Un écart démesuré (10 millions d'années puis 2 ans) est coupé « // » avec sa durée écrite,
+   sinon il écraserait tout le reste ; un écart trop petit est élargi pour que les cartes ne se chevauchent pas. */
+function duree(a){
+  const fr=LANG==='fr', n=(x,d)=>x.toLocaleString(fr?'fr-FR':'en-GB',{maximumFractionDigits:d});
+  if(a>=1e9) return fr?`${n(a/1e9,1)} milliard${a>=2e9?'s':''} d’années`:`${n(a/1e9,1)} billion years`;
+  if(a>=1e6) return fr?`${n(a/1e6,1)} million${a>=2e6?'s':''} d’années`:`${n(a/1e6,1)} million years`;
+  if(a>=1.5) return fr?`${n(Math.round(a),0)} ans`:`${n(Math.round(a),0)} years`;
+  const m=Math.round(a*12); return m>=2?(fr?`${m} mois`:`${m} months`):(fr?'quelques jours':'a few days');
+}
+function positions(l,esp){
+  const n=l.length, xs=[]; xs.coupes={};
+  const vals=l.map(o=>o.v).filter(v=>v!=null);
+  if(esp==='main'){ l.forEach((o,i)=>{ if(!i) return xs.push(0); let x=xs[i-1]+.62*(o.e.ecart||1); if(i>1) x=Math.max(x,xs[i-2]+1.08); xs.push(x); }); return xs; }
+  if(esp!=='dates'||vals.length<2){ for(let i=0;i<n;i++) xs.push(i*.62); return xs; }
+  let last=vals[0]; const v=l.map(o=>last=(o.v??last));
+  const ecarts=[]; for(let i=1;i<n;i++) if(v[i]>v[i-1]) ecarts.push(v[i]-v[i-1]);
+  ecarts.sort((a,b)=>a-b); const med=ecarts.length?ecarts[Math.floor((ecarts.length-1)/2)]:1, k=.9/med, MAX=2.4;
+  for(let i=0;i<n;i++){
+    if(!i){ xs.push(0); continue; }
+    let g=(v[i]-v[i-1])*k;
+    if(g>MAX){ g=MAX; xs.coupes[i]=duree(v[i]-v[i-1]); }
+    let x=xs[i-1]+g; x=Math.max(x,xs[i-1]+.58); if(i>1) x=Math.max(x,xs[i-2]+1.08); xs.push(x);
+  }
+  return xs;
+}
+
+/* ---------------- Le composant frise ---------------- */
+class Frise{
+  constructor(boite){ this.boite=boite; this.pas=-1; this.n=0; }
+  construire(d){
+    this.d=d; const l=ordonnes(d).filter(o=>o.e.date.trim()||o.e.titre.trim()||o.e.texte.trim()||o.e.emoji.trim()||o.e.img), xs=positions(l,d.esp); this.l=l; this.xs=xs; this.n=l.length;
+    const a0=(xs[0]||0)-1.6, a1=(xs[xs.length-1]||0)+1.6; this.a0=a0; this.a1=a1;
+    const marq={parchemin:'🪶',spatial:'🚀'}[d.theme]||'';
+    const evs=l.map((o,i)=>{ const e=o.e;
+      return `<div class="ev ${i%2?'dessous':'dessus'}" style="--x:${xs[i]}" data-i="${i}">${xs.coupes&&xs.coupes[i]?`<span class="coupe" style="--g:${xs[i]-xs[i-1]}"><b>//</b><small>${esc(xs.coupes[i])}</small></span>`:''}<span class="tige"></span><span class="pt"></span>
+        <div class="carte">${e.emoji?`<span class="em">${esc(e.emoji)}</span>`:''}<div class="d">${esc(e.date)}</div>${e.img?`<img src="${e.img}" alt="">`:''}${e.titre?`<h3>${esc(e.titre)}</h3>`:''}${e.texte?`<p>${esc(e.texte)}</p>`:''}</div></div>`; }).join('');
+    this.boite.innerHTML=`<div class="frise t-${d.theme} titre"><div class="deco"></div>
+      <div class="piste" style="--a0:${a0};--a1:${a1};--fx:${a0}"><span class="sonde"></span><div class="axe"></div><div class="plein"></div>${marq?`<span class="curseur">${marq}</span>`:''}${evs}</div>
+      <div class="titre-ecran"><h2>${esc(d.titre||t('titreDefaut'))}</h2>${d.sous||!l.length?`<p>${esc(d.sous||t('apVide'))}</p>`:''}</div>
+      <div class="compteur"></div></div>`;
+    this.f=this.boite.firstChild; this.piste=this.f.querySelector('.piste'); this.deco=this.f.querySelector('.deco');
+    this.evs=[...this.f.querySelectorAll('.ev')];
+    this.pas=-1; this.placer(false);
+  }
+  u(){ return this.f.querySelector('.sonde').offsetWidth||1; }
+  /* pas : -1 = écran titre, 0..n-1 = événements, n = vue d'ensemble */
+  aller(p,{anim=true,instant=false}={}){
+    p=Math.max(-1,Math.min(this.n,p)); const avant=this.pas; this.pas=p;
+    this.f.classList.toggle('titre',p===-1); this.f.classList.toggle('vue',p===this.n);
+    this.evs.forEach((ev,i)=>{
+      const vis=p===this.n ? true : i<=p;
+      ev.classList.toggle('vis',vis); ev.classList.toggle('cur',i===p);
+      if(i===p && anim && p>avant){ ev.classList.remove('anim'); void ev.offsetWidth; ev.classList.add('anim'); if(this.d.theme==='bd') this.onom(ev); }
+      else if(i!==p) ev.classList.remove('anim');
+    });
+    this.f.querySelector('.compteur').textContent=p>=0&&p<this.n?`${p+1} / ${this.n}`:'';
+    this.placer(!instant);
+  }
+  placer(transition=true){
+    if(!this.f) return;
+    const u=this.u(), W=this.f.clientWidth, H=this.f.clientHeight, p=this.pas, xs=this.xs, n=this.n;
+    if(!transition){ this.piste.style.transition='none'; this.deco.style.transition='none'; }
+    let tx, s=1, fx;
+    if(p===n && n){ const x0=xs[0]-.6, x1=xs[n-1]+.6, larg=(x1-x0)*u;
+      s=Math.min(1,(W*.94)/larg,(H*.9)/(this.hauteurMax()||H)); tx=W/2-((x0+x1)/2)*u*s; fx=xs[n-1]; }
+    else if(p<0){ tx=W/2-((xs[0]||0)-1.1)*u; fx=this.a0; }
+    else { tx=W/2-xs[p]*u; fx=xs[p]; }
+    this.piste.style.transform=`translateX(${tx}px) scale(${s})`;
+    this.piste.style.setProperty('--fx',fx);
+    this.f.style.setProperty('--px',(tx*.3)+'px');
+    if(!transition){ void this.piste.offsetWidth; this.piste.style.transition=''; this.deco.style.transition=''; }
+  }
+  hauteurMax(){ let h=0; this.evs.forEach(ev=>{ const c=ev.querySelector('.carte'); h=Math.max(h,c.offsetHeight); }); return 2*(h+this.u()*.14); }
+  onom(ev){ const w=t('onom'), o=document.createElement('span'); o.className='onom'; o.textContent=w[Math.floor(Math.random()*w.length)];
+    const bas=ev.classList.contains('dessous'); o.style.left='calc(var(--u)*.3)'; o.style[bas?'top':'bottom']='calc(var(--u)*-.02)';
+    ev.appendChild(o); setTimeout(()=>o.remove(),1400); }
+}
+
+/* ---------------- Éditeur ---------------- */
+function tuiles(){
+  $('tuiles').innerHTML=THEMES.map(th=>`<button class="tuile t-${th}" data-th="${th}" aria-pressed="${D.theme===th}"><span class="ech"><b>1789</b></span><span class="nom">${esc(T[LANG].amb[th])}</span></button>`).join('');
+}
+$('tuiles').onclick=e=>{ const b=e.target.closest('.tuile'); if(!b) return; avant(); D.theme=b.dataset.th; tuiles(); apercu(true); garder(); };
+$('esp').onclick=e=>{ const b=e.target.closest('[data-v]'); if(!b) return; avant(); D.esp=b.dataset.v; regl(); liste(); apercu(); garder(); };
+$('auto').onchange=()=>{ D.auto=+$('auto').value; garder(); };
+function regl(){ [...$('esp').children].forEach(b=>b.setAttribute('aria-pressed',D.esp===b.dataset.v)); $('auto').value=String(D.auto); }
+
+function liste(){
+  const L=$('liste');
+  if(!D.ev.length){ L.innerHTML=`<div class="vide-liste">${esc(t('videListe'))}</div>`; return; }
+  L.innerHTML=D.ev.map((e,i)=>{ const ko=e.date.trim()&&isNaN(lireDate(e.date));
+    return `<div class="item${sel===e.id?' choisi':''}" data-id="${e.id}">
+      <div class="l1"><span class="num">${i+1}</span><input type="text" class="date${ko?' ko':''}" value="${esc(e.date)}" placeholder="${esc(t('phDate'))}" aria-label="${esc(t('phDate'))}" maxlength="60">
+      <input type="text" class="emo" value="${esc(e.emoji)}" placeholder="${t('phEmo')}" aria-label="Emoji" maxlength="8">
+      <button class="suppr" title="${esc(t('suppr'))}" aria-label="${esc(t('suppr'))}">✕</button></div>
+      ${ko?`<p class="err">${esc(t('dateKo'))}</p>`:''}
+      <input type="text" class="ti" value="${esc(e.titre)}" placeholder="${esc(t('phTitre'))}" aria-label="${esc(t('phTitre'))}" maxlength="120">
+      <textarea class="tx" rows="2" placeholder="${esc(t('phTexte'))}" aria-label="${esc(t('phTexte'))}" maxlength="400">${esc(e.texte)}</textarea>
+      ${D.esp==='main'&&i>0?`<label class="ecart"><span>${esc(t('lEcart'))}</span><input type="range" class="rg" min="1" max="5" step="0.25" value="${e.ecart||1}"></label>`:''}
+      <div class="l3"><button class="btn mini img">${esc(t('image'))}</button>${e.img?`<img src="${e.img}" alt=""><button class="btn mini warn imgdel">${esc(t('retirer'))}</button>`:''}</div></div>`; }).join('');
+}
+const evDe=el=>{ const it=el.closest('.item'); return it&&D.ev.find(e=>e.id===it.dataset.id); };
+let saisie=false;
+$('liste').addEventListener('focusin',e=>{ const ev=evDe(e.target); if(!ev||sel===ev.id) return; sel=ev.id;
+  document.querySelectorAll('.item').forEach(it=>it.classList.toggle('choisi',it.dataset.id===sel)); apercu(true); });
+$('liste').addEventListener('input',e=>{ const ev=evDe(e.target); if(!ev) return;
+  if(!saisie){ avant(); saisie=true; }
+  const c=e.target.classList; if(c.contains('date')) ev.date=e.target.value; else if(c.contains('ti')) ev.titre=e.target.value; else if(c.contains('tx')) ev.texte=e.target.value; else if(c.contains('emo')) ev.emoji=e.target.value; else if(c.contains('rg')){ ev.ecart=+e.target.value; apercu(false); garder(); return; }
+  apercuBientot(); garder(); });
+$('liste').addEventListener('change',e=>{ saisie=false; if(!e.target.classList.contains('date')) return;
+  const ev=evDe(e.target); const bouge=trier(); liste(); apercu(true); garder();
+  if(ev){ const it=document.querySelector(`.item[data-id="${ev.id}"]`); if(it&&bouge){ it.classList.add('bouge'); it.scrollIntoView({block:'nearest',behavior:'smooth'}); } } });
+let cibleImg=null;
+$('liste').addEventListener('click',e=>{ const ev=evDe(e.target); if(!ev) return;
+  if(e.target.closest('.suppr')){ avant(); D.ev=D.ev.filter(x=>x!==ev); if(sel===ev.id) sel=null; liste(); apercu(); garder(); }
+  else if(e.target.closest('.img')){ cibleImg=ev; $('fImg').click(); }
+  else if(e.target.closest('.imgdel')){ avant(); ev.img=null; liste(); apercu(); garder(); } });
+$('fImg').onchange=()=>{ const f=$('fImg').files[0]; $('fImg').value=''; if(!f||!cibleImg) return;
+  const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>{ const k=Math.min(1,900/Math.max(im.width,im.height)); const c=document.createElement('canvas');
+    c.width=Math.round(im.width*k); c.height=Math.round(im.height*k); c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    avant(); cibleImg.img=c.toDataURL('image/jpeg',.82); liste(); apercu(true); garder(); }; im.onerror=()=>msg(t('mImgGros')); im.src=r.result; }; r.readAsDataURL(f); };
+$('ajout').onclick=()=>{ avant(); const e={id:nid(),date:'',titre:'',texte:'',emoji:'',img:null}; D.ev.push(e); sel=e.id; liste(); apercu(); garder();
+  const it=document.querySelector(`.item[data-id="${e.id}"] .date`); it&&it.focus(); };
+$('titre').oninput=()=>{ if(!saisie){ avant(); saisie=true; } D.titre=$('titre').value; sel=null; apercuBientot(); garder(); };
+$('sous').oninput=()=>{ if(!saisie){ avant(); saisie=true; } D.sous=$('sous').value; sel=null; apercuBientot(); garder(); };
+$('titre').onchange=$('sous').onchange=()=>{ saisie=false; };
+$('annuler').onclick=annuler;
+addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'&&!$('scene').classList.contains('on')){ const a=document.activeElement; if(a&&(a.tagName==='TEXTAREA'||a.tagName==='INPUT')&&saisie) return; e.preventDefault(); annuler(); } });
+
+/* Aperçu : la frise en miniature, positionnée sur l'événement en cours de saisie */
+const AP=new Frise($('apercu'));
+let tAp; function apercuBientot(){ clearTimeout(tAp); tAp=setTimeout(()=>apercu(false),350); }
+function apercu(anim){
+  AP.construire(D);
+  const i=sel?AP.l.findIndex(o=>o.e.id===sel):-1;
+  if(i>=0){ AP.aller(i-1,{anim:false,instant:true}); AP.aller(i,{anim:!!anim,instant:!anim}); }
+  else AP.aller(-1,{anim:false,instant:true});
+}
+$('apercu').onclick=()=>lancer(); $('apercu').onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); lancer(); } };
+
+function tout(){ $('titre').value=D.titre; $('sous').value=D.sous; tuiles(); regl(); liste(); apercu(); }
+
+/* ---------------- Importer : coller une liste, ou lire un document ----------------
+   Un document (Word, PDF, photo, texte) est d'abord découpé en « blocs » : une ligne de tableau
+   ({cells}) ou un paragraphe ({t}, h si c'est un titre). extraire() y repère ensuite les dates
+   (en début de paragraphe, seules sur une ligne, ou dans une colonne de tableau) et ce qui va avec.
+   Le résultat s'affiche dans la zone de texte, une ligne par événement : on vérifie avant de créer. */
+const chargerScript=src=>new Promise((ok,ko)=>{ if(document.querySelector(`script[src="${src}"]`)) return ok(); const e=document.createElement('script'); e.src=src; e.onload=ok; e.onerror=()=>ko(new Error('reseau')); document.head.appendChild(e); });
+const MOIS_RE="(?:janv(?:ier|\\.)?|f[ée]vr(?:ier|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[ûu]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?|january|february|march|april|may|june|july|august|september|october|november|december|jan\\.?|feb\\.?|mar\\.?|apr\\.?|jun\\.?|jul\\.?|aug\\.?|sep\\.?|oct\\.?|nov\\.?|dec\\.?)";
+const ERE="(?:\\s*(?:av\\.?|avant|apr\\.?|après)\\s*(?:J\\.?\\s*-?\\s*C\\.?|Jésus-Christ|notre\\s+[èe]re|n\\.\\s*[èe]\\.?)|\\s*(?:BCE|BC|CE|AD|B\\.C\\.|A\\.D\\.)(?![a-z]))";
+const AN=`(?:\\d{1,4}${ERE}|-?\\d{3,4}(?!\\d)${ERE}?)`;
+const FORMES=[
+  `\\d{1,2}(?:er|st|nd|rd|th)?\\s+${MOIS_RE}\\s+${AN}`,
+  `${MOIS_RE}\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+${AN}`,
+  `${MOIS_RE}\\s+${AN}`,
+  `\\d{1,2}[/.]\\d{1,2}[/.]\\d{2,4}(?!\\d)`, `\\d{4}-\\d{2}-\\d{2}`,
+  `(?:il\\s+y\\s+a\\s+)?(?:environ\\s+|plus\\s+de\\s+)?\\d[\\d\\s.,]*\\s*(?:millions?|milliards?)\\s+d['’]\\s*ann[ée]es`,
+  `(?:about\\s+)?\\d[\\d.,]*\\s*(?:million|billion)\\s+years\\s+ago`,
+  `il\\s+y\\s+a\\s+(?:environ\\s+)?\\d[\\d\\s]*\\s*ans`, `\\d[\\d,]*\\s+years\\s+ago`,
+  `(?:[IVXLC]+|\\d{1,2})(?:e|er|ème|eme|re)\\s+si[èe]cle${ERE}?`, `\\d{1,2}(?:st|nd|rd|th)\\s+century${ERE}?`,
+  `${AN}(?:\\s*[-–—/]\\s*${AN}|\\s+(?:à|to)\\s+${AN})?`
+];
+const DEBUT=new RegExp(`^\\s*(?:(?:en|le|in|on|dès|depuis|à\\s+partir\\s+de|au|the)\\s+)?((?:(?:vers|environ|autour\\s+de|aux\\s+alentours\\s+de|début|fin|mi-|c\\.|ca\\.|circa|around|about|early|late)\\s*)?(?:${FORMES.join('|')}))(?=$|[\\s:;,.–—|)\\]-])\\s*(?:[:;,.–—|)\\]-]+\\s*)?`,'iu');
+const PUCE=/^\s*(?:[•●▪◦‣∙·*►➤✓□■-]\s*|[–—]\s+)/;
+function debutDate(s){
+  s=s.replace(/[  ]/g,' ').replace(PUCE,'');
+  let m=DEBUT.exec(s);
+  if(!m){ const n=/^\s*\(?\d{1,2}[.)]\s+/.exec(s); if(n) m=DEBUT.exec(s.slice(n[0].length)), s=m?s.slice(n[0].length):s; }
+  if(!m) return null;
+  const date=m[1].trim().replace(/(\d)[.,]$/,'$1').replace(/,$/,'');
+  if(isNaN(lireDate(date))) return null;
+  return {date:date.charAt(0).toUpperCase()+date.slice(1), reste:s.slice(m[0].length).trim()};
+}
+const majuscule=s=>s.charAt(0).toUpperCase()+s.slice(1);
+/* « titre ; détail », « titre : détail », ou une longue phrase coupée après la première phrase */
+function couper(r){
+  r=r.replace(/\s+/g,' ').trim(); let ti=r, tx='', m;
+  if((m=/^(.{3,90}?)\s+;\s+(.+)$/.exec(r))) { ti=m[1]; tx=m[2]; }
+  else if((m=/^(.{3,70}?)\s?:\s+(.+)$/.exec(r))&&!/\d$/.test(m[1])) { ti=m[1]; tx=m[2]; }
+  else if(r.length>95&&(m=/^(.{20,110}?[.!?])\s+(\p{Lu}.+)$/u.exec(r))) { ti=m[1]; tx=m[2]; }
+  ti=ti.replace(/\.$/,'').trim();
+  return {titre:majuscule(ti), texte:majuscule(tx.trim())};
+}
+const bruit=s=>/_{3,}|\.{5,}/.test(s);
+function extraire(blocs,liste){
+  const ev=[]; let titre='', cur=null, entete=false;
+  const fin=()=>{ cur=null; };
+  const colDate=cells=>cells.findIndex(c=>{ const d=c&&debutDate(c); return d&&!d.reste.replace(/[\s.,;:]/g,''); });
+  /* Colonne des dates d'un tableau : celle où l'on en trouve le plus. Une année courte (« 79 ») y est acceptée. */
+  const freq={}; blocs.forEach(b=>{ if(b.cells){ const i=colDate(b.cells.map(c=>c.trim())); if(i>=0) freq[i]=(freq[i]||0)+1; } });
+  const colTab=+(Object.entries(freq).sort((a,b)=>b[1]-a[1])[0]||[-1])[0];
+  for(const b of blocs){
+    if(b.cells){
+      const cells=b.cells.map(c=>c.replace(/\s+/g,' ').trim());
+      let iD=colDate(cells);
+      if(iD<0&&colTab>=0&&/^-?\d{1,4}$/.test(cells[colTab]||'')&&ev.length) iD=colTab;
+      if(iD>=0){
+        const autres=cells.slice(iD+1).filter(c=>c&&!/^\d{1,3}$/.test(c));
+        const r=couper(autres.shift()||''); const tx=[r.texte,...autres].filter(Boolean).join(' — ');
+        cur={date:(debutDate(cells[iD])||{date:cells[iD]}).date,titre:r.titre,texte:tx,de:'tab'}; ev.push(cur); continue;
+      }
+      const txt=cells.filter(Boolean).join(' ');
+      if(!ev.length){ if(!titre&&b.titre&&txt.length<90) titre=txt; continue; }
+      if(cur&&cur.de==='tab'&&txt){ if(cur.texte) cur.texte+=' '+txt; else cur.titre+=' '+txt; }
+      continue;
+    }
+    const t=(b.t||'').replace(/\s+/g,' ').trim(); if(!t||bruit(t)) { if(t) fin(); continue; }
+    let d=debutDate(t);
+    /* Dans la zone de texte, « quelque chose : événement » vaut une ligne de frise, même si la date n'est pas reconnue */
+    if(!d&&liste){ const m=/^([^:;]{1,40}?)\s+:\s+(.+)$/.exec(t); if(m) d={date:m[1].trim(),reste:m[2]}; }
+    if(d){
+      if(d.reste){ const r=couper(d.reste); cur={date:d.date,...r,de:'ligne'}; }
+      else cur={date:d.date,titre:'',texte:'',de:'seule'};
+      ev.push(cur); continue;
+    }
+    if(b.h){ if(!ev.length&&!titre&&t.length<90) titre=t; fin(); continue; }
+    if(!ev.length){ if(!titre&&t.length<90&&!/[:?]$/.test(t)) titre=t; continue; }
+    if(!cur) continue;
+    if(b.suite){ if(cur.texte) cur.texte+=' '+t; else cur.titre+=' '+t; continue; }   // ligne coupée d'un PDF
+    if(!cur.titre){ const r=couper(t); cur.titre=r.titre; cur.texte=r.texte; continue; }
+    if(cur.de==='seule'&&!cur.texte){ cur.texte=t; continue; }
+    fin();
+  }
+  ev.forEach(e=>{ e.titre=e.titre.replace(/\s+/g,' ').trim(); e.texte=e.texte.replace(/\s+/g,' ').trim(); });
+  return {titre, ev:ev.filter(e=>e.titre||e.texte)};
+}
+/* Lecture des formats */
+async function blocsWord(file){
+  await chargerScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js');
+  const html=(await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()})).value;
+  const doc=new DOMParser().parseFromString(html,'text/html'), out=[];
+  (function tour(n){ for(const e of n.children){
+    const tg=e.tagName;
+    if(tg==='TABLE'){ e.querySelectorAll('tr').forEach((tr,i)=>out.push({cells:[...tr.children].map(c=>c.textContent),titre:i===0})); }
+    else if(/^H[1-6]$/.test(tg)) out.push({t:e.textContent,h:+tg[1]});
+    else if(tg==='UL'||tg==='OL') tour(e);
+    else if(tg==='LI'){ const sous=e.querySelector('ul,ol'); if(sous){ const c=e.cloneNode(true); c.querySelectorAll('ul,ol').forEach(x=>x.remove()); out.push({t:c.textContent}); tour(sous); } else out.push({t:e.textContent}); }
+    else if(tg==='P'){ const br=e.innerHTML.split(/<br\s*\/?>/i); if(br.length>1) br.forEach(h=>{ const d=document.createElement('div'); d.innerHTML=h; out.push({t:d.textContent}); }); else out.push({t:e.textContent}); }
+    else if(e.children.length) tour(e); else if(e.textContent.trim()) out.push({t:e.textContent});
+  } })(doc.body);
+  return out;
+}
+async function pdfjs(){
+  await chargerScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+async function blocsPdf(file){
+  await pdfjs();
+  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise; const lignes=[];
+  for(let p=1;p<=pdf.numPages;p++){
+    const items=(await (await pdf.getPage(p)).getTextContent()).items.filter(it=>it.str.trim());
+    const ls=[];
+    items.forEach(it=>{ const y=it.transform[5], x=it.transform[4], h=Math.abs(it.transform[3])||it.height||10;
+      let l=ls.find(l=>Math.abs(l.y-y)<Math.max(2,h*.3)); if(!l) ls.push(l={y,h,its:[]}); l.its.push({x,w:it.width,s:it.str,h}); l.h=Math.max(l.h,h); });
+    ls.sort((a,b)=>b.y-a.y);
+    ls.forEach(l=>{ l.its.sort((a,b)=>a.x-b.x); const cells=[]; let fin=null;
+      l.its.forEach(it=>{ if(fin===null||it.x-fin>Math.max(14,it.h*1.6)) cells.push({x:it.x,s:it.s}); else cells[cells.length-1].s+=(it.x-fin>1?' ':'')+it.s; fin=it.x+it.w; });
+      lignes.push({p,y:l.y,h:l.h,cells}); });
+  }
+  if(lignes.map(l=>l.cells.map(c=>c.s).join('')).join('').replace(/\s/g,'').length<20){ // PDF scanné
+    const imgs=[]; for(let i=1;i<=Math.min(pdf.numPages,10);i++){ const pg=await pdf.getPage(i); const v=pg.getViewport({scale:2}); const cv=document.createElement('canvas'); cv.width=v.width; cv.height=v.height; await pg.render({canvasContext:cv.getContext('2d'),viewport:v}).promise; imgs.push(cv); }
+    return blocsTexte(await lireImages(imgs));
+  }
+  const tailles=lignes.map(l=>l.h).sort((a,b)=>a-b), norm=tailles[Math.floor(tailles.length/2)]||10, out=[];
+  let prec=null;
+  for(const l of lignes){
+    const txt=l.cells.map(c=>c.s).join(' ');
+    const proche=prec&&prec.p===l.p&&(prec.y-l.y)<=Math.max(prec.h,l.h)*1.5;
+    const b=l.cells.length>1?{cells:l.cells.map(c=>c.s)}:{t:txt,h:l.h>norm*1.25?1:0};
+    if(proche&&l.cells.length===1&&!debutDate(txt)){
+      const dern=prec.b;
+      if(dern.cells&&Math.abs(prec.cells[prec.cells.length-1].x-l.cells[0].x)<8){ dern.cells[dern.cells.length-1]+=' '+txt; prec={...l,b:dern}; continue; }
+      if(dern.t!=null&&!dern.h&&!b.h&&Math.abs(prec.cells[0].x-l.cells[0].x)<40){ dern.t+=' '+txt; prec={...l,b:dern}; continue; }
+    }
+    out.push(b); prec={...l,b};
+  }
+  return out;
+}
+const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/';
+async function lireImages(sources){
+  await chargerScript(TESS+'tesseract.min.js');
+  const w=await Tesseract.createWorker(LANG==='en'?'eng':'fra',1,{workerPath:TESS+'worker.min.js',corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1',langPath:`https://cdn.jsdelivr.net/npm/@tesseract.js-data/${LANG==='en'?'eng':'fra'}@1.0.0/4.0.0_best_int`,
+    logger:m=>{ if(m.status==='recognizing text') etatImp(t('impOcr')+' '+Math.round(m.progress*100)+' %'); }});
+  let txt=''; try{ for(const s of sources){ const r=await w.recognize(s); txt+=r.data.text+'\n'; } } finally{ await w.terminate(); }
+  return txt;
+}
+function blocsTexte(txt){ return txt.replace(/\r/g,'').split('\n').map(l=>l.includes('\t')?{cells:l.split('\t')}:{t:l}).filter(b=>b.cells?b.cells.some(c=>c.trim()):b.t.trim()); }
+async function lireDocument(f){
+  const nom=f.name.toLowerCase();
+  if(nom.endsWith('.docx')) return blocsWord(f);
+  if(nom.endsWith('.pdf')||f.type==='application/pdf') return blocsPdf(f);
+  if(f.type.startsWith('image/')) return blocsTexte(await lireImages([f]));
+  if(nom.endsWith('.csv')){ const tx=await f.text(); const sep=tx.includes(';')?';':','; return blocsTexte(tx.split('\n').map(l=>l.split(sep).map(c=>c.replace(/^"|"$/g,'')).join('\t')).join('\n')); }
+  if(nom.endsWith('.txt')||f.type.startsWith('text/')) return blocsTexte(await f.text());
+  throw new Error('format');
+}
+const versLignes=ev=>ev.map(e=>`${e.date} : ${e.titre}${e.texte?' ; '+e.texte:''}`).join('\n');
+function etatImp(s){ const e=$('impEtat'); e.hidden=!s; e.textContent=s||''; }
+let titreTrouve='';
+async function importerFichier(f){
+  if(!$('dlgImport').open) ouvrirImport();
+  $('impFichier').disabled=true; etatImp(t('impLecture'));
+  try{
+    const r=extraire(await lireDocument(f));
+    if(!r.ev.length) throw new Error('aucun');
+    $('impTxt').value=versLignes(r.ev); titreTrouve=r.titre;
+    etatImp(t('impTrouve').replace('{n}',r.ev.length)+(r.titre?' '+t('impTitreTrouve').replace('{t}',r.titre):''));
+  }catch(x){
+    etatImp(x.message==='format'?t('impFormat'):x.message==='aucun'?t('impAucun'):x.message==='reseau'?t('impReseau'):t('impErreur'));
+  }finally{ $('impFichier').disabled=false; }
+}
+function ouvrirImport(){ $('impTxt').value=''; titreTrouve=''; etatImp(''); $('dlgImport').showModal(); }
+$('importer').onclick=()=>{ ouvrirImport(); $('impTxt').focus(); };
+$('importerDoc').onclick=()=>{ ouvrirImport(); $('fDoc').click(); };
+$('impFichier').onclick=()=>$('fDoc').click();
+$('fDoc').onchange=()=>{ const f=$('fDoc').files[0]; $('fDoc').value=''; if(f) importerFichier(f); };
+/* Déposer un fichier n'importe où sur la page */
+addEventListener('dragover',e=>{ if([...(e.dataTransfer?.types||[])].includes('Files')) e.preventDefault(); });
+addEventListener('drop',e=>{ const f=e.dataTransfer?.files?.[0]; if(!f) return; e.preventDefault(); if(/\.json$/i.test(f.name)) return; importerFichier(f); });
+$('impNon').onclick=()=>$('dlgImport').close();
+$('impOui').onclick=()=>{
+  const r=extraire(blocsTexte($('impTxt').value),true);
+  const nv=r.ev.map(e=>({id:nid(),date:e.date,titre:e.titre,texte:e.texte,emoji:'',img:null,ecart:1}));
+  if(!nv.length){ etatImp(t('impAucun')); return; }
+  avant(); const vides=D.ev.every(e=>!e.date.trim()&&!e.titre.trim()&&!e.texte.trim());
+  D.ev=($('impRempl').checked||vides)?nv:D.ev.concat(nv);
+  if(titreTrouve&&(!D.titre||$('impRempl').checked)) D.titre=titreTrouve;
+  trier(); sel=null; $('dlgImport').close(); tout(); garder();
+};
+
+/* ---------------- Fichiers et lien ---------------- */
+$('exemples').onchange=()=>{ const k=$('exemples').value; $('exemples').value=''; if(!k) return; avant(); D=normaliser(structuredClone(EXEMPLES[LANG][k].d)); sel=null; tout(); garder(); };
+$('effacer').onclick=()=>{ if(!confirm(t('mEff'))) return; avant(); D=VIDE(); sel=null; tout(); garder(); };
+$('sauver').onclick=()=>{ const b=new Blob([JSON.stringify({type:'frise-animee',v:1,...D},null,1)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=((D.titre||t('titreDefaut')).replace(/[^\p{L}\p{N} _-]/gu,'').trim()||'frise')+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); };
+$('ouvrir').onclick=()=>$('fJson').click();
+$('fJson').onchange=()=>{ const f=$('fJson').files[0]; $('fJson').value=''; if(!f) return; f.text().then(s=>{ const j=JSON.parse(s); if(!Array.isArray(j.ev)) throw 0; avant(); D=normaliser(j); sel=null; tout(); garder(); }).catch(()=>msg(t('mOuvrirKo'))); };
+function lienFrise(jouer){ const sans={...D,ev:D.ev.map(({img,id,...r})=>r)};
+  const b=btoa(unescape(encodeURIComponent(JSON.stringify(sans)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  return location.href.split('#')[0]+'#f='+b+(jouer?'&jouer':''); }
+$('lien').onclick=async()=>{ const u=lienFrise(true); try{ await navigator.clipboard.writeText(u); }catch(e){ prompt('',u); return; } msg(D.ev.some(e=>e.img)?t('mLienImg'):t('mLien')); };
+$('langue').onclick=()=>{ LANG=LANG==='fr'?'en':'fr'; try{ localStorage.setItem('frise:lang',LANG); }catch(e){} traduire(); tuiles(); liste(); apercu(); };
+
+/* ---------------- Projection ---------------- */
+const SC=new Frise($('sceneFrise'));
+let tAuto=null, tCalme=null;
+function lancer(d){
+  d=d&&d.ev?d:D;
+  if(!d.ev.some(e=>e.date.trim()||e.titre.trim()||e.texte.trim()||e.img)) return msg(t('mVide'));
+  stopAuto(); $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false');
+  try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){}
+  SC.construire(d); SC.aller(-1,{instant:true}); reveil(); $('sSuiv').focus({preventScroll:true});
+}
+function quitter(){ stopAuto(); $('scene').classList.remove('on'); $('scene').setAttribute('aria-hidden','true'); try{ document.fullscreenElement&&document.exitFullscreen(); }catch(e){} $('jouer').focus(); }
+const suiv=()=>{ if(SC.pas<SC.n) SC.aller(SC.pas+1); else stopAuto(); };
+const prec=()=>{ stopAuto(); if(SC.pas>-1) SC.aller(SC.pas-1,{anim:false}); };
+function stopAuto(){ clearInterval(tAuto); tAuto=null; $('sAuto').setAttribute('aria-pressed','false'); }
+function basculerAuto(){ if(tAuto) return stopAuto(); $('sAuto').setAttribute('aria-pressed','true'); if(SC.pas>=SC.n) SC.aller(-1,{instant:true}); suiv(); tAuto=setInterval(()=>{ suiv(); if(SC.pas>=SC.n) stopAuto(); },(SC.d.auto||5)*1000); }
+function vue(){ stopAuto(); SC.aller(SC.pas===SC.n?SC.n-1:SC.n,{anim:false}); }
+function plein(){ try{ if(document.fullscreenElement){ quitterAvecPlein=false; document.exitFullscreen(); } else document.documentElement.requestFullscreen(); }catch(e){} }
+function reveil(){ $('scene').classList.remove('calme'); clearTimeout(tCalme); tCalme=setTimeout(()=>$('scene').classList.add('calme'),2500); }
+$('jouer').onclick=()=>lancer();
+$('sSuiv').onclick=e=>{ e.stopPropagation(); stopAuto(); suiv(); };
+$('sPrec').onclick=e=>{ e.stopPropagation(); prec(); };
+$('sAuto').onclick=e=>{ e.stopPropagation(); basculerAuto(); };
+$('sVue').onclick=e=>{ e.stopPropagation(); vue(); };
+$('sPlein').onclick=e=>{ e.stopPropagation(); plein(); };
+$('sFin').onclick=e=>{ e.stopPropagation(); quitter(); };
+$('sceneFrise').onclick=()=>{ stopAuto(); suiv(); };
+$('scene').addEventListener('mousemove',reveil);
+let x0=null; $('scene').addEventListener('touchstart',e=>{ x0=e.touches[0].clientX; reveil(); },{passive:true});
+$('scene').addEventListener('touchend',e=>{ if(x0==null) return; const dx=e.changedTouches[0].clientX-x0; x0=null;
+  if(Math.abs(dx)>40){ e.preventDefault(); dx<0?(stopAuto(),suiv()):prec(); } });
+addEventListener('keydown',e=>{ if(!$('scene').classList.contains('on')) return;
+  const k=e.key;
+  if(k==='Escape') quitter();
+  else if([' ','ArrowRight','ArrowDown','Enter','PageDown'].includes(k)){ if(k===' '||k==='Enter'){ if(e.target.closest&&e.target.closest('.bas')&&e.target!==$('sSuiv')) return; } e.preventDefault(); stopAuto(); suiv(); }
+  else if(['ArrowLeft','ArrowUp','Backspace','PageUp'].includes(k)){ e.preventDefault(); prec(); }
+  else if(k==='Home'){ stopAuto(); SC.aller(-1,{anim:false}); }
+  else if(k==='End'||k==='v'||k==='V'||k==='o'||k==='O'){ vue(); }
+  else if(k==='a'||k==='A'){ basculerAuto(); }
+  else if(k==='f'||k==='F'){ plein(); }
+});
+/* Échap en plein écran : le navigateur sort du plein écran d'abord ; on quitte la projection avec. */
+document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement&&$('scene').classList.contains('on')&&quitterAvecPlein) quitter(); quitterAvecPlein=true; setTimeout(()=>SC.placer(false),60); });
+let quitterAvecPlein=true;
+addEventListener('resize',()=>{ clearTimeout(window._rz); window._rz=setTimeout(()=>{ AP.placer(false); if($('scene').classList.contains('on')) SC.placer(false); },120); });
+
+/* ---------------- Démarrage ---------------- */
+const depuisLien=charger();
+traduire(); tout();
+if(depuisLien&&/[#&]jouer\b/.test(location.hash)){ setTimeout(()=>{ lancer(); msg(t('mPlein')); },300); }
+/* ?exemple=espace : ouvre directement un exemple en projection (bouton « Voir un exemple » du site) */
+else { const ex=new URLSearchParams(location.search).get('exemple'); if(ex&&EXEMPLES[LANG][ex]) setTimeout(()=>{ lancer(normaliser(structuredClone(EXEMPLES[LANG][ex].d))); msg(t('mPlein')); },300); }
+document.fonts&&document.fonts.ready.then(()=>{ AP.placer(false); });
+</script>
+<script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Frise animée" data-flottant="non" data-url="https://antoninatger.com/jeux/frise-animee/" data-texte="Frise animée, un outil gratuit pour créer une frise chronologique animée à projeter en classe"></script>
+</body>
+</html>
