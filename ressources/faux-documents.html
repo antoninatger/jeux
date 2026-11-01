@@ -64,6 +64,9 @@ input[type=file]{display:none}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg .btn{flex:1;font-size:13px}
 .seg .btn[aria-pressed=true]{background:var(--acc2);border-color:var(--acc);font-weight:600}
+.barre-ed{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.barre-ed .btn{padding:2px 8px;min-height:28px;font-size:12.5px}
+.decor{background:var(--acc2);border-color:var(--acc)}
 .img-champ{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .img-champ .vign{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid var(--bord)}
 .aide{font-size:12.5px;color:var(--doux);margin:6px 0 0}
@@ -373,7 +376,8 @@ const T={
 fr:{titre:'Faux documents',retourTitre:'Retour sur antoninatger.com',partager:'📣 Partager',png:"Télécharger l'image",imprimer:'Imprimer',projeter:'Projeter en plein écran',quitter:'Quitter (Échap)',
   astuce:"Cliquez sur un élément du document pour aller au champ correspondant. L'image et l'impression portent la mention discrète « Document fictif ».",
   fictif:'Document fictif · usage pédagogique',style:'Style',plus:'Plus de champs',photo:'Choisir une photo',retirer:'Retirer',
-  exemple:"Recharger l'exemple",vider:'Tout vider',sauver:'Enregistrer',ouvrir:'Ouvrir',
+  exemple:"Recharger l'exemple",vider:'Vider le texte',confirmer:'Sûr ? Cliquez encore',decor:'Décor',decorAide:'Nom du journal, date, brèves, rubriques, chiffres… sont remplis au hasard : concentrez-vous sur le texte. Tout reste modifiable.',decorBtn:'🎲 Changer le décor',okDecor:'Nouveau décor tiré au hasard.',
+  bLien:'Lien',bGras:'Gras',bItal:'Italique',bNote:'Note',bSection:'Section',motLien:'mot',motGras:'texte',nouvSection:'Nouvelle section',nouvSource:'Auteur, titre, éditeur, année.',sauver:'Enregistrer',ouvrir:'Ouvrir',
   aideFichier:"« Enregistrer » crée un petit fichier à garder ou à envoyer à un collègue. Rien n'est envoyé sur Internet.",
   okImg:'Image enregistrée dans vos téléchargements.',errImg:"L'image n'a pas pu être créée. Essayez une capture d'écran.",noLib:"L'outil d'image n'a pas pu se charger.",
   okSauve:'Fichier enregistré dans vos téléchargements.',okOuvre:'Document ouvert.',errOuvre:"Ce fichier n'est pas un document enregistré ici.",
@@ -382,7 +386,8 @@ fr:{titre:'Faux documents',retourTitre:'Retour sur antoninatger.com',partager:'�
 en:{titre:'Fake documents',retourTitre:'Back to antoninatger.com',partager:'📣 Share',png:'Download image',imprimer:'Print',projeter:'Full-screen display',quitter:'Exit (Esc)',
   astuce:'Click any part of the document to jump to its field. Images and prints carry a discreet “Fictional document” label.',
   fictif:'Fictional document · for teaching',style:'Style',plus:'More fields',photo:'Choose a photo',retirer:'Remove',
-  exemple:'Reload the example',vider:'Clear all',sauver:'Save',ouvrir:'Open',
+  exemple:'Reload the example',vider:'Clear the text',confirmer:'Sure? Click again',decor:'Auto-filled details',decorAide:'Paper name, date, briefs, sections, numbers… are filled in at random, so you can focus on the text. Everything stays editable.',decorBtn:'🎲 Shuffle details',okDecor:'New random details.',
+  bLien:'Link',bGras:'Bold',bItal:'Italic',bNote:'Footnote',bSection:'Section',motLien:'word',motGras:'text',nouvSection:'New section',nouvSource:'Author, title, publisher, year.',sauver:'Save',ouvrir:'Open',
   aideFichier:'“Save” creates a small file you can keep or send to a colleague. Nothing is sent over the Internet.',
   okImg:'Image saved to your downloads.',errImg:'The image could not be created. Try a screenshot.',noLib:'The image tool failed to load.',
   okSauve:'File saved to your downloads.',okOuvre:'Document opened.',errOuvre:'This file is not a document saved here.',
@@ -498,7 +503,7 @@ article:{fr:'Article en ligne',en:'News article',
   champs:[
     C('titre','long','Titre','Headline',{rows:2}),C('chapo','long','Chapô','Standfirst',{rows:3}),
     C('image','image','Photo','Photo'),C('legende','text','Légende et crédit','Caption and credit'),
-    C('texte','long','Texte de l’article','Article text',{rows:6,ex:{fr:'Un paragraphe par ligne.',en:'One paragraph per line.'}}),
+    C('texte','long','Texte de l’article','Article text',{rows:6,outils:['gras'],ex:{fr:'Un paragraphe par ligne.',en:'One paragraph per line.'}}),
     C('auteur','text','Auteur','Author'),C('date','text','Publié le','Published'),
     C('lire','text','Encadré « Lire aussi »','“Read also” box'),
     C('abonnes','check','Article réservé aux abonnés (texte coupé)','Subscribers only (paywall)'),
@@ -607,9 +612,9 @@ fiche:{fr:'Fiche encyclopédie',en:'Encyclopedia page',
   groupes:[["L'article",'The article'],['Encadré à droite','Infobox'],['Sources et bas de page','Sources and footer']],
   champs:[
     C('titre','text','Titre de la page','Page title'),
-    C('texte','long','Texte de l’article','Article text',{rows:9,ex:{fr:'« ## Titre » crée une section, **gras**, [[lien]], [1] un appel de note.',en:'“## Heading” starts a section, **bold**, [[link]], [1] a footnote.'}}),
+    C('texte','long','Texte de l’article','Article text',{rows:9,outils:['lien','gras','ital','note','section'],ex:{fr:'« ## Titre » crée une section, **gras**, [[lien]], [1] un appel de note.',en:'“## Heading” starts a section, **bold**, [[link]], [1] a footnote.'}}),
     C('boxt','text','Titre de l’encadré','Infobox title',{g:1}),C('image','image','Image','Image',{g:1}),C('legende','text','Légende','Caption',{g:1}),
-    C('lignes','long','Lignes (une par ligne : « Nom : valeur »)','Rows (one per line: “Label: value”)',{g:1,rows:5,ex:{fr:'Une ligne « # Titre » crée un intertitre.',en:'A line “# Heading” adds a sub-heading.'}}),
+    C('lignes','long','Lignes (une par ligne : « Nom : valeur »)','Rows (one per line: “Label: value”)',{g:1,rows:5,outils:['lien'],ex:{fr:'Une ligne « # Titre » crée un intertitre.',en:'A line “# Heading” adds a sub-heading.'}}),
     C('refs','long','Notes et références (une par ligne)','Notes and references (one per line)',{g:2,rows:3}),
     C('cats','text','Catégories (séparées par des virgules)','Categories (comma separated)',{g:2}),C('modif','text','Dernière modification','Last edited',{g:2})],
   L:{fr:{nom:'Encyclopédie',sous:'L’encyclopédie libre',cherche:'Rechercher dans l’Encyclopédie',btn:'Rechercher',liens:['Faire un don','Créer un compte','Se connecter'],
@@ -657,6 +662,59 @@ fiche:{fr:'Fiche encyclopédie',en:'Encyclopedia page',
       cats:'Mountain mammals, Fauna of the Alps, Legendary creatures',modif:'2 November 2026, at 18:04'}}
 }
 };
+/* =====================================================================
+   Le décor : tout ce qu'on n'a pas envie d'inventer (nom du journal, date,
+   brèves, rubriques, chiffres…). Tiré au hasard dans ces réserves à chaque
+   nouveau document et sur « Changer le décor » ; le prof garde la main
+   sur le texte principal, et peut toujours retoucher le décor.
+   ===================================================================== */
+const hasard=a=>a[Math.floor(Math.random()*a.length)];
+const plusieurs=(a,n)=>{ const c=a.slice(); for(let i=c.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [c[i],c[j]]=[c[j],c[i]]; } return c.slice(0,n); };
+const entre=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const nb=(n,l)=>n.toLocaleString(l==='fr'?'fr-FR':'en-US');
+/* Chiffres « réseau social » : 18,4 k / 1,2 M en français, 18.4K / 1.2M en anglais */
+const court=(n,l)=>{ const f=(x,s)=>(l==='fr'?x.toFixed(1).replace('.',',')+' '+s:x.toFixed(1)+s.toUpperCase()).replace(/[.,]0(?=\s?\w)/,''); return n>=1e6?f(n/1e6,'M'):n>=1e4?f(n/1e3,'k'):nb(n,l); };
+const aujourdhui=(l,o)=>{ let s=new Date().toLocaleDateString(l==='fr'?'fr-FR':'en-US',o); if(l==='fr') s=s.replace(/(^|\s)1(\s)/,'$11er$2'); return s.charAt(0).toUpperCase()+s.slice(1); };
+const RES={
+fr:{
+  journaux:[["L'Écho du Matin","Quotidien d'information fondé en 1924"],['Le Courrier national','Journal indépendant depuis 1946'],['La Gazette du Soir','Le quotidien de toutes les régions'],['Le Petit Républicain','Fondé en 1889 · Édition nationale'],["L'Horizon",'Le journal qui voit plus loin'],['Le Messager du Centre',"Quotidien régional d'information"],['La Tribune libre',"Quotidien d'opinion fondé en 1958"],['Le Réveil','Information · Opinion · Débats']],
+  prix:['2,90 €','2,50 €','3,20 €','1,80 €','2,20 €'],
+  oreilles:['Supplément · Spécial rentrée','Offert · Le guide télé','Ce week-end · Notre magazine','Exclusif · Les coulisses du Tour','Gratuit · Le cahier jeux','Inédit · Notre grand sondage'],
+  breves:[['Une grenouille fluorescente découverte en Guyane','Des naturalistes ont identifié une espèce qui brille sous lumière ultraviolette.'],['La Loire à son plus bas niveau depuis 1976',"Les arrêtés de restriction d'eau sont prolongés dans six départements."],['Le club de Saint-Arnoux en finale régionale','Les handballeuses joueront samedi devant un public déjà conquis.'],['Un timbre consacré aux phares bretons','La Poste émettra dès lundi une série de six vignettes.'],['Les cantines testent le menu « zéro gaspillage »',"Quarante collèges y participent jusqu'en décembre."],["Record d'affluence au musée des Arts forains",'Plus de 12 000 visiteurs pendant les vacances.'],["Une comète visible à l'œil nu",'Les astronomes conseillent de s\'éloigner des villes en fin de semaine.'],["Le ticket de bus gelé jusqu'en 2028","La métropole a voté la mesure à l'unanimité."],['Un ours brun aperçu dans les Pyrénées','Les éleveurs du secteur ont été prévenus par la mairie.'],['La fibre arrive dans les derniers villages','Les travaux s\'achèveront au printemps, assure le département.'],['Un festival de BD pour les 8-14 ans','Ateliers et rencontres d\'auteurs seront gratuits.'],['Le marathon change de parcours','Les coureurs longeront le canal pour la première fois.']],
+  pieds:["Économie : la baguette à 1,50 €, vraiment ?",'Culture : le retour des cinémas de quartier',"Sport : les secrets d'une remontada",'Sciences : pourquoi le ciel est-il bleu ?','Société : la semaine de quatre jours fait débat',"Monde : les élections vues de l'étranger",'Planète : le grand retour des haies',"Numérique : vos données valent-elles de l'or ?",'Santé : le sommeil des ados en question'],
+  auteurs:['Claire Montel','Julien Darcourt','Sophie Lambert','Karim Benali','Élise Fournier','Thomas Rigaud','Nadia Ferhat','Marc Olivier'],
+  sites:[['Le Matinal','www.lematinal-info.fr'],["L'Actu Directe",'www.actudirecte.fr'],['Le Quotidien numérique','www.quotidien-numerique.fr'],['Info Hexagone','www.infohexagone.fr'],['La Dépêche du Net','www.depeche-du-net.fr'],['Le Fil Info','www.lefil-info.com']],
+  menus:['International, Politique, Société, Éducation, Économie, Culture, Sport','France, Monde, Éducation, Sciences, Santé, Planète, Culture','À la une, Politique, Éducation, Société, Sciences, Sport, Vidéos'],
+  lire:['Les écrans le soir, vraiment responsables des mauvaises notes ?','Pourquoi les fausses informations circulent plus vite que les vraies','Comment vérifier une photo en trente secondes','Cinq idées reçues sur le cerveau des adolescents','Les « études » sponsorisées, mode d\'emploi','Ce que disent vraiment les chiffres du bac'],
+  comptes:[['Info Express 🔴','infoexpress_direct',true],['Le Vrai Savoir','levraisavoir',false],['Actu Choc ⚡','actuchoc_fr',true],['Dr Nature 🌿','dr_nature_officiel',true],['Breaking France','breakingfrance24',true],['Maman Zen','mamanzen_et_bio',false],['Le Décodeur du Web','decodeur_web',false]],
+  signes:['La Municipalité','Le Comité des fêtes',"L'Association des parents d'élèves",'Le Conseil départemental','La Direction du collège','Le Syndicat des eaux']},
+en:{
+  journaux:[['The Daily Lantern','An independent newspaper since 1924'],['The National Courier','Serving readers since 1946'],['The Evening Gazette','News from every county'],['The Morning Sentinel','Founded 1889 · National edition'],['The Horizon','The paper that looks further'],['The Valley Messenger','Your regional daily'],['The Free Tribune','A paper of opinion since 1958'],['The Wake-Up Call','News · Views · Debate']],
+  prix:['$2.50','$1.99','$3.00','£1.80','£2.20'],
+  oreilles:['Free inside · Back to school','Free · TV guide','This weekend · Our magazine','Exclusive · Behind the scenes','Free · Puzzle book','New · Our big poll'],
+  breves:[['Glowing frog discovered in French Guiana','Naturalists have identified a species that shines under ultraviolet light.'],['River levels at lowest since 1976','Water restrictions are extended in six counties.'],['Local team reaches regional final','The handball squad will play on Saturday in front of a home crowd.'],['New stamps celebrate lighthouses','The postal service will issue a set of six on Monday.'],['School canteens test “zero waste” menu','Forty schools are taking part until December.'],['Record crowds at fairground museum','More than 12,000 visitors over the holidays.'],['Comet visible to the naked eye','Astronomers advise heading away from city lights this weekend.'],['Bus fares frozen until 2028','The council voted for the measure unanimously.'],['Brown bear spotted in the mountains','Local farmers have been warned by the town hall.'],['Broadband reaches the last villages','Work will be finished by spring, the county says.'],['Comic festival for 8 to 14-year-olds','Workshops and author meetings will be free.'],['Marathon gets a new route','Runners will follow the canal for the first time.']],
+  pieds:['Business: is a $5 sandwich fair?','Culture: neighbourhood cinemas are back','Sport: inside a historic comeback','Science: why is the sky blue?','Society: the four-day school week debate','World: the elections seen from abroad','Planet: the return of hedgerows','Tech: is your data worth gold?','Health: teenagers and sleep'],
+  auteurs:['Claire Montel','Julian Dark','Sophie Lambert','Karim Benali','Ellen Foster','Tom Rigby','Nadia Ferhat','Mark Oliver'],
+  sites:[['The Daybreak','www.thedaybreak-news.com'],['Direct News','www.directnews-online.com'],['The Digital Times','www.digitaltimes-daily.com'],['News Nation','www.newsnation-today.com'],['The Net Dispatch','www.netdispatch.com'],['The Newswire','www.thenewswire-info.com']],
+  menus:['World, Politics, Society, Education, Business, Culture, Sport','UK, World, Education, Science, Health, Climate, Culture','Top stories, Politics, Education, Society, Science, Sport, Video'],
+  lire:['Are screens at night really to blame for bad grades?','Why fake news spreads faster than the truth','How to check a photo in thirty seconds','Five myths about the teenage brain','Sponsored “studies”: a user’s guide','What exam statistics really say'],
+  comptes:[['News Flash 🔴','newsflash_live',true],['True Knowledge','trueknowledge',false],['Shock News ⚡','shocknews_now',true],['Dr Nature 🌿','dr_nature_official',true],['Breaking Today','breakingtoday24',true],['Zen Mum','zenmum_organic',false],['Web Decoder','web_decoder',false]],
+  signes:['The Town Council','The Festival Committee','The Parent-Teacher Association','The County Council','The School Management','The Water Board']}
+};
+/* Pour chaque gabarit : les champs qui forment le décor, et comment les tirer */
+const DECOR={
+  une:{ champs:['journal','devise','date','numero','prix','oreille','auteur','b1t','b1','b2t','b2','b3t','b3','pied'],
+    tirer(l){ const R=RES[l], [j,dv]=hasard(R.journaux), br=plusieurs(R.breves,3); const o={journal:j,devise:dv,date:aujourdhui(l,{weekday:'long',day:'numeric',month:'long',year:'numeric'}),numero:(l==='fr'?'N° ':'No. ')+nb(entre(18000,39999),l),prix:hasard(R.prix),oreille:hasard(R.oreilles),auteur:hasard(R.auteurs),pied:plusieurs(R.pieds,3).join('\n')}; br.forEach(([a,b],i)=>{ o['b'+(i+1)+'t']=a; o['b'+(i+1)]=b; }); return o; } },
+  article:{ champs:['site','domaine','menu','auteur','date','lire'],
+    tirer(l){ const R=RES[l], [s,dm]=hasard(R.sites), h=entre(6,21), m=entre(0,59); return {site:s,domaine:dm,menu:hasard(R.menus),auteur:hasard(R.auteurs),lire:hasard(R.lire),
+      date:l==='fr'?`${aujourdhui('fr',{day:'numeric',month:'long',year:'numeric'}).toLowerCase()} à ${String(h).padStart(2,'0')} h ${String(m).padStart(2,'0')}`:`${aujourdhui('en',{month:'long',day:'numeric',year:'numeric'})}, ${(h%12)||12}:${String(m).padStart(2,'0')} ${h<12?'a.m.':'p.m.'}`}; } },
+  post:{ champs:['nom','pseudo','certifie','heure','date','vues','partages','citations','jaime','signets'],
+    tirer(l){ const [n,p,c]=hasard(RES[l].comptes), v=entre(80,2400)*1000, j=Math.round(v*entre(15,45)/1000), h=entre(6,23), m=entre(0,59);
+      return {nom:n,pseudo:p,certifie:c,heure:l==='fr'?`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`:`${(h%12)||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`,
+        date:new Date().toLocaleDateString(l==='fr'?'fr-FR':'en-US',{day:'numeric',month:'short',year:'numeric'}),vues:court(v,l),partages:court(Math.round(j*entre(20,50)/100),l),citations:court(Math.round(j*entre(3,8)/100),l),jaime:court(j,l),signets:court(Math.round(j*entre(5,12)/100),l)}; } },
+  affiche:{ champs:['sign'], tirer(l){ return {sign:hasard(RES[l].signes)}; } },
+  fiche:{ champs:['modif'], tirer(l){ const h=entre(7,23), m=String(entre(0,59)).padStart(2,'0'); return {modif:l==='fr'?`${new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})} à ${h}:${m}`:`${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}, at ${h}:${m}`}; } }
+};
 /* Les vignettes de choix : des croquis maison, reconnaissables d'un coup d'œil */
 const VIGN={
   une:'<svg viewBox="0 0 120 62"><rect x="30" y="1" width="60" height="60" fill="#fbfaf5" stroke="#bbb"/><rect x="38" y="6" width="44" height="6" fill="#222"/><rect x="34" y="14" width="52" height="1.5" fill="#222"/><rect x="34" y="19" width="34" height="5" fill="#222"/><rect x="34" y="27" width="34" height="14" fill="#b9b3a3"/><g fill="#999"><rect x="34" y="44" width="16" height="1.5"/><rect x="34" y="47" width="16" height="1.5"/><rect x="34" y="50" width="16" height="1.5"/><rect x="52" y="44" width="16" height="1.5"/><rect x="52" y="47" width="16" height="1.5"/><rect x="52" y="50" width="16" height="1.5"/><rect x="72" y="20" width="14" height="1.5"/><rect x="72" y="24" width="14" height="1.5"/><rect x="72" y="32" width="14" height="1.5"/><rect x="72" y="36" width="14" height="1.5"/></g><rect x="72" y="19" width="10" height="2.5" fill="#222"/><rect x="72" y="30" width="10" height="2.5" fill="#222"/></svg>',
@@ -670,7 +728,7 @@ const VIGN={
 const CLE='faux-documents:v1';
 const params=new URLSearchParams(location.search);
 let lang=(params.get('lang')==='en'||(!params.get('lang')&&(()=>{try{return localStorage.getItem('faux-documents:lang')}catch(e){}})()==='en'))?'en':'fr';
-const exemple=(g,l)=>JSON.parse(JSON.stringify(G[g].ex[l]));
+const exemple=(g,l)=>Object.assign(JSON.parse(JSON.stringify(G[g].ex[l])),DECOR[g].tirer(l));
 let S={g:'une',docs:{},modif:{}};
 try{ const s=localStorage.getItem(CLE); if(s){ const j=JSON.parse(s); if(j&&j.docs) S=Object.assign(S,j); } }catch(e){}
 if(!G[S.g]) S.g='une';
@@ -697,12 +755,12 @@ function champHTML(c,d){
   const id='f_'+c.k, lab=c[lang], ex=c.ex?`<span class="ex">${esc(c.ex[lang])}</span>`:'';
   if(c.type==='check') return `<label class="champ case"><input type="checkbox" id="${id}" data-c="${c.k}" ${d[c.k]?'checked':''}>${esc(lab)}</label>`;
   if(c.type==='image') return `<div class="champ"><span>${esc(lab)}</span><div class="img-champ">${d[c.k]?`<img class="vign" src="${d[c.k]}" alt="">`:''}<button class="btn mini" type="button" id="${id}" data-img="${c.k}">${t('photo')}</button>${d[c.k]?`<button class="btn mini warn" type="button" data-sans="${c.k}">${t('retirer')}</button>`:''}</div></div>`;
-  if(c.type==='long') return `<label class="champ">${esc(lab)}<textarea id="${id}" data-c="${c.k}" rows="${c.rows||3}">${esc(d[c.k])}</textarea>${ex}</label>`;
+  if(c.type==='long') return `<label class="champ" for="${id}">${esc(lab)}</label>${c.outils?`<div class="barre-ed">${c.outils.map(o=>`<button type="button" class="btn mini" data-ed="${o}" data-cible="${id}">${t('b'+o[0].toUpperCase()+o.slice(1))}</button>`).join('')}</div>`:''}<label class="champ" style="margin-top:3px"><textarea id="${id}" data-c="${c.k}" rows="${c.rows||3}">${esc(d[c.k])}</textarea>${ex}</label>`;
   return `<label class="champ">${esc(lab)}<input type="text" id="${id}" data-c="${c.k}" value="${esc(d[c.k])}">${ex}</label>`;
 }
 function dessinerForm(){
   const g=G[S.g], d=S.docs[S.g];
-  let h='';
+  let h=`<section class="bloc decor"><h2>${t('decor')}</h2><p class="aide" style="margin:0 0 8px">${t('decorAide')}</p><button class="btn mini" type="button" id="bDecor">${t('decorBtn')}</button></section>`;
   if(g.styles) h+=`<section class="bloc"><h2>${t('style')}</h2><div class="seg">${g.styles.map(([v,fr,en])=>`<button class="btn" type="button" data-style="${v}" aria-pressed="${(d.style||g.styles[0][0])===v}">${lang==='fr'?fr:en}</button>`).join('')}</div></section>`;
   g.groupes.forEach((gr,i)=>{
     const ch=g.champs.filter(c=>c.g===i).map(c=>champHTML(c,d)).join('');
@@ -715,9 +773,29 @@ function dessinerForm(){
   f.querySelectorAll('[data-img]').forEach(b=>b.onclick=()=>{ imgCle=b.dataset.img; $('fImg').value=''; $('fImg').click(); });
   f.querySelectorAll('[data-sans]').forEach(b=>b.onclick=()=>{ d[b.dataset.sans]=''; S.modif[S.g]=true; dessinerForm(); rendre(); garder(); });
   $('bEx').onclick=()=>{ S.docs[S.g]=exemple(S.g,lang); S.modif[S.g]=false; tout(); garder(); msg(t('okExemple')); };
-  $('bVide').onclick=()=>{ if(!confirm(t('confVider'))) return; const n={style:d.style}; for(const c of g.champs) n[c.k]=c.type==='check'?false:''; S.docs[S.g]=n; S.modif[S.g]=true; tout(); garder(); };
+  $('bDecor').onclick=()=>{ const cle=x=>x.journal||x.site||x.nom||x.sign||x.modif; let n, i=0; do n=DECOR[S.g].tirer(lang); while(cle(n)===cle(d)&&i++<8); Object.assign(d,n); dessinerForm(); rendre(); garder(); msg(t('okDecor')); };
+  f.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>editer(b.dataset.ed,$(b.dataset.cible)));
+  /* Pas de confirm() : un second clic confirme (la boîte native est bloquée dans certains cadres) */
+  $('bVide').onclick=e=>{ const b=e.currentTarget; if(!b.dataset.arme){ b.dataset.arme=1; b.textContent=t('confirmer'); setTimeout(()=>{ if(b.isConnected){ delete b.dataset.arme; b.textContent=t('vider'); } },3000); return; } const n={style:d.style}; for(const c of g.champs) n[c.k]=DECOR[S.g].champs.includes(c.k)?d[c.k]:(c.type==='check'?false:''); S.docs[S.g]=n; S.modif[S.g]=true; tout(); garder(); };
   $('bSauve').onclick=()=>{ telecharger(nomFichier()+'.document.json',new Blob([JSON.stringify({type:'faux-document',v:1,g:S.g,d:S.docs[S.g]})],{type:'application/json'})); msg(t('okSauve')); };
   $('bOuvre').onclick=()=>{ $('fJson').value=''; $('fJson').click(); };
+}
+
+/* ---------- Mise en forme de la fiche : les boutons écrivent la syntaxe à la place du prof ---------- */
+function editer(o,ta){
+  if(!ta) return; const d=S.docs[S.g]; let a=ta.selectionStart, b=ta.selectionEnd, v=ta.value, sel=v.slice(a,b), ins, s0, s1;
+  if(o==='lien'||o==='gras'||o==='ital'){
+    const [g1,g2]=o==='lien'?['[[',']]']:o==='gras'?['**','**']:['*','*'];
+    const mot=sel||t(o==='lien'?'motLien':'motGras'); ins=g1+mot+g2; s0=a+g1.length; s1=s0+mot.length;
+  } else if(o==='note'){
+    const n=(v.match(/\[(\d+)\]/g)||[]).reduce((m,x)=>Math.max(m,+x.slice(1,-1)),0)+1;
+    ins=sel+'['+n+']'; a=b; sel=''; s0=s1=a+ins.length;
+    const refs=paras(d.refs); while(refs.length<n) refs.push(t('nouvSource')); d.refs=refs.join('\n'); const fr=$('f_refs'); if(fr) fr.value=d.refs;
+  } else {
+    const avant=v.slice(0,a), pre=avant&&!avant.endsWith('\n')?'\n':''; const titre=sel||t('nouvSection'); ins=pre+'## '+titre+'\n'; s0=a+pre.length+3; s1=s0+titre.length;
+  }
+  ta.focus(); ta.setRangeText(ins,a,b,'end'); ta.setSelectionRange(s0,s1);
+  d[ta.dataset.c]=ta.value; S.modif[S.g]=true; rendre(); garder();
 }
 
 /* ---------- Photos : réduites à 1600 px pour rester légères ---------- */
