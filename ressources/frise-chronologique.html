@@ -76,6 +76,15 @@ kbd{font:12px ui-monospace,monospace;border:1px solid var(--bord);border-bottom-
 /* Aperçu */
 .apercu-boite{border-radius:var(--r);overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.18);aspect-ratio:16/9;cursor:pointer;position:relative}
 .apercu-boite .frise{position:absolute;inset:0}
+.galerie{margin-top:22px}
+.galerie h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin:0}
+.galerie .aide{margin:4px 0 10px}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gal .tuile .ech{height:70px}
+.gal .tuile .ech b{font-size:13px;right:10px;line-height:1.15}
+.gal .tuile .ech i{position:absolute;right:8px;bottom:6px;font-style:normal;font-size:20px}
+.gal .tuile .nom{display:flex;justify-content:space-between;gap:6px}
+@media (max-width:600px){ .gal{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .astuce{font-size:12.5px;color:var(--doux);text-align:center;margin:10px auto 0;max-width:640px}
 
@@ -135,6 +144,10 @@ dialog .ligne{justify-content:flex-end}
 .frise .compteur{position:absolute;right:2.5cqw;top:2.5cqh;font:calc(var(--u)*.042)/1 var(--f-bf);opacity:.6;z-index:6;transition:opacity .4s}
 .frise.titre .compteur,.frise.vue .compteur{opacity:0}
 .frise .marque{position:absolute;left:2.5cqw;bottom:2cqh;font-size:calc(var(--u)*.032);opacity:.45;z-index:6}
+.frise .coupe{position:absolute;top:0;left:calc(var(--g)*var(--u)*-.5);transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
+.frise .coupe b{font:700 calc(var(--u)*.09)/1 var(--f-tf);color:var(--f-line);background:var(--f-pt);padding:0 calc(var(--u)*.01);letter-spacing:-.1em;text-shadow:var(--f-glow,none)}
+.frise .coupe small{position:absolute;top:100%;margin-top:calc(var(--u)*.01);white-space:nowrap;font-size:calc(var(--u)*.04);font-style:italic;opacity:.85}
+.frise .dessous .coupe small{top:auto;bottom:100%;margin:0 0 calc(var(--u)*.01)}
 .frise .onom{position:absolute;z-index:7;pointer-events:none}
 
 /* ---------- Parchemin ---------- */
@@ -277,6 +290,7 @@ dialog .ligne{justify-content:flex-end}
         <button class="btn mini" data-v="dates" data-t="espDates">Au rythme des dates</button>
       </div>
     </div>
+    <p class="aide" data-t="aideEsp"></p>
     <label class="lab"><span data-t="lAuto">Lecture automatique : un événement toutes les</span>
       <select id="auto"><option value="3">3 s</option><option value="5">5 s</option><option value="8">8 s</option><option value="12">12 s</option></select></label>
   </section>
@@ -299,6 +313,11 @@ dialog .ligne{justify-content:flex-end}
   <div class="actions">
     <button class="btn prim gros" id="jouer" data-t="lancer">Lancer la frise ▶</button>
   </div>
+  <section class="galerie">
+    <h2 data-t="hGal">Voir un exemple en projection</h2>
+    <p class="aide" data-t="aideGal">Un clic lance la frise, sans toucher à la vôtre. Pour partir d'un exemple et le modifier : « Charger un exemple », à gauche.</p>
+    <div class="gal" id="gal"></div>
+  </section>
   <p class="astuce" data-t-html="astuce">En classe : <kbd>→</kbd> ou un clic pour avancer, <kbd>←</kbd> pour revenir, <kbd>A</kbd> lecture automatique, <kbd>V</kbd> vue d'ensemble, <kbd>Échap</kbd> pour quitter. Une télécommande de présentation marche aussi.</p>
 </div>
 </main>
@@ -333,9 +352,9 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 /* ---------------- Langue ---------------- */
 const T={
 fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour sur antoninatger.com',annuler:'↶ Annuler',annulerSimple:'Annuler',
-  hFrise:'1. La frise',lTitre:'Titre',lSous:'Sous-titre (facultatif)',hEv:'2. Les événements',ajout:'+ Un événement',importer:'Coller une liste',
+  hFrise:'1. La frise',hGal:'Voir un exemple en projection',aideGal:"Un clic lance la frise, sans toucher à la vôtre. Pour partir d'un exemple et le modifier : « Charger un exemple », à gauche.",lTitre:'Titre',lSous:'Sous-titre (facultatif)',hEv:'2. Les événements',ajout:'+ Un événement',importer:'Coller une liste',
   aideDates:"La date s'écrit comme on veut : « 1789 », « 14 juillet 1789 », « 14/07/1789 », « 52 av. J.-C. », « XVe siècle », « il y a 65 millions d'années ». La frise range tout dans l'ordre.",
-  hAmb:"3. L'ambiance",lEsp:'Espacement',espReg:'Régulier',espDates:'Au rythme des dates',lAuto:'Lecture automatique : un événement toutes les',
+  hAmb:"3. L'ambiance",lEsp:'Espacement',espReg:'Régulier',espDates:'Au rythme des dates',aideEsp:"« Au rythme des dates » : les écarts sont proportionnels ; un écart démesuré est coupé (//) avec sa durée écrite.",lAuto:'Lecture automatique : un événement toutes les',
   hFich:'4. Garder, partager',exemples:'Charger un exemple…',lien:'Copier le lien',sauver:'Enregistrer',ouvrir:'Ouvrir',effacer:'Tout effacer',
   aideFich:"Le lien contient toute la frise (sans les images) : à envoyer aux élèves ou à un collègue. « Enregistrer » crée un petit fichier avec les images. Rien n'est envoyé sur Internet.",
   lancer:'Lancer la frise ▶',astuce:"En classe : <kbd>→</kbd> ou un clic pour avancer, <kbd>←</kbd> pour revenir, <kbd>A</kbd> lecture automatique, <kbd>V</kbd> vue d'ensemble, <kbd>Échap</kbd> pour quitter. Une télécommande de présentation marche aussi.",
@@ -350,9 +369,9 @@ fr:{titreOutil:'Frise animée',retour:'← antoninatger.com',retourTitre:'Retour
   mPlein:'Appuyez sur F pour le plein écran.',onom:['BOUM !','PAF !','ZIP !','WOUAH !','TCHAC !','VLAN !'],
   amb:{parchemin:'Parchemin',neon:'Néon',bd:'BD',spatial:'Spatial',tableau:'Tableau noir',journal:'Journal'}},
 en:{titreOutil:'Animated timeline',retour:'← antoninatger.com',retourTitre:'Back to antoninatger.com',annuler:'↶ Undo',annulerSimple:'Cancel',
-  hFrise:'1. The timeline',lTitre:'Title',lSous:'Subtitle (optional)',hEv:'2. Events',ajout:'+ Add an event',importer:'Paste a list',
+  hFrise:'1. The timeline',hGal:'Watch an example',aideGal:'One click plays the timeline without touching yours. To start from an example and edit it: “Load an example”, on the left.',lTitre:'Title',lSous:'Subtitle (optional)',hEv:'2. Events',ajout:'+ Add an event',importer:'Paste a list',
   aideDates:'Write dates any way you like: “1789”, “July 14, 1789”, “1789-07-14”, “52 BC”, “15th century”, “65 million years ago”. The timeline puts everything in order.',
-  hAmb:'3. Style',lEsp:'Spacing',espReg:'Even',espDates:'To scale',lAuto:'Autoplay: one event every',
+  hAmb:'3. Style',lEsp:'Spacing',espReg:'Even',espDates:'To scale',aideEsp:'“To scale”: gaps are proportional; a huge gap is cut (//) with its length written on it.',lAuto:'Autoplay: one event every',
   hFich:'4. Save, share',exemples:'Load an example…',lien:'Copy link',sauver:'Save',ouvrir:'Open',effacer:'Clear all',
   aideFich:'The link holds the whole timeline (without images): send it to students or a colleague. “Save” creates a small file that keeps the images. Nothing is sent over the Internet.',
   lancer:'Play the timeline ▶',astuce:'In class: <kbd>→</kbd> or a click to move on, <kbd>←</kbd> to go back, <kbd>A</kbd> autoplay, <kbd>V</kbd> overview, <kbd>Esc</kbd> to quit. A presentation clicker works too.',
@@ -380,7 +399,7 @@ function traduire(){
   $('langue').textContent=LANG==='fr'?'EN':'FR';
   $('impTxt').placeholder=t('impPh');
   $('titre').placeholder=t('titreDefaut');
-  remplirExemples();
+  remplirExemples(); galerie();
 }
 
 /* ---------------- Lecture des dates ---------------- */
@@ -446,6 +465,32 @@ fr:{
     E('21 janvier 1793','Exécution de Louis XVI','',''),
     E('27 juillet 1794','Chute de Robespierre','Le 9 thermidor an II.',''),
     E('9 novembre 1799','Coup d’État de Bonaparte','Le 18 brumaire an VIII : fin de la Révolution.','⚔️')]}},
+  jeux:{nom:'Le jeu vidéo',d:{titre:'Le jeu vidéo',sous:'De l’oscilloscope à Minecraft',theme:'neon',ev:[
+    E('octobre 1958','Tennis for Two','William Higinbotham affiche une partie de tennis sur un oscilloscope, dans un laboratoire américain.','🎾'),
+    E('novembre 1972','Pong','Le premier grand succès du jeu vidéo, dans les cafés et les salles d’arcade.','🏓'),
+    E('1978','Space Invaders','Des vagues d’extraterrestres à abattre : le jeu lance l’âge d’or de l’arcade.','👾'),
+    E('mai 1980','Pac-Man','Un héros rond, des fantômes, un labyrinthe.','🟡'),
+    E('13 septembre 1985','Super Mario Bros.','Le jeu de plateforme devient un genre à part entière.','🍄'),
+    E('21 avril 1989','La Game Boy','On joue partout, dans la poche.','🎮'),
+    E('27 février 1996','Pokémon Rouge et Vert','Il faut échanger avec les autres pour tout attraper.','⚡'),
+    E('17 mai 2009','Minecraft','Première version publique d’un jeu où l’on construit tout, bloc par bloc.','⛏️')]}},
+  vie:{nom:'L’histoire de la vie',d:{titre:'L’histoire de la vie',sous:'Des bactéries à nous',theme:'bd',esp:'dates',ev:[
+    E('il y a 3,5 milliards d’années','Les premières traces de vie','Des bactéries forment des stromatolithes dans les mers.','🦠'),
+    E('il y a 540 millions d’années','L’explosion cambrienne','En quelques millions d’années, apparaissent la plupart des grands groupes d’animaux.','🦐'),
+    E('il y a 230 millions d’années','Les premiers dinosaures','','🦕'),
+    E('il y a 66 millions d’années','La chute d’un astéroïde','Les dinosaures disparaissent, sauf ceux qui ont donné les oiseaux.','☄️'),
+    E('il y a 7 millions d’années','Toumaï','Un des plus anciens fossiles connus de la lignée humaine, trouvé au Tchad.','💀'),
+    E('il y a 3,2 millions d’années','Lucy','Une australopithèque découverte en Éthiopie en 1974.','🦴'),
+    E('il y a 300 000 ans','Homo sapiens','Les plus anciens fossiles connus de notre espèce, au Maroc.','🧑')]}},
+  sciences:{nom:'Les grandes découvertes',d:{titre:'Les grandes découvertes',sous:'Petite histoire des sciences',theme:'tableau',ev:[
+    E('vers 300 av. J.-C.','Les Éléments d’Euclide','Le livre de géométrie le plus lu de l’histoire.','📐'),
+    E('1543','Copernic','La Terre tourne autour du Soleil, et non l’inverse.','☀️'),
+    E('janvier 1610','Galilée et sa lunette','Il découvre quatre lunes qui tournent autour de Jupiter.','🔭'),
+    E('1687','Newton','La même loi explique la chute d’une pomme et le mouvement de la Lune.','🍎'),
+    E('24 novembre 1859','Darwin','L’Origine des espèces explique l’évolution par la sélection naturelle.','🐢'),
+    E('8 novembre 1895','Les rayons X','Wilhelm Röntgen photographie l’intérieur du corps.','🩻'),
+    E('septembre 1928','La pénicilline','Alexander Fleming découvre le premier antibiotique.','🧫'),
+    E('25 avril 1953','La structure de l’ADN','Watson et Crick s’appuient sur les clichés de Rosalind Franklin.','🧬')]}},
 },
 en:{
   info:{nom:'A history of information',d:{titre:'A history of information',sous:'From clay to AI',theme:'journal',ev:[
@@ -474,7 +519,37 @@ en:{
     E('January 21, 1793','Louis XVI is executed','',''),
     E('July 27, 1794','The fall of Robespierre','9 Thermidor, Year II.',''),
     E('November 9, 1799','Bonaparte’s coup','18 Brumaire, Year VIII: the end of the Revolution.','⚔️')]}},
+  jeux:{nom:'Video games',d:{titre:'Video games',sous:'From the oscilloscope to Minecraft',theme:'neon',ev:[
+    E('October 1958','Tennis for Two','William Higinbotham shows a game of tennis on an oscilloscope in a US laboratory.','🎾'),
+    E('November 1972','Pong','The first big video game hit, in bars and arcades.','🏓'),
+    E('1978','Space Invaders','Waves of aliens to shoot down: the golden age of arcades begins.','👾'),
+    E('May 1980','Pac-Man','A round hero, ghosts and a maze.','🟡'),
+    E('September 13, 1985','Super Mario Bros.','Platform games become a genre of their own.','🍄'),
+    E('April 21, 1989','The Game Boy','Games go everywhere, in your pocket.','🎮'),
+    E('February 27, 1996','Pokémon Red and Green','You have to trade with others to catch them all.','⚡'),
+    E('May 17, 2009','Minecraft','First public version of a game where you build everything, block by block.','⛏️')]}},
+  vie:{nom:'The history of life',d:{titre:'The history of life',sous:'From bacteria to us',theme:'bd',esp:'dates',ev:[
+    E('3.5 billion years ago','The first traces of life','Bacteria build stromatolites in the seas.','🦠'),
+    E('540 million years ago','The Cambrian explosion','Within a few million years, most major animal groups appear.','🦐'),
+    E('230 million years ago','The first dinosaurs','','🦕'),
+    E('66 million years ago','An asteroid strikes','The dinosaurs die out, except those that became birds.','☄️'),
+    E('7 million years ago','Toumaï','One of the oldest known fossils of the human lineage, found in Chad.','💀'),
+    E('3.2 million years ago','Lucy','An australopithecine discovered in Ethiopia in 1974.','🦴'),
+    E('300,000 years ago','Homo sapiens','The oldest known fossils of our species, in Morocco.','🧑')]}},
+  sciences:{nom:'Great discoveries',d:{titre:'Great discoveries',sous:'A short history of science',theme:'tableau',ev:[
+    E('c. 300 BC','Euclid’s Elements','The most widely read geometry book in history.','📐'),
+    E('1543','Copernicus','The Earth goes around the Sun, not the other way round.','☀️'),
+    E('January 1610','Galileo’s telescope','He discovers four moons orbiting Jupiter.','🔭'),
+    E('1687','Newton','The same law explains a falling apple and the motion of the Moon.','🍎'),
+    E('November 24, 1859','Darwin','On the Origin of Species explains evolution by natural selection.','🐢'),
+    E('November 8, 1895','X-rays','Wilhelm Röntgen photographs the inside of the body.','🩻'),
+    E('September 1928','Penicillin','Alexander Fleming discovers the first antibiotic.','🧫'),
+    E('April 25, 1953','The structure of DNA','Watson and Crick build on Rosalind Franklin’s images.','🧬')]}},
 }};
+function galerie(){
+  $('gal').innerHTML=Object.entries(EXEMPLES[LANG]).map(([k,v])=>`<button class="tuile t-${v.d.theme}" data-ex="${k}"><span class="ech"><b>${esc(v.d.titre)}</b><i>${v.d.ev[0].emoji||''}</i></span><span class="nom"><span>${esc(T[LANG].amb[v.d.theme])}</span><span aria-hidden="true">▶</span></span></button>`).join('');
+}
+$('gal').onclick=e=>{ const b=e.target.closest('[data-ex]'); if(!b) return; lancer(normaliser(structuredClone(EXEMPLES[LANG][b.dataset.ex].d))); };
 function remplirExemples(){ const s=$('exemples'); s.length=1; s.options[0].textContent=t('exemples');
   Object.entries(EXEMPLES[LANG]).forEach(([k,v])=>s.add(new Option(v.nom,k))); }
 
@@ -502,23 +577,38 @@ function annuler(){ if(!hist.length) return; D=normaliser(JSON.parse(hist.pop())
 function msg(s){ const b=$('msgBox'); b.textContent=s; b.classList.add('on'); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('on'),3000); }
 
 /* Ordre chronologique : un événement à la date illisible reste après celui qui le précède dans la liste. */
-function ordonnes(){
+function ordonnes(d=D){
   let prec=-Infinity;
-  const l=D.ev.map((e,i)=>{ const v=lireDate(e.date); const ok=!isNaN(v); const cle=ok?v:prec; if(ok) prec=v; return {e,v:ok?v:null,cle,i}; });
+  const l=d.ev.map((e,i)=>{ const v=lireDate(e.date); const ok=!isNaN(v); const cle=ok?v:prec; if(ok) prec=v; return {e,v:ok?v:null,cle,i}; });
   l.sort((a,b)=>a.cle-b.cle||a.i-b.i);
   return l;
 }
 function trier(){ const avantIds=D.ev.map(e=>e.id).join(); D.ev=ordonnes().map(o=>o.e); return avantIds!==D.ev.map(e=>e.id).join(); }
 
 /* ---------------- Positions sur l'axe (en largeurs de carte) ---------------- */
+/* « Au rythme des dates » : l'écart typique (médian) vaut ~0,9 carte, les autres en proportion.
+   Un écart démesuré (10 millions d'années puis 2 ans) est coupé « // » avec sa durée écrite,
+   sinon il écraserait tout le reste ; un écart trop petit est élargi pour que les cartes ne se chevauchent pas. */
+function duree(a){
+  const fr=LANG==='fr', n=(x,d)=>x.toLocaleString(fr?'fr-FR':'en-GB',{maximumFractionDigits:d});
+  if(a>=1e9) return fr?`${n(a/1e9,1)} milliard${a>=2e9?'s':''} d’années`:`${n(a/1e9,1)} billion years`;
+  if(a>=1e6) return fr?`${n(a/1e6,1)} million${a>=2e6?'s':''} d’années`:`${n(a/1e6,1)} million years`;
+  if(a>=1.5) return fr?`${n(Math.round(a),0)} ans`:`${n(Math.round(a),0)} years`;
+  const m=Math.round(a*12); return m>=2?(fr?`${m} mois`:`${m} months`):(fr?'quelques jours':'a few days');
+}
 function positions(l,esp){
-  const n=l.length, xs=[];
+  const n=l.length, xs=[]; xs.coupes={};
   const vals=l.map(o=>o.v).filter(v=>v!=null);
   if(esp!=='dates'||vals.length<2){ for(let i=0;i<n;i++) xs.push(i*.62); return xs; }
-  const v0=Math.min(...vals), v1=Math.max(...vals), span=(v1-v0)||1, L=(n-1)*.9;
-  let last=v0;
-  l.forEach((o,i)=>{ const v=o.v??last; last=v; let x=(v-v0)/span*L;
-    if(i>0) x=Math.max(x,xs[i-1]+.58); if(i>1) x=Math.max(x,xs[i-2]+1.08); xs.push(x); });
+  let last=vals[0]; const v=l.map(o=>last=(o.v??last));
+  const ecarts=[]; for(let i=1;i<n;i++) if(v[i]>v[i-1]) ecarts.push(v[i]-v[i-1]);
+  ecarts.sort((a,b)=>a-b); const med=ecarts.length?ecarts[Math.floor((ecarts.length-1)/2)]:1, k=.9/med, MAX=2.4;
+  for(let i=0;i<n;i++){
+    if(!i){ xs.push(0); continue; }
+    let g=(v[i]-v[i-1])*k;
+    if(g>MAX){ g=MAX; xs.coupes[i]=duree(v[i]-v[i-1]); }
+    let x=xs[i-1]+g; x=Math.max(x,xs[i-1]+.58); if(i>1) x=Math.max(x,xs[i-2]+1.08); xs.push(x);
+  }
   return xs;
 }
 
@@ -526,11 +616,11 @@ function positions(l,esp){
 class Frise{
   constructor(boite){ this.boite=boite; this.pas=-1; this.n=0; }
   construire(d){
-    this.d=d; const l=ordonnes(), xs=positions(l,d.esp); this.l=l; this.xs=xs; this.n=l.length;
+    this.d=d; const l=ordonnes(d), xs=positions(l,d.esp); this.l=l; this.xs=xs; this.n=l.length;
     const a0=(xs[0]||0)-1.6, a1=(xs[xs.length-1]||0)+1.6; this.a0=a0; this.a1=a1;
     const marq={parchemin:'🪶',spatial:'🚀'}[d.theme]||'';
     const evs=l.map((o,i)=>{ const e=o.e;
-      return `<div class="ev ${i%2?'dessous':'dessus'}" style="--x:${xs[i]}" data-i="${i}"><span class="tige"></span><span class="pt"></span>
+      return `<div class="ev ${i%2?'dessous':'dessus'}" style="--x:${xs[i]}" data-i="${i}">${xs.coupes&&xs.coupes[i]?`<span class="coupe" style="--g:${xs[i]-xs[i-1]}"><b>//</b><small>${esc(xs.coupes[i])}</small></span>`:''}<span class="tige"></span><span class="pt"></span>
         <div class="carte">${e.emoji?`<span class="em">${esc(e.emoji)}</span>`:''}<div class="d">${esc(e.date)}</div>${e.img?`<img src="${e.img}" alt="">`:''}${e.titre?`<h3>${esc(e.titre)}</h3>`:''}${e.texte?`<p>${esc(e.texte)}</p>`:''}</div></div>`; }).join('');
     this.boite.innerHTML=`<div class="frise t-${d.theme} titre"><div class="deco"></div>
       <div class="piste" style="--a0:${a0};--a1:${a1};--fx:${a0}"><span class="sonde"></span><div class="axe"></div><div class="plein"></div>${marq?`<span class="curseur">${marq}</span>`:''}${evs}</div>
@@ -668,21 +758,22 @@ $('langue').onclick=()=>{ LANG=LANG==='fr'?'en':'fr'; try{ localStorage.setItem(
 /* ---------------- Projection ---------------- */
 const SC=new Frise($('sceneFrise'));
 let tAuto=null, tCalme=null;
-function lancer(){
-  if(!D.ev.length) return msg(t('mVide'));
+function lancer(d){
+  d=d&&d.ev?d:D;
+  if(!d.ev.length) return msg(t('mVide'));
   stopAuto(); $('scene').classList.add('on'); $('scene').setAttribute('aria-hidden','false');
   try{ document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){}
-  SC.construire(D); SC.aller(-1,{instant:true}); reveil(); $('sSuiv').focus({preventScroll:true});
+  SC.construire(d); SC.aller(-1,{instant:true}); reveil(); $('sSuiv').focus({preventScroll:true});
 }
 function quitter(){ stopAuto(); $('scene').classList.remove('on'); $('scene').setAttribute('aria-hidden','true'); try{ document.fullscreenElement&&document.exitFullscreen(); }catch(e){} $('jouer').focus(); }
 const suiv=()=>{ if(SC.pas<SC.n) SC.aller(SC.pas+1); else stopAuto(); };
 const prec=()=>{ stopAuto(); if(SC.pas>-1) SC.aller(SC.pas-1,{anim:false}); };
 function stopAuto(){ clearInterval(tAuto); tAuto=null; $('sAuto').setAttribute('aria-pressed','false'); }
-function basculerAuto(){ if(tAuto) return stopAuto(); $('sAuto').setAttribute('aria-pressed','true'); if(SC.pas>=SC.n) SC.aller(-1,{instant:true}); suiv(); tAuto=setInterval(()=>{ suiv(); if(SC.pas>=SC.n) stopAuto(); },(D.auto||5)*1000); }
+function basculerAuto(){ if(tAuto) return stopAuto(); $('sAuto').setAttribute('aria-pressed','true'); if(SC.pas>=SC.n) SC.aller(-1,{instant:true}); suiv(); tAuto=setInterval(()=>{ suiv(); if(SC.pas>=SC.n) stopAuto(); },(SC.d.auto||5)*1000); }
 function vue(){ stopAuto(); SC.aller(SC.pas===SC.n?SC.n-1:SC.n,{anim:false}); }
 function plein(){ try{ if(document.fullscreenElement){ quitterAvecPlein=false; document.exitFullscreen(); } else document.documentElement.requestFullscreen(); }catch(e){} }
 function reveil(){ $('scene').classList.remove('calme'); clearTimeout(tCalme); tCalme=setTimeout(()=>$('scene').classList.add('calme'),2500); }
-$('jouer').onclick=lancer;
+$('jouer').onclick=()=>lancer();
 $('sSuiv').onclick=e=>{ e.stopPropagation(); stopAuto(); suiv(); };
 $('sPrec').onclick=e=>{ e.stopPropagation(); prec(); };
 $('sAuto').onclick=e=>{ e.stopPropagation(); basculerAuto(); };
