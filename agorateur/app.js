@@ -158,8 +158,8 @@ const FOES = [
 // (un indice de sa motivation cachée). motiv = la vraie motivation ; leurres =
 // fausses pistes, la dernière la plus proche (servie en Difficile seulement).
 const DIALOGUE = [
-  {motiv:"Il a peur de perdre sa place auprès de vous : le monde change vite, et il se sent dépassé.",
-   leurres:["Il veut avoir le dernier mot : à table, c'est lui qui a toujours raison, et ça l'amuse.","Il défend son ancien métier : il a travaillé toute sa vie dans l'élevage.","Il se méfie de tout ce qui est nouveau : pour lui, c'était mieux avant, pour tout le monde."],
+  {motiv:"Il veut qu'on reconnaisse ce qu'il sait et ce qu'il a vécu : dans une famille qui change vite, il se sent mis de côté.",
+   leurres:["Il veut avoir le dernier mot : à table, c'est lui qui a toujours raison, et ça l'amuse.","Il défend son ancien métier : il a travaillé toute sa vie dans l'élevage.","Il a peur pour ta santé : il croit sincèrement que tes choix vont te rendre malade."],
    braque:"Gérard croise les bras : « Ah, monsieur fait des grands mots maintenant ! » Il ne t'écoute plus.",
    esquive:"Gérard hausse les épaules et ressert du fromage. Rien n'a bougé.",
    fin:"Gérard sourit : « Allez, dimanche, on fait un tour à vélo ensemble. Avec le casque, promis. »",
@@ -184,20 +184,20 @@ const DIALOGUE = [
      k:"« Pardon. C'est que… j'ai du mal à suivre tout ce que vous savez, vous, les jeunes. »"},
     {q:"« Tu as raison. Qu'est-ce qui te fait penser à ça aujourd'hui ? »",
      r:"« Tu as raison, et les études le confirment. Je le mettrai. »",
-     k:"« J'ai eu tellement peur, le jour où ton cousin est tombé. Je tiens à vous, c'est tout. »"},
+     k:"« Tu vois, le vieux a parfois raison. Ça fait du bien qu'on me le dise. »"},
    ]},
-  {motiv:"Il a peur de perdre ses abonnés, donc ses revenus : il dit ce que les marques lui demandent de dire.",
-   leurres:["Il veut devenir célèbre à tout prix : les likes comptent plus pour lui que la vérité.","Il déteste les scientifiques : ils se sont moqués de lui dans une vidéo l'an dernier.","Il croit sincèrement à ses produits : il pense avoir été guéri par une boisson détox."],
+  {motiv:"L'argent des marques : il gagne très bien sa vie grâce à elles, et il dit ce qu'elles paient pour entendre.",
+   leurres:["Il déteste les scientifiques : ils se sont moqués de lui dans une vidéo l'an dernier.","Il croit sincèrement à ses produits : il pense avoir été guéri par une boisson détox.","Il a peur de décevoir sa communauté : il dit ce que ses abonnés ont envie d'entendre."],
    braque:"Maxx coupe le micro : « Encore un hater… Bloqué. » La discussion s'arrête là.",
    esquive:"Maxx enchaîne sur sa prochaine story. Rien n'a bougé.",
    fin:"Maxx range sa perche à selfie : « Tu sais quoi ? Ma prochaine vidéo, ce sera : comment repérer un placement de produit. »",
    lignes:[
     {q:"« Pourquoi cette cagnotte te tient-elle à cœur ? »",
      r:"« Je comprends que tu veuilles aider ce chaton. Mais on peut être ému et vouloir savoir où va l'argent : tu peux nous le dire ? »",
-     k:"« Si mes vidéos ne font pas de vues, le mois prochain, je ne paie pas mon loyer. »"},
+     k:"« Une vidéo qui fait le buzz, c'est une vidéo que je vends plus cher aux marques. »"},
     {q:"« Qu'est-ce que ça représente pour toi, 2,4 millions d'abonnés ? »",
      r:"« Tu dis que beaucoup de gens aiment ta boisson, et c'est sûrement vrai. Mais ça ne dit pas si elle détoxifie : que dit la science, vraiment ? »",
-     k:"« Les chiffres, c'est ma vie. S'ils baissent, les marques s'en vont. »"},
+     k:"« Les chiffres, c'est mon tarif. Plus j'ai d'abonnés, plus les marques paient. »"},
     {q:"« Comment ce footballeur a-t-il découvert ta boisson ? »",
      r:"« Ce footballeur est un champion du sport, d'accord. Mais en nutrition, qu'est-ce qui le rend compétent ? »",
      k:"« Le footballeur, c'est la marque qui l'a choisi, pas moi. Je n'avais même pas goûté la boisson avant le tournage. »"},
@@ -206,17 +206,17 @@ const DIALOGUE = [
      k:"« Honnêtement ? Je ne sais pas si c'est le jus. C'est la phrase que la marque m'a demandé de dire. »"},
     {q:"« Qu'est-ce que tu risquerais, si le produit ne marchait pas ? »",
      r:"« Tu me demandes de prouver que ça ne marche pas. Mais c'est à celui qui vend le produit de montrer qu'il marche : tu as des études indépendantes ? »",
-     k:"« Si j'admets que le produit ne sert à rien, je perds le contrat… et la confiance de ma commu. »"},
+     k:"« Ce contrat, c'est le plus gros de ma carrière. Je ne vais pas cracher dessus. »"},
     {q:"« Qui a réalisé cette étude ? »",
      r:"« Tu t'appuies sur des chiffres, c'est une bonne démarche. Pour que ce soit solide, il faudrait savoir qui a fait l'étude, et comment. »",
      k:"« L'étude, c'est la marque qui l'a payée. Je n'ai pas vérifié : je publie trois vidéos par jour, je n'ai pas le temps. »"},
     {q:"« C'est courageux. Pourquoi as-tu décidé de le dire ? »",
      r:"« Merci de le dire, c'est honnête et c'est rare. Ça me donne plus confiance en toi. »",
-     k:"« J'aimerais faire des vidéos plus honnêtes, mais j'ai peur que plus personne ne les regarde. »"},
+     k:"« J'aimerais faire des vidéos plus honnêtes, mais elles rapportent dix fois moins. »"},
    ]},
   {vous:true,
-   motiv:"Il a peur de perdre l'élection et de décevoir ceux qui ont cru en lui : alors il force le trait.",
-   leurres:["Il ne croit à aucune de ses idées : il dit ce qui fera voter pour lui, puis il oubliera.","Il est payé par une entreprise : ses lois servent d'abord les intérêts de ses amis.","Il adore être applaudi : sur scène, les acclamations comptent plus que les solutions."],
+   motiv:"L'ambition : il rêve de cette élection depuis toujours, et il force le trait pour la gagner.",
+   leurres:["Il ne croit à aucune de ses idées : il dit ce qui fera voter pour lui, puis il oubliera.","Il est payé par une entreprise : ses lois servent d'abord les intérêts de ses amis.","Il a peur de décevoir ceux qui ont voté pour lui : il force le trait pour ne pas les lâcher."],
    braque:"Brutus se tourne vers la salle : « Vous voyez ? Mes adversaires n'ont que des insultes ! » Il en ressort plus fort.",
    esquive:"Brutus enchaîne sur la suite de son discours. Rien n'a bougé.",
    fin:"Brutus baisse le micro : « Vous savez, je préfère un débat comme celui-ci à tous mes meetings. On en refait un, devant les électeurs ? »",
@@ -226,28 +226,28 @@ const DIALOGUE = [
      k:"« J'ai grandi dans un quartier où des voisins dormaient dans leur voiture. Je ne l'ai jamais oublié. »"},
     {q:"« Dans ces pays, d'autres choses ont-elles changé en même temps ? »",
      r:"« Vous appuyez votre proposition sur des données, c'est une bonne base. Il faudrait encore vérifier que la baisse du chômage vient bien de cet impôt. »",
-     k:"« Ces projections, mon équipe y a passé des nuits. Si je perds, tout ce travail sera perdu. »"},
+     k:"« Cette élection, j'y pense depuis mes vingt ans. Ces chiffres doivent m'aider à la gagner. »"},
     {q:"« Pouvez-vous citer ce que votre adversaire propose exactement ? »",
      r:"« Si je reformule fidèlement : votre adversaire veut limiter la vitesse en ville, pas interdire la voiture. Qu'est-ce qui vous gêne dans cette mesure-là ? »",
      k:"« Je l'admets, je caricature. Mes conseillers disent qu'il faut des phrases chocs, sinon personne ne retient rien. »"},
     {q:"« N'y a-t-il vraiment que ces deux options ? »",
      r:"« Vous voulez que les gens soient en sécurité, c'est légitime. Mais entre votre loi et l'insécurité totale, il existe d'autres solutions : lesquelles avez-vous écartées ? »",
-     k:"« Mon équipe me dit que je recule dans les sondages. Quand j'ai peur, je simplifie tout. »"},
+     k:"« Mon équipe me dit que je peux gagner si je frappe plus fort. Alors je simplifie tout. »"},
     {q:"« Que pensez-vous de ses recherches elles-mêmes ? »",
      r:"« Vous lui reprochez d'être incohérent, admettons. Mais ses résultats se jugent sur le fond : qu'avez-vous à redire à ses données ? »",
      k:"« Ce climatologue m'a mis en difficulté au dernier débat. Je n'ai pas su lui répondre… »"},
     {q:"« Que répondriez-vous à ceux qui ne vous soutiennent pas ? »",
      r:"« Beaucoup de gens vous soutiennent, c'est un fait. Mais être populaire ne veut pas dire avoir raison sur ce point précis : quels sont vos arguments ? »",
-     k:"« En vérité, ce sondage date de l'an dernier. Aujourd'hui, je ne suis plus sûr de rien. »"},
+     k:"« En vérité, ce sondage date de l'an dernier. Mais pour gagner, il faut avoir l'air de gagner. »"},
     {q:"« Que lui avez-vous promis, à cette petite fille ? »",
      r:"« Cette histoire vous tient à cœur, ça se sent. Quel est votre plan précis pour les enfants hospitalisés ? »",
      k:"« Cette petite fille existe vraiment. Je lui ai promis que son hôpital resterait ouvert. »"},
     {q:"« C'est clair et vérifiable. Comment avez-vous choisi l'ordre des écoles ? »",
      r:"« Merci de publier vos sources : c'est exactement ce qui permet un débat honnête. »",
-     k:"« Les gens qui m'ont élu comptent sur moi. Je ne veux pas les décevoir. »"},
+     k:"« Je veux être celui qui aura rénové les écoles. C'est pour ça qu'on se souviendra de moi. »"},
    ]},
-  {motiv:"Il s'est senti méprisé et seul : dans son groupe en ligne, on l'écoute enfin.",
-   leurres:["Il gagne de l'argent avec son site : plus il fait peur, plus il vend de remèdes.","Il veut faire peur pour s'amuser : semer le doute est un jeu pour lui.","Il se croit plus intelligent que tout le monde : il aime avoir vu ce que les autres ignorent."],
+  {motiv:"La colère : depuis son licenciement, il ne croit plus aucune institution, et il reste fidèle au groupe qui partage sa colère.",
+   leurres:["Il gagne de l'argent avec son site : plus il fait peur, plus il vend de remèdes.","Il se croit plus intelligent que tout le monde : il aime avoir vu ce que les autres ignorent.","Il a peur pour sa santé : il croit sincèrement que les ondes et les vaccins le menacent."],
    braque:"« Tu vois, tu es comme les autres : tu me prends pour un idiot. » Il se renferme dans ses certitudes.",
    esquive:"Il retourne à son téléphone. Rien n'a bougé.",
    fin:"Il décroche un post-it du mur : « On pourrait vérifier une de mes infos ensemble, la semaine prochaine ? Juste pour voir. »",
@@ -263,7 +263,7 @@ const DIALOGUE = [
      k:"« Mon chat, c'est tout ce qui me reste depuis que je vis seul. J'avais besoin de comprendre. »"},
     {q:"« Depuis quand as-tu ce sentiment ? »",
      r:"« Tu ressens une vraie méfiance, et elle vient sûrement de quelque part. Mais un sentiment ne suffit pas à prouver un mensonge : qu'est-ce qui l'a fait naître ? »",
-     k:"« Ce sentiment que tout cloche, je l'ai depuis mon licenciement. Ce jour-là, on m'a menti. »"},
+     k:"« Ce sentiment que tout cloche, je l'ai depuis mon licenciement. Ce jour-là, on m'a menti, et ça me met encore en rage. »"},
     {q:"« Qu'est-ce qui pourrait te faire changer d'avis ? »",
      r:"« Tu me demandes de prouver qu'il n'y a pas de complot. Mais c'est à celui qui affirme de prouver : quelle est ta preuve la plus solide ? »",
      k:"« Si j'ai tort, alors j'ai perdu des années… et peut-être mes amis du groupe avec. »"},
@@ -342,7 +342,7 @@ if(SENSEI_BOSS){
      a:"valable", opts:["halo","circulaire","preuve"],
      e:"Enfin, la vraie leçon. Juger un argument sur ses <b>preuves</b> et non sur la personne qui le porte, c'est un <b>argument valable</b>, et c'est tout l'esprit du dojo."},
    ]});
-  DIALOGUE.push({motiv:"Il a peur d'avoir formé des disciples qui le croient sur parole : il veut savoir si tu penses par toi-même, même face à lui.",
+  DIALOGUE.push({motiv:"Il veut savoir s'il a réussi sa mission de maître : former un élève qui pense par lui-même, même face à lui.",
    leurres:["Il veut prouver qu'il reste le meilleur : il ne supporte pas qu'un élève le dépasse.","Il est passé chez les sophistes : lui aussi préfère gagner que d'avoir raison.","Il veut récupérer Sophisuke : il est jaloux que son ancien disciple marche à tes côtés."],
    braque:"Kakasophe rouvre son petit livre : « Tu frappes fort, mais tu n'écoutes pas. Il te reste du chemin. »",
    esquive:"Kakasophe soupire : « Fuir le désaccord, ce n'est pas ce que je t'ai appris. »",
@@ -919,6 +919,103 @@ function texteMassue(line){
   if(line.type==="epl") return "« C'est "+({ethos:"de l'ethos",pathos:"du pathos",logos:"du logos"}[line.a])+", ça ne prouve rien ! »";
   return "« "+nom+" ! "+(vous?"Votre":"Ton")+" argument ne vaut rien. »";
 }
+// Des réponses de longueur variable, et une répartition qui change d'une
+// réplique à l'autre (1, 2 ou 3 bonnes réponses sur 4) : la plus longue ne doit
+// pas être la bonne à coup sûr (retour d'un joueur, novembre 2026). Chaque
+// choix porte un geste (g : l'effet et le bilan) et parfois une variante
+// (v : l'étiquette et la leçon affichées après coup).
+const VARIANTES={
+  lecon:{l:"📚 Leçon de morale", m:"Même bien argumentée, une leçon assénée de haut reste un coup de massue : l'autre se sent jugé et défend sa position au lieu d'écouter."},
+  piege:{l:"🎣 Question piège", m:"Une question qui contient déjà le reproche n'est pas une vraie question : l'autre se sent piégé et se ferme."},
+  polie:{l:"🙈 Esquive polie", m:"Une esquive bien tournée reste une esquive : la paix est sauve, mais la discussion n'avance pas."},
+  courte:{l:"❓ Question ouverte", m:"Quelques mots suffisent : une vraie question, posée avec curiosité, invite l'autre à s'expliquer."},
+};
+// Ce que la leçon de morale reproche, sophisme par sophisme : le constat est
+// juste, c'est le ton qui ferme la discussion.
+const LECONS={
+  ethos:"Mettre en avant son expérience ou sa réputation ne prouve rien : c'est de l'ethos, pas un argument.",
+  pathos:"Jouer sur l'émotion au lieu d'apporter des faits, c'est du pathos, le plus vieux procédé de manipulation.",
+  logos:"Aligner des chiffres pour impressionner, c'est facile : sans la méthode et les sources, ce raisonnement ne vaut rien.",
+  paille:"Caricaturer ce que dit l'autre camp pour avoir l'air d'avoir raison, c'est malhonnête.",
+  adhom:"S'en prendre à la personne au lieu de répondre à l'argument, c'est le niveau zéro du débat.",
+  popu:"Que beaucoup de gens le pensent ne prouve absolument rien : la majorité s'est souvent trompée.",
+  dilemme:"Faire comme s'il n'y avait que deux options, alors qu'il en existe bien d'autres, c'est de la manipulation.",
+  pente:"Enchaîner des catastrophes sans prouver un seul maillon de la chaîne, ce n'est pas un raisonnement.",
+  genehat:"Tirer une règle générale d'un seul cas, ce n'est pas sérieux.",
+  nature:"« Naturel » ne veut pas dire « bon » : les champignons vénéneux aussi sont naturels.",
+  halo:"Être célèbre dans un domaine ne rend compétent dans aucun autre.",
+  preuve:"C'est à celui qui affirme d'apporter la preuve, pas aux autres de prouver le contraire.",
+  posthoc:"Que deux choses arrivent en même temps ne prouve pas que l'une cause l'autre.",
+  circulaire:"Prendre sa conclusion pour preuve, c'est tourner en rond.",
+  hareng:"Changer de sujet pour ne pas répondre, tout le monde le voit.",
+  cherry:"Ne garder que les chiffres qui arrangent, c'est tricher avec les données.",
+  whatabout:"Renvoyer ses défauts à l'autre ne répond pas à la question.",
+};
+function au(tab){ return tab[Math.floor(Math.random()*tab.length)]; }
+function texteLecon(line){
+  const vous=!!(line.dlg&&line.dlg.vous);
+  if(line.type==="sain") return vous?"« C'est bien beau, ce discours raisonnable, mais je ne vais pas vous féliciter pour une fois où vous avez raison. Je retiens surtout tout ce que vous avez dit avant, et ça ne tenait pas debout. »":"« C'est bien beau, ce discours raisonnable, mais je ne vais pas te féliciter pour une fois où tu as raison. Je retiens surtout tout ce que tu as dit avant, et ça ne tenait pas debout. »";
+  const fin=line.type==="epl"
+    ?(vous?" Un vrai débat se fait sur des preuves, et tant que vous n'en apportez pas, je n'ai aucune raison de vous écouter.":" Un vrai débat se fait sur des preuves, et tant que tu n'en apportes pas, je n'ai aucune raison de t'écouter.")
+    :(vous?" C'est un sophisme classique, et tant que vous raisonnerez comme ça, je ne vois pas l'intérêt de discuter avec vous.":" C'est un sophisme classique, et tant que tu raisonneras comme ça, je ne vois pas l'intérêt de discuter avec toi.");
+  return "« "+(LECONS[line.a]||LECONS.paille)+(Math.random()<0.5?fin:"")+" »";
+}
+function texteQuestionPiege(line){
+  const vous=!!(line.dlg&&line.dlg.vous);
+  if(line.type==="sain") return vous?"« Ah, parce que maintenant vous citez des sources ? Vous ne trouvez pas que c'est un peu tard, après tout ce que vous avez raconté ? »":"« Ah, parce que maintenant tu cites des sources ? Tu ne trouves pas que c'est un peu tard, après tout ce que tu as raconté ? »";
+  return au(vous?[
+    "« Vous vous rendez compte que ce que vous venez de dire ne tient pas debout ? Vous pensez vraiment que quelqu'un de sensé peut avaler ça ? »",
+    "« Et vous pensez sincèrement que ça suffit à convaincre quelqu'un qui réfléchit un minimum ? Vous n'avez rien de plus solide ? »",
+  ]:[
+    "« Tu te rends compte que ce que tu viens de dire ne tient pas debout ? Tu penses vraiment que quelqu'un de sensé peut avaler ça ? »",
+    "« Et tu penses sincèrement que ça suffit à convaincre quelqu'un qui réfléchit un minimum ? Tu n'as rien de plus solide ? »",
+  ]);
+}
+function texteEsquivePolie(line){
+  const vous=!!(line.dlg&&line.dlg.vous);
+  return au(vous?[
+    "« Écoutez, chacun a son point de vue, et au fond nous avons sans doute tous un peu raison. Inutile de nous disputer pour ça : nous en reparlerons à tête reposée. »",
+    "« C'est un sujet compliqué, avec beaucoup de nuances, et je ne suis pas sûr qu'on puisse le régler en quelques minutes. Restons-en là pour aujourd'hui, ça vaut mieux. »",
+    "« Je respecte votre avis, vraiment, même si je ne le partage pas. L'important, c'est de rester en bons termes : parlons plutôt de ce qui nous rassemble. »",
+  ]:[
+    "« Écoute, chacun a son point de vue, et au fond on a sans doute tous un peu raison. Pas la peine de se disputer pour ça : on en reparlera à tête reposée, d'accord ? »",
+    "« C'est un sujet compliqué, avec beaucoup de nuances, et je ne suis pas sûr qu'on puisse le régler en quelques minutes. Restons-en là pour aujourd'hui, ça vaut mieux. »",
+    "« Je respecte ton avis, vraiment, même si je ne le partage pas. L'important, c'est qu'on reste en bons termes : parlons plutôt de ce qui nous rassemble. »",
+  ]);
+}
+function texteQuestionCourte(line){
+  const vous=!!(line.dlg&&line.dlg.vous);
+  return au(vous?["« Qu'est-ce qui vous fait dire ça ? J'aimerais comprendre. »","« Vous pouvez m'en dire un peu plus ? Ça m'intéresse. »","« D'où vous vient cette idée ? Racontez-moi. »"]
+                :["« Qu'est-ce qui te fait dire ça ? J'aimerais comprendre. »","« Tu peux m'en dire un peu plus ? Ça m'intéresse. »","« D'où te vient cette idée ? Raconte-moi. »"]);
+}
+// Les réponses possibles : trois bonnes, quatre mauvaises (jamais deux esquives).
+function poolsChoix(line){
+  const d=line.d, vous=!!(line.dlg&&line.dlg.vous);
+  const bonnes=[{g:"question", t:d.q},{g:"reformulation", t:d.r},{g:"question", v:"courte", t:texteQuestionCourte(line)}];
+  const mauvaises=[
+    {g:"massue", t:texteMassue(line)},
+    {g:"massue", v:"lecon", t:texteLecon(line)},
+    {g:"massue", v:"piege", t:texteQuestionPiege(line)},
+    au([{g:"esquive", t:vous?"« Bon… ne nous fâchons pas. Parlons d'autre chose. »":"« Bon… on ne va pas se fâcher. Parlons d'autre chose. »"},
+        {g:"esquive", v:"polie", t:texteEsquivePolie(line)}]),
+  ];
+  return {bonnes:bonnes, mauvaises:mauvaises};
+}
+// La longueur ne doit rien trahir : la plus longue (et la plus courte) des
+// quatre réponses n'est bonne que dans la proportion des bonnes réponses du
+// tirage. On retire jusqu'à obtenir l'ordre visé.
+function composerChoix(line){
+  const r=Math.random(), nb=r<0.3?1:r<0.75?2:3;
+  const veutLongue=Math.random()<nb/4, veutCourte=Math.random()<nb/4;
+  let choix=[];
+  for(let essai=0;essai<60;essai++){
+    const p=poolsChoix(line);
+    choix=[...shuffle(p.bonnes).slice(0,nb), ...shuffle(p.mauvaises).slice(0,4-nb)];
+    const tri=[...choix].sort((x,y)=>x.t.length-y.t.length);
+    if(GESTES[tri[3].g].bon===veutLongue && GESTES[tri[0].g].bon===veutCourte) break;
+  }
+  return shuffle(choix);
+}
 function renderReponse(line){
   const box=$("dialogue"), foe=line.foe||foeActuel(), d=line.d;
   if(!d){ $("nextbtn").style.display="block"; $("nextbtn").textContent="Réplique suivante ➜"; return; }
@@ -929,17 +1026,12 @@ function renderReponse(line){
   h.textContent="💬 Et maintenant, que réponds-tu à {n} ?".replace("{n}",foe.name);
   box.appendChild(h);
   const grille=document.createElement("div"); grille.className="dgrille";
-  const choix=shuffle([
-    {g:"massue", t:texteMassue(line)},
-    {g:"esquive", t:vous?"« Bon… ne nous fâchons pas. Parlons d'autre chose. »":"« Bon… on ne va pas se fâcher. Parlons d'autre chose. »"},
-    {g:"question", t:d.q},
-    {g:"reformulation", t:d.r},
-  ]);
+  const choix=composerChoix(line);
   choix.forEach(c=>{
     const b=document.createElement("button");
-    b.type="button"; b.className="dbtn"; b.dataset.geste=c.g;
+    b.type="button"; b.className="dbtn"; b.dataset.geste=c.g; if(c.v) b.dataset.v=c.v;
     b.textContent=c.t;
-    b.onclick=()=>repondre(line,c.g,b);
+    b.onclick=()=>repondre(line,c.g,b,c.v);
     grille.appendChild(b);
   });
   box.appendChild(grille);
@@ -947,14 +1039,14 @@ function renderReponse(line){
   box.appendChild(r);
   setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); const p=grille.querySelector(".dbtn"); if(p) p.focus({preventScroll:true}); },350);
 }
-function repondre(line,geste,btn){
+function repondre(line,geste,btn,variante){
   const foe=line.foe||foeActuel(), dlg=line.dlg||{}, G=GESTES[geste];
   const max=foeActuel().lines.length;
   bilan[geste]++;
   document.querySelectorAll(".dbtn").forEach(b=>{
     b.disabled=true;
     const g=GESTES[b.dataset.geste];
-    const tag=document.createElement("span"); tag.className="dtag"; tag.textContent=g.l;
+    const tag=document.createElement("span"); tag.className="dtag"; tag.textContent=(VARIANTES[b.dataset.v]||g).l;
     b.prepend(tag);
     b.classList.add(b===btn?(g.bon?"good":"bad"):"dim");
   });
@@ -963,7 +1055,7 @@ function repondre(line,geste,btn){
   const tete=document.createElement("p"); tete.className="rtete";
   const corps=document.createElement("p"); corps.className="rcorps";
   const lecon=document.createElement("p"); lecon.className="rlecon";
-  lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Reconnaître un bon argument, c'est construire un point d'accord.":G.m;
+  lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Reconnaître un bon argument, c'est construire un point d'accord.":(VARIANTES[variante]||G).m;
   if(G.bon){
     ouverture=Math.min(max,ouverture+1);
     tete.textContent=" "+"{n} s'ouvre un peu :".replace("{n}",foe.name); tete.prepend(persoNoeud(foe));
@@ -1027,7 +1119,7 @@ function renderComprendre(){
       $("rip-title").textContent=ok?"🤝 Tu as compris {n} !".replace("{n}",foe.name):"🤔 Pas tout à fait…";
       $("rip-expl").innerHTML="";
       const p1=document.createElement("p"); p1.textContent=(ok?"":"En réalité : ")+dlg.motiv;
-      const p2=document.createElement("p"); p2.className="rfin"; p2.textContent=ok?dlg.fin:"Relis ton carnet : derrière les arguments, il y a souvent une peur ou un besoin. Les questions ouvertes aident à les entendre.";
+      const p2=document.createElement("p"); p2.className="rfin"; p2.textContent=ok?dlg.fin:"Relis ton carnet : derrière les arguments, il y a souvent une peur, une envie, une colère ou un besoin. Les questions ouvertes aident à les entendre.";
       $("rip-expl").append(p1,p2);
       const nb=$("nextbtn"); nb.style.display="block";
       nb.textContent=foeIdx===FOES.length-1?"🏁 Voir le bilan ➜":"Personnage suivant ➜";
