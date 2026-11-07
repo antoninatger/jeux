@@ -158,8 +158,8 @@ const FOES = [
 // to their hidden motive). motiv = the real motive; leurres = false leads, the
 // last one the closest (only served in Hard).
 const DIALOGUE = [
-  {motiv:"He is afraid of losing his place in the family: the world is changing fast, and he feels left behind.",
-   leurres:["He wants the last word: at the table, he is always right, and he enjoys it.","He is defending his old trade: he worked in livestock farming all his life.","He distrusts anything new: for him, things were better before, for everyone."],
+  {motiv:"He wants what he knows and what he has lived through to be recognised: in a family that is changing fast, he feels pushed aside.",
+   leurres:["He wants the last word: at the table, he is always right, and he enjoys it.","He is defending his old trade: he worked in livestock farming all his life.","He is afraid for your health: he sincerely believes your choices will make you ill."],
    braque:"Gerard folds his arms: 'Oh, listen to you with your big words!' He has stopped listening.",
    esquive:"Gerard shrugs and helps himself to more cheese. Nothing has moved.",
    fin:"Gerard smiles: 'Come on, let's go for a bike ride together on Sunday. With helmets, I promise.'",
@@ -184,20 +184,20 @@ const DIALOGUE = [
      k:"'Sorry. It's just… I struggle to keep up with everything you young people know.'"},
     {q:"'You're right. What makes you think of it today?'",
      r:"'You're right, and the studies back it up. I'll wear it.'",
-     k:"'I was so scared the day your cousin fell. I care about you all, that's all.'"},
+     k:"'You see, the old man is right sometimes. It feels good to hear it.'"},
    ]},
-  {motiv:"He is afraid of losing followers, and so his income: he says what the brands ask him to say.",
-   leurres:["He wants to be famous at any cost: likes matter more to him than the truth.","He hates scientists: they mocked him in a video last year.","He sincerely believes in his products: he thinks a detox drink cured him."],
+  {motiv:"The brands' money: he earns a very good living from them, and he says what they pay to hear.",
+   leurres:["He hates scientists: they mocked him in a video last year.","He sincerely believes in his products: he thinks a detox drink cured him.","He is afraid of letting his community down: he says what his followers want to hear."],
    braque:"Maxx cuts the mic: 'Another hater… Blocked.' The conversation ends there.",
    esquive:"Maxx moves on to his next story. Nothing has moved.",
    fin:"Maxx puts away his selfie stick: 'You know what? My next video will be: how to spot sponsored content.'",
    lignes:[
     {q:"'Why does this fundraiser matter to you?'",
      r:"'I understand you want to help this kitten. But you can be moved and still want to know where the money goes: can you tell us?'",
-     k:"'If my videos don't get views, I can't pay my rent next month.'"},
+     k:"'A video that goes viral is a video I can sell to brands for more.'"},
     {q:"'What do 2.4 million followers mean to you?'",
      r:"'You're saying lots of people like your drink, and that's probably true. But it doesn't tell us whether it detoxes anything: what does the science actually say?'",
-     k:"'Numbers are my life. If they drop, the brands leave.'"},
+     k:"'Numbers are my rate card. The more followers I have, the more the brands pay.'"},
     {q:"'How did this footballer discover your drink?'",
      r:"'This footballer is a sports champion, sure. But in nutrition, what makes him an expert?'",
      k:"'The brand picked the footballer, not me. I hadn't even tasted the drink before the shoot.'"},
@@ -206,16 +206,16 @@ const DIALOGUE = [
      k:"'Honestly? I don't know if it's the juice. It's the line the brand asked me to say.'"},
     {q:"'What would you risk if the product didn't work?'",
      r:"'You're asking me to prove it doesn't work. But it's up to whoever sells the product to show that it works: do you have independent studies?'",
-     k:"'If I admit the product is useless, I lose the contract… and my community's trust.'"},
+     k:"'This contract is the biggest of my career. I'm not going to turn it down.'"},
     {q:"'Who ran this study?'",
      r:"'You're relying on numbers, which is a good approach. To make it solid, we'd need to know who ran the study, and how.'",
      k:"'The brand paid for the study. I didn't check: I post three videos a day, I don't have time.'"},
     {q:"'That's brave. Why did you decide to say it?'",
      r:"'Thanks for saying that, it's honest and rare. It makes me trust you more.'",
-     k:"'I'd love to make more honest videos, but I'm scared nobody would watch them.'"},
+     k:"'I'd love to make more honest videos, but they pay ten times less.'"},
    ]},
-  {motiv:"He is afraid of losing the election and letting down those who believed in him: so he exaggerates.",
-   leurres:["He doesn't believe in any of his ideas: he says whatever wins votes, then forgets.","A company pays him: his laws serve his friends' interests first.","He loves being applauded: on stage, cheers matter more than solutions."],
+  {motiv:"Ambition: he has dreamed of this election all his life, and he exaggerates to win it.",
+   leurres:["He doesn't believe in any of his ideas: he says whatever wins votes, then forgets.","A company pays him: his laws serve his friends' interests first.","He is afraid of letting down those who voted for him: he exaggerates so as not to abandon them."],
    braque:"Brutus turns to the audience: 'You see? My opponents have nothing but insults!' He comes out stronger.",
    esquive:"Brutus carries on with his speech. Nothing has moved.",
    fin:"Brutus lowers the mic: 'You know, I prefer a debate like this one to all my rallies. Shall we do it again, in front of the voters?'",
@@ -225,28 +225,28 @@ const DIALOGUE = [
      k:"'I grew up in a neighbourhood where neighbours slept in their cars. I've never forgotten it.'"},
     {q:"'In those countries, did other things change at the same time?'",
      r:"'You're basing your proposal on data, which is a good start. We'd still need to check that the fall in unemployment really came from that tax.'",
-     k:"'My team spent nights on those projections. If I lose, all that work will be lost.'"},
+     k:"'I've been thinking about this election since I was twenty. These numbers have to help me win it.'"},
     {q:"'Can you quote exactly what your opponent proposes?'",
      r:"'If I rephrase faithfully: your opponent wants to limit speed in cities, not ban cars. What bothers you about that measure?'",
      k:"'I admit it, I caricature. My advisers say you need punchlines, otherwise nobody remembers anything.'"},
     {q:"'Are there really only these two options?'",
      r:"'You want people to be safe, which is legitimate. But between your law and total insecurity, there are other solutions: which ones did you rule out?'",
-     k:"'My team tells me I'm slipping in the polls. When I'm scared, I oversimplify.'"},
+     k:"'My team tells me I can win if I hit harder. So I oversimplify.'"},
     {q:"'What do you think of his research itself?'",
      r:"'You say he's inconsistent, fair enough. But his results must be judged on their merits: what's wrong with his data?'",
      k:"'That climate scientist put me on the spot in the last debate. I didn't know how to answer him…'"},
     {q:"'What would you say to those who don't support you?'",
      r:"'Many people support you, that's a fact. But being popular doesn't mean being right on this specific point: what are your arguments?'",
-     k:"'To be honest, that poll is from last year. Today, I'm not sure of anything.'"},
+     k:"'To be honest, that poll is from last year. But to win, you have to look like you're winning.'"},
     {q:"'What did you promise that little girl?'",
      r:"'This story clearly matters to you. What is your precise plan for children in hospital?'",
      k:"'That little girl is real. I promised her that her hospital would stay open.'"},
     {q:"'That's clear and checkable. How did you choose the order of the schools?'",
      r:"'Thank you for publishing your sources: that's exactly what makes an honest debate possible.'",
-     k:"'The people who elected me are counting on me. I don't want to let them down.'"},
+     k:"'I want to be the one who renovated the schools. That's what I'll be remembered for.'"},
    ]},
-  {motiv:"He felt looked down on and alone: in his online group, people finally listen to him.",
-   leurres:["He makes money from his website: the more he scares people, the more remedies he sells.","He wants to scare people for fun: sowing doubt is a game to him.","He thinks he is smarter than everyone: he loves seeing what others miss."],
+  {motiv:"Anger: since he was laid off, he trusts no institution, and he stays loyal to the group that shares his anger.",
+   leurres:["He makes money from his website: the more he scares people, the more remedies he sells.","He thinks he is smarter than everyone: he loves seeing what others miss.","He is afraid for his health: he sincerely believes radio waves and vaccines threaten him."],
    braque:"'See, you're like the others: you think I'm an idiot.' He retreats into his certainties.",
    esquive:"He goes back to his phone. Nothing has moved.",
    fin:"He takes a sticky note off the wall: 'We could check one of my facts together next week? Just to see.'",
@@ -262,7 +262,7 @@ const DIALOGUE = [
      k:"'My cat is all I have left since I've been living alone. I needed to understand.'"},
     {q:"'How long have you had this feeling?'",
      r:"'You feel real distrust, and it probably comes from somewhere. But a feeling isn't enough to prove a lie: what started it?'",
-     k:"'This feeling that something's wrong, I've had it since I was laid off. That day, they lied to me.'"},
+     k:"'This feeling that something's wrong, I've had it since I was laid off. That day, they lied to me, and it still makes me furious.'"},
     {q:"'What could change your mind?'",
      r:"'You're asking me to prove there's no conspiracy. But it's up to whoever makes the claim to prove it: what's your strongest evidence?'",
      k:"'If I'm wrong, then I've wasted years… and maybe lost my friends from the group too.'"},
@@ -340,7 +340,7 @@ if(SENSEI_BOSS){
      a:"valable", opts:["halo","circulaire","preuve"],
      e:"At last, the real lesson. Judging an argument by its <b>evidence</b>, not by the person who makes it, is a <b>valid argument</b>, and the whole spirit of the dojo."},
    ]});
-  DIALOGUE.push({motiv:"He is afraid of having trained disciples who take him at his word: he wants to know if you think for yourself, even against him.",
+  DIALOGUE.push({motiv:"He wants to know if he has fulfilled his mission as a master: training a student who thinks for himself, even against him.",
    leurres:["He wants to prove he is still the best: he can't stand a student surpassing him.","He has gone over to the sophists: he too prefers winning to being right.","He wants Sophisuke back: he is jealous that his former disciple walks by your side."],
    braque:"Kakasophe reopens his little book: “You hit hard, but you don't listen. You still have a long way to go.”",
    esquive:"Kakasophe sighs: “Running from disagreement is not what I taught you.”",
@@ -916,6 +916,91 @@ function texteMassue(line){
   if(line.type==="epl") return "'That's just "+nom.toLowerCase()+", it proves nothing!'";
   return "'"+nom+"! Your argument is worthless.'";
 }
+// Des réponses de longueur variable, et une répartition qui change d'une
+// réplique à l'autre (1, 2 ou 3 bonnes réponses sur 4) : la plus longue ne doit
+// pas être la bonne à coup sûr (retour d'un joueur, novembre 2026). Chaque
+// choix porte un geste (g : l'effet et le bilan) et parfois une variante
+// (v : l'étiquette et la leçon affichées après coup).
+const VARIANTES={
+  lecon:{l:"📚 Lecture", m:"Even well argued, a lesson delivered from on high is still a sledgehammer: the other person feels judged and defends their position instead of listening."},
+  piege:{l:"🎣 Loaded question", m:"A question that already contains the reproach isn't a real question: the other person feels trapped and shuts down."},
+  polie:{l:"🙈 Polite dodge", m:"A well-turned dodge is still a dodge: the peace is kept, but the discussion goes nowhere."},
+  courte:{l:"❓ Open question", m:"A few words are enough: a real question, asked with curiosity, invites the other person to explain."},
+};
+// Ce que la leçon de morale reproche, sophisme par sophisme : le constat est
+// juste, c'est le ton qui ferme la discussion.
+const LECONS={
+  ethos:"Showing off your experience or reputation proves nothing: that's ethos, not an argument.",
+  pathos:"Playing on emotion instead of bringing facts is pathos, the oldest manipulation trick there is.",
+  logos:"Lining up numbers to impress is easy: without the method and the sources, that reasoning is worthless.",
+  paille:"Caricaturing what the other side says to look right is dishonest.",
+  adhom:"Attacking the person instead of answering the argument is debate at its lowest.",
+  popu:"Lots of people thinking something proves absolutely nothing: the majority has often been wrong.",
+  dilemme:"Acting as if there were only two options, when there are plenty of others, is manipulation.",
+  pente:"Chaining disasters together without proving a single link isn't reasoning.",
+  genehat:"Drawing a general rule from a single case isn't serious.",
+  nature:"'Natural' doesn't mean 'good': poisonous mushrooms are natural too.",
+  halo:"Being famous in one field doesn't make anyone competent in another.",
+  preuve:"It's up to whoever makes the claim to prove it, not up to others to prove the opposite.",
+  posthoc:"Two things happening at the same time doesn't prove one causes the other.",
+  circulaire:"Using your conclusion as your proof is going round in circles.",
+  hareng:"Changing the subject to avoid answering, everyone can see it.",
+  cherry:"Keeping only the figures that suit you is cheating with the data.",
+  whatabout:"Throwing someone's flaws back at them doesn't answer the question.",
+};
+function au(tab){ return tab[Math.floor(Math.random()*tab.length)]; }
+function texteLecon(line){
+  if(line.type==="sain") return "'That's a very reasonable speech, but I'm not going to congratulate you for being right for once. What I remember is everything you said before, and none of it held up.'";
+  const fin=line.type==="epl"
+    ?" A real debate is about evidence, and until you bring some, I have no reason to listen to you."
+    :" It's a textbook fallacy, and as long as you reason like that, I don't see the point of discussing with you.";
+  return "'"+(LECONS[line.a]||LECONS.paille)+(Math.random()<0.5?fin:"")+"'";
+}
+function texteQuestionPiege(line){
+  if(line.type==="sain") return "'Oh, so now you're quoting sources? Don't you think it's a bit late, after everything you've been saying?'";
+  return au([
+    "'Do you realise that what you just said makes no sense? Do you really think anyone sensible would swallow that?'",
+    "'And you honestly think that's enough to convince someone who thinks even a little? Haven't you got anything more solid?'",
+  ]);
+}
+function texteEsquivePolie(line){
+  return au([
+    "'Look, everyone has their own point of view, and deep down we're probably all a bit right. No need to argue about it: let's talk it over another time, calmly.'",
+    "'It's a complicated subject, with lots of nuances, and I'm not sure we can settle it in a few minutes. Let's leave it there for today, that's better.'",
+    "'I respect your opinion, really, even if I don't share it. What matters is that we stay on good terms: let's talk about what brings us together instead.'",
+  ]);
+}
+function texteQuestionCourte(line){
+  return au(["'What makes you say that? I'd like to understand.'","'Can you tell me a bit more? I'm interested.'","'Where does that idea come from? Tell me.'"]);
+}
+// Les réponses possibles : trois bonnes, quatre mauvaises (jamais deux esquives).
+function poolsChoix(line){
+  const d=line.d;
+  const bonnes=[{g:"question", t:d.q},{g:"reformulation", t:d.r},{g:"question", v:"courte", t:texteQuestionCourte(line)}];
+  const mauvaises=[
+    {g:"massue", t:texteMassue(line)},
+    {g:"massue", v:"lecon", t:texteLecon(line)},
+    {g:"massue", v:"piege", t:texteQuestionPiege(line)},
+    au([{g:"esquive", t:"'Well… let's not fight. Let's talk about something else.'"},
+        {g:"esquive", v:"polie", t:texteEsquivePolie(line)}]),
+  ];
+  return {bonnes:bonnes, mauvaises:mauvaises};
+}
+// La longueur ne doit rien trahir : la plus longue (et la plus courte) des
+// quatre réponses n'est bonne que dans la proportion des bonnes réponses du
+// tirage. On retire jusqu'à obtenir l'ordre visé.
+function composerChoix(line){
+  const r=Math.random(), nb=r<0.3?1:r<0.75?2:3;
+  const veutLongue=Math.random()<nb/4, veutCourte=Math.random()<nb/4;
+  let choix=[];
+  for(let essai=0;essai<60;essai++){
+    const p=poolsChoix(line);
+    choix=[...shuffle(p.bonnes).slice(0,nb), ...shuffle(p.mauvaises).slice(0,4-nb)];
+    const tri=[...choix].sort((x,y)=>x.t.length-y.t.length);
+    if(GESTES[tri[3].g].bon===veutLongue && GESTES[tri[0].g].bon===veutCourte) break;
+  }
+  return shuffle(choix);
+}
 function renderReponse(line){
   const box=$("dialogue"), foe=line.foe||foeActuel(), d=line.d;
   if(!d){ $("nextbtn").style.display="block"; $("nextbtn").textContent="Next line ➜"; return; }
@@ -926,17 +1011,12 @@ function renderReponse(line){
   h.textContent="💬 And now, what do you say to {n}?".replace("{n}",foe.name);
   box.appendChild(h);
   const grille=document.createElement("div"); grille.className="dgrille";
-  const choix=shuffle([
-    {g:"massue", t:texteMassue(line)},
-    {g:"esquive", t:"'Well… let's not fight. Let's talk about something else.'"},
-    {g:"question", t:d.q},
-    {g:"reformulation", t:d.r},
-  ]);
+  const choix=composerChoix(line);
   choix.forEach(c=>{
     const b=document.createElement("button");
-    b.type="button"; b.className="dbtn"; b.dataset.geste=c.g;
+    b.type="button"; b.className="dbtn"; b.dataset.geste=c.g; if(c.v) b.dataset.v=c.v;
     b.textContent=c.t;
-    b.onclick=()=>repondre(line,c.g,b);
+    b.onclick=()=>repondre(line,c.g,b,c.v);
     grille.appendChild(b);
   });
   box.appendChild(grille);
@@ -944,14 +1024,14 @@ function renderReponse(line){
   box.appendChild(r);
   setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); const p=grille.querySelector(".dbtn"); if(p) p.focus({preventScroll:true}); },350);
 }
-function repondre(line,geste,btn){
+function repondre(line,geste,btn,variante){
   const foe=line.foe||foeActuel(), dlg=line.dlg||{}, G=GESTES[geste];
   const max=foeActuel().lines.length;
   bilan[geste]++;
   document.querySelectorAll(".dbtn").forEach(b=>{
     b.disabled=true;
     const g=GESTES[b.dataset.geste];
-    const tag=document.createElement("span"); tag.className="dtag"; tag.textContent=g.l;
+    const tag=document.createElement("span"); tag.className="dtag"; tag.textContent=(VARIANTES[b.dataset.v]||g).l;
     b.prepend(tag);
     b.classList.add(b===btn?(g.bon?"good":"bad"):"dim");
   });
@@ -960,7 +1040,7 @@ function repondre(line,geste,btn){
   const tete=document.createElement("p"); tete.className="rtete";
   const corps=document.createElement("p"); corps.className="rcorps";
   const lecon=document.createElement("p"); lecon.className="rlecon";
-  lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Acknowledging a good argument builds common ground.":G.m;
+  lecon.textContent=(geste==="reformulation"&&line.type==="sain")?"Acknowledging a good argument builds common ground.":(VARIANTES[variante]||G).m;
   if(G.bon){
     ouverture=Math.min(max,ouverture+1);
     tete.textContent=" "+"{n} opens up a little:".replace("{n}",foe.name); tete.prepend(persoNoeud(foe));
@@ -1024,7 +1104,7 @@ function renderComprendre(){
       $("rip-title").textContent=ok?"🤝 You understood {n}!".replace("{n}",foe.name):"🤔 Not quite…";
       $("rip-expl").innerHTML="";
       const p1=document.createElement("p"); p1.textContent=(ok?"":"In fact: ")+dlg.motiv;
-      const p2=document.createElement("p"); p2.className="rfin"; p2.textContent=ok?dlg.fin:"Reread your notebook: behind the arguments there is often a fear or a need. Open questions help you hear them.";
+      const p2=document.createElement("p"); p2.className="rfin"; p2.textContent=ok?dlg.fin:"Reread your notebook: behind the arguments there is often a fear, a desire, anger or a need. Open questions help you hear them.";
       $("rip-expl").append(p1,p2);
       const nb=$("nextbtn"); nb.style.display="block";
       nb.textContent=foeIdx===FOES.length-1?"🏁 See the summary ➜":"Next character ➜";
