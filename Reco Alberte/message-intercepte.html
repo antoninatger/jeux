@@ -815,18 +815,25 @@ function sceneDessiner(nouv){
   const box=$('sceneTel');
   const rendre=(n,frappe,nv)=>{ const s=sel; sel=-1; box.innerHTML=telHTML({n,frappe,nouv:nv}); sel=s; const f=box.querySelector('.fil'); f.scrollTop=f.scrollHeight; ajusterScene(); $('sInfo').textContent=`${Math.min(n,C.msgs.length)} / ${C.msgs.length}`; };
   const m=C.msgs[pas-1];
-  if(nouv&&m&&m.de!=='moi'&&m.de!=='date'){ rendre(pas-1,true); tFrappe=setTimeout(()=>rendre(pas,false,pas-1),Math.min(1600,500+(m.texte||'').length*18)); }
+  if(nouv&&m&&m.de!=='moi'&&m.de!=='date'){ rendre(pas-1,true); tFrappe=setTimeout(()=>rendre(pas,false,pas-1),dureeFrappe(m)); }
   else rendre(pas,false,nouv?pas-1:undefined);
 }
 function ajusterScene(){ if(typeof marquerZones==='function') marquerZones($('sceneTel')); const t=$('sceneTel').querySelector('.tel'); if(!t) return; const k=Math.min((innerHeight-80)/t.offsetHeight,(innerWidth-20)/t.offsetWidth,1.6); t.style.transform=`scale(${k})`; $('sceneTel').style.height=(t.offsetHeight*k)+'px'; }
 addEventListener('resize',()=>{ if($('scene').classList.contains('on')) ajusterScene(); });
 let auto=false, tAuto=null;
-function dureeMsg(m){ if(!m) return 1500; if(m.de==='date') return 1300; const n=(m.texte||'').length;
-  const frappe=m.de!=='moi'?Math.min(1600,500+n*18):0; return frappe+(m.img?4200:Math.max(1700,Math.min(4500,1100+n*45))); }
+// « … écrit » : court pour un message court, plafonné ; une photo s'envoie vite
+function dureeFrappe(m){ if(!m||m.de==='moi'||m.de==='date') return 0; if(m.img) return 700; return Math.min(1500,450+(m.texte||'').length*14); }
+// temps de lecture une fois le message affiché
+function dureeLecture(m){ if(!m) return 1200; if(m.de==='date') return 900; if(m.img) return 3000; const n=(m.texte||'').length; return Math.max(1300,Math.min(3200,700+n*30)); }
+const minutes=h=>{ const x=/^(\d{1,2}):(\d{2})$/.exec(h||''); return x?+x[1]*60+ +x[2]:null; };
+function dureeMsg(m,suivant){ let d=dureeFrappe(m)+dureeLecture(m);
+  if(suivant&&m&&suivant.de===m.de&&m.de!=='date') d-=400; // le même enchaîne
+  const a=minutes(m&&m.h), b=minutes(suivant&&suivant.h); if(a!=null&&b!=null&&b-a>=30) d+=900; // l'après-midi, le soir : petite pause
+  return Math.max(900,d); }
 function majAuto(){ const b=$('sAuto'); if(!b) return; b.classList.toggle('on',auto); b.textContent=auto?'⏸ Pause':(pas>=C.msgs.length?'↺ Relire':'▶ Lecture'); b.setAttribute('aria-pressed',auto); }
 function planifier(){ clearTimeout(tAuto); if(!auto) return majAuto();
   if(pas>=C.msgs.length){ auto=false; return majAuto(); }
-  const prochain=C.msgs[pas]; tAuto=setTimeout(()=>{ if(!auto) return; pas++; sceneDessiner(true); planifier(); }, pas===0?700:dureeMsg(C.msgs[pas-1])); majAuto(); }
+  const prochain=C.msgs[pas]; tAuto=setTimeout(()=>{ if(!auto) return; pas++; sceneDessiner(true); planifier(); }, pas===0?600:dureeMsg(C.msgs[pas-1],C.msgs[pas])); majAuto(); }
 function basculerAuto(){ auto=!auto; if(auto&&pas>=C.msgs.length){ pas=0; sceneDessiner(false); } planifier(); }
 function sceneSuiv(){ if(pas<C.msgs.length){ pas++; sceneDessiner(true); } if(auto) planifier(); else majAuto(); }
 function scenePrec(){ if(pas>0){ pas--; sceneDessiner(false); } if(auto) planifier(); else majAuto(); }
