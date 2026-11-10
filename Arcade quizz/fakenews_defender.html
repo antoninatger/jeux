@@ -31,6 +31,11 @@
      l'en-tête au milieu de la page). */
   #ui{margin-top:auto}
   #speed-row{margin-bottom:auto}
+  /* En mobile, le jeu se cale sous l'en-tête : le centrage vertical laissait
+     ~200 px de vide au-dessus du cadre. */
+  @media (max-width:600px){ #ui{margin-top:4px} }
+  /* Au doigt, glisser sur le cadre déplace l'avion : la page ne doit pas défiler. */
+  @media (pointer:coarse){ canvas{touch-action:none} }
 
   #ui {
     max-width:660px; width:100%; display:flex; justify-content:space-between; align-items:center;
@@ -214,12 +219,12 @@
       <span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>
       ⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>
       ✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>
-      ← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
+      ← →, <strong style="color:#00ffcc">SOURIS</strong> ou <strong style="color:#00ffcc">DOIGT</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause
     </div>
     <ul class="col-meta">
       <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
       <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
-      <li>⌨️ <span data-i18n="metaCommandes">Clavier ou souris</span></li>
+      <li>⌨️ <span data-i18n="metaCommandes">Clavier, souris ou doigt</span></li>
     </ul>
     <div class="col-actions" style="flex-direction:column;align-items:center">
       <button onclick="startDefaultGame()" data-i18n="play">JOUER ▶</button>
@@ -247,9 +252,9 @@ I18N.register({
     hudScore: "SCORE", hudLives: "VIES",
     consigne: "DÉTRUIRE LES FAUSSES RÉPONSES !",
     controlsHint: "← → ou SOURIS déplacer &nbsp;|&nbsp; ESPACE ou CLIC tirer &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Détruis les FAUSSES réponses",
-    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou souris",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier, souris ou doigt",
     speedVerySlow: "TRÈS LENTE", speedSlow: "LENTE", speedNormal: "NORMALE", speedFast: "RAPIDE", speedTurbo: "TURBO",
-    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br><span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>← → ou <strong style="color:#00ffcc">SOURIS</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🎯 Une question s'affiche en haut.<br>Des réponses tombent du ciel.<br><strong style="color:#00ffcc">Détruis toutes les FAUSSES réponses !</strong><br><span class="mob-hide">⚠️ Ne tire pas sur la bonne réponse — tu perdras une vie !<br>⚠️ Ne laisse pas une FAUSSE réponse atteindre le bas — tu perdras une vie !<br>✅ La bonne réponse, elle, peut passer sans risque.<br><br></span>← →, <strong style="color:#00ffcc">SOURIS</strong> ou <strong style="color:#00ffcc">DOIGT</strong> pour déplacer &nbsp;|&nbsp; ESPACE ou <strong style="color:#00ffcc">CLIC</strong> pour tirer &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "JOUER ▶", menu: "← MENU & QUESTIONS", finalScore: "Score final :", replay: "REJOUER ▶",
     winTitle: "BRAVO !<br>MISSION ACCOMPLIE !", loseTitle: "GAME OVER",
     winMsg: "Tu es un vrai chasseur de Fake News !", loseMsg: "Continue à développer ton esprit critique !",
@@ -263,9 +268,9 @@ I18N.register({
     hudScore: "SCORE", hudLives: "LIVES",
     consigne: "DESTROY THE FALSE ANSWERS!",
     controlsHint: "← → or MOUSE to move &nbsp;|&nbsp; SPACE or CLICK to shoot &nbsp;|&nbsp; P = Pause &nbsp;|&nbsp; Destroy the FALSE answers",
-    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or mouse",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard, mouse or touch",
     speedVerySlow: "VERY SLOW", speedSlow: "SLOW", speedNormal: "NORMAL", speedFast: "FAST", speedTurbo: "TURBO",
-    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br><span class="mob-hide">⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Don't let a FALSE answer reach the bottom — you'll lose a life!<br>✅ The correct answer, though, can safely pass through.<br><br></span>← → or <strong style="color:#00ffcc">MOUSE</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
+    intro: `🎯 A question appears at the top.<br>Answers fall from the sky.<br><strong style="color:#00ffcc">Destroy all the FALSE answers!</strong><br><span class="mob-hide">⚠️ Don't shoot the correct answer — you'll lose a life!<br>⚠️ Don't let a FALSE answer reach the bottom — you'll lose a life!<br>✅ The correct answer, though, can safely pass through.<br><br></span>← →, <strong style="color:#00ffcc">MOUSE</strong> or <strong style="color:#00ffcc">FINGER</strong> to move &nbsp;|&nbsp; SPACE or <strong style="color:#00ffcc">CLICK</strong> to shoot &nbsp;|&nbsp; <strong style="color:#00ffcc">P</strong> = Pause`,
     play: "PLAY ▶", menu: "← MENU & QUESTIONS", finalScore: "Final score:", replay: "REPLAY ▶",
     winTitle: "WELL DONE!<br>MISSION ACCOMPLISHED!", loseTitle: "GAME OVER",
     winMsg: "You're a real fake-news hunter!", loseMsg: "Keep developing your critical thinking!",
@@ -352,6 +357,24 @@ canvas.addEventListener('mousemove', e => {
   plane.x = Math.max(34, Math.min(W-34, (e.clientX - rect.left) * scaleX));
 });
 canvas.addEventListener('click', () => { if (gameRunning && !paused) shoot(); });
+// Doigt : glisser déplace l'avion, chaque contact tire. Le mousemove synthétique
+// d'un tap ne suffisait pas à suivre le doigt pendant le glissement.
+function planeAuDoigt(t){
+  const rect = canvas.getBoundingClientRect();
+  plane.x = Math.max(34, Math.min(W-34, (t.clientX - rect.left) * (W / rect.width)));
+}
+canvas.addEventListener('touchstart', e => {
+  if (!gameRunning || paused || !e.touches.length) return;
+  e.preventDefault(); // pas de clic synthétique : le tir part ici, une seule fois
+  planeAuDoigt(e.touches[0]);
+  shoot();
+}, { passive:false });
+canvas.addEventListener('touchmove', e => {
+  if (!gameRunning || paused || !e.touches.length) return;
+  e.preventDefault();
+  planeAuDoigt(e.touches[0]);
+  shoot(); // doigt posé = tir continu, comme Espace maintenu (cadence bornée par shootCooldown)
+}, { passive:false });
 
 // ── PLANE ────────────────────────────────────────────────────
 const plane = { x: W/2, y: H-55, speed:5 };

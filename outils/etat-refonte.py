@@ -25,8 +25,10 @@ IGNORE = {"Obso", ".git", ".agents", "_prive", "_to_delete", "Collège Lycée",
 #    pas quand quelqu'un le déclare fermé.
 BLOQUANTS = [
     ("Fake Blaster et les deux Snake n'affichaient jamais l'explication",
+     # Le Snake racine est devenu une redirection vers l'Arcade (décision D10) :
+     # le témoin porte désormais sur le Snake de l'Arcade, le seul qui se joue.
      lambda f: min(f.get("Arcade quizz/fake-blaster.html", "").count("expl"),
-                   f.get("snake-fakenews.html", "").count("expl")) > 0),
+                   f.get("Arcade quizz/snake-fakenews.html", "").count("expl")) > 0),
     ("Fake News Defender : la consigne affichée contredisait le code",
      lambda f: "La bonne réponse, elle, peut passer" in f.get("Arcade quizz/fakenews_defender.html", "")),
     ("Radar désinfo coupait la partie avant de montrer le contenu restant",
@@ -36,9 +38,11 @@ BLOQUANTS = [
     ("Mine la planète : texte à 4,5 px, et injouable au doigt",
      lambda f: ".36rem" not in f.get("mine.html", ""),
      lambda f: "pointer:coarse" in f.get("mine.html", "") or "pointer: coarse" in f.get("mine.html", "")),
-    ("Snake racine : aucune media query, injouable au doigt",
-     lambda f: "@media" in f.get("snake-fakenews.html", ""),
-     lambda f: "touchmove" in f.get("snake-fakenews.html", "")),
+    # D10 : snake-fakenews.html (racine) redirige vers l'Arcade ; le bloquant se
+    # rejoue sur la page qui se joue vraiment.
+    ("Snake : aucune media query, injouable au doigt",
+     lambda f: "@media" in f.get("Arcade quizz/snake-fakenews.html", ""),
+     lambda f: "touchmove" in f.get("Arcade quizz/snake-fakenews.html", "")),
     ("Graphiques trompeurs : injouable sans la vue",
      lambda f: "Graphique à analyser" not in f.get("graphiques-trompeurs/app.js", "")),
     ("FakeMètre : le curseur central n'est pas opérable au clavier",

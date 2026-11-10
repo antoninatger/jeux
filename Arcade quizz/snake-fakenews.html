@@ -52,6 +52,8 @@
      l'en-tête au milieu de la page). */
   .subtitle{margin-top:auto}
   .controls{margin-bottom:auto}
+  /* En mobile, le jeu se cale sous l'en-tête au lieu d'être centré. */
+  @media (max-width:600px){ .subtitle{margin-top:4px} }
 
   body::before {
     content: '';
@@ -229,6 +231,14 @@
   .overlay > :first-child{margin-top:auto}
   .overlay > :last-child{margin-bottom:auto}
   .overlay.hidden { display: none; }
+  /* Intro resserrée en mobile : à 390 px l'arène ne fait que ~366 px de haut
+     et COMMENCER passait sous le bord, il fallait deviner qu'on pouvait défiler. */
+  @media (max-width:480px){
+    .overlay{gap:8px; padding:8px 0}
+    .overlay h2{font-size:13px; line-height:1.6}
+    .overlay > p{font-size:13px; line-height:1.5; padding:0 12px}
+    .overlay .col-meta{display:none}
+  }
 
   .overlay h2 {
     font-family: 'Press Start 2P', monospace;
@@ -322,7 +332,7 @@
       <ul class="col-meta">
         <li>⏱️ <span data-i18n="metaDuree">5 à 15 min</span></li>
         <li>🎓 <span data-i18n="metaNiveau">Dès le collège</span></li>
-        <li>⌨️ <span data-i18n="metaCommandes">Clavier</span></li>
+        <li>⌨️ <span data-i18n="metaCommandes">Clavier ou glisser du doigt</span></li>
       </ul>
       <button class="btn" id="startBtn" data-i18n="startBtn">COMMENCER</button>
       <button class="btn-menu" onclick="location.href='index.html'" data-i18n="menu">← MENU</button>
@@ -355,7 +365,7 @@
   </div>
 </div>
 
-<div class="controls" data-i18n="controlsHint">↑ ↓ ← → ou WASD · ESPACE = Pause</div>
+<div class="controls" data-i18n="controlsHint">↑ ↓ ← → ou WASD (ou glisser du doigt) · ESPACE = Pause</div>
 
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
@@ -364,8 +374,8 @@ I18N.register({
   fr: {
     pageTitle: "Snake - Fake News & Esprit Critique", colRetour: "Retour à l'arcade",
     subtitle: "Fake News & Esprit Critique",
-    controlsHint: "↑ ↓ ← → ou WASD · ESPACE = Pause",
-    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier",
+    controlsHint: "↑ ↓ ← → ou WASD (ou glisser du doigt) · ESPACE = Pause",
+    metaDuree: "5 à 15 min", metaNiveau: "Dès le collège", metaCommandes: "Clavier ou glisser du doigt",
     collision: "auto-collision !",
     currentQ: "Lance le jeu pour commencer !", overlayH2: "SNAKE<br>ESPRIT CRITIQUE",
     overlayP: `<strong style="color:#69f0ae">Mange UNIQUEMENT la bonne réponse !</strong><br>Manger une mauvaise réponse = −1 vie.<br><br>Toutes les réponses sont en <strong style="color:#4fc3f7">BLEU</strong> — à toi de trouver la bonne. Après chaque bouchée, la bonne devient 🟢 verte et les mauvaises 🔴 rouges.`,
@@ -380,8 +390,8 @@ I18N.register({
   en: {
     pageTitle: "Snake - Fake News & Critical Thinking", colRetour: "Back to the arcade",
     subtitle: "Fake News & Critical Thinking",
-    controlsHint: "↑ ↓ ← → or WASD · SPACE = Pause",
-    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard",
+    controlsHint: "↑ ↓ ← → or WASD (or swipe) · SPACE = Pause",
+    metaDuree: "5 to 15 min", metaNiveau: "Ages 11+", metaCommandes: "Keyboard or swipe",
     collision: "self-collision!",
     currentQ: "Start the game to begin!", overlayH2: "SNAKE<br>CRITICAL THINKING",
     overlayP: `<strong style="color:#69f0ae">Eat ONLY the correct answer!</strong><br>Eating a wrong answer = −1 life.<br><br>All the answers are in <strong style="color:#4fc3f7">BLUE</strong> — it's up to you to find the right one. After each bite, the correct one turns 🟢 green and the wrong ones 🔴 red.`,
@@ -922,7 +932,29 @@ startBtn.addEventListener('click', startGame);
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
   }, { passive: true });
+  // Pendant la partie, glisser sur l'arène dirige le serpent : la page ne doit
+  // pas défiler sous le doigt, et le virage part dès que le geste est lisible
+  // (sans attendre que le doigt se lève).
+  let virageFait = false;
+  arena.addEventListener('touchmove', e => {
+    if (!running || paused) return;
+    e.preventDefault();
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    if (Math.abs(dx) < MIN_SWIPE && Math.abs(dy) < MIN_SWIPE) return;
+    const nd = Math.abs(dx) > Math.abs(dy)
+      ? { x: dx > 0 ? 1 : -1, y: 0 }
+      : { x: 0, y: dy > 0 ? 1 : -1 };
+    if (nd.x !== -dir.x || nd.y !== -dir.y) nextDir = nd;
+    // nouveau point de départ : enchaîner deux virages sans lever le doigt
+    touchStartX = t.clientX; touchStartY = t.clientY;
+    virageFait = true;
+  }, { passive: false });
+  arena.addEventListener('touchstart', () => { virageFait = false; }, { passive: true });
   arena.addEventListener('touchend', e => {
+    if (virageFait) return;
     if (!running) return;
     const t = e.changedTouches && e.changedTouches[0];
     if (!t) return;
