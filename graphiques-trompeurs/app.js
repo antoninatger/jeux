@@ -11,86 +11,86 @@ const TECH = {
 };
 
 const QUESTIONS = [
-  {img:"images/exemple-graphique-meteo.jpg", cred:"Capture d'un JT météo américain (Fox 8)",
+  {img:"images/exemple-graphique-meteo.jpg", cred:"Capture d'un JT météo américain (Fox 8)", d:"Capture d'un bulletin météo télévisé américain, titré « températures maximales sur 7 jours ». Sept barres rouges, du lundi au dimanche. Lundi, mardi, mercredi, samedi et dimanche : 92 °F, des barres très basses, presque plates. Jeudi et vendredi : 94 °F, des barres environ dix fois plus hautes. Aucun axe vertical gradué n'est affiché.",
    t:"Ce bulletin météo affiche les températures maximales du lundi au dimanche. Observe bien ce graphique : qu'est-ce qui cloche ?",
    a:"tronq", opts:["cam3d","double","honnete"],
-   e:"L'échelle commence à <b>92°</b>, pas à 0° ! Résultat : un écart réel de seulement <b>2 degrés</b> (92° → 94°) fait paraître les barres du jeudi et vendredi presque <b>deux fois plus hautes</b>. C'est l'<b>axe tronqué</b>, le grand classique du bulletin météo qui veut « faire peur »."},
+   e:"Il n'y a <b>aucune échelle</b>, mais la ligne de base est placée juste sous <b>92°</b>, pas à 0° ! Résultat : un écart réel de seulement <b>2 degrés</b> (92° → 94°) fait paraître les barres du jeudi et vendredi <b>dix fois plus hautes</b>. C'est l'<b>axe tronqué</b>, le grand classique du bulletin météo qui veut « faire peur »."},
 
-  {img:"images/wiki-axe-tronque.png", cred:"Wikimedia Commons",
+  {img:"images/wiki-axe-tronque.png", cred:"Wikimedia Commons", d:"Deux graphiques en barres côte à côte, avec les mêmes valeurs : A vaut 40, B vaut 50. À gauche, l'axe vertical est gradué de 36 à 50, et la barre B est environ trois fois plus haute que la barre A. À droite, l'axe est gradué de 0 à 50, et la barre B est un peu plus haute que la barre A.",
    t:"Ces deux graphiques représentent exactement les mêmes données (A = 40, B = 50). Compare-les bien : qu'est-ce qui te frappe ?",
    a:"tronq", opts:["picto","omises","honnete"],
    e:"À gauche, l'axe démarre à <b>35</b> au lieu de 0 : la moindre différence est étirée et paraît énorme. À droite, l'axe part de <b>0</b> et montre le vrai rapport entre A et B. Toujours vérifier le bas de l'échelle avant de juger un écart."},
 
-  {img:"images/wiki-camembert-3d.png", cred:"Wikimedia Commons",
+  {img:"images/wiki-camembert-3d.png", cred:"Wikimedia Commons", d:"Un camembert dessiné en relief, incliné vers l'arrière, en quatre parts sans pourcentage affiché. La part D, violette, occupe la gauche et l'avant. La part A, bleue, est petite, tout au fond. La part B, rouge, est à droite vers le fond. La part C, verte, est au premier plan, détachée du reste, et on voit l'épaisseur de son bord.",
    t:"Regarde bien les parts <b>A</b>, <b>B</b> et <b>C</b> de ce camembert. Fais-tu confiance aux proportions que tu vois ?",
    a:"cam3d", opts:["double","omises","honnete"],
-   e:"L'inclinaison 3D grossit artificiellement les parts <b>au premier plan</b> et écrase celles du fond. Résultat : C (au fond) paraît presque aussi grande qu'A (devant), alors qu'elle est <b>deux fois plus petite</b>. Le <b>camembert 3D</b> déforme systématiquement les proportions — méfie-toi de tout graphique « en relief »."},
+   e:"L'inclinaison 3D grossit artificiellement les parts <b>au premier plan</b> et écrase celles du fond. Résultat : C, <b>au premier plan</b> et détachée, paraît bien plus grosse qu'A, tout au fond. Le <b>camembert 3D</b> déforme systématiquement les proportions — méfie-toi de tout graphique « en relief »."},
 
-  {img:"images/wiki-double-axe.png", cred:"Federal Reserve Bank of St. Louis, via Wikimedia Commons",
+  {img:"images/wiki-double-axe.png", cred:"Federal Reserve Bank of St. Louis, via Wikimedia Commons", d:"Graphique en courbes, « les six pays aux plus grandes dépenses militaires », de 1992 à 2021, en milliards de dollars. Il a deux axes verticaux : à gauche, de 0 à 300 milliards, pour la Chine, la Russie, l'Inde, l'Arabie saoudite et le Royaume-Uni ; à droite, de 400 à 1 000 milliards, pour les États-Unis seuls. La courbe des États-Unis monte jusqu'à environ 870 milliards en 2010 et culmine dans le haut du graphique, à la même hauteur que la courbe de la Chine, qui finit à environ 270 milliards en 2021.",
    t:"Ce graphique compare les dépenses militaires de 6 pays au fil du temps. Observe bien sa construction : quelque chose te paraît-il étrange ?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"Il y a <b>deux échelles verticales différentes</b> : à gauche pour la Chine, la Russie, l'Inde… (0 à 300 milliards), à droite pour les États-Unis (0 à 1000 milliards). En superposant deux échelles sans le préciser clairement, on peut faire paraître deux courbes « proches » alors que les valeurs réelles sont très éloignées. Toujours vérifier s'il y a un axe à gauche <b>et</b> un axe à droite."},
 
-  {img:"images/picto-taille-femmes-hommes.svg", cred:"Illustration du jeu (moyennes indicatives, France)",
+  {img:"images/picto-taille-femmes-hommes.svg", cred:"Illustration du jeu (moyennes indicatives, France)", d:"Deux silhouettes posées sur la même ligne : une femme, légendée 165 cm, et un homme, légendé 178 cm. La silhouette de l'homme est dessinée environ deux fois plus haute que celle de la femme, et beaucoup plus large.",
    t:"Ce graphique compare la taille moyenne des femmes (165 cm) et des hommes (178 cm) en France. Observe bien les deux silhouettes par rapport à ces chiffres : qu'en penses-tu ?",
    a:"picto", opts:["cam3d","omises","honnete"],
    e:"L'écart réel n'est que de <b>13 cm</b> (165 → 178, soit +8 %) : les deux silhouettes devraient être presque identiques. Ici, la silhouette homme est dessinée près de <b>2 fois plus haute</b> — et comme elle gonfle aussi en largeur, elle occupe près de <b>3 fois la surface</b> ! Les hommes sont visuellement <b>surreprésentés</b>. Un pictogramme honnête garde des dessins <b>proportionnels aux valeurs réelles</b>."},
 
-  {img:"images/wiki-donnees-omises.svg", cred:"Wikimedia Commons",
+  {img:"images/wiki-donnees-omises.svg", cred:"Wikimedia Commons", d:"Graphique à points intitulé « Data », avec l'axe des années gradué de 1998 à 2012 et l'axe vertical de 0 à 10 000. Six points seulement, un tous les deux ans de 2000 à 2010 : environ 5 000, 6 100, 7 250, 8 300, 8 000 et 8 900. Il n'y a aucun point pour les années impaires, ni pour 1998 et 2012.",
    t:"Ce graphique montre l'évolution d'une donnée entre 1998 et 2012. Observe bien la courbe et les années affichées : quelque chose te semble-t-il manquant ?",
    a:"omises", opts:["tronq","double","honnete"],
    e:"En <b>retirant certains points ou certaines périodes</b>, on peut lisser une courbe en réalité chaotique, faire disparaître une baisse gênante entre deux pics arrangeants, ou masquer un pic isolé. Les <b>données omises</b> sont difficiles à repérer : le seul réflexe fiable est de se demander « ai-je toute la période, ou seulement des extraits choisis ? »."},
 
-  {img:"images/wiki-graphique-correct.svg", cred:"Wikimedia Commons",
+  {img:"images/wiki-graphique-correct.svg", cred:"Wikimedia Commons", d:"Graphique en barres bleues, cinq groupes de A à E, axe vertical gradué de 0 à 12 000. Les cinq barres sont presque de même hauteur, entre environ 9 300 et 9 750, légèrement croissantes de A à E.",
    t:"Ce graphique en barres compare 5 groupes (A à E). Examine-le attentivement : y vois-tu un piège, ou te semble-t-il honnête ?",
    a:"honnete", opts:["tronq","cam3d","picto"],
    e:"Non : c'est un <b>graphique honnête</b>. L'axe part de <b>zéro</b>, il n'y a qu'<b>une seule échelle</b>, pas d'effet 3D qui déforme les proportions, et rien ne semble avoir été retiré. Ce sont exactement les 4 questions à se poser face à n'importe quel graphique : zéro ? une échelle ? pas de 3D ? tout est là ?"},
 
-  {img:"images/sncf-greve-barres.svg", cred:"D'après un communiqué de presse de la SNCF, 4 avril 2018",
+  {img:"images/sncf-greve-barres.svg", cred:"D'après un communiqué de presse de la SNCF, 4 avril 2018", d:"Titre : « Taux de participation à la grève ». Deux barres, sans axe gradué. 3 avril : 33,9 %, barre de pleine hauteur. 4 avril : 29,7 %, barre dessinée à environ 60 % de la hauteur de la première.",
    t:"Le nombre de grévistes a-t-il beaucoup diminué, ou juste un peu, entre le 3 et le 4 avril ? Regarde bien comment ces deux barres sont construites.",
    a:"noaxe", opts:["tronq","omises","honnete"],
    e:"L'écart réel n'est que de <b>4,2 points</b> (33,9 % → 29,7 %, soit environ <b>-12 %</b>). Mais la seconde barre est dessinée à peine plus de la <b>moitié</b> de la hauteur de la première, sans aucun axe chiffré pour vérifier. Sans échelle, rien n'oblige les hauteurs des barres à respecter les valeurs réelles — c'est le piège des <b>barres sans échelle</b>."},
 
-  {img:"images/dette-axe-inverse.svg", cred:"Reconstitution pédagogique, données approximatives",
+  {img:"images/dette-axe-inverse.svg", cred:"Reconstitution pédagogique, données approximatives", d:"Courbe rouge, « Dette publique de la France, en % du PIB ». L'axe vertical est gradué de 50 % en haut à 80 % en bas. Les points : environ 60 % en 1997 et 1999, 57 % en 2001, 64 % en 2003, 67 % en 2005, 64 % en 2007, 79 % en 2009. Dessinée ainsi, la courbe descend vers le bas du graphique, surtout entre 2007 et 2009.",
    t:"Que devient la dette publique entre 1997 et 2009 d'après ce graphique ? Regarde bien le sens de l'axe vertical avant de répondre.",
    a:"inverse", opts:["tronq","double","honnete"],
    e:"La dette <b>augmente</b> bien sur toute la période (elle passe d'environ 59 % à 79 % du PIB) — mais l'axe vertical est <b>inversé</b> : les petits pourcentages sont en haut, les grands en bas. Résultat : la courbe semble « plonger », comme une mauvaise nouvelle qui s'effondre, alors qu'elle représente en réalité une hausse. Toujours vérifier dans quel sens se lit l'axe vertical."},
 
-  {img:"images/cinema-internet-tronque.svg", cred:"D'après des données de fréquentation cinéma, ababsurdo.fr",
+  {img:"images/cinema-internet-tronque.svg", cred:"D'après des données de fréquentation cinéma, ababsurdo.fr", d:"Deux graphiques côte à côte, les mêmes données : les entrées au cinéma par habitant, de 2002 à 2007, entre environ 2,8 et 3,2. À gauche, l'axe est gradué de 2,6 à 3,4 : la courbe fait des zigzags marqués et finit nettement plus bas qu'au départ. À droite, l'axe est gradué de 0 à 10 : la courbe est presque une ligne plate, vers 3.",
    t:"Ces deux graphiques montrent exactement les mêmes données de fréquentation des cinémas français entre 2002 et 2007. La démocratisation d'internet a-t-elle eu un effet dramatique sur le cinéma ?",
    a:"tronq", opts:["omises","picto","honnete"],
    e:"À gauche, l'axe ne va que de <b>2,6 à 3,4</b> : la moindre variation devient un « effondrement ». À droite, sur une échelle de <b>0 à 10</b>, on voit que la fréquentation reste en réalité <b>quasi stable</b>. Même écart de données, impression totalement différente selon où commence l'axe."},
 
-  {img:"images/lemonde-disques-legislatives.svg", cred:"D'après une infographie de presse, élections législatives 2012",
+  {img:"images/lemonde-disques-legislatives.svg", cred:"D'après une infographie de presse, élections législatives 2012", d:"« Résultats du 1er tour d'une élection législative (2012) », chaque parti représenté par un disque. Gauche (PS et alliés) 34,43 % et Droite (UMP, centre et alliés) 34,10 % : deux très grands disques de même taille. FN 13,77 % : un disque dont le diamètre fait environ 40 % de celui des grands. Front de Gauche 6,94 % : un disque deux fois moins large que celui du FN. MoDem 2,33 % : un tout petit disque.",
    t:"Regarde bien la taille des cercles par rapport aux pourcentages qu'ils représentent. Les proportions te semblent-elles fidèles aux chiffres ?",
    a:"picto", opts:["cam3d","omises","honnete"],
    e:"Le Front de Gauche (6,94 %) et le FN (13,77 %) ont un score environ <b>2 fois</b> plus grand — mais leurs cercles, eux, ont une <b>surface</b> bien plus de 2 fois différente : c'est le <b>rayon</b> du cercle qui a été rendu proportionnel au score, pas sa surface. Comme la surface d'un disque augmente avec le <b>carré</b> du rayon, l'écart visuel est très amplifié par rapport à l'écart réel."},
 
-  {img:"images/budget-asso-camembert3d.svg", cred:"Reconstitution pédagogique, données approximatives",
+  {img:"images/budget-asso-camembert3d.svg", cred:"Reconstitution pédagogique, données approximatives", d:"« Budget annuel d'une association sportive », camembert incliné en perspective, posé sur une ombre. Quatre parts : Salaires 42 %, à gauche ; Événements 28 %, au premier plan ; Communication 18 %, à droite vers le fond ; Équipements 12 %, tout au fond.",
    t:"Voici la répartition du budget annuel d'une association sportive, présentée par son trésorier lors de l'assemblée générale. Fais-tu confiance aux proportions que tu vois ?",
    a:"cam3d", opts:["double","omises","honnete"],
-   e:"L'inclinaison 3D grossit artificiellement la part <b>au premier plan</b> (Salaires, 42 %) et écrase celle du fond (Équipements, 12 %) : leur écart visuel semble plus faible qu'il ne l'est réellement. Le <b>camembert 3D</b> déforme systématiquement les proportions, même quand les chiffres affichés sont exacts."},
+   e:"L'inclinaison 3D grossit artificiellement la part <b>au premier plan</b> (Événements, 28 %) et écrase celle du fond (Équipements, 12 %) : leur écart visuel semble plus faible qu'il ne l'est réellement. Le <b>camembert 3D</b> déforme systématiquement les proportions, même quand les chiffres affichés sont exacts."},
 
-  {img:"images/confiance-medias-barres.svg", cred:"Reconstitution pédagogique, données approximatives",
+  {img:"images/confiance-medias-barres.svg", cred:"Reconstitution pédagogique, données approximatives", d:"Titre : « Confiance des Français dans les médias ». Deux barres, sans axe gradué. 2015 : 48 %, barre de pleine hauteur. 2024 : 44 %, barre dessinée à environ 45 % de la hauteur de la première.",
    t:"Ce graphique, publié sur les réseaux sociaux, compare la confiance des Français dans les médias en 2015 et en 2024. La confiance s'est-elle vraiment effondrée à ce point ? Regarde bien comment ces deux barres sont construites.",
    a:"noaxe", opts:["tronq","omises","honnete"],
    e:"L'écart réel n'est que de <b>4 points</b> (48 % → 44 %, soit environ <b>-8 %</b>). Mais la seconde barre est dessinée à moins de la <b>moitié</b> de la hauteur de la première, sans aucun axe chiffré pour vérifier. Sans échelle, rien n'oblige les hauteurs des barres à respecter les valeurs réelles."},
 
-  {img:"images/ca-entreprise-omises.svg", cred:"Reconstitution pédagogique, données approximatives",
+  {img:"images/ca-entreprise-omises.svg", cred:"Reconstitution pédagogique, données approximatives", d:"Courbe bleue, « Chiffre d'affaires d'une entreprise, en millions d'euros », axe vertical de 0 à 90. Années affichées : 2016, 2017, 2018, 2019, 2021, 2022, 2023. La courbe monte régulièrement, d'environ 47 millions en 2016 à environ 87 millions en 2023.",
    t:"Ce graphique montre le chiffre d'affaires d'une entreprise entre 2016 et 2023, présenté fièrement dans son rapport annuel. Observe bien la courbe et les années affichées : quelque chose te semble-t-il manquant ?",
    a:"omises", opts:["tronq","noaxe","honnete"],
    e:"L'année <b>2020</b> a complètement disparu du graphique : c'est justement celle où le chiffre d'affaires s'est effondré à 41 M€ (contre 69 puis 75 M€ juste avant et après). En retirant ce seul point, l'entreprise transforme une chute brutale en une <b>progression continue</b>. Toujours vérifier que la suite d'années est complète."},
 
-  {img:"images/co2-usine-axe-inverse.svg", cred:"Reconstitution pédagogique, données approximatives",
+  {img:"images/co2-usine-axe-inverse.svg", cred:"Reconstitution pédagogique, données approximatives", d:"Courbe rouge, « Émissions de CO2 d'une usine, en milliers de tonnes par an ». L'axe vertical est gradué de 115 en haut à 170 en bas. Les points : environ 120 en 2015, 128 en 2017, 135 en 2019, 150 en 2021, 168 en 2023. Dessinée ainsi, la courbe descend régulièrement vers le bas du graphique.",
    t:"Une usine publie ce graphique de ses émissions de CO2 dans son rapport « développement durable ». Que deviennent ses émissions entre 2015 et 2023 ? Regarde bien le sens de l'axe vertical avant de répondre.",
    a:"inverse", opts:["tronq","double","honnete"],
    e:"Les émissions <b>augmentent</b> bien sur toute la période (de 120 à 168 milliers de tonnes, soit <b>+40 %</b>) — mais l'axe vertical est <b>inversé</b> : les petites valeurs sont en haut, les grandes en bas. La courbe semble alors « plonger » comme une bonne nouvelle, alors qu'elle représente une hausse de la pollution. Toujours vérifier dans quel sens se lit l'axe."},
 
-  {img:"images/reseaux-sociaux-double-axe.svg", cred:"Reconstitution pédagogique, données approximatives",
+  {img:"images/reseaux-sociaux-double-axe.svg", cred:"Reconstitution pédagogique, données approximatives", d:"« Utilisateurs actifs de deux réseaux sociaux, en millions », de 2019 à 2023. Deux axes verticaux : à gauche, de 0 à 60, pour le Réseau A ; à droite, de 0 à 600, pour le Réseau B. Les deux courbes montent ensemble et se superposent exactement, d'environ 20 à 56 sur l'échelle de gauche, soit environ 200 à 560 sur celle de droite.",
    t:"Un article affirme que ces deux réseaux sociaux connaissent une croissance « comparable » depuis 2019, courbes à l'appui. Regarde bien la construction de ce graphique : quelque chose te paraît-il étrange ?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"Il y a <b>deux échelles verticales différentes</b> : à gauche pour le Réseau A (0 à 60 millions), à droite pour le Réseau B (0 à 600 millions) — dix fois plus grande. Résultat : les deux courbes se superposent presque parfaitement, alors que le Réseau B compte réellement <b>dix fois plus</b> d'utilisateurs que le Réseau A. Toujours vérifier s'il y a un axe à gauche <b>et</b> un axe à droite."},
-  {img:"images/pisa-france-axe-justifie.svg", cred:"D'après la note « France » de l'OCDE, résultats PISA 2025 (8 septembre 2026)",
+  {img:"images/pisa-france-axe-justifie.svg", cred:"D'après la note « France » de l'OCDE, résultats PISA 2025 (8 septembre 2026)", d:"Graphique de l'OCDE : « France : les résultats de 2025 sont les plus bas jamais mesurés par PISA dans les trois matières ». Trois cadres côte à côte, avec la même échelle de score de 450 à 520, rappelée à gauche et à droite. Sciences, de 2006 à 2025 : de 495 à 499, puis une baisse jusqu'à 483. Compréhension de l'écrit, de 2000 à 2025 : entre 488 et 505 jusqu'en 2018, puis 474 en 2022 et 456 en 2025. Mathématiques, de 2003 à 2025 : 511, puis autour de 495 jusqu'en 2018, puis 474 et 458.",
    t:"Ce graphique de l'OCDE montre les scores de la France aux enquêtes PISA depuis 2000. Beaucoup de commentaires l'accusent d'exagérer la baisse. Examine-le attentivement : y vois-tu un piège, ou te semble-t-il honnête ?",
    a:"honnete", opts:["tronq","double","omises"],
    fix:"🎉 Rien à réparer : une seule échelle, pas de 3D, aucune année retirée. Et remettre l'axe à zéro n'améliorerait rien — ça écraserait les trois courbes en une ligne plate.",
@@ -161,7 +161,11 @@ function renderQ(){
   $("qnum").textContent=idx+1;
   $("scase").textContent="Graphique n°"+String(idx+1).padStart(2,"0");
   $("qimg").src=it.img;
-  $("qimg").alt="Graphique à analyser";
+  // Description textuelle (bloquant §8.6) : lue par les lecteurs d'écran, et
+  // affichée pour tous derrière le bouton « Décrire le graphique ».
+  $("qimg").alt=it.d;
+  $("qdesc").textContent=it.d; $("qdesc").hidden=true;
+  $("qdescbtn").setAttribute("aria-expanded","false");
   $("qcred").textContent="Source : "+it.cred;
   $("stxt").innerHTML=it.t;
   $("feedback").style.display="none";
