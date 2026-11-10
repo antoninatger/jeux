@@ -12,7 +12,7 @@
 I18N.register({
   fr: {
     pageTitle: "Fake Blaster", colRetour: "Retour à l'arcade",
-    startMsg: "Appuie sur ESPACE ou clique pour commencer !",
+    startMsg: "Appuie sur JOUER pour commencer !",
     gameOfA: "— partie de", gameOfB: "questions",
     realOne: "C'EST LA VRAIE ! −1 VIE", lostLife: "−1 VIE !",
     subtitle: "ESPRIT CRITIQUE", menu: "← MENU",
@@ -25,6 +25,10 @@ I18N.register({
     winTitle: "MISSION ACCOMPLIE !", winMsg: "Tu as démasqué toutes les fausses infos de la série !",
     isTrue: "✅ VRAIE !", advance: "AVANCE !",
     inGameControls: "← → bouger  |  ↑ sauter  |  SOURIS viser  |  CLIC / ESPACE tirer",
+    rule1Touch: "🎯  Les réponses flottent dans le ciel — touche-les pour tirer",
+    controlsTouch: "◀ ▶ : bouger   |   ▲ : sauter   |   TOUCHER UNE RÉPONSE : tirer",
+    inGameControlsTouch: "◀ ▶ bouger  |  ▲ sauter  |  toucher pour tirer",
+    padLeft: "Aller à gauche", padUp: "Sauter", padRight: "Aller à droite",
     explLabel: "💡 POURQUOI :", explDefault: "La bonne réponse est celle restée en vert.",
     explWaiting: "L'explication s'affichera ici après chaque question.",
     plus50: "+50 pts !", plus100Advance: "+100 ! AVANCE ➡",
@@ -32,7 +36,7 @@ I18N.register({
   },
   en: {
     pageTitle: "Fake Blaster", colRetour: "Back to the arcade",
-    startMsg: "Press SPACE or click to start!",
+    startMsg: "Press PLAY to start!",
     gameOfA: "— game of", gameOfB: "questions",
     realOne: "THAT'S THE TRUE ONE! −1 LIFE", lostLife: "−1 LIFE!",
     subtitle: "CRITICAL THINKING", menu: "← MENU",
@@ -45,6 +49,10 @@ I18N.register({
     winTitle: "MISSION ACCOMPLISHED!", winMsg: "You unmasked all the false claims in the set!",
     isTrue: "✅ TRUE!", advance: "GO!",
     inGameControls: "← → move  |  ↑ jump  |  MOUSE aim  |  CLICK / SPACE shoot",
+    rule1Touch: "🎯  The answers float in the sky — tap them to shoot",
+    controlsTouch: "◀ ▶ : move   |   ▲ : jump   |   TAP AN ANSWER : shoot",
+    inGameControlsTouch: "◀ ▶ move  |  ▲ jump  |  tap to shoot",
+    padLeft: "Move left", padUp: "Jump", padRight: "Move right",
     explLabel: "💡 WHY:", explDefault: "The correct answer is the one left in green.",
     explWaiting: "The explanation will appear here after each question.",
     plus50: "+50 pts!", plus100Advance: "+100! GO ➡",
@@ -132,6 +140,29 @@ body{
 }
 #menu-link:hover{background:#c8440a;color:#fff;}
 #set-label{color:#8a6ab0;letter-spacing:.04em;font-size:13px;}
+/* Commande tactile (pointer:coarse) : trois gros boutons sous le canvas. */
+#pad{display:none}
+@media (pointer:coarse){
+  #game{touch-action:none}
+  #pad{
+    display:flex;justify-content:space-between;gap:10px;
+    background:#09040f;border:2px solid #c8440a;border-top:none;padding:10px;
+  }
+  #pad button{
+    flex:1;min-height:56px;font-size:1.5rem;color:#ffb380;background:#150b28;
+    border:2px solid #c8440a;border-radius:10px;touch-action:none;
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  }
+  #pad button.on{background:#c8440a;color:#fff}
+}
+/* En mobile, le jeu se cale sous l'en-tête au lieu d'être centré : le
+   centrage vertical laissait ~200 px de vide au-dessus du canvas. */
+@media (max-width:600px){
+  #wrap{margin-top:8px}
+  #qbar,#explbar,#menubar{padding:8px 10px}
+  #qtext{font-size:15px}
+  #expltext{font-size:14px}
+}
 
 </style>
 </head>
@@ -139,13 +170,20 @@ body{
 <div id="wrap">
   <div id="qbar">
     <span id="qlabel">❓ QUESTION :</span>
-    <span id="qtext" data-i18n="startMsg">Appuie sur ESPACE ou clique pour commencer !</span>
+    <span id="qtext" data-i18n="startMsg">Appuie sur JOUER pour commencer !</span>
   </div>
   <div id="gameArea">
     <canvas id="game" width="800" height="460"></canvas>
     <button id="actionBtn" type="button"></button>
     <!-- E2 : écran de fin rendu par ColFin (titre, score, questions ratées, rejouer mes erreurs) à la place du canvas -->
     <div class="col-fin" id="ecran-fin" hidden></div>
+  </div>
+  <!-- Commande tactile : sans clavier, le héros ne pouvait ni avancer ni sauter,
+       la partie restait bloquée à la première question. Visible au doigt seulement. -->
+  <div id="pad">
+    <button type="button" data-k="ArrowLeft" data-i18n-aria-label="padLeft" aria-label="Aller à gauche">◀</button>
+    <button type="button" data-k="ArrowUp" data-i18n-aria-label="padUp" aria-label="Sauter">▲</button>
+    <button type="button" data-k="ArrowRight" data-i18n-aria-label="padRight" aria-label="Aller à droite">▶</button>
   </div>
   <div id="explbar" class="idle" aria-live="polite">
     <span id="expllabel" data-i18n="explLabel">💡 POURQUOI :</span>
@@ -291,8 +329,25 @@ cv.addEventListener('mousemove',function(e){
   aim.x=(e.clientX-r.left)*(W/r.width);
   aim.y=(e.clientY-r.top)*(H/r.height);
 });
-cv.addEventListener('click',function(){
+// pointerdown plutôt que click : au doigt, il n'y a pas de survol, la visée
+// se prend au point touché, puis le tir part (un seul tir par contact).
+cv.addEventListener('pointerdown',function(e){
+  var r=cv.getBoundingClientRect();
+  aim.x=(e.clientX-r.left)*(W/r.width);
+  aim.y=(e.clientY-r.top)*(H/r.height);
   if(gstate==='playing') doShoot(); else startGame();
+});
+var TACTILE=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
+// Pavé tactile : chaque bouton tient sa touche enfoncée tant que le doigt reste.
+Array.prototype.forEach.call(document.querySelectorAll('#pad button'),function(b){
+  var k=b.getAttribute('data-k');
+  function on(e){ e.preventDefault(); if(!keys[k]) justP[k]=true; keys[k]=true; b.classList.add('on'); try{b.setPointerCapture(e.pointerId);}catch(_){} }
+  function off(){ keys[k]=false; b.classList.remove('on'); }
+  b.addEventListener('pointerdown',on);
+  b.addEventListener('pointerup',off);
+  b.addEventListener('pointercancel',off);
+  b.addEventListener('lostpointercapture',off);
+  b.addEventListener('contextmenu',function(e){e.preventDefault();});
 });
 
 // F6 : bouton HTML pour commencer/rejouer — accessible au clavier et au
@@ -694,7 +749,7 @@ function drawHUD(){
   cx.fillText('Q '+(qIdx+1)+'/'+SESSION.length,W-12,19);
 
   cx.font='700 13px Nunito,sans-serif';cx.textAlign='center';cx.fillStyle='rgba(190,140,250,0.9)';
-  cx.fillText(I18N.t('inGameControls'),W/2,H-12);
+  cx.fillText(I18N.t(TACTILE?'inGameControlsTouch':'inGameControls'),W/2,H-12);
 }
 
 // ── Flèche d'avancée quand la question est terminée ──
@@ -739,7 +794,7 @@ function drawTitle(){
   cx.fillText(I18N.t('subtitle'),W/2,130);cx.restore();
 
   var rules=[
-    [I18N.t('rule1'),'#d8ccff'],
+    [I18N.t(TACTILE?'rule1Touch':'rule1'),'#d8ccff'],
     [I18N.t('rule2'),'#ff5544'],
     [I18N.t('rule3'),'#44ffcc'],
     [I18N.t('rule4'),'#ffcc44'],
@@ -754,7 +809,7 @@ function drawTitle(){
   // ici — seule la ligne de commandes clavier/souris reste peinte.
   cx.font='600 13px Nunito,sans-serif';cx.textAlign='center';cx.textBaseline='middle';
   cx.fillStyle='rgba(170,120,230,0.8)';
-  cx.fillText(I18N.t('controls'),W/2,H-20);
+  cx.fillText(I18N.t(TACTILE?'controlsTouch':'controls'),W/2,H-20);
 }
 
 // ══════════════════════════════════════════════

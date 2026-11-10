@@ -263,6 +263,16 @@ document.addEventListener('mousemove',e=>{
   cur.style.left=(e.clientX+5)+'px';
   cur.style.top=(e.clientY-22)+'px';
 });
+// Au doigt, la pioche s'affiche au point touché le temps du coup (voir mine.html).
+let curTapT=0;
+document.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse') return;
+  cur.style.left=(e.clientX+5)+'px';
+  cur.style.top=(e.clientY-22)+'px';
+  cur.classList.add('tap');
+  clearTimeout(curTapT);
+  curTapT=setTimeout(()=>cur.classList.remove('tap'),450);
+});
 
 /* ══════════════════════════════════════
    HUD
@@ -933,11 +943,11 @@ function showExport(){
         <textarea id="export-txt" readonly style="flex:1;min-height:200px;background:#0a0a0a;border:2px solid #444;color:#aaffcc;font-family:VT323,monospace;font-size:1rem;padding:10px;resize:none;outline:none"></textarea>
         <div style="display:flex;gap:8px">
           <button onclick="document.getElementById('export-txt').select();document.execCommand('copy');this.textContent='${I18N.t('copiedBtn')}';setTimeout(()=>this.textContent='${I18N.t('copyBtn')}',1500)"
-            style="flex:1;padding:8px;background:#003300;border:2px solid #00aa00;border-top-color:#00ff00;border-left-color:#00ff00;font-family:'Press Start 2P',monospace;font-size:.38rem;color:#00ff88;cursor:none">${I18N.t('copyBtn')}</button>
+            style="flex:1;padding:8px;background:#003300;border:2px solid #00aa00;border-top-color:#00ff00;border-left-color:#00ff00;font-family:'Press Start 2P',monospace;font-size:var(--fs-100);color:#00ff88;cursor:none">${I18N.t('copyBtn')}</button>
           <button onclick="if(confirm(I18N.t('confirmClear'))){localStorage.removeItem('mine_extra');document.getElementById('export-txt').value='${I18N.t('cleared')}';}"
-            style="padding:8px 14px;background:#330000;border:2px solid #aa0000;border-top-color:#ff0000;border-left-color:#ff0000;font-family:'Press Start 2P',monospace;font-size:.38rem;color:#ff6666;cursor:none">${I18N.t('clearBtn')}</button>
+            style="padding:8px 14px;background:#330000;border:2px solid #aa0000;border-top-color:#ff0000;border-left-color:#ff0000;font-family:'Press Start 2P',monospace;font-size:var(--fs-100);color:#ff6666;cursor:none">${I18N.t('clearBtn')}</button>
           <button onclick="document.getElementById('export-modal').style.display='none'"
-            style="padding:8px 14px;background:#1e1e1e;border:2px solid #555;border-top-color:#888;border-left-color:#888;font-family:'Press Start 2P',monospace;font-size:.38rem;color:#999;cursor:none">${I18N.t('closeBtn')}</button>
+            style="padding:8px 14px;background:#1e1e1e;border:2px solid #555;border-top-color:#888;border-left-color:#888;font-family:'Press Start 2P',monospace;font-size:var(--fs-100);color:#999;cursor:none">${I18N.t('closeBtn')}</button>
         </div>
       </div>`;
     document.body.appendChild(modal);

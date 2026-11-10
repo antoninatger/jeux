@@ -27,6 +27,16 @@ body{cursor:none}
 #cursor{position:fixed;pointer-events:none;z-index:999;font-size:30px;
   transform:rotate(-40deg) scaleX(-1);filter:drop-shadow(1px 1px 0 #000)}
 body.swing #cursor{transform:rotate(18deg) scaleX(-1)}
+/* Au doigt (pointer:coarse) : pas de survol, donc pas de pioche qui suit la
+   souris — elle restait plantée en haut à gauche, sur l'en-tête. Elle
+   apparaît au point touché, le temps du coup, et le curseur système revient.
+   touch-action:manipulation : trois tapes rapides sur le bloc ne zooment plus. */
+@media (pointer:coarse){
+  body,body *{cursor:auto}
+  #cursor{display:none}
+  #cursor.tap{display:block}
+  #block,.w,.cbtn,.lvlc,button{touch-action:manipulation}
+}
 
 /* == Chantier 05, tranche 2 : adoption de l'echelle typographique ==========
    Onze elements passaient sous le plancher de 12,8 px, jusqu'a 4,5 px pour
