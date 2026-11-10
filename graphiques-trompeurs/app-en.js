@@ -11,86 +11,86 @@ const TECH = {
 };
 
 const QUESTIONS = [
-  {img:"images/exemple-graphique-meteo.jpg", cred:"Screenshot from a US weather broadcast (Fox 8)",
+  {img:"images/exemple-graphique-meteo.jpg", cred:"Screenshot from a US weather broadcast (Fox 8)", d:"Screenshot of a US TV weather segment titled “7 day high temperatures”. Seven red bars, Monday to Sunday. Monday, Tuesday, Wednesday, Saturday and Sunday: 92 °F, very short bars, almost flat. Thursday and Friday: 94 °F, bars about ten times taller. No graduated vertical axis is shown.",
    t:"This weather segment shows the high temperatures from Monday to Sunday. Take a close look at this chart: what's off about it?",
    a:"tronq", opts:["cam3d","double","honnete"],
-   e:"The scale starts at <b>92°</b>, not 0°! As a result, a real gap of only <b>2 degrees</b> (92° → 94°) makes Thursday and Friday's bars look almost <b>twice as tall</b>. This is a <b>truncated axis</b>, the classic move for a weather segment that wants to look dramatic."},
+   e:"There is <b>no scale</b> at all, but the baseline sits just below <b>92°</b>, not at 0°! As a result, a real gap of only <b>2 degrees</b> (92° → 94°) makes Thursday and Friday's bars look <b>ten times as tall</b>. This is a <b>truncated axis</b>, the classic move for a weather segment that wants to look dramatic."},
 
-  {img:"images/wiki-axe-tronque.png", cred:"Wikimedia Commons",
+  {img:"images/wiki-axe-tronque.png", cred:"Wikimedia Commons", d:"Two bar charts side by side, with the same values: A is 40, B is 50. On the left, the vertical axis runs from 36 to 50, and bar B is about three times taller than bar A. On the right, the axis runs from 0 to 50, and bar B is a little taller than bar A.",
    t:"These two charts show exactly the same data (A = 40, B = 50). Compare them closely: what strikes you?",
    a:"tronq", opts:["picto","omises","honnete"],
    e:"On the left, the axis starts at <b>35</b> instead of 0: the slightest difference gets stretched and looks huge. On the right, the axis starts at <b>0</b> and shows the true ratio between A and B. Always check the bottom of the scale before judging a gap."},
 
-  {img:"images/wiki-camembert-3d.png", cred:"Wikimedia Commons",
+  {img:"images/wiki-camembert-3d.png", cred:"Wikimedia Commons", d:"A pie chart drawn in relief, tilted backwards, with four slices and no percentages shown. Slice D, purple, takes up the left and the front. Slice A, blue, is small, right at the back. Slice B, red, is on the right towards the back. Slice C, green, is in the foreground, pulled out from the rest, and you can see the thickness of its edge.",
    t:"Take a good look at slices <b>A</b>, <b>B</b> and <b>C</b> of this pie chart. Do you trust the proportions you're seeing?",
    a:"cam3d", opts:["double","omises","honnete"],
-   e:"The 3D tilt artificially enlarges the slices in the <b>foreground</b> and shrinks the ones in the back. As a result, C (in the back) looks almost as big as A (in front), even though it's actually <b>half the size</b>. A <b>3D pie chart</b> systematically distorts proportions — be wary of any chart 'in relief'."},
+   e:"The 3D tilt artificially enlarges the slices in the <b>foreground</b> and shrinks the ones in the back. As a result, C, <b>in the foreground</b> and pulled out, looks much bigger than A, right at the back. A <b>3D pie chart</b> systematically distorts proportions — be wary of any chart 'in relief'."},
 
-  {img:"images/wiki-double-axe.png", cred:"Federal Reserve Bank of St. Louis, via Wikimedia Commons",
+  {img:"images/wiki-double-axe.png", cred:"Federal Reserve Bank of St. Louis, via Wikimedia Commons", d:"Line chart, “Top six countries by military expenditures”, from 1992 to 2021, in billions of dollars. It has two vertical axes: on the left, 0 to 300 billion, for China, Russia, India, Saudi Arabia and the UK; on the right, 400 to 1,000 billion, for the United States alone. The US line rises to about 870 billion in 2010 and peaks near the top of the chart, at the same height as China's line, which ends at about 270 billion in 2021.",
    t:"This chart compares the military spending of 6 countries over time. Look closely at how it's built: does anything seem off?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"There are <b>two different vertical scales</b>: one on the left for China, Russia, India… (0 to 300 billion), and one on the right for the United States (0 to 1000 billion). Overlaying two scales without making it obvious can make two curves look 'close' when the real values are far apart. Always check whether there's an axis on the left <b>and</b> one on the right."},
 
-  {img:"images/picto-taille-femmes-hommes.svg", cred:"Game illustration (approximate averages, France)",
+  {img:"images/picto-taille-femmes-hommes.svg", cred:"Game illustration (approximate averages, France)", d:"Two silhouettes standing on the same line: a woman, labelled 165 cm, and a man, labelled 178 cm. The man's silhouette is drawn about twice as tall as the woman's, and much wider.",
    t:"This chart compares the average height of women (165 cm) and men (178 cm) in France. Look closely at the two silhouettes compared with those numbers: what do you think?",
    a:"picto", opts:["cam3d","omises","honnete"],
    e:"The real gap is only <b>13 cm</b> (165 → 178, about +8%): the two silhouettes should be almost identical. Here, the male silhouette is drawn nearly <b>twice as tall</b> — and since it also widens, it covers almost <b>3 times the area</b>! Men are visually <b>overrepresented</b>. An honest pictogram keeps drawings <b>proportional to the real values</b>."},
 
-  {img:"images/wiki-donnees-omises.svg", cred:"Wikimedia Commons",
+  {img:"images/wiki-donnees-omises.svg", cred:"Wikimedia Commons", d:"Scatter chart labelled “Data”, with the year axis running from 1998 to 2012 and the vertical axis from 0 to 10,000. Only six points, one every two years from 2000 to 2010: about 5,000, 6,100, 7,250, 8,300, 8,000 and 8,900. There is no point for odd years, nor for 1998 and 2012.",
    t:"This chart shows how a value changed between 1998 and 2012. Look closely at the curve and the years shown: does anything seem to be missing?",
    a:"omises", opts:["tronq","double","honnete"],
    e:"By <b>removing certain points or periods</b>, you can smooth out a curve that was actually chaotic, hide an inconvenient dip between two convenient peaks, or mask an isolated spike. <b>Missing data</b> is hard to spot: the only reliable reflex is to ask yourself, 'do I have the whole period, or just cherry-picked excerpts?'"},
 
-  {img:"images/wiki-graphique-correct.svg", cred:"Wikimedia Commons",
+  {img:"images/wiki-graphique-correct.svg", cred:"Wikimedia Commons", d:"Blue bar chart, five groups from A to E, vertical axis running from 0 to 12,000. The five bars are almost the same height, between about 9,300 and 9,750, rising slightly from A to E.",
    t:"This bar chart compares 5 groups (A to E). Look at it carefully: do you spot a trap, or does it look honest to you?",
    a:"honnete", opts:["tronq","cam3d","picto"],
    e:"No: this is an <b>honest chart</b>. The axis starts at <b>zero</b>, there's only <b>one scale</b>, no 3D effect distorting the proportions, and nothing seems to have been removed. These are exactly the 4 questions to ask about any chart: zero? one scale? no 3D? is everything there?"},
 
-  {img:"images/sncf-greve-barres.svg", cred:"Based on a press release from the French railway company SNCF, April 4, 2018",
+  {img:"images/sncf-greve-barres.svg", cred:"Based on a press release from the French railway company SNCF, April 4, 2018", d:"Title (in French): “Strike participation rate”. Two bars, no graduated axis. April 3: 33.9%, full-height bar. April 4: 29.7%, bar drawn at about 60% of the height of the first.",
    t:"Did the number of strikers drop a lot, or just a little, between April 3 and April 4? Look closely at how these two bars are drawn.",
    a:"noaxe", opts:["tronq","omises","honnete"],
    e:"The real gap is only <b>4.2 points</b> (33.9% → 29.7%, about <b>-12%</b>). But the second bar is drawn at barely over <b>half</b> the height of the first, with no numbered axis to check against. Without a scale, nothing forces the bar heights to respect the real values — that's the trap of <b>bars with no scale</b>."},
 
-  {img:"images/dette-axe-inverse.svg", cred:"Educational reconstruction, approximate figures",
+  {img:"images/dette-axe-inverse.svg", cred:"Educational reconstruction, approximate figures", d:"Red line (labels in French), “France's public debt, as % of GDP”. The vertical axis runs from 50% at the top to 80% at the bottom. The points: about 60% in 1997 and 1999, 57% in 2001, 64% in 2003, 67% in 2005, 64% in 2007, 79% in 2009. Drawn this way, the line heads down towards the bottom of the chart, especially between 2007 and 2009.",
    t:"What happens to public debt between 1997 and 2009 according to this chart? Look closely at the direction of the vertical axis before answering.",
    a:"inverse", opts:["tronq","double","honnete"],
    e:"Debt does <b>increase</b> throughout the period (from about 59% to 79% of GDP) — but the vertical axis is <b>inverted</b>: small percentages at the top, large ones at the bottom. As a result, the curve seems to 'plunge,' like bad news collapsing, even though it actually represents a rise. Always check which way the vertical axis reads."},
 
-  {img:"images/cinema-internet-tronque.svg", cred:"Based on French cinema attendance data, ababsurdo.fr",
+  {img:"images/cinema-internet-tronque.svg", cred:"Based on French cinema attendance data, ababsurdo.fr", d:"Two charts side by side, the same data: cinema admissions per inhabitant, from 2002 to 2007, between about 2.8 and 3.2. On the left, the axis runs from 2.6 to 3.4: the line zigzags sharply and ends clearly lower than it started. On the right, the axis runs from 0 to 10: the line is almost flat, around 3.",
    t:"These two charts show the exact same French cinema attendance data between 2002 and 2007. Did the rise of the internet have a dramatic effect on cinema-going?",
    a:"tronq", opts:["omises","picto","honnete"],
    e:"On the left, the axis only goes from <b>2.6 to 3.4</b>: the slightest wiggle looks like a 'collapse.' On the right, on a scale of <b>0 to 10</b>, attendance is actually <b>nearly stable</b>. Same data, completely different impression depending on where the axis starts."},
 
-  {img:"images/lemonde-disques-legislatives.svg", cred:"Based on a press infographic, 2012 legislative elections",
+  {img:"images/lemonde-disques-legislatives.svg", cred:"Based on a press infographic, 2012 legislative elections", d:"“First-round results of a legislative election (2012)” (labels in French), each party shown as a disc. Left (Socialists and allies) 34.43% and Right (UMP, centre and allies) 34.10%: two very large discs of the same size. FN 13.77%: a disc whose diameter is about 40% of the large ones. Front de Gauche 6.94%: a disc half as wide as the FN's. MoDem 2.33%: a tiny disc.",
    t:"Look closely at the size of the circles compared to the percentages they represent. Do the proportions look faithful to the numbers?",
    a:"picto", opts:["cam3d","omises","honnete"],
    e:"The Front de Gauche (6.94%) and the FN (13.77%) have a score roughly <b>2 times</b> bigger — but their circles have a <b>surface area</b> that differs by far more than a factor of 2. It's the circle's <b>radius</b> that was made proportional to the score, not its area. Since a disk's area grows with the <b>square</b> of its radius, the visual gap is heavily amplified compared to the real one."},
 
-  {img:"images/budget-asso-camembert3d.svg", cred:"Educational reconstruction, approximate figures",
+  {img:"images/budget-asso-camembert3d.svg", cred:"Educational reconstruction, approximate figures", d:"“Annual budget of a sports club” (labels in French), a pie chart tilted in perspective, sitting on a shadow. Four slices: Salaries 42%, on the left; Events 28%, in the foreground; Communication 18%, on the right towards the back; Equipment 12%, right at the back.",
    t:"Here is the annual budget breakdown of a sports club, presented by its treasurer at the general meeting. Do you trust the proportions you're seeing?",
    a:"cam3d", opts:["double","omises","honnete"],
-   e:"The 3D tilt artificially enlarges the slice in the <b>foreground</b> (Salaries, 42%) and shrinks the one in the back (Equipment, 12%): their visual gap looks smaller than it really is. A <b>3D pie chart</b> systematically distorts proportions, even when the numbers shown are accurate."},
+   e:"The 3D tilt artificially enlarges the slice in the <b>foreground</b> (Events, 28%) and shrinks the one in the back (Equipment, 12%): their visual gap looks smaller than it really is. A <b>3D pie chart</b> systematically distorts proportions, even when the numbers shown are accurate."},
 
-  {img:"images/confiance-medias-barres.svg", cred:"Educational reconstruction, approximate figures",
+  {img:"images/confiance-medias-barres.svg", cred:"Educational reconstruction, approximate figures", d:"Title (in French): “French people's trust in the media”. Two bars, no graduated axis. 2015: 48%, full-height bar. 2024: 44%, bar drawn at about 45% of the height of the first.",
    t:"This chart, shared on social media, compares French people's trust in the media in 2015 and 2024. Did trust really collapse that much? Look closely at how these two bars are built.",
    a:"noaxe", opts:["tronq","omises","honnete"],
    e:"The real gap is only <b>4 points</b> (48% → 44%, about <b>-8%</b>). But the second bar is drawn at less than <b>half</b> the height of the first, with no numbered axis to check against. Without a scale, nothing forces the bar heights to respect the real values."},
 
-  {img:"images/ca-entreprise-omises.svg", cred:"Educational reconstruction, approximate figures",
+  {img:"images/ca-entreprise-omises.svg", cred:"Educational reconstruction, approximate figures", d:"Blue line (labels in French), “A company's revenue, in millions of euros”, vertical axis from 0 to 90. Years shown: 2016, 2017, 2018, 2019, 2021, 2022, 2023. The line rises steadily, from about 47 million in 2016 to about 87 million in 2023.",
    t:"This chart shows a company's revenue between 2016 and 2023, proudly featured in its annual report. Look closely at the curve and the years shown: does anything seem to be missing?",
    a:"omises", opts:["tronq","noaxe","honnete"],
    e:"The year <b>2020</b> has vanished entirely from the chart: that's exactly the year revenue collapsed to €41M (compared to €69M and then €75M just before and after). By removing that single point, the company turns a brutal crash into <b>continuous growth</b>. Always check that the sequence of years is complete."},
 
-  {img:"images/co2-usine-axe-inverse.svg", cred:"Educational reconstruction, approximate figures",
+  {img:"images/co2-usine-axe-inverse.svg", cred:"Educational reconstruction, approximate figures", d:"Red line (labels in French), “A factory's CO2 emissions, in thousands of tonnes per year”. The vertical axis runs from 115 at the top to 170 at the bottom. The points: about 120 in 2015, 128 in 2017, 135 in 2019, 150 in 2021, 168 in 2023. Drawn this way, the line heads steadily down towards the bottom of the chart.",
    t:"A factory publishes this chart of its CO2 emissions in its 'sustainable development' report. What happens to its emissions between 2015 and 2023? Look closely at the direction of the vertical axis before answering.",
    a:"inverse", opts:["tronq","double","honnete"],
    e:"Emissions do <b>increase</b> throughout the period (from 120 to 168 thousand tonnes, about <b>+40%</b>) — but the vertical axis is <b>inverted</b>: small values at the top, large ones at the bottom. The curve then seems to 'plunge' like good news, even though it actually represents rising pollution. Always check which way the axis reads."},
 
-  {img:"images/reseaux-sociaux-double-axe.svg", cred:"Educational reconstruction, approximate figures",
+  {img:"images/reseaux-sociaux-double-axe.svg", cred:"Educational reconstruction, approximate figures", d:"“Active users of two social networks, in millions” (labels in French), from 2019 to 2023. Two vertical axes: on the left, 0 to 60, for Network A; on the right, 0 to 600, for Network B. The two lines rise together and overlap exactly, from about 20 to 56 on the left scale, that is about 200 to 560 on the right one.",
    t:"An article claims these two social networks have seen 'comparable' growth since 2019, curves included. Look closely at how this chart is built: does anything seem off?",
    a:"double", opts:["tronq","picto","honnete"],
    e:"There are <b>two different vertical scales</b>: one on the left for Network A (0 to 60 million), one on the right for Network B (0 to 600 million) — ten times bigger. As a result, the two curves overlap almost perfectly, even though Network B actually has <b>ten times more</b> users than Network A. Always check whether there's an axis on the left <b>and</b> one on the right."},
-  {img:"images/pisa-france-axe-justifie.svg", cred:"After the OECD country note for France, PISA 2025 results (8 September 2026)",
+  {img:"images/pisa-france-axe-justifie.svg", cred:"After the OECD country note for France, PISA 2025 results (8 September 2026)", d:"OECD chart (labels in French): “France: 2025 results are the lowest ever measured by PISA in all three subjects”. Three panels side by side, with the same score scale from 450 to 520, repeated on the left and right. Science, 2006 to 2025: from 495 to 499, then a drop to 483. Reading, 2000 to 2025: between 488 and 505 until 2018, then 474 in 2022 and 456 in 2025. Mathematics, 2003 to 2025: 511, then around 495 until 2018, then 474 and 458.",
    t:"This OECD chart shows France's scores in the PISA surveys since 2000. Plenty of comments accuse it of exaggerating the decline. Examine it carefully: do you see a trick, or does it look honest to you?",
    a:"honnete", opts:["tronq","double","omises"],
    fix:"🎉 Nothing to fix: a single scale, no 3D, no year removed. And putting the axis back at zero would help nothing — it would squash all three curves into a flat line.",
@@ -161,7 +161,11 @@ function renderQ(){
   $("qnum").textContent=idx+1;
   $("scase").textContent="Chart n°"+String(idx+1).padStart(2,"0");
   $("qimg").src=it.img;
-  $("qimg").alt="Chart to analyze";
+  // Description textuelle (bloquant §8.6) : lue par les lecteurs d'écran, et
+  // affichée pour tous derrière le bouton « Décrire le graphique ».
+  $("qimg").alt=it.d;
+  $("qdesc").textContent=it.d; $("qdesc").hidden=true;
+  $("qdescbtn").setAttribute("aria-expanded","false");
   $("qcred").textContent="Source: "+it.cred;
   $("stxt").innerHTML=it.t;
   $("feedback").style.display="none";

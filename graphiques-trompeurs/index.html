@@ -62,6 +62,11 @@ main{display:flex;flex-direction:column;align-items:center;}
 #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:10000;align-items:center;justify-content:center;cursor:zoom-out;padding:20px;}
 #lightbox img{max-width:100%;max-height:100%;border-radius:8px;background:#fff;padding:8px;}
 .qimg-cred{font-size:var(--fs-100);color:var(--mu);text-align:right;margin-top:4px;opacity:.7;}
+/* Description textuelle du graphique, repliée par défaut : elle aide aussi les élèves
+   dys et le fond de la classe quand le graphique est projeté. */
+.qdescbtn{display:inline-block;margin:0 0 10px;min-height:var(--cible);padding:6px 14px;font:inherit;font-size:var(--fs-200,0.9rem);font-weight:700;color:#fff;background:transparent;border:1.5px solid var(--mu);border-radius:8px;cursor:pointer;}
+.qdescbtn:hover{border-color:#fff;}
+.qdesc{margin:0 0 12px;padding:10px 14px;border-left:3px solid var(--mu);background:rgba(255,255,255,.06);border-radius:6px;line-height:1.55;}
 .stxt{font-size:1.02rem;font-weight:700;line-height:1.55;color:#fff;}
 
 #answers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
@@ -171,6 +176,8 @@ main{display:flex;flex-direction:column;align-items:center;}
     <span class="scase" id="scase"></span>
     <div class="qimg-wrap"><img id="qimg" src="" alt=""></div>
     <p class="qimg-cred" id="qcred"></p>
+    <button type="button" class="qdescbtn" id="qdescbtn" aria-expanded="false" aria-controls="qdesc" onclick="var d=document.getElementById('qdesc');d.hidden=!d.hidden;this.setAttribute('aria-expanded',String(!d.hidden));" data-i18n="descBtn">📝 Décrire le graphique</button>
+    <p class="qdesc" id="qdesc" hidden></p>
     <p class="stxt" id="stxt"></p>
   </div>
   <div id="freearea">
@@ -227,7 +234,7 @@ I18N.register({
     brief3: `👀 Le réflexe à avoir : avant de croire un graphique, regarde toujours <b>l'axe vertical</b>, l'<b>échelle</b> et ce qui pourrait manquer.`,
     start: "📊 Observer les graphiques", fiches: "📑 Comprendre les techniques",
     qLabel: "Question", scoreLabel: "Score",
-    fPlaceholder: "Écris ce qui cloche avec ce graphique…", fValidate: "Valider ➜",
+    fPlaceholder: "Écris ce qui cloche avec ce graphique…", fValidate: "Valider ➜", descBtn: "📝 Décrire le graphique",
     aideBtn: "🆘 Besoin d'aide ? Voir les choix",
     fixTitle: "🔧 Répare le graphique", fixPlaceholder: "Comment corriger ce graphique ?", fixValidate: "Valider ➜",
     next: "Question suivante ➜", replay: "🔄 Rejouer",
@@ -245,7 +252,7 @@ I18N.register({
     brief3: `👀 The reflex to build: before trusting a chart, always check the <b>vertical axis</b>, the <b>scale</b>, and what might be missing.`,
     start: "📊 Inspect the charts", fiches: "📑 Understand the techniques",
     qLabel: "Question", scoreLabel: "Score",
-    fPlaceholder: "Write what's wrong with this chart…", fValidate: "Submit ➜",
+    fPlaceholder: "Write what's wrong with this chart…", fValidate: "Submit ➜", descBtn: "📝 Describe the chart",
     aideBtn: "🆘 Need help? Show the choices",
     fixTitle: "🔧 Fix the chart", fixPlaceholder: "How would you fix this chart?", fixValidate: "Submit ➜",
     next: "Next question ➜", replay: "🔄 Play again",
