@@ -84,7 +84,7 @@ const SCENARIOS = [
       'Pièce jointe PDF inconnue : ne jamais ouvrir, elle peut installer un virus.'
     ],
     reflexe: 'Un gain que vous n’avez pas joué est toujours un piège. On n’ouvre pas la pièce jointe, on supprime.',
-    explication: 'La mise en forme « cassée » (VeuiLLez.ConFirmer) n’est pas de la maladresse : elle sert à passer les filtres anti-spam. La pièce jointe peut installer un logateur espion ou vous conduire vers une page qui réclame vos coordonnées bancaires « pour les frais de livraison ».'
+    explication: 'La mise en forme « cassée » (VeuiLLez.ConFirmer) n’est pas de la maladresse : elle sert à passer les filtres anti-spam. La pièce jointe peut installer un logiciel espion ou vous conduire vers une page qui réclame vos coordonnées bancaires « pour les frais de livraison ».'
   },
 
   /* ---------- 4. E-mail panneaux solaires / aides — ARNAQUE ----------- */
