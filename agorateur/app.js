@@ -436,6 +436,7 @@ function startMatch(i, foeRevision){
   $("foe-emoji").replaceChildren(persoNoeud(foe));
   $("foe-title").textContent=foe.name;
   $("foe-tag").textContent=" "+foe.name+" — "+foe.desc; $("foe-tag").prepend(persoNoeud(foe));
+  AgoraPlus.debutMatch(foe);
   renderBreadcrumb();
   updateHP();
   renderTurn();
@@ -472,7 +473,6 @@ function renderTurn(){
   $("dialogue").after($("carnet"));
   $("souffle").hidden=true;
   $("btxt").textContent=line.t;
-  Voix.replique(line.t, line.foe||foe);
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
   $("dialogue").hidden=true; $("dialogue").innerHTML="";
@@ -483,6 +483,13 @@ function renderTurn(){
   void bubble.offsetWidth;
   bubble.classList.add("pop-replay");
   tourFini=false;
+  $("answers").innerHTML="";
+  // L'Agora vivante (agora-plus.js) : la tirade à surligner ou à interrompre passe d'abord.
+  if(AgoraPlus.debutReplique(line, ()=>renderChoix(line))) return;
+  renderChoix(line);
+}
+
+function renderChoix(line){
   lancerAttaque(line);
   const ansDiv=$("answers"); ansDiv.innerHTML="";
   let choices;
@@ -493,7 +500,7 @@ function renderTurn(){
     $("qprompt").textContent="Quel est le piège de cet argument… s’il y en a un ?";
     const pool=[line.a,...line.opts].filter(id=>id!=="valable");
     choices=shuffle(pool.map(id=>({...FALLACIES.find(f=>f.id===id)})));
-    choices.push({...VALABLE});
+    if(!line.repere) choices.push({...VALABLE});
   }
   if(modeSaisie()){ renderSaisie(line); renderTechs(); return; }
   choices.forEach(c=>{
@@ -529,6 +536,7 @@ function answer(line,id,btn){
   if(FALLACIES.some(f=>f.id===line.a)){ const c=croises[line.a]||(croises[line.a]={ok:0,ko:0}); if(ok) c.ok++; else c.ko++; }
   totalCount++;
   if(ok){ correctCount++; matchCorrect++; }
+  AgoraPlus.apresAnswer(line, ok);
   const all=[...document.querySelectorAll(".abtn")];
   all.forEach(b=>{b.disabled=true;b.classList.add("dim");});
   const goodLabel=libelle(line.a).l;
@@ -563,9 +571,10 @@ function answer(line,id,btn){
 }
 
 function nextTurn(){
-  Voix.taire(); Voix.arreterEcoute();
+  Voix.taire(); Voix.arreterEcoute(); AgoraPlus.arreter();
   if(youHP<=0){ lose(); return; }
-  if(phase==="comprendre"){ winMatch(); return; }
+  if(phase==="plaidoyer"){ AgoraPlus.suitePlaidoyer(); return; }
+  if(phase==="comprendre"){ if(!AgoraPlus.plaidoyer(foeActuel())) winMatch(); return; }
   lineIdx++;
   if(lineIdx>=order.length){
     if(revision || !foeActuel().dlg) winMatch(); else renderComprendre();
@@ -639,7 +648,7 @@ function victory(){
   oublierPartie();
   $("retry-btn").style.display="none";
   const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"Tu as discuté avec "+(SENSEI_BOSS?"les cinq personnages et ton propre maître":"les cinq personnages")+", et tu as compris ce qui motivait "+bilan.compris+" d'entre eux sur "+FOES.length+".<br><br>Tes réponses : "+bilan.question+" questions, "+bilan.reformulation+" reformulations, "+bilan.esquive+" esquives, "+bilan.massue+" coups de massue.<br><br>"+scoreLine()+"<br><br>Repérer un sophisme, c'est le début. Ce qui fait avancer une discussion, c'est poser des questions, reformuler fidèlement l'idée de l'autre (l'<b>homme de fer</b>), reconnaître ses bons arguments… et chercher à comprendre ce qui compte pour lui. 🤝";
-  finDePartie(SENSEI_BOSS?"🥋 Dernière leçon réussie !":"🤝 Bâtisseur de dialogue !", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
+  finDePartie(SENSEI_BOSS?"🥋 Dernière leçon réussie !":"🤝 Bâtisseur de dialogue !", msg+AgoraPlus.bilan()+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
 }
 
 function lose(){
@@ -647,7 +656,7 @@ function lose(){
   $("nextbtn").style.display="none";
   const title="Tu t'es laissé embarquer…";
   const msg=foeActuel().name+" t'a fait tomber dans trop de pièges. Pas grave : l'art de la discussion <b>se pratique</b> plus qu'il ne s'apprend.<br><br>"+scoreLine()+"<br><br>Relis bien les ripostes : homme de paille, faux dilemme, appel à la popularité… Une fois qu'on les connaît, on les voit partout !";
-  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
+  finDePartie("😵 "+title, msg+AgoraPlus.bilan()+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
   // Reprendre ce personnage est le choix le plus utile : il passe en tête des boutons de fin.
   $("retry-btn").style.display="none";
   const rb=document.createElement("button");
@@ -812,7 +821,7 @@ function renderSaisie(line){
   const msg=document.createElement("p"); msg.className="saisie-msg"; msg.id="saisie-msg"; msg.setAttribute("aria-live","polite");
   const indice=document.createElement("p"); indice.className="saisie-msg"; indice.id="saisie-indice";
   form.append(input,ok);
-  if(line.type!=="epl"){
+  if(line.type!=="epl" && !line.repere){
     const val=document.createElement("button"); val.type="button"; val.className="saisie-valable"; val.textContent="✅ C'est un bon argument";
     val.onclick=()=>conclureSaisie(line, "valable", input, null);
     form.appendChild(val);
@@ -1074,6 +1083,7 @@ function repondre(line,geste,btn,variante){
     else corps.textContent="Pas de confidence cette fois : cet indice t'échappe.";
   }
   r.append(tete,corps,lecon);
+  AgoraPlus.apresReponse(line, geste);
   Voix.dire(G.bon?line.d.k:(geste==="massue"?dlg.braque:dlg.esquive), foe, {citations:true});
   updateHP();
   const nb=$("nextbtn");
@@ -1131,6 +1141,7 @@ function renderComprendre(){
       if(ok) Voix.dire(dlg.fin, foe, {citations:true});
       const nb=$("nextbtn"); nb.style.display="block";
       nb.textContent=foeIdx===FOES.length-1?"🏁 Voir le bilan ➜":"Personnage suivant ➜";
+      AgoraPlus.boutonComprendre(nb);
       nb.scrollIntoView({behavior:"smooth",block:"end"}); nb.focus({preventScroll:true});
     };
     ansDiv.appendChild(b);

@@ -338,6 +338,46 @@ body.voix-parle .bubble .voix-bascule{animation:voix-pulse 1s ease-in-out infini
 .voix-zone{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px;}
 .voix-zone .voix-micro{width:min(100%,420px);}
 @media (prefers-reduced-motion: reduce){body.voix-parle .bubble .voix-bascule,.voix-micro.ecoute{animation:none;}}
+/* L'Agora vivante (agora-plus.js). La foule : */
+#foule{margin:8px 0 2px;text-align:center;}
+#foule .foule-titre{font-size:var(--fs-100);font-weight:800;color:var(--mu);margin:0 0 4px;letter-spacing:.3px;}
+#foule .foule-gens{display:flex;justify-content:center;gap:2px;font-size:1.25rem;line-height:1;}
+#foule .foule-gens span{transition:transform .4s,filter .4s;}
+#foule .foule-gens .avec{filter:drop-shadow(0 0 3px rgba(62,207,142,.8));transform:translateY(-2px);}
+#foule .foule-gens .contre{filter:grayscale(.6) opacity(.7);}
+#foule .foule-reaction{min-height:1.3em;margin:4px 0 0;font-size:var(--fs-100);font-weight:800;color:var(--tx);opacity:0;}
+#foule .foule-reaction.vu{animation:foule-flash 3.2s ease-out both;}
+@keyframes foule-flash{0%{opacity:0;transform:translateY(4px);}12%{opacity:1;transform:none;}75%{opacity:1;}100%{opacity:.35;}}
+/* L'humeur du personnage */
+.humeur{font-size:var(--fs-100);font-weight:800;color:var(--mu);margin:2px 0 4px;}
+#f-foe{transition:border-color .4s,box-shadow .4s;}
+#f-foe.humeur-m2{border-color:var(--rd);box-shadow:0 0 0 2px rgba(247,95,95,.35);}
+#f-foe.humeur-m1{border-color:rgba(247,95,95,.6);}
+#f-foe.humeur-p1{border-color:rgba(62,207,142,.6);}
+#f-foe.humeur-p2{border-color:var(--gr);box-shadow:0 0 0 2px rgba(62,207,142,.35);}
+#f-foe.humeur-m2 .femoji,#f-foe.humeur-m1 .femoji{animation:humeur-fache .5s ease-in-out 2;}
+#f-foe.humeur-p2 .femoji,#f-foe.humeur-p1 .femoji{animation:humeur-content .7s ease-in-out 1;}
+@keyframes humeur-fache{25%{transform:translateX(-3px) rotate(-4deg);}75%{transform:translateX(3px) rotate(4deg);}}
+@keyframes humeur-content{50%{transform:translateY(-6px) scale(1.06);}}
+/* La tirade : à surligner (Facile) ou en direct (Difficile) */
+#tirade:empty{display:none;}
+#tirade .tirade-pre{font-style:italic;color:var(--mu);margin:0 0 6px;}
+#tirade.surligner{display:flex;flex-direction:column;gap:8px;}
+#tirade .phrase{text-align:left;background:var(--card);border:2px dashed var(--bord);border-radius:12px;padding:10px 12px;color:var(--tx);font:inherit;font-style:italic;line-height:1.45;cursor:pointer;min-height:44px;}
+#tirade .phrase:hover:not(:disabled),#tirade .phrase:focus-visible{border-color:var(--acc);border-style:solid;outline:none;background:rgba(255,93,115,.08);}
+#tirade .phrase.bad{border-color:var(--rd);border-style:solid;opacity:.6;text-decoration:line-through;cursor:default;}
+#tirade.direct .phrase-direct{margin:0 0 8px;font-style:italic;line-height:1.5;animation:phrase-entre .35s ease-out both;}
+#tirade.direct .phrase-direct.passee{opacity:.45;}
+#tirade.direct .phrase-direct.bad{color:var(--rd);text-decoration:line-through;}
+@keyframes phrase-entre{from{opacity:0;transform:translateY(6px);}}
+#tirade.contexte{margin-bottom:8px;}
+#tirade .tirade-titre{font-size:var(--fs-100);font-weight:800;color:var(--mu);margin:0 0 2px;text-transform:uppercase;letter-spacing:.4px;}
+#tirade .tirade-ctx{margin:0 0 4px;font-size:.9em;font-style:italic;color:var(--mu);}
+#answers .rien{grid-column:1/-1;}
+#answers .objection{grid-column:1/-1;width:100%;min-height:64px;border:none;border-radius:50px;background:linear-gradient(135deg,#ffb84d,#e8743b);color:#1a0d00;font-family:'Alfa Slab One',serif;font-size:1.35rem;cursor:pointer;box-shadow:0 4px 20px rgba(255,170,60,.35);}
+#answers .objection:active{transform:scale(.97);}
+#answers .objection:focus-visible{outline:3px solid #fff;outline-offset:3px;}
+@media (prefers-reduced-motion: reduce){#foule .foule-reaction.vu{animation:none;opacity:1;}#f-foe .femoji{animation:none!important;}#tirade.direct .phrase-direct{animation:none;}}
 @media(max-width:520px){.options{grid-template-columns:1fr;}}
 
 /* La piste de combat : l'attaque part de l'adversaire (à droite) vers toi */
@@ -717,6 +757,9 @@ function entrerAgora(){
 if(/[?&]entrer\b/.test(location.search)) window.addEventListener('load',()=>{ document.getElementById('intro').style.display!=='none'&&entrerAgora(); });
 // Les définitions et parades du dojo servent à la révision de fin de partie.
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'dojo-data-en.js' : 'dojo-data.js') + '"><\/scr' + 'ipt>');
+// L'Agora vivante : la tirade, la foule, l'humeur et le plaidoyer (contenu par langue, logique commune).
+document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'agora-plus-data-en.js' : 'agora-plus-data.js') + '"><\/scr' + 'ipt>');
+document.write('<scr' + 'ipt src="agora-plus.js"><\/scr' + 'ipt>');
 document.write('<scr' + 'ipt src="' + (I18N.lang === 'en' ? 'app-en.js' : 'app.js') + '"><\/scr' + 'ipt>');
 </script>
 <script src="https://antoninatger.github.io/jeux/partage.js" defer data-jeu="Agorateur" data-texte="Agorateur, un jeu gratuit pour repérer les ruses du discours et apprendre à mieux discuter" data-texte-en="Agorator, a free game to spot tricks of speech and learn to discuss better"></script>

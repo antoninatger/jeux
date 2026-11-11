@@ -434,6 +434,7 @@ function startMatch(i, foeRevision){
   $("foe-emoji").replaceChildren(persoNoeud(foe));
   $("foe-title").textContent=foe.name;
   $("foe-tag").textContent=" "+foe.name+" — "+foe.desc; $("foe-tag").prepend(persoNoeud(foe));
+  AgoraPlus.debutMatch(foe);
   renderBreadcrumb();
   updateHP();
   renderTurn();
@@ -470,7 +471,6 @@ function renderTurn(){
   $("dialogue").after($("carnet"));
   $("souffle").hidden=true;
   $("btxt").textContent=line.t;
-  Voix.replique(line.t, line.foe||foe);
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
   $("dialogue").hidden=true; $("dialogue").innerHTML="";
@@ -481,6 +481,13 @@ function renderTurn(){
   void bubble.offsetWidth;
   bubble.classList.add("pop-replay");
   tourFini=false;
+  $("answers").innerHTML="";
+  // L'Agora vivante (agora-plus.js) : la tirade à surligner ou à interrompre passe d'abord.
+  if(AgoraPlus.debutReplique(line, ()=>renderChoix(line))) return;
+  renderChoix(line);
+}
+
+function renderChoix(line){
   lancerAttaque(line);
   const ansDiv=$("answers"); ansDiv.innerHTML="";
   let choices;
@@ -491,7 +498,7 @@ function renderTurn(){
     $("qprompt").textContent="What is the trap in this argument… if there is one?";
     const pool=[line.a,...line.opts].filter(id=>id!=="valable");
     choices=shuffle(pool.map(id=>({...FALLACIES.find(f=>f.id===id)})));
-    choices.push({...VALABLE});
+    if(!line.repere) choices.push({...VALABLE});
   }
   if(modeSaisie()){ renderSaisie(line); renderTechs(); return; }
   choices.forEach(c=>{
@@ -527,6 +534,7 @@ function answer(line,id,btn){
   if(FALLACIES.some(f=>f.id===line.a)){ const c=croises[line.a]||(croises[line.a]={ok:0,ko:0}); if(ok) c.ok++; else c.ko++; }
   totalCount++;
   if(ok){ correctCount++; matchCorrect++; }
+  AgoraPlus.apresAnswer(line, ok);
   const all=[...document.querySelectorAll(".abtn")];
   all.forEach(b=>{b.disabled=true;b.classList.add("dim");});
   const goodLabel=libelle(line.a).l;
@@ -561,9 +569,10 @@ function answer(line,id,btn){
 }
 
 function nextTurn(){
-  Voix.taire(); Voix.arreterEcoute();
+  Voix.taire(); Voix.arreterEcoute(); AgoraPlus.arreter();
   if(youHP<=0){ lose(); return; }
-  if(phase==="comprendre"){ winMatch(); return; }
+  if(phase==="plaidoyer"){ AgoraPlus.suitePlaidoyer(); return; }
+  if(phase==="comprendre"){ if(!AgoraPlus.plaidoyer(foeActuel())) winMatch(); return; }
   lineIdx++;
   if(lineIdx>=order.length){
     if(revision || !foeActuel().dlg) winMatch(); else renderComprendre();
@@ -637,7 +646,7 @@ function victory(){
   oublierPartie();
   $("retry-btn").style.display="none";
   const msg=(SENSEI_BOSS?PROJET_COMMUN+"<br><br>":"")+"You talked with "+(SENSEI_BOSS?"all five characters and your own master":"all five characters")+", and understood what drove "+bilan.compris+" of them out of "+FOES.length+".<br><br>Your answers: "+bilan.question+" questions, "+bilan.reformulation+" rephrasings, "+bilan.esquive+" dodges, "+bilan.massue+" sledgehammer blows.<br><br>"+scoreLine()+"<br><br>Spotting a fallacy is only the start. What moves a discussion forward is asking questions, faithfully rephrasing the other person's idea (the <b>steelman</b>), acknowledging their good arguments… and trying to understand what matters to them. 🤝";
-  finDePartie(SENSEI_BOSS?"🥋 Last lesson passed!":"🤝 Dialogue builder!", msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
+  finDePartie(SENSEI_BOSS?"🥋 Last lesson passed!":"🤝 Dialogue builder!", msg+AgoraPlus.bilan()+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
 }
 
 function lose(){
@@ -645,7 +654,7 @@ function lose(){
   $("nextbtn").style.display="none";
   const title="You got carried away…";
   const msg=foeActuel().name+" led you into too many traps. No worries: the art of discussion is something you <b>practise</b> more than something you learn.<br><br>"+scoreLine()+"<br><br>Read the replies carefully: straw man, false dilemma, appeal to popularity… Once you know them, you see them everywhere!";
-  finDePartie("😵 "+title, msg+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
+  finDePartie("😵 "+title, msg+AgoraPlus.bilan()+(SENSEI_BOSS?"":"<br><br>"+PISTE_DOJO.replace("🙋",window.Avatar?Avatar.emoji():"🙋")));
   // Reprendre ce personnage est le choix le plus utile : il passe en tête des boutons de fin.
   $("retry-btn").style.display="none";
   const rb=document.createElement("button");
@@ -810,7 +819,7 @@ function renderSaisie(line){
   const msg=document.createElement("p"); msg.className="saisie-msg"; msg.id="saisie-msg"; msg.setAttribute("aria-live","polite");
   const indice=document.createElement("p"); indice.className="saisie-msg"; indice.id="saisie-indice";
   form.append(input,ok);
-  if(line.type!=="epl"){
+  if(line.type!=="epl" && !line.repere){
     const val=document.createElement("button"); val.type="button"; val.className="saisie-valable"; val.textContent="✅ It's a good argument";
     val.onclick=()=>conclureSaisie(line, "valable", input, null);
     form.appendChild(val);
@@ -1059,6 +1068,7 @@ function repondre(line,geste,btn,variante){
     else corps.textContent="No confidence this time: this clue slips away.";
   }
   r.append(tete,corps,lecon);
+  AgoraPlus.apresReponse(line, geste);
   Voix.dire(G.bon?line.d.k:(geste==="massue"?dlg.braque:dlg.esquive), foe, {citations:true});
   updateHP();
   const nb=$("nextbtn");
@@ -1116,6 +1126,7 @@ function renderComprendre(){
       if(ok) Voix.dire(dlg.fin, foe, {citations:true});
       const nb=$("nextbtn"); nb.style.display="block";
       nb.textContent=foeIdx===FOES.length-1?"🏁 See the summary ➜":"Next character ➜";
+      AgoraPlus.boutonComprendre(nb);
       nb.scrollIntoView({behavior:"smooth",block:"end"}); nb.focus({preventScroll:true});
     };
     ansDiv.appendChild(b);
