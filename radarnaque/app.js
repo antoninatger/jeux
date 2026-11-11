@@ -70,6 +70,7 @@
      ÉCRAN D'ACCUEIL
      ===================================================================== */
   function ecranAccueil(){
+    ColFin.protegerSortie(false);   // plus de partie en cours : « ← Retour » ne demande plus confirmation
     hud.style.display = 'none';
     var mb = el('menu-btn'); if (mb) mb.style.display = 'none';
     app.innerHTML =
@@ -740,7 +741,11 @@
     var left = Math.max(6, Math.min(cx - pw/2, maq.clientWidth - pw - 6));
 
     // sous l'élément par défaut ; au-dessus s'il n'y a pas la place en bas de l'écran
-    var placeBelow = (window.innerHeight - refBot) > (ph + 24) || refTop < (ph + 24);
+    // l'en-tête de la collection passe au-dessus de la fenêtre : on ne la glisse pas dessous,
+    // sinon sa croix de fermeture devient inatteignable en haut de page
+    var entete = document.querySelector('.col-entete');
+    var hautLibre = entete ? Math.max(0, entete.getBoundingClientRect().bottom) : 0;
+    var placeBelow = (window.innerHeight - refBot) > (ph + 24) || (refTop - hautLibre) < (ph + 24);
     var top = placeBelow ? (botA + 12) : (topA - ph - 12);
     pop.classList.toggle('above', !placeBelow);
     pop.style.left = left + 'px';

@@ -156,7 +156,8 @@ body{
   font-size:.75em; line-height:1.3; text-align:left; transform:rotate(2.5deg);
   box-shadow:0 3px 8px rgba(0,0,0,.32);
 }
-.fauxphoto .fp-hd{ display:block; font-size:1em; letter-spacing:.09em; color:#6b7280; }
+/* en A++ « DESTINATAIRE » se coupait en deux lignes : plus petit, et jamais coupé */
+.fauxphoto .fp-hd{ display:block; font-size:.72em; letter-spacing:.06em; color:#6b7280; white-space:nowrap; }
 .fauxphoto .fp-tag b{ display:block; font-weight:800; word-break:break-word; }
 .fauxphoto .fp-bar{ display:block; margin-top:3px; letter-spacing:-1px; color:#111; font-size:1.15em; overflow:hidden; }
 .fp-cap{ font-size:.78em; color:var(--texte-doux); margin:6px 2px 0; }
@@ -461,13 +462,26 @@ img.repere.hint-flash{ animation:hintPulseImg 1.1s ease 2; }
 .reflexes-carte li::before{ content:'🛡️'; position:absolute; left:0; top:0; }
 .ressources{ margin-top:16px; font-size:.92em; }
 .ressources h3{ color:var(--bleu-fonce); margin-bottom:8px; }
-.ressources .r{ display:flex; gap:10px; align-items:baseline; padding:8px 0; border-bottom:1px dashed var(--bord); }
+.ressources .r{ display:flex; flex-wrap:wrap; gap:2px 10px; align-items:baseline; text-align:left; padding:8px 0; border-bottom:1px dashed var(--bord); }
+.ressources .r b{ overflow-wrap:anywhere; }
 .ressources .r b{ color:var(--texte); }
 .ressources .num{ font-weight:800; color:var(--vert); white-space:nowrap; }
 
 .footer-note{ text-align:center; font-size:.8em; color:var(--texte-doux); margin-top:26px; }
 
 /* Mouvement réduit, focus, cibles de 44 px : fournis par collection.css. */
+
+/* Le socle dimensionne en rem : sans ceci, la sonde (ouverte à chaque indice) et
+   le récapitulatif de fin restaient en petit quand le joueur choisit A+ ou A++. */
+.col-modale.sonde .col-modale__titre{ font-size:calc(var(--fs-500) * var(--taille)); }
+.col-modale.sonde .col-btn,
+.col-fin .col-btn,
+.col-fin .col-fin__msg,
+.col-fin .col-recap__intitule,
+.col-fin .col-recap__sansfaute{ font-size:calc(1rem * var(--taille)); }
+.col-fin .col-recap__titre,
+.col-fin .col-recap__expl,
+.col-fin .col-recap__lien{ font-size:calc(.875rem * var(--taille)); }
 
 /* ---- Fenêtre de message interne (remplace confirm()/alert()) ---- */
 .msg-modal{ max-width:380px; text-align:center; }
