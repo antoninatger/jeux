@@ -1098,6 +1098,81 @@ const SCENARIOS = [
     ],
     reflexe: 'Un montant qui fait sursauter n’est pas un signe d’arnaque. Regardez ce qu’on vous demande de faire : ici, rien — et tout est vérifiable depuis votre espace client.',
     explication: 'Un message inquiétant n’est pas forcément un faux message : une vraie facture peut très bien annoncer une mauvaise surprise. Les faux mails d’énergie, eux, ajoutent toujours deux choses que celui-ci n’a pas : un lien de paiement immédiat et une menace de coupure sous 24 ou 48 heures. Le réflexe ne change pas — n’ouvrez pas le lien d’un mail, ouvrez vous-même votre espace client et comparez le montant.'
+  },
+
+  /* ---------- 48. Appel « du petit-fils », voix clonée par IA — ARNAQUE */
+  {
+    id: 'appel-voix-clonee-petit-fils',
+    canal: 'appel',
+    entete: 'Appel reçu un soir. La voix ressemble à s’y méprendre à celle de votre petit-fils',
+    afficheur: 'Numéro inconnu',
+    numero: '07 56 81 XX XX',
+    transcript: [
+      { qui: 'lui', texte: 'Mamie, c’est moi… J’ai eu un accident de voiture, j’ai blessé quelqu’un. Je suis au commissariat. Surtout, ne dis rien à papa et maman.' },
+      { qui: 'vous', texte: 'Mon Dieu, Théo ! Tu n’as rien ?' },
+      { qui: 'lui', texte: 'Je te passe mon avocat, il va tout t’expliquer.' },
+      { qui: 'lui', texte: 'Bonjour Madame, maître Lambert. Il faut verser une caution de 3 800 € ce soir pour lui éviter la garde à vue. Un coursier passera chez vous prendre l’enveloppe dans une heure.' }
+    ],
+    verdict: 'arnaque',
+    categorie: 'Arnaque au faux proche — voix clonée par IA',
+    indices: [
+      'L’appel vient d’un numéro inconnu, pas du numéro enregistré de votre petit-fils.',
+      'Un drame soudain (accident, commissariat) : la peur est là pour vous empêcher de réfléchir.',
+      'Le secret imposé (« ne dis rien à papa et maman ») vous coupe de ceux qui pourraient vérifier.',
+      { risque: 'De l’argent liquide remis le soir même à un « coursier » : aucune caution ne se paie ainsi. Une fois l’enveloppe partie, l’argent est perdu.' },
+      'La voix ne prouve plus rien : une IA peut l’imiter à partir d’un court enregistrement, par exemple une vidéo publiée en ligne.'
+    ],
+    reflexe: 'Raccrochez, puis rappelez votre proche sur SON numéro habituel. Et convenez en famille d’un mot de code, que seul un vrai proche connaît.',
+    explication: 'C’est l’arnaque « aux grands-parents », rendue plus redoutable par le clonage de voix : à partir d’un court extrait (une vidéo sur les réseaux sociaux, un message vocal), une IA fabrique une voix qui ressemble à celle de votre proche. Le scénario, lui, ne change pas : un drame, le secret, de l’argent tout de suite. Ce n’est donc pas la voix qu’il faut écouter, mais ce qu’on vous demande. Un vrai proche en difficulté acceptera toujours que vous le rappeliez.'
+  },
+
+  /* ---------- 49. Message vocal « de votre fille », cloné par IA — ARNAQUE */
+  {
+    id: 'chat-vocal-clone-fille',
+    canal: 'chat',
+    entete: 'Messages reçus d’un numéro inconnu, dont un message vocal',
+    plateforme: 'WhatsApp',
+    contact: '+33 7 49 02 15 63',
+    avatar: '',
+    messages: [
+      { from: 'eux', texte: 'Maman c’est moi, mon téléphone est tombé dans l’eau 😩 Je t’écris du portable d’une collègue.' },
+      { from: 'eux', voix: '0:07', texte: '« Maman, c’est vraiment moi, écoute… J’ai un gros souci, j’ai besoin de toi tout de suite. »' },
+      { from: 'eux', texte: 'Tu as entendu, c’est bien moi ❤️ Je dois régler 940 € au garage avant 18h, sinon ils gardent la voiture. Je t’envoie le RIB du garagiste : fais un virement instantané, je te rembourse demain.' }
+    ],
+    verdict: 'arnaque',
+    categorie: 'Arnaque au faux proche — message vocal cloné par IA',
+    indices: [
+      'Un numéro inconnu, et un prétexte pour l’expliquer (téléphone tombé dans l’eau, portable d’une collègue).',
+      'Le message vocal est offert comme « preuve » : or une voix s’imite par IA à partir d’un court enregistrement. Une preuve fournie par celui qui demande de l’argent n’en est pas une.',
+      'Une somme à payer avant une heure précise (« avant 18h ») : l’urgence empêche de vérifier.',
+      { risque: 'Un virement instantané part en quelques secondes et ne s’annule pas.' }
+    ],
+    reflexe: 'Une voix ne prouve plus rien. Rappelez votre proche sur son numéro habituel, ou posez une question dont lui seul connaît la réponse.',
+    explication: 'C’est l’arnaque « Bonjour maman » dans sa version récente : pour lever vos doutes, l’escroc joint un court message vocal fabriqué par IA, qui imite la voix de votre enfant. Remarquez qu’il ne dit rien que seul votre enfant pourrait savoir. Proposez d’appeler sur l’ancien numéro : un imposteur trouvera toujours une raison de refuser.'
+  },
+
+  /* ---------- 50. Appel de la petite-fille, qui donne le mot de code — FIABLE */
+  {
+    id: 'appel-petite-fille-code-ok',
+    canal: 'appel',
+    entete: 'Appel reçu un dimanche. Dans votre famille, on a convenu d’un mot de code contre les arnaques à la voix imitée',
+    afficheur: 'Chloé (petite-fille)',
+    numero: 'contact enregistré',
+    transcript: [
+      { qui: 'lui', texte: 'Coucou Mamie ! Dis, je peux passer mercredi après les cours ? J’ai un exposé sur les années 60 et j’aimerais que tu me racontes.' },
+      { qui: 'vous', texte: 'Avec plaisir ! Mais d’abord… c’est quoi, notre mot de code ?' },
+      { qui: 'lui', texte: 'Clafoutis ! Tu as bien raison de demander. Et si tu as un doute, raccroche et rappelle-moi, ça ne me vexe pas du tout.' }
+    ],
+    verdict: 'fiable',
+    categorie: 'Message légitime — un proche qui accepte d’être vérifié',
+    indices: [
+      'Elle donne le mot de code familial sans hésiter : une voix imitée ne peut pas le connaître.',
+      'Elle vous propose elle-même de raccrocher et de rappeler : un escroc ne peut pas se le permettre.',
+      'Aucune demande d’argent, aucune urgence, aucun secret.',
+      'Elle propose de venir vous voir : tout se vérifiera en personne.'
+    ],
+    reflexe: 'Demander le mot de code à un proche n’a rien de vexant : c’est le test qu’une voix imitée ne peut pas réussir.',
+    explication: 'Les arnaques à la voix clonée ne doivent pas vous faire douter de tous vos proches. Ce qui rassure ici n’est ni le nom affiché ni la voix — les deux s’imitent — mais trois choses qu’un escroc ne peut pas fournir : le mot de code, l’invitation à rappeler, et l’absence de toute demande d’argent. Choisissez en famille un mot simple, que vous ne publiez nulle part.'
   }
 
 ];
@@ -1164,7 +1239,10 @@ const GLOSSAIRE = [
     def:'Fausse page « je ne suis pas un robot » qui, au lieu de cocher une case, vous demande d’appuyer sur des touches (Windows + R, ou le Terminal sur Mac) pour coller un « code de vérification ». Ce code est en réalité une commande qui installe un logiciel voleur. Règle absolue : un contrôle anti-robot ne demande jamais d’ouvrir une fenêtre de l’ordinateur.' },
   { key:'presse-papiers', terme:'Presse-papiers',
     aliases:['presse-papiers'],
-    def:'Mémoire invisible de l’ordinateur où atterrit tout ce que vous copiez, et d’où sort tout ce que vous collez (Ctrl + V). Une page web peut y déposer un texte sans vous prévenir : ce que vous collez n’est donc pas forcément ce que vous croyez avoir copié.' }
+    def:'Mémoire invisible de l’ordinateur où atterrit tout ce que vous copiez, et d’où sort tout ce que vous collez (Ctrl + V). Une page web peut y déposer un texte sans vous prévenir : ce que vous collez n’est donc pas forcément ce que vous croyez avoir copié.' },
+  { key:'clonage-voix', terme:'Clonage de voix (voix imitée par IA)',
+    aliases:['clonage de voix','voix clonée','voix imitée'],
+    def:'Technique qui permet à une IA d’imiter la voix d’une personne à partir d’un court enregistrement (une vidéo en ligne, un message vocal). Les escrocs s’en servent pour se faire passer pour un proche en détresse. Parade : raccrocher et rappeler sur le numéro habituel, ou convenir en famille d’un mot de code.' }
 ];
 
 /* =========================================================================
@@ -1180,7 +1258,8 @@ const GLOSSAIRE = [
                                  montant, une formule de politesse).
    Sur une carte fiable il n'y a pas d'escroc : donc jamais de leurre.
    « bon » reste lu comme synonyme quand « type » est absent.
-   « texte » doit apparaître tel quel dans le message affiché ; '__IMG__' = l'image.
+   « texte » doit apparaître tel quel dans le message affiché ; '__IMG__' = l'image ;
+   '__CTX__' = la ligne de contexte au-dessus du message (désignée en entier).
    ========================================================================= */
 const REPERES = {
   'sms-colis': [
@@ -1274,7 +1353,8 @@ const REPERES = {
   'email-prenom-detourne': [
     { texte:'Vous serez débité de 447,00', bon:true, aide:'Un simple prénom contient-il une phrase sur de l’argent et un IBAN ? Cherchez ce qui n’a rien à faire dans un « Bonjour ».', note:'Un « prénom » qui parle d’argent, d’IBAN et de prélèvements : ce texte a été glissé dans le champ prénom à la place de votre nom.' },
     { texte:'0259509226', bon:true, aide:'Que cherche-t-on à vous faire faire ? Repérez le numéro à appeler : c’est là qu’est le piège.', note:'Le message fournit lui-même le numéro à rappeler. Rien de ce que vous avez sous les yeux ne dit qui décrochera : un numéro ne se vérifie pas. On rappelle toujours par un canal qu’on est allé chercher soi-même.' },
-    { texte:'no-reply@welcometothejungle.com', bon:false, type:'neutre', note:'L’adresse est bien celle du vrai site, correctement orthographiée : cet e-mail vient réellement de Welcome to the Jungle. L’expéditeur n’est donc pas ce qui cloche ici.' }
+    { texte:'no-reply@welcometothejungle.com', bon:false, type:'neutre', note:'L’adresse est bien celle du vrai site, correctement orthographiée : cet e-mail vient réellement de Welcome to the Jungle. L’expéditeur n’est donc pas ce qui cloche ici.' },
+    { texte:'__CTX__', bon:true, aide:'Avez-vous fait quelque chose qui explique cet e-mail ? Regardez le contexte, tout en haut.', note:'Vous n’avez créé aucun compte : quelqu’un d’autre a donc saisi votre adresse à votre place. Un message « de bienvenue » pour une inscription que vous n’avez pas faite mérite toujours la méfiance.' }
   ],
   'sms-banque-ok': [
     { texte:'Appelez le numéro figurant au dos de votre carte', bon:true, aide:'Cherchez ce qui vous renvoie vers un moyen sûr, que vous contrôlez vous-même.', note:'On vous renvoie vers un canal officiel que VOUS maîtrisez.' },
@@ -1286,7 +1366,8 @@ const REPERES = {
     { texte:'Compte Google', bon:true, aide:'D’où vient cette notification ? Cherchez ce qui montre qu’elle vient de l’application officielle.', note:'La notification est poussée par l’application Google installée sur ce téléphone : son origine est vérifiable, contrairement au nom d’expéditeur d’un SMS ou d’un e-mail, qui s’écrit librement.' },
     { texte:'aucune action n’est nécessaire', bon:true, aide:'Cherchez la phrase qui montre qu’il n’y a rien à faire en urgence.', note:'Ton informatif, sans menace : on vous laisse le temps de vérifier au lieu de vous presser.' },
     { texte:'depuis l’application Google, rubrique Sécurité', bon:true, aide:'Cherchez ce qui vous renvoie vers l’appli officielle plutôt que vers un lien à cliquer.', note:'On vous renvoie vers l’appli que vous ouvrez vous-même, pas vers un lien à cliquer : c’est vous qui gardez la main.' },
-    { texte:'Nouvelle connexion sur Windows', bon:false, type:'neutre', note:'Cette phrase fait peur, et c’est normal : elle décrit un vrai risque. Mais une phrase alarmante n’est ni une preuve d’arnaque, ni une preuve du contraire. Ce qui départage, c’est ce qu’on vous demande de faire — ici, rien d’urgent.' }
+    { texte:'Nouvelle connexion sur Windows', bon:false, type:'neutre', note:'Cette phrase fait peur, et c’est normal : elle décrit un vrai risque. Mais une phrase alarmante n’est ni une preuve d’arnaque, ni une preuve du contraire. Ce qui départage, c’est ce qu’on vous demande de faire — ici, rien d’urgent.' },
+    { texte:'__CTX__', bon:false, type:'neutre', note:'Ce contexte inquiète, et il y a de quoi : quelqu’un d’autre s’est peut-être connecté. Mais il ne dit rien de l’authenticité du message — c’est même exactement à cela que sert une vraie alerte. Ce qui départage, c’est ce qu’on vous demande de faire.' }
   ],
   'chat-ami-ok': [
     { texte:'Jacqueline (voisine)', bon:true, aide:'Regardez qui écrit : est-ce un contact que vous connaissez et avez enregistré ?', note:'Contact connu et enregistré : c’est bien votre voisine.' },
@@ -1295,8 +1376,9 @@ const REPERES = {
   ],
   'sms-code-ok': [
     { texte:'Ne le communiquez jamais à personne', bon:true, aide:'Cherchez le rappel de sécurité tout à fait normal au sujet de ce code.', note:'Rappel de sécurité normal : le code ne se donne pas.' },
-    { texte:'valable 5 minutes', bon:true, aide:'Cherchez le détail technique habituel d’un vrai code de connexion.', note:'Détail technique habituel d’un vrai code de connexion.' },
-    { texte:'483 920', bon:false, type:'neutre', note:'Le code lui-même n’est pas un indice : ce qui compte, c’est de ne jamais le donner.' }
+    { texte:'valable 5 minutes', bon:false, type:'neutre', note:'Une durée de validité figure aussi dans les faux messages : elle se recopie. Ce qui rend ce code normal, c’est que vous veniez vous-même de le demander.' },
+    { texte:'483 920', bon:false, type:'neutre', note:'Le code lui-même n’est pas un indice : ce qui compte, c’est de ne jamais le donner.' },
+    { texte:'__CTX__', bon:true, aide:'Pourquoi ce code arrive-t-il maintenant ? Regardez le contexte, tout en haut de la carte.', note:'Vous veniez vous-même de cliquer « Se connecter » : ce code répond à VOTRE geste. Le même SMS, reçu sans que vous ayez rien demandé, serait un signal d’alarme : quelqu’un d’autre essaierait d’entrer.' }
   ],
   'notif-virement-ok': [
     { texte:'Ma Banque', bon:true, aide:'D’où vient cette notification ? Cherchez ce qui montre qu’elle vient de votre appli bancaire.', note:'Retenez la différence, elle vaut pour tout le jeu. Une notification est POUSSÉE par une application que vous avez installée vous-même : personne d’autre ne peut en envoyer à sa place, son origine est donc fiable. Le nom d’expéditeur d’un SMS ou d’un e-mail, lui, est simplement du texte que l’expéditeur choisit : n’importe qui peut signer « CIC », « DGFIP » ou « ameli ». Un nom affiché ne prouve jamais rien ; une notification d’application, si.' },
@@ -1339,7 +1421,8 @@ const REPERES = {
   'sms-remboursement-impots': [
     { texte:'DGFIP', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « DGFIP ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' },
     { texte:'https://remboursement-impots-particuliers.com', bon:true, aide:'Le vrai site des impôts, c’est impots.gouv.fr. Cette adresse lui ressemble-t-elle ?', note:'Ce n’est pas impots.gouv.fr : lien piégé.' },
-    { texte:'complétez vos coordonnées bancaires', bon:true, aide:'Si vous avez déjà été remboursé par le passé, l’administration a-t-elle besoin que vous ressaisissiez vos coordonnées bancaires ?', note:'L’administration a déjà votre RIB si vous avez déjà été remboursé : elle ne le redemande pas par SMS.' }
+    { texte:'complétez vos coordonnées bancaires', bon:true, aide:'Si vous avez déjà été remboursé par le passé, l’administration a-t-elle besoin que vous ressaisissiez vos coordonnées bancaires ?', note:'L’administration a déjà votre RIB si vous avez déjà été remboursé : elle ne le redemande pas par SMS.' },
+    { texte:'__CTX__', bon:false, type:'leurre', note:'Le moment tombe bien, et ce n’est pas un hasard : les escrocs envoient ces SMS pendant la période de déclaration, quand un message des impôts paraît naturel. Un moment plausible ne prouve rien — vous n’avez rien demandé.' }
   ],
   'chat-leboncoin-paiement-securise-ok': [
     { texte:'Paiement Leboncoin', bon:true, aide:'Comment l’acheteuse propose-t-elle de régler ? Cherchez le système de paiement utilisé.', note:'Le paiement passe par le système sécurisé de la plateforme, pas par un virement direct.' },
@@ -1389,13 +1472,15 @@ const REPERES = {
     { texte:'ne-pas-repondre@dgfip.finances.gouv.fr', bon:true, aide:'Le nom affiché ne prouve rien : regardez l’adresse complète, juste en dessous. Par quoi se termine-t-elle ?', note:'L’adresse se termine par .gouv.fr, un domaine que seul l’État peut utiliser. C’est l’adresse complète qui est vérifiable, jamais le nom affiché au-dessus.' },
     { texte:'consultable dans votre espace particulier', bon:true, aide:'Où vous envoie-t-on pour lire ce document ? Vers un lien du message, ou vers un espace que vous ouvrez vous-même ?', note:'On vous renvoie vers votre espace, que vous ouvrez vous-même en tapant l’adresse. Aucun lien à cliquer dans le message : c’est vous qui gardez la main.' },
     { texte:'Aucune démarche n’est nécessaire', bon:true, aide:'Cherchez ce qui vous dit qu’il n’y a rien à faire, ni tout de suite ni plus tard.', note:'Rien ne vous est demandé, et aucun délai ne vous est imposé. Une arnaque a besoin que vous fassiez quelque chose : celle-ci ne vous demande rien.' },
-    { texte:'Mes documents', bon:false, type:'neutre', note:'Le nom exact d’une rubrique fait sérieux, mais il se recopie depuis le vrai site en deux minutes. Un faux mail cite lui aussi les bonnes rubriques : ce détail ne rend pas ce message fiable.' }
+    { texte:'Mes documents', bon:false, type:'neutre', note:'Le nom exact d’une rubrique fait sérieux, mais il se recopie depuis le vrai site en deux minutes. Un faux mail cite lui aussi les bonnes rubriques : ce détail ne rend pas ce message fiable.' },
+    { texte:'__CTX__', bon:true, aide:'Cet e-mail arrive-t-il sans raison, ou à la suite de quelque chose que vous avez fait ? Regardez le contexte, tout en haut.', note:'Vous venez de faire votre déclaration en ligne : recevoir ensuite votre avis est la suite normale de votre propre démarche.' }
   ],
   'sms-livraison-ok': [
     { texte:'Suivi disponible dans l’application La Poste', bon:true, aide:'Comment vous propose-t-on de suivre le colis ? Par un lien, ou par quelque chose que vous ouvrez vous-même ?', note:'On vous renvoie vers l’application officielle que vous ouvrez vous-même. Le SMS piégé, lui, contient toujours un lien : c’est la différence qui compte.' },
     { texte:'avec votre numéro de colis', bon:true, aide:'De quoi avez-vous besoin pour vérifier ? D’une information que vous détenez déjà, ou d’une information à donner ?', note:'On vous demande de vérifier avec une information que vous avez déjà. À aucun moment on ne vous réclame vos coordonnées ni votre carte.' },
     { texte:'sera livré aujourd’hui entre 14h et 16h', bon:true, aide:'Que fait ce message, au fond : vous annonce-t-il quelque chose, ou vous demande-t-il quelque chose ?', note:'Le message annonce un créneau et s’arrête là. Un vrai transporteur informe ; il ne réclame jamais deux euros de « frais » pour libérer un colis.' },
-    { texte:'Colissimo', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « Colissimo ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
+    { texte:'Colissimo', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « Colissimo ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' },
+    { texte:'__CTX__', bon:true, aide:'Ce SMS tombe-t-il de nulle part, ou correspond-il à quelque chose que vous avez fait ? Regardez le contexte, tout en haut.', note:'Vous attendez réellement une commande ce jour-là : le message correspond à quelque chose que vous avez engagé vous-même. Un SMS de livraison pour un colis que vous n’avez jamais commandé resterait suspect.' }
   ],
   'appel-banque-fraude-ok': [
     { texte:'Je ne vous demanderai aucun code', bon:true, aide:'Que vous demande-t-on de dire ou de faire pendant l’appel ? Cherchez la phrase qui répond à cette question.', note:'C’est la phrase qui tranche. Un faux conseiller a besoin d’un code, d’un mot de passe ou d’une validation dans l’appli : sans cela, il n’a rien.' },
@@ -1407,13 +1492,15 @@ const REPERES = {
     { texte:'ameli', bon:true, aide:'D’où sort cette notification : d’une application installée sur votre téléphone, ou d’un message envoyé par quelqu’un ?', note:'Cette notification est poussée par l’application ameli, que vous avez installée vous-même : personne d’autre ne peut en envoyer à sa place. C’est là toute la différence avec un SMS signé « AMELI-INFO », dont le nom s’écrit librement.' },
     { texte:'consultable dans l’onglet', bon:true, aide:'Où vous emmène-t-on pour voir le détail : vers l’extérieur, ou à l’intérieur de l’application ?', note:'Tout se passe dans l’application, sans aucun lien vers l’extérieur. Le faux SMS ameli, lui, ne sert qu’à vous faire sortir vers une fausse page.' },
     { texte:'Le détail de vos derniers remboursements', bon:true, aide:'Que vous demande-t-on de fournir en échange de cette information ?', note:'Rien ne vous est réclamé : ni RIB, ni numéro de sécurité sociale, ni identifiant. Une notification qui informe sans rien demander n’a aucun intérêt pour un escroc.' },
-    { texte:'Un nouveau remboursement est disponible', bon:false, type:'neutre', note:'« Un remboursement disponible », c’est exactement l’appât du faux SMS ameli. La phrase est la même : ce qui change, c’est qu’ici on ne vous demande rien pour l’obtenir.' }
+    { texte:'Un nouveau remboursement est disponible', bon:false, type:'neutre', note:'« Un remboursement disponible », c’est exactement l’appât du faux SMS ameli. La phrase est la même : ce qui change, c’est qu’ici on ne vous demande rien pour l’obtenir.' },
+    { texte:'__CTX__', bon:false, type:'neutre', note:'Le SMS douteux de la veille n’a aucun rapport avec cette notification : une coïncidence ne rend un message ni vrai ni faux. Le contexte qui compte, c’est « ai-je moi-même déclenché ce message ? », pas « que s’est-il passé hier ? ».' }
   ],
   'email-commande-ok': [
     { texte:'commandes@natureetdecouvertes.com', bon:true, aide:'Le nom affiché ne prouve rien : regardez l’adresse complète. Correspond-elle vraiment à l’enseigne ?', note:'L’adresse complète correspond au site où vous avez acheté. C’est elle qui est vérifiable — le nom affiché au-dessus, lui, s’écrit librement.' },
     { texte:'Bonjour Madame Renard', bon:true, aide:'Comment vous appelle-t-on : par votre nom, ou par une formule qui vaut pour tout le monde ?', note:'On vous nomme correctement, parce que la boutique vous connaît. Un envoi de masse écrit « Cher client » : il ignore à qui il parle.' },
     { texte:'à l’adresse enregistrée dans votre compte', bon:true, aide:'Vous redemande-t-on quelque chose que vous avez déjà donné ?', note:'Rien ne vous est redemandé : ni adresse, ni carte, ni identifiant. Le faux « problème de paiement » qui arrive après un vrai achat, lui, réclame toujours de ressaisir la carte.' },
-    { texte:'n° 4471902', bon:false, type:'neutre', note:'Un numéro de commande fait sérieux, mais il s’invente en trois secondes. Ce qui rend ce message fiable, c’est que la commande existe et que rien ne vous est demandé.' }
+    { texte:'n° 4471902', bon:false, type:'neutre', note:'Un numéro de commande fait sérieux, mais il s’invente en trois secondes. Ce qui rend ce message fiable, c’est que la commande existe et que rien ne vous est demandé.' },
+    { texte:'__CTX__', bon:true, aide:'Qu’avez-vous fait juste avant de recevoir cet e-mail ? Regardez le contexte, tout en haut.', note:'Dix minutes plus tôt, c’est vous qui avez passé cette commande : le message suit votre propre geste. C’est ce qui le distingue d’une « confirmation » pour un achat que vous n’avez jamais fait.' }
   ],
   'sms-pharmacie-ok': [
     { texte:'votre traitement commandé mardi', bon:true, aide:'Ce message parle-t-il de quelque chose que vous avez engagé vous-même ?', note:'Le message répond à une démarche que vous avez faite vous-même, mardi. Une arnaque, elle, tombe sur un événement que vous n’avez jamais déclenché.' },
@@ -1455,7 +1542,8 @@ const REPERES = {
     { texte:'Pour annuler, connectez-vous à votre compte Doctolib', bon:true, aide:'Comment vous propose-t-on d’annuler : par un lien du message, ou par votre compte ?', note:'On vous renvoie à votre compte, que vous ouvrez vous-même. Aucun lien ne figure dans le message : c’est vous qui allez chercher l’information.' },
     { texte:'Dr Nguyen (cardiologie)', bon:true, aide:'Le rendez-vous annoncé correspond-il à quelque chose que vous avez fait vous-même ?', note:'Le praticien est nommé, et c’est vous qui avez pris ce rendez-vous. Un faux rappel reste flou sur l’essentiel, parce qu’il ne sait rien de vous.' },
     { texte:'demain 15/08 à 10h30, 4 rue des Lilas', bon:true, aide:'Ces informations sont-elles vérifiables sans rien donner de vous ?', note:'Date, heure et adresse sont précises et se recoupent avec votre agenda. Surtout, rien n’est demandé en retour : ni paiement, ni « confirmation » par carte.' },
-    { texte:'Doctolib', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « Doctolib ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
+    { texte:'Doctolib', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « Doctolib ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' },
+    { texte:'__CTX__', bon:true, aide:'Ce rendez-vous vous est-il connu ? Regardez le contexte, tout en haut.', note:'Ce rendez-vous, c’est vous qui l’avez pris : le rappel ne vous apprend rien, il confirme ce que vous savez déjà. Un rappel pour un rendez-vous inconnu mériterait la méfiance.' }
   ],
   'email-syndic-ok': [
     { texte:'Le même dossier vous parviendra par courrier recommandé', bon:true, aide:'Ce message est-il le seul moyen d’obtenir ce document ? Cherchez le second canal.', note:'Le même dossier arrive aussi par la poste : vous pourrez recouper les deux. Un escroc évite soigneusement tout second canal, parce qu’il ne le contrôle pas.' },
@@ -1468,6 +1556,26 @@ const REPERES = {
     { texte:'Ce montant comprend la régularisation annuelle de votre consommation', bon:true, aide:'Le message explique-t-il d’où sort la somme, ou se contente-t-il de vous alarmer ?', note:'Le message explique lui-même d’où vient la somme, calcul à l’appui. Un faux mail ne fait jamais cela : il a besoin que vous paniquiez, pas que vous compreniez.' },
     { texte:'sur le compte habituel', bon:true, aide:'Vous annonce-t-on un changement de compte bancaire ? Cherchez la réponse.', note:'Aucun nouveau compte n’est annoncé : le prélèvement se fait comme les mois précédents. C’est précisément là qu’opère la fraude au changement de RIB, et il n’y en a pas trace ici.' },
     { texte:'214,60 €', bon:false, type:'neutre', note:'C’est le chiffre qui saute aux yeux, et c’est bien celui qu’on regarde en premier. Mais un montant élevé n’est ni une preuve d’arnaque, ni une preuve du contraire : ce qui compte, c’est qu’on ne vous demande ni lien, ni carte, ni nouveau RIB.' }
+  ],
+  'appel-voix-clonee-petit-fils': [
+    { texte:'Numéro inconnu', bon:true, aide:'Avant même d’écouter : d’où vient cet appel ? Regardez ce qu’affiche le téléphone.', note:'L’appel n’arrive pas du numéro enregistré de votre petit-fils. Un proche qui appelle d’un numéro inconnu pour une urgence d’argent se vérifie toujours en le rappelant sur son numéro habituel.' },
+    { texte:'ne dis rien à papa et maman', bon:true, aide:'Cherchez la phrase qui vous demande de n’en parler à personne.', note:'Le secret vous isole : il vous empêche d’appeler ceux qui diraient aussitôt « mais Théo est à la maison ».' },
+    { texte:'caution de 3 800 € ce soir', bon:true, aide:'Combien, et pour quand ? Cherchez la demande d’argent et son délai.', note:'Une grosse somme, à réunir le soir même : l’urgence sert à vous empêcher de vérifier.' },
+    { texte:'Un coursier passera chez vous prendre l’enveloppe', bon:true, aide:'Comment l’argent doit-il être remis ? Est-ce ainsi qu’on paie quoi que ce soit d’officiel ?', note:'De l’argent liquide remis à un inconnu sur le pas de la porte : aucune caution, aucune amende, aucun avocat ne se paie ainsi.' },
+    { texte:'Mamie, c’est moi', bon:false, type:'leurre', note:'C’est bien sa voix, pensez-vous — et c’est exactement l’effet recherché. Une voix s’imite aujourd’hui par IA à partir d’un court enregistrement : elle ne prouve plus qui parle. Ce qui trahit l’appel, c’est ce qu’on vous demande.' }
+  ],
+  'chat-vocal-clone-fille': [
+    { texte:'+33 7 49 02 15 63', bon:true, aide:'Ce numéro est-il bien celui, enregistré, de votre fille ? Regardez d’où viennent les messages.', note:'Numéro inconnu qui prétend être votre enfant.' },
+    { texte:'Je t’écris du portable d’une collègue', bon:true, aide:'Cherchez l’excuse donnée pour expliquer ce numéro inconnu.', note:'Le prétexte qui explique le numéro inconnu — et qui vous dissuade d’appeler l’ancien.' },
+    { texte:'avant 18h', bon:true, aide:'Cherchez le délai qui vous presse.', note:'Un délai couperet : on veut que vous payiez avant d’avoir vérifié.' },
+    { texte:'fais un virement instantané', bon:true, aide:'Comment vous demande-t-on de payer ? Ce moyen de paiement se rattrape-t-il ?', note:'Un virement instantané part en quelques secondes et ne s’annule pas : c’est pour cela qu’on vous le demande.' },
+    { texte:'c’est vraiment moi, écoute', bon:false, type:'leurre', note:'Ce message vocal est là pour vous rassurer : « tu entends bien que c’est moi ». Mais une voix s’imite par IA, et celui qui vous réclame de l’argent ne peut pas fournir lui-même la preuve de son identité.' }
+  ],
+  'appel-petite-fille-code-ok': [
+    { texte:'Clafoutis', bon:true, aide:'Vous avez posé une question que seul un vrai proche peut réussir. Qu’a-t-elle répondu ?', note:'Elle connaît le mot de code convenu en famille. Une IA peut imiter une voix, pas deviner un mot qui n’a jamais été publié nulle part.' },
+    { texte:'raccroche et rappelle-moi', bon:true, aide:'Que vous propose-t-elle, si vous avez un doute ?', note:'Elle vous invite d’elle-même à vérifier. Un escroc fait tout l’inverse : il vous garde en ligne et vous interdit de raccrocher.' },
+    { texte:'je peux passer mercredi après les cours', bon:true, aide:'Que vous demande-t-elle, au fond : de l’argent, ou autre chose ?', note:'Elle demande une visite, pas un virement. Rien d’urgent, rien de secret, et tout se vérifiera mercredi en la voyant.' },
+    { texte:'Chloé (petite-fille)', bon:false, type:'neutre', note:'Le nom qui s’affiche pendant un appel se truque (« spoofing »), et une voix s’imite : ni l’un ni l’autre ne prouve qui appelle. Ce qui rend cet appel fiable, c’est le mot de code et l’absence de toute demande.' }
   ]
 };
 
