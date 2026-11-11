@@ -472,6 +472,7 @@ function renderTurn(){
   $("dialogue").after($("carnet"));
   $("souffle").hidden=true;
   $("btxt").textContent=line.t;
+  Voix.replique(line.t, line.foe||foe);
   $("riposte").style.display="none";
   $("nextbtn").style.display="none";
   $("dialogue").hidden=true; $("dialogue").innerHTML="";
@@ -522,6 +523,7 @@ function answer(line,id,btn){
   }
   const dmg=techActive.contre?2:1;
   tourFini=true;
+  Voix.taire(); Voix.arreterEcoute();
   finAttaque(ok, line);
   joue.push({id:line.t, titre:line.t, reussi:ok, explication:texteBrut(line.e)});
   if(FALLACIES.some(f=>f.id===line.a)){ const c=croises[line.a]||(croises[line.a]={ok:0,ko:0}); if(ok) c.ok++; else c.ko++; }
@@ -561,6 +563,7 @@ function answer(line,id,btn){
 }
 
 function nextTurn(){
+  Voix.taire(); Voix.arreterEcoute();
   if(youHP<=0){ lose(); return; }
   if(phase==="comprendre"){ winMatch(); return; }
   lineIdx++;
@@ -582,6 +585,7 @@ function winMatch(){
   $("inter-emoji").replaceChildren(persoNoeud(FOES[foeIdx]));
   $("inter-title").textContent="💬 Fin de la discussion avec "+FOES[foeIdx].name;
   $("inter-msg").innerHTML="Tu reprends ton souffle : +3 lucidité. 🌿<br><br>Prochain interlocuteur : <b>"+persoHtml(next)+" "+next.name+"</b> — "+next.desc+".<br><i>"+next.intro+"</i>";
+  Voix.dire(next.intro, next, {citations:true});
   youHP=Math.min(YOUMAX,youHP+3);
   $("inter-btn").textContent="💬 Discuter avec "+next.name;
   $("inter-btn").onclick=()=>startMatch(foeIdx+1);
@@ -793,7 +797,7 @@ function reconnaitre(saisie, ids){
   }));
   return meilleur;
 }
-function modeSaisie(){ const r=document.querySelector('input[name="mode"]:checked'); return !!r && r.value==="saisie"; }
+function modeSaisie(){ const r=document.querySelector('input[name="mode"]:checked'); return !!r && (r.value==="saisie"||r.value==="voix"); }
 
 function renderSaisie(line){
   const ansDiv=$("answers");
@@ -825,6 +829,7 @@ function renderSaisie(line){
   };
   passe.onclick=()=>conclureSaisie(line, null, input, null);
   input.focus();
+  Voix.brancherSaisie(form, input, (line.type==="epl"?EPL:FALLACIES).map(o=>o.id));
 }
 
 function conclureSaisie(line, id, input, tape){
@@ -832,7 +837,7 @@ function conclureSaisie(line, id, input, tape){
   const lab=id?libelle(id).l:"";
   const note=document.createElement("p");
   note.className="saisie-lu";
-  note.textContent=id==="valable"&&tape==null?"Tu as jugé l'argument valable.":tape!=null?"Tu as écrit « {x} » : reconnu comme {l}.".replace("{x}",tape.trim()).replace("{l}",lab):"Tu as passé ton tour.";
+  note.textContent=id==="valable"&&tape==null?"Tu as jugé l'argument valable.":tape!=null?(input.dataset.oral?"Tu as dit « {x} » : reconnu comme {l}.":"Tu as écrit « {x} » : reconnu comme {l}.").replace("{x}",tape.trim()).replace("{l}",lab):"Tu as passé ton tour.";
   $("rip-expl").prepend(note);
   if(res==="seconde") return;
   input.classList.add(id===line.a?"good":"bad");
@@ -842,7 +847,7 @@ function conclureSaisie(line, id, input, tape){
 // Le mode de réponse choisi à l'accueil reste mémorisé d'une partie à l'autre.
 (function(){
   let m=null; try{ m=localStorage.getItem("arene.mode"); }catch(e){}
-  const r=document.querySelector('input[name="mode"][value="'+(m==="saisie"?"saisie":"qcm")+'"]');
+  const r=document.querySelector('input[name="mode"][value="'+(m==="saisie"||m==="voix"?m:"qcm")+'"]');
   if(r) r.checked=true;
   document.querySelectorAll('input[name="mode"]').forEach(x=>x.addEventListener("change",()=>{
     try{ localStorage.setItem("arene.mode", x.value); }catch(e){}
@@ -1035,6 +1040,7 @@ function renderReponse(line){
     grille.appendChild(b);
   });
   box.appendChild(grille);
+  Voix.brancherBoutons(box, [...grille.querySelectorAll(".dbtn")]);
   const r=document.createElement("div"); r.id="reaction"; r.setAttribute("aria-live","polite"); r.hidden=true;
   box.appendChild(r);
   setTimeout(()=>{ box.scrollIntoView({behavior:"smooth",block:"start"}); const p=grille.querySelector(".dbtn"); if(p) p.focus({preventScroll:true}); },350);
@@ -1068,6 +1074,7 @@ function repondre(line,geste,btn,variante){
     else corps.textContent="Pas de confidence cette fois : cet indice t'échappe.";
   }
   r.append(tete,corps,lecon);
+  Voix.dire(G.bon?line.d.k:(geste==="massue"?dlg.braque:dlg.esquive), foe, {citations:true});
   updateHP();
   const nb=$("nextbtn");
   nb.style.display="block";
@@ -1121,11 +1128,13 @@ function renderComprendre(){
       const p1=document.createElement("p"); p1.textContent=(ok?"":"En réalité : ")+dlg.motiv;
       const p2=document.createElement("p"); p2.className="rfin"; p2.textContent=ok?dlg.fin:"Relis ton carnet : derrière les arguments, il y a souvent une peur, une envie, une colère ou un besoin. Les questions ouvertes aident à les entendre.";
       $("rip-expl").append(p1,p2);
+      if(ok) Voix.dire(dlg.fin, foe, {citations:true});
       const nb=$("nextbtn"); nb.style.display="block";
       nb.textContent=foeIdx===FOES.length-1?"🏁 Voir le bilan ➜":"Personnage suivant ➜";
       nb.scrollIntoView({behavior:"smooth",block:"end"}); nb.focus({preventScroll:true});
     };
     ansDiv.appendChild(b);
   });
+  Voix.brancherBoutons(ansDiv, [...ansDiv.querySelectorAll(".abtn")]);
   window.scrollTo({top:0,behavior:"smooth"});
 }
