@@ -1314,7 +1314,7 @@ const REPERES = {
     { texte:'comme prévu', bon:true, aide:'Cherchez ce qui montre qu’on parle d’un projet déjà convenu ensemble.', note:'Se réfère à un projet réel déjà convenu : rien d’anormal.' }
   ],
   'appel-medecin-ok': [
-    { texte:'Cabinet du Dr Martin', bon:true, aide:'Cherchez ce qui identifie clairement la personne qui appelle.', note:'Interlocuteur clairement identifié.' },
+    { texte:'Cabinet du Dr Martin', bon:false, type:'neutre', note:'Le nom qui s’affiche pendant un appel se truque (« spoofing ») : il ne prouve ni que c’est le cabinet, ni le contraire. Ce qui rend cet appel fiable, c’est qu’on confirme un rendez-vous que vous connaissez, sans rien vous demander de sensible.' },
     { texte:'confirmer votre rendez-vous', bon:true, aide:'Cherchez ce qui montre qu’on confirme seulement un rendez-vous que vous connaissez.', note:'On confirme seulement un rendez-vous que vous connaissez.' },
     { texte:'apporter votre carte Vitale', bon:true, aide:'Vous demande-t-on des numéros au téléphone, ou juste de la présenter sur place ?', note:'On la présente sur place — on ne demande pas ses numéros au téléphone.' }
   ],
