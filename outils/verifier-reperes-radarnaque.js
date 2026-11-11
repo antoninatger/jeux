@@ -1,5 +1,5 @@
 /* Compare le nombre de repères (REPERES) par carte entre scenarios.js (FR) et
-   scenarios-en.js (EN). Objectif : zéro écart sur les 48 cartes.
+   scenarios-en.js (EN). Objectif : zéro écart, quelle que soit la taille du corpus.
 
    Usage : node outils/verifier-reperes-radarnaque.js
 */

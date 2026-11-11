@@ -1092,6 +1092,110 @@ const SCENARIOS = [
     ],
     "reflexe": "An amount that makes you jump is not a sign of a scam. Look at what you are being asked to do: here, nothing — and everything can be checked from your customer area.",
     "explication": "A worrying message is not necessarily a fake message: a real bill can perfectly well bring bad news. Fake energy emails always add two things this one does not have: an immediate payment link and a threat of disconnection within 24 or 48 hours. The habit does not change — never open the link in an email, open your customer area yourself and compare the amount."
+  },
+  {
+    "id": "appel-voix-clonee-petit-fils",
+    "canal": "appel",
+    "entete": "Call received one evening. The voice sounds exactly like your grandson’s",
+    "afficheur": "Unknown number",
+    "numero": "07 56 81 XX XX",
+    "transcript": [
+      {
+        "qui": "lui",
+        "texte": "Granny, it’s me… I’ve had a car accident, I hurt someone. I’m at the police station. Whatever you do, don’t tell mum and dad."
+      },
+      {
+        "qui": "vous",
+        "texte": "Good heavens, Théo! Are you hurt?"
+      },
+      {
+        "qui": "lui",
+        "texte": "I’ll put my lawyer on, he will explain everything."
+      },
+      {
+        "qui": "lui",
+        "texte": "Good evening, madam, Mr Lambert speaking. Bail of €3,800 must be paid tonight to keep him out of custody. A courier will come to your home to collect the envelope within the hour."
+      }
+    ],
+    "verdict": "arnaque",
+    "categorie": "Fake relative scam — AI voice cloning",
+    "indices": [
+      "The call comes from an unknown number, not from your grandson’s saved number.",
+      "A sudden drama (accident, police station): the fear is there to stop you thinking.",
+      "The imposed secrecy (“don’t tell mum and dad”) cuts you off from the people who could check.",
+      {
+        "risque": "Cash handed that same evening to a “courier”: no bail is ever paid that way. Once the envelope has gone, the money is lost."
+      },
+      "The voice no longer proves anything: AI can imitate it from a short recording, such as a video posted online."
+    ],
+    "reflexe": "Hang up, then call your relative back on THEIR usual number. And agree on a family code word that only a real relative knows.",
+    "explication": "This is the “grandparent scam”, made more formidable by voice cloning: from a short clip (a video on social media, a voice message), AI produces a voice that sounds like your relative’s. The script itself does not change: a drama, secrecy, money right now. So it is not the voice you should listen to, but what you are being asked to do. A real relative in trouble will always accept that you call them back."
+  },
+  {
+    "id": "chat-vocal-clone-fille",
+    "canal": "chat",
+    "entete": "Messages received from an unknown number, including a voice message",
+    "plateforme": "WhatsApp",
+    "contact": "+33 7 49 02 15 63",
+    "avatar": "",
+    "messages": [
+      {
+        "from": "eux",
+        "texte": "Mum it’s me, my phone fell in the water 😩 I’m writing from a colleague’s mobile."
+      },
+      {
+        "from": "eux",
+        "voix": "0:07",
+        "texte": "“Mum, it really is me, listen… I’ve got a big problem, I need you right now.”"
+      },
+      {
+        "from": "eux",
+        "texte": "You heard, it’s definitely me ❤️ I have to pay the garage €940 before 6pm, otherwise they keep the car. I’m sending you the garage’s bank details: make an instant transfer, I’ll pay you back tomorrow."
+      }
+    ],
+    "verdict": "arnaque",
+    "categorie": "Fake relative scam — AI-cloned voice message",
+    "indices": [
+      "An unknown number, and an excuse to explain it (phone fell in the water, a colleague’s mobile).",
+      "The voice message is offered as “proof”: but AI can imitate a voice from a short recording. Proof supplied by the person asking for money is no proof at all.",
+      "An amount to pay before a set time (“before 6pm”): urgency stops you checking.",
+      {
+        "risque": "An instant transfer leaves in seconds and cannot be cancelled."
+      }
+    ],
+    "reflexe": "A voice no longer proves anything. Call your relative back on their usual number, or ask a question only they can answer.",
+    "explication": "This is the “Hi mum” scam in its recent form: to remove your doubts, the scammer attaches a short AI-made voice message imitating your child’s voice. Notice that it says nothing only your child could know. Offer to call the old number: an impostor will always find a reason to refuse."
+  },
+  {
+    "id": "appel-petite-fille-code-ok",
+    "canal": "appel",
+    "entete": "Call received on a Sunday. Your family has agreed on a code word against voice-imitation scams",
+    "afficheur": "Chloé (granddaughter)",
+    "numero": "saved contact",
+    "transcript": [
+      {
+        "qui": "lui",
+        "texte": "Hi Granny! Say, can I come round on Wednesday after class? I have a school talk on the 1960s and I’d love you to tell me about them."
+      },
+      {
+        "qui": "vous",
+        "texte": "With pleasure! But first… what is our code word?"
+      },
+      {
+        "qui": "lui",
+        "texte": "Clafoutis! You are quite right to ask. And if you have any doubt, hang up and call me back, I won’t mind at all."
+      }
+    ],
+    "verdict": "fiable",
+    "categorie": "Legitimate message — a relative who is happy to be checked",
+    "indices": [
+      "She gives the family code word without hesitating: an imitated voice cannot know it.",
+      "She herself suggests you hang up and call back: a scammer cannot afford that.",
+      "No request for money, no urgency, no secrecy.",
+      "She offers to come and see you: everything can be checked in person."
+    ],
+    "reflexe": "Asking a relative for the code word is nothing to be embarrassed about: it is the test an imitated voice cannot pass.",
+    "explication": "Voice-cloning scams should not make you doubt all your relatives. What reassures here is neither the displayed name nor the voice — both can be imitated — but three things a scammer cannot supply: the code word, the invitation to call back, and the absence of any request for money. Choose a simple word as a family, and never post it anywhere."
   }
 ];
 
@@ -1262,6 +1366,16 @@ const GLOSSAIRE = [
       "presse-papiers"
     ],
     "def": "The invisible memory where everything you copy lands, and where everything you paste comes from (Ctrl + V). A web page can drop text into it without warning you: what you paste is therefore not necessarily what you think you copied."
+  },
+  {
+    "key": "clonage-voix",
+    "terme": "Voice cloning (AI-imitated voice)",
+    "aliases": [
+      "voice cloning",
+      "cloned voice",
+      "imitated voice"
+    ],
+    "def": "A technique that lets AI imitate a person’s voice from a short recording (an online video, a voice message). Scammers use it to pose as a relative in distress. Defence: hang up and call back on the usual number, or agree on a family code word."
   }
 ];
 
@@ -1672,6 +1786,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "The address really is the real site’s, correctly spelled: this email does come from Welcome to the Jungle. So the sender is not what is wrong here."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": true,
+      "aide": "Did you do anything that explains this email? Look at the context, at the very top.",
+      "note": "You created no account: so someone else entered your address in your place. A “welcome” message for a sign-up you never made always deserves suspicion."
     }
   ],
   "sms-banque-ok": [
@@ -1724,6 +1844,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "This sentence is frightening, and rightly so: it describes a real risk. But an alarming sentence is neither proof of a scam nor proof of the opposite. What settles it is what you are asked to do — here, nothing urgent."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": false,
+      "type": "neutre",
+      "note": "This context is worrying, and rightly so: someone else may have signed in. But it says nothing about whether the message is genuine — that is exactly what a real alert is for. What settles it is what you are asked to do."
     }
   ],
   "chat-ami-ok": [
@@ -1755,15 +1881,21 @@ const REPERES = {
     },
     {
       "texte": "valid for 5 minutes",
-      "bon": true,
-      "aide": "Find the normal technical detail.",
-      "note": "Normal one-time code detail."
+      "bon": false,
+      "type": "neutre",
+      "note": "A validity period also appears in fake messages: it is easily copied. What makes this code normal is that you had just asked for it yourself."
     },
     {
       "texte": "483 920",
       "bon": false,
       "type": "neutre",
       "note": "The code itself is not a clue: what matters is never to pass it on."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": true,
+      "aide": "Why is this code arriving now? Look at the context, at the very top of the card.",
+      "note": "You had just clicked “Sign in” yourself: this code answers YOUR action. The same text, received when you had asked for nothing, would be a warning sign: someone else would be trying to get in."
     }
   ],
   "notif-virement-ok": [
@@ -1942,6 +2074,12 @@ const REPERES = {
       "bon": true,
       "aide": "If you have been refunded before, does the tax authority need you to re-enter your bank details?",
       "note": "The administration already has your bank details if you have been refunded before: it does not ask again by SMS."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": false,
+      "type": "leurre",
+      "note": "The timing is convenient, and that is no accident: scammers send these texts during tax return season, when a message from the tax office seems natural. Plausible timing proves nothing — you asked for nothing."
     }
   ],
   "email-clim-aides": [
@@ -2144,6 +2282,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "The exact name of a section looks serious, but it can be copied from the real website in two minutes. A fake email quotes the right sections too: this detail is not what makes the message reliable."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": true,
+      "aide": "Does this email arrive for no reason, or after something you did? Look at the context, at the very top.",
+      "note": "You have just filed your tax return online: receiving your tax notice afterwards is the normal sequel to your own action."
     }
   ],
   "sms-livraison-ok": [
@@ -2170,6 +2314,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “Colissimo”. It proves nothing — neither that a message is fake, nor that it is genuine."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": true,
+      "aide": "Does this text come out of nowhere, or does it match something you did? Look at the context, at the very top.",
+      "note": "You really are expecting an order that day: the message matches something you set in motion yourself. A delivery text for a parcel you never ordered would remain suspicious."
     }
   ],
   "appel-banque-fraude-ok": [
@@ -2222,6 +2372,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "“A reimbursement available” is exactly the bait of the fake ameli text. The sentence is the same: what differs is that here nothing is asked of you to get it."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": false,
+      "type": "neutre",
+      "note": "Yesterday’s suspicious text has nothing to do with this notification: a coincidence makes a message neither true nor false. The context that matters is “did I trigger this message myself?”, not “what happened yesterday?”."
     }
   ],
   "email-commande-ok": [
@@ -2248,6 +2404,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "An order number looks serious, but it can be invented in three seconds. What makes this message reliable is that the order exists and nothing is asked of you."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": true,
+      "aide": "What did you do just before receiving this email? Look at the context, at the very top.",
+      "note": "Ten minutes earlier, you placed this order yourself: the message follows your own action. That is what separates it from a “confirmation” of a purchase you never made."
     }
   ],
   "sms-pharmacie-ok": [
@@ -2430,6 +2592,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "The sender name on a text message or an email is free text: anyone can sign “Doctolib”. It proves nothing — neither that a message is fake, nor that it is genuine."
+    },
+    {
+      "texte": "__CTX__",
+      "bon": true,
+      "aide": "Do you know about this appointment? Look at the context, at the very top.",
+      "note": "You booked this appointment yourself: the reminder tells you nothing new, it confirms what you already know. A reminder for an appointment you know nothing about would deserve suspicion."
     }
   ],
   "email-syndic-ok": [
@@ -2482,6 +2650,96 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "That is the figure that jumps out, and the one you look at first. But a high amount is neither proof of a scam nor proof of the opposite: what counts is that you are asked for no link, no card and no new bank details."
+    }
+  ],
+  "appel-voix-clonee-petit-fils": [
+    {
+      "texte": "Unknown number",
+      "bon": true,
+      "aide": "Before you even listen: where is this call coming from? Look at what the phone displays.",
+      "note": "The call does not come from your grandson’s saved number. A relative calling from an unknown number about an urgent need for money should always be checked by calling them back on their usual number."
+    },
+    {
+      "texte": "don’t tell mum and dad",
+      "bon": true,
+      "aide": "Find the sentence asking you not to tell anyone.",
+      "note": "Secrecy isolates you: it stops you calling the people who would say at once “but Théo is at home”."
+    },
+    {
+      "texte": "Bail of €3,800 must be paid tonight",
+      "bon": true,
+      "aide": "How much, and by when? Find the request for money and its deadline.",
+      "note": "A large sum, to be found that same evening: the urgency is there to stop you checking."
+    },
+    {
+      "texte": "A courier will come to your home to collect the envelope",
+      "bon": true,
+      "aide": "How is the money to be handed over? Is that how anything official is paid?",
+      "note": "Cash handed to a stranger on the doorstep: no bail, no fine and no lawyer is ever paid that way."
+    },
+    {
+      "texte": "Granny, it’s me",
+      "bon": false,
+      "type": "leurre",
+      "note": "It really is his voice, you think — and that is exactly the intended effect. AI can now imitate a voice from a short recording: it no longer proves who is speaking. What gives the call away is what you are asked to do."
+    }
+  ],
+  "chat-vocal-clone-fille": [
+    {
+      "texte": "+33 7 49 02 15 63",
+      "bon": true,
+      "aide": "Is this really your daughter’s saved number? Look at where the messages come from.",
+      "note": "Unknown number claiming to be your child."
+    },
+    {
+      "texte": "I’m writing from a colleague’s mobile",
+      "bon": true,
+      "aide": "Find the excuse given to explain this unknown number.",
+      "note": "The excuse that explains the unknown number — and discourages you from calling the old one."
+    },
+    {
+      "texte": "before 6pm",
+      "bon": true,
+      "aide": "Find the deadline that rushes you.",
+      "note": "A hard deadline: they want you to pay before you have checked."
+    },
+    {
+      "texte": "make an instant transfer",
+      "bon": true,
+      "aide": "How are you asked to pay? Can this payment method be undone?",
+      "note": "An instant transfer leaves in seconds and cannot be cancelled: that is why you are asked for one."
+    },
+    {
+      "texte": "it really is me, listen",
+      "bon": false,
+      "type": "leurre",
+      "note": "This voice message is there to reassure you: “you can hear it’s me”. But AI can imitate a voice, and the person asking you for money cannot supply the proof of their own identity."
+    }
+  ],
+  "appel-petite-fille-code-ok": [
+    {
+      "texte": "Clafoutis",
+      "bon": true,
+      "aide": "You asked a question only a real relative can get right. What did she answer?",
+      "note": "She knows the code word agreed in the family. AI can imitate a voice, but it cannot guess a word that has never been posted anywhere."
+    },
+    {
+      "texte": "hang up and call me back",
+      "bon": true,
+      "aide": "What does she suggest if you have a doubt?",
+      "note": "She invites you to check, of her own accord. A scammer does the exact opposite: they keep you on the line and forbid you to hang up."
+    },
+    {
+      "texte": "can I come round on Wednesday after class",
+      "bon": true,
+      "aide": "What is she really asking for: money, or something else?",
+      "note": "She is asking for a visit, not a transfer. Nothing urgent, nothing secret, and everything can be checked on Wednesday when you see her."
+    },
+    {
+      "texte": "Chloé (granddaughter)",
+      "bon": false,
+      "type": "neutre",
+      "note": "The name shown during a call can be faked (“spoofing”), and a voice can be imitated: neither proves who is calling. What makes this call trustworthy is the code word and the absence of any request."
     }
   ]
 };

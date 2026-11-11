@@ -7,6 +7,25 @@
   'use strict';
 
   var CARTES_PAR_PARTIE = 14;   // number of cards played per game (balanced)
+  var PARTIE_COURTE = 6;        // partie courte proposée à l'accueil
+  var PARTIE_THEME = 8;         // plafond d'une partie à thème
+  /* Ce que le joueur a choisi à l'accueil ; « Rejouer » repart sur le même choix. */
+  var tailleVoulue = CARTES_PAR_PARTIE, themeCourant = null;
+  /* Thèmes : les cartes sont rangées ici par leur id, pour ne pas dupliquer un champ
+     dans scenarios.js et scenarios-en.js. Une carte absente de tous les thèmes ne sort
+     qu'en partie mélangée. */
+  var THEMES = [
+    { cle:'colis', em:'📦', nom:'Parcels and online shopping',
+      ids:['sms-colis','sms-colis-photo-ia','email-fausse-boutique-liquidation','email-prime-video-paiement','email-boite-mystere','sms-livraison-ok','email-commande-ok','email-abonnement-ok'] },
+    { cle:'banque', em:'🏦', nom:'Bank, codes and security',
+      ids:['appel-banque','email-motdepasse','email-prenom-detourne','popup-support','popup-faux-captcha','sms-banque-ok','sms-code-ok','notif-virement-ok','appel-banque-fraude-ok','notif-connexion-ok','notif-maj-appli-ok'] },
+    { cle:'proches', em:'❤️', nom:'Romance and fake relatives',
+      ids:['chat-celebrite','chat-faux-profil-rencontre','chat-faux-proche','chat-faux-numero-invest','appel-voix-clonee-petit-fils','chat-vocal-clone-fille','chat-ami-ok','chat-famille-ok','chat-petitfils-ok','appel-petite-fille-code-ok'] },
+    { cle:'admin', em:'🏛️', nom:'Health, taxes and grants',
+      ids:['sms-ameli','email-ameli-regularisation','sms-remboursement-impots','email-panneaux','email-clim-aides','notif-ameli-ok','email-impots-ok','appel-mairie-ok','appel-medecin-ok','sms-pharmacie-ok','sms-rdv-ok','email-mutuelle-ok'] },
+    { cle:'annonces', em:'🏷️', nom:'Classified ads and rentals',
+      ids:['chat-trop-percu-vente','chat-fausse-vendeuse-acompte','email-airbnb-horsplateforme','chat-leboncoin-paiement-securise-ok'] }
+  ];
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
   /* E2 : ce que la partie a joué, pour l'écran de fin ColFin — {id, titre, reussi, explication}.
@@ -85,30 +104,49 @@
           '<div class="step"><div class="n">2</div><div>Find the clues that show whether you can trust the message or should be suspicious.</div></div>' +
           '<div class="step"><div class="n">3</div><div>Choose: <b>“It’s a scam”</b> or <b>“It’s reliable”</b>.</div></div>' +
         '</div>' +
-        '<div class="accueil-boutons">' +
-          '<button class="btn-start" id="go">Start&nbsp;▶</button>' +
+        '<div class="choix-partie">' +
+          '<h2 class="choix-titre">Choose your game</h2>' +
+          '<div class="accueil-boutons">' +
+            '<button class="btn-start" id="go-court">Short game&nbsp;▶<small>' + PARTIE_COURTE + ' messages · about 10 to 15 minutes</small></button>' +
+            '<button class="btn-start btn-long" id="go">Full game&nbsp;▶<small>' + CARTES_PAR_PARTIE + ' messages · about 30 minutes</small></button>' +
+          '</div>' +
+          '<h2 class="choix-titre">… or a single theme</h2>' +
+          '<div class="themes">' +
+            THEMES.map(function(t){ return '<button class="btn-theme" data-theme="' + t.cle + '"><span class="em" aria-hidden="true">' + t.em + '</span>' + t.nom + '</button>'; }).join('') +
+          '</div>' +
           '<button class="btn-gloss" id="voir-mots">📖 Words to know</button>' +
         '</div>' +
         '<p class="footer-note">No data is sent. This game is only for practice.</p>' +
       '</div>';
-    el('go').onclick = demarrer;
+    el('go-court').onclick = function(){ lancer(PARTIE_COURTE, null); };
+    el('go').onclick = function(){ lancer(CARTES_PAR_PARTIE, null); };
+    var bt = app.querySelectorAll('.btn-theme');
+    for (var k=0;k<bt.length;k++){
+      (function(b){ b.onclick = function(){ lancer(PARTIE_THEME, b.getAttribute('data-theme')); }; })(bt[k]);
+    }
     el('voir-mots').onclick = function(){ openGlossaire(); };
   }
 
   /* =====================================================================
      STARTING A GAME
      ===================================================================== */
+  /* Lance une partie depuis l'accueil : une longueur, et un thème facultatif. */
+  function lancer(taille, theme){ tailleVoulue = taille; themeCourant = theme; demarrer(); }
+
   function demarrer(sousDeck){
     // appelé aussi comme gestionnaire de clic : l'événement n'est pas un paquet
     sousDeck = Array.isArray(sousDeck) ? sousDeck : null;
     fermerGlossaire();
     // BALANCED draw: as many scams as reliable messages where possible
-    var arnaques = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='arnaque'; }));
-    var fiables  = shuffle(SCENARIOS.filter(function(c){ return c.verdict==='fiable';  }));
+    var source = SCENARIOS;
+    var th = THEMES.filter(function(t){ return t.cle === themeCourant; })[0];
+    if (th) source = SCENARIOS.filter(function(c){ return th.ids.indexOf(c.id) !== -1; });
+    var arnaques = shuffle(source.filter(function(c){ return c.verdict==='arnaque'; }));
+    var fiables  = shuffle(source.filter(function(c){ return c.verdict==='fiable';  }));
     // E2 : dans chaque moitié, les cartes jamais vues passent d'abord (mémoire ColFin)
     arnaques = ColFin.nonVusDabord(JEU, arnaques);
     fiables  = ColFin.nonVusDabord(JEU, fiables);
-    var total = Math.min(CARTES_PAR_PARTIE, SCENARIOS.length);
+    var total = Math.min(tailleVoulue, source.length);
     var moitie = Math.floor(total/2);
     var nbFiables  = Math.min(moitie, fiables.length);
     var nbArnaques = Math.min(total - nbFiables, arnaques.length);
@@ -140,11 +178,12 @@
     var c = deck[idx];
     reperesActifs = c.reperes || REP[c.id] || [];
     // clue objects are shared between rounds: wipe the previous judgement
-    reperesActifs.forEach(function(r){ delete r._juge; delete r._choix; delete r._why; });
+    reperesActifs.forEach(function(r){ delete r._juge; delete r._choix; });
     app.innerHTML =
       '<div class="panel">' +
-        '<div class="entete">' + esc(c.entete || contexteParDefaut(c)) + '</div>' +
-        '<div id="maquette">' + renderMaquette(c) + '</div>' +
+        // le contexte fait partie de l'enquête : il vit dans la maquette pour pouvoir être désigné
+        '<div id="maquette"><div class="entete"><span class="ctx">' + esc(c.entete || contexteParDefaut(c)) + '</span></div>' +
+          renderMaquette(c) + '</div>' +
       '</div>' +
       '<div class="panel"><div id="lower"></div></div>';
 
@@ -275,7 +314,8 @@
         // fit in three bubbles.
         var sep = m.dateSep ? '<div class="datesep"><span>' + esc(m.dateSep) + '</span></div>' : '';
         if (m.voix){
-          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div></div>';
+          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div>' +
+            (m.texte ? '<div class="voix-txt"><span class="voix-lbl">Transcript</span>' + esc(m.texte) + '</div>' : '') + '</div>';
         }
         return sep + '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
       });
@@ -372,7 +412,7 @@
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
     el('lower').innerHTML =
-      '<div class="spot-consigne"><b>Step 1 — Investigate.</b> In the message, click the <b>details that catch your attention</b> 👆<small>With each click, <b>you are the judge</b>: set the slider (suspicious / nothing special / reassuring) and, if you like, say why. We answer afterwards. Nothing is highlighted: it is up to you to investigate.</small></div>' +
+      '<div class="spot-consigne"><b>Step 1 — Investigate.</b> In the message, click the <b>details that catch your attention</b> 👆<small>With each click, <b>you are the judge</b>: suspicious, nothing special or reassuring. We answer afterwards. Nothing is highlighted: it is up to you to investigate. The <b>context</b>, at the very top, counts too.</small></div>' +
       '<div class="spot-compteur" id="spot-compteur" aria-live="polite"></div>' +
       '<div class="spot-actions">' +
         '<button class="hint-btn" id="coup-pouce">💡 Hint</button>' +
@@ -439,7 +479,21 @@
         }
         return;
       }
-      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      if (r.texte === '__CTX__'){
+        var ctx = root.querySelector('.entete .ctx');
+        if (ctx){
+          ctx.classList.add('repere'); ctx.setAttribute('data-i', i);
+          ctx.setAttribute('role', 'button'); ctx.setAttribute('tabindex', '0');
+        } else {
+          console.warn('[Radar’naque] context marker not found in the DOM.');
+        }
+        return;
+      }
+      // le contexte ne se désigne qu'en entier ('__CTX__') : on n'y cherche jamais un fragment,
+      // sinon un mot du contexte capterait le repère destiné au message
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function(n){
+        return (n.parentNode && n.parentNode.closest && n.parentNode.closest('.entete')) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      } });
       var node, wrapped = false;
       while ((node = walker.nextNode())){
         var pos = node.nodeValue.indexOf(r.texte);
@@ -461,7 +515,9 @@
     root.addEventListener('click', function(e){
       if (!root.classList.contains('mode-spot')) return;
       // click inside the explanation pop-up (or on a glossary word): let it happen
-      if (e.target.closest && (e.target.closest('.spot-pop') || e.target.closest('.gloss'))) return;
+      if (e.target.closest && e.target.closest('.gloss')) return;
+      // toucher la fenêtre d'explication la referme : plus besoin de viser la croix
+      if (e.target.closest && e.target.closest('.spot-pop')){ hidePop(); return; }
       var t = e.target.closest ? e.target.closest('.repere') : null;
       if (t) clicRepere(parseInt(t.getAttribute('data-i'), 10), t);
       else clicVide(e);            // the player clicked beside a clue: give feedback
@@ -475,85 +531,54 @@
     });
   }
 
-  /* --- Analyse the free-text "why": compare it to the clue's keywords --- */
-  var STOP = (' the a an and or but so nor for of to in on at by with without into from as is are be been being this that these those it its it s he she they them we you your our their my his her not no yes can could will would may might do does did done make made just very more most less here there when then also same already nothing everything something real really never always why what who whom whose which how so if').split(' ');
-  function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' '); }
-  // { norm, texte }: the normalized form is used for comparison, "texte" keeps the original accents for display
-  function motsClesIndice(r){
-    var brut = ((r.note||'') + ' ' + (r.aide||'')).split(/\s+/);
-    var out = [];
-    brut.forEach(function(w){
-      var propre = w.replace(/^[^a-zA-ZÀ-ÖØ-öø-ÿ]+|[^a-zA-ZÀ-ÖØ-öø-ÿ]+$/g, '');
-      var wn = norm(propre);
-      if (wn.length >= 4 && STOP.indexOf(wn) < 0 && !out.some(function(o){ return o.norm === wn; }))
-        out.push({ norm: wn, texte: propre });
-    });
-    return out;
-  }
-  function analyserPourquoi(why, r){
-    var w = norm(why);
-    if (!w.replace(/\s/g,'')) return { ecrit:false, trouves:[] };
-    var trouves = [];
-    motsClesIndice(r).forEach(function(k){ if (w.indexOf(k.norm) >= 0) trouves.push(k.texte); });
-    return { ecrit:true, trouves:trouves };
-  }
-
   function clicRepere(i, span){
     var r = reperesActifs[i];
     if (!r) return;
     // already judged: just show the saved feedback again
     if (span.classList.contains('trouve') || span.classList.contains('decoy')){
-      afficherResultatRepere(i, span, r._choix, r._why);
+      afficherResultatRepere(i, span, r._choix);
       return;
     }
     ouvrirSonde(i, span);
   }
 
-  /* --- The player judges: confidence slider + optional "why" --- */
+  /* --- The player judges, in a single gesture: suspicious, nothing special or reassuring --- */
   /* ColModale (collection.js) handles the focus trap, Escape and returning focus
      to the original element: the probe no longer has to rewrite these three things. */
   function ouvrirSonde(i, span){
     span.classList.remove('hint-flash');
-
-    var contenu = document.createElement('div');
-    contenu.className = 'sonde-corps';
-    contenu.innerHTML =
-      '<div class="curseur" role="radiogroup" aria-label="Your feeling">' +
-        '<button type="button" class="cr" data-v="louche" role="radio" aria-checked="false"><span class="e">🚩</span><small>Suspicious</small></button>' +
-        '<button type="button" class="cr" data-v="neutre" role="radio" aria-checked="false"><span class="e">😐</span><small>Nothing special</small></button>' +
-        '<button type="button" class="cr" data-v="rassurant" role="radio" aria-checked="false"><span class="e">✅</span><small>Reassuring</small></button>' +
-      '</div>' +
-      '<textarea class="sonde-why" rows="2" placeholder="Why? (optional)"></textarea>';
-
-    var choix = null;
-    var valider = null; // set right after ColModale.ouvrir returns — the button already exists (Promise executor runs synchronously)
-    contenu.querySelectorAll('.cr').forEach(function(b){
-      b.onclick = function(){
-        choix = b.getAttribute('data-v');
-        contenu.querySelectorAll('.cr').forEach(function(x){ x.classList.remove('sel'); x.setAttribute('aria-checked','false'); });
-        b.classList.add('sel'); b.setAttribute('aria-checked','true');
-        if (valider) valider.disabled = false;
-      };
-    });
-
+    /* Les trois réponses SONT les boutons de la modale : un seul geste suffit, sans
+       « Valider ». Le focus part sur le titre, pas sur une réponse : une touche Entrée
+       restée enfoncée en ouvrant la sonde ne peut ainsi pas répondre à la place du
+       joueur, et Tab mène à la première réponse. */
     var promesse = ColModale.ouvrir({
       titre: 'How does this detail feel to you?',
-      contenu: contenu,
       classe: 'sonde',
       actions: [
-        { id: 'annuler', libelle: 'Cancel' },
-        { id: 'valider', libelle: 'Confirm my analysis', principal: true }
+        { id: 'louche', libelle: 'Suspicious' },
+        { id: 'neutre', libelle: 'Nothing special' },
+        { id: 'rassurant', libelle: 'Reassuring' },
+        { id: 'annuler', libelle: 'Cancel' }
       ]
     });
-    valider = document.querySelector('dialog.col-modale.sonde .col-btn:not(.col-btn--fantome)');
-    if (valider) valider.disabled = true;
+    // ColModale écrit des libellés en texte : on leur ajoute ici leur pictogramme
+    var EMO = ['🚩', '😐', '✅'];
+    var btns = document.querySelectorAll('dialog.col-modale.sonde .col-modale__actions .col-btn');
+    EMO.forEach(function(em, k){
+      var b = btns[k]; if (!b) return;
+      b.classList.add('cr');
+      b.innerHTML = '<span class="e" aria-hidden="true">' + em + '</span><small>' + esc(b.textContent) + '</small>';
+    });
+    if (btns[3]) btns[3].classList.add('sonde-annuler');
+    var titreSonde = document.querySelector('dialog.col-modale.sonde .col-modale__titre');
+    if (titreSonde){ titreSonde.setAttribute('tabindex', '-1'); titreSonde.focus(); }
 
     promesse.then(function(id){
-      if (id === 'valider' && choix) validerSonde(i, span, choix, (contenu.querySelector('.sonde-why').value || ''));
+      if (id && id !== 'annuler') validerSonde(i, span, id);
     });
   }
 
-  function validerSonde(i, span, choix, why){
+  function validerSonde(i, span, choix){
     var r = reperesActifs[i];
     if (typeRepere(r) === 'indice'){
       if (!span.classList.contains('trouve')){
@@ -563,15 +588,15 @@
     } else {
       span.classList.add('decoy');
     }
-    r._choix = choix; r._why = why; r._juge = true;
+    r._choix = choix; r._juge = true;
     majCompteur();
-    afficherResultatRepere(i, span, choix, why);
+    afficherResultatRepere(i, span, choix);
   }
 
   /* --- Educational feedback after the player's judgement ---
      Green and red judge the PLAYER'S CHOICE, never the nature of the detail:
      we first say whether they were right, then what the detail actually was. */
-  function afficherResultatRepere(i, span, choix, why){
+  function afficherResultatRepere(i, span, choix){
     var r = reperesActifs[i];
     var estArnaque = deck[idx].verdict === 'arnaque';
     var type = typeRepere(r);
@@ -600,14 +625,6 @@
     }
     corps = tete + nature + gl(r.note || defaut);
 
-    var a = analyserPourquoi(why, r);
-    if (a.ecrit){
-      if (type === 'indice' && a.trouves.length)
-        corps += '<span class="sonde-fb ok">💬 Exactly: you pointed to “' + esc(a.trouves[0]) + '”, the heart of the problem.</span>';
-      else
-        corps += '<span class="sonde-fb">💬 Well done for putting it into words: verbalising is already the right reflex.</span>';
-    }
-
     showResultPop(span, (juste ? 'ok' : 'ko'), '<div class="pc"><span>' + corps + '</span></div>');
   }
 
@@ -615,7 +632,7 @@
   // If this message is already showing, another empty click dismisses it.
   function clicVide(e){
     var p = document.querySelector('#spot-pop');
-    if (p && p.style.display !== 'none' && p.classList.contains('miss')){ hidePop(); return; }
+    if (p && p.style.display !== 'none'){ hidePop(); return; }
     showPopAt(e, 'miss', 'Nothing useful here. Look for details that seem unusual: the sender, a link, the tone, urgency, a request for money or a code…');
   }
 
