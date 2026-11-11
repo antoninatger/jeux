@@ -32,6 +32,76 @@
      Chaque carte a un id stable dans scenarios.js : c'est lui que ColFin mémorise. */
   var JEU = 'radarnaque';
   var joue = [];
+  /* Étoiles (3 par carte) et bons gestes de la partie ; aideCarte : un coup de pouce a servi sur la carte */
+  var etoiles = 0, gestesBons = 0, gestesPoses = 0, aideCarte = false;
+  /* « Et maintenant, je fais quoi ? » : les gestes proposés après une arnaque.
+     t = le geste ; p = pourquoi c'est un piège (absent quand c'est le bon geste). */
+  var ACTES = {
+    signaler:   { t:'Je ne clique pas, et je transfère le SMS au 33700' },
+    officiel:   { t:'Je n’utilise ni le lien ni le numéro du message : je passe moi-même par le site ou l’appli officielle' },
+    supprimer:  { t:'Je n’ouvre rien et je supprime le message' },
+    rappelBanque:{ t:'Je raccroche, et je rappelle ma banque au numéro inscrit au dos de ma carte' },
+    rappelProche:{ t:'Je ne fais rien avant de l’avoir appelé sur son numéro habituel' },
+    couper:     { t:'Je coupe court, je bloque ce contact et j’en parle à un proche' },
+    fermer:     { t:'Je ne fais rien de ce qui est demandé : je ferme la fenêtre, et si elle résiste j’éteins l’appareil' },
+    plateforme: { t:'Je reste sur la plateforme : paiement sécurisé, ou rien' },
+    verifier:   { t:'Je ne partage pas : je cherche d’abord si des médias reconnus en parlent' },
+    attendre:   { t:'Je ne renvoie rien tant que l’argent n’est pas réellement arrivé sur mon compte' },
+    renov:      { t:'Je ne réponds pas ; si le sujet m’intéresse, j’appelle moi-même France Rénov’' },
+    reputation: { t:'Je n’achète pas avant d’avoir vérifié la réputation du site ailleurs que sur ce message' },
+    cliquer:    { t:'Je clique sur le lien, juste pour voir', p:'Cliquer « pour voir », c’est déjà entrer dans le piège : la fausse page est faite pour vous faire continuer.' },
+    payerPeu:   { t:'Je paie, la somme est petite', p:'Ce n’est pas la somme qui les intéresse : c’est le numéro de votre carte.' },
+    repondre:   { t:'Je réponds pour demander si c’est bien vrai', p:'Répondre montre qu’il y a quelqu’un au bout du fil, et c’est l’escroc qui vous répondra, avec des arguments rodés.' },
+    remplir:    { t:'Je clique sur le lien et je remplis ce qu’on me demande', p:'La page est une copie : tout ce que vous y tapez part chez l’escroc.' },
+    code:       { t:'Je donne le code pour bloquer le virement', p:'Ce code ne bloque rien : il VALIDE l’opération des escrocs.' },
+    enLigne:    { t:'Je reste en ligne et je lui pose des questions pour vérifier', p:'L’escroc a réponse à tout, et plus l’appel dure, plus il a de prise. On vérifie en raccrochant.' },
+    payerAvant: { t:'Je paie d’abord, je vérifierai après', p:'Un virement, des espèces ou des cartes cadeaux une fois partis ne se récupèrent pas.' },
+    preuve:     { t:'Je lui demande une preuve par message', p:'Une photo, une pièce d’identité, une voix : tout cela se copie ou se fabrique. La preuve se prend par un autre canal.' },
+    essayer:    { t:'J’essaie avec une petite somme, pour voir', p:'C’est exactement ce qu’on attend de vous : les premiers « gains » affichés sont faux, et servent à vous faire verser davantage.' },
+    numero:     { t:'J’appelle le numéro indiqué', p:'Ce numéro est celui des escrocs : au bout du fil, ils sauront vous faire payer ou prendre la main sur votre appareil.' },
+    obeir:      { t:'Je suis les instructions affichées à l’écran', p:'Ces manipulations vous font installer ou autoriser vous-même le programme malveillant.' },
+    partager:   { t:'Je partage, au cas où ce serait vrai', p:'Partager « au cas où », c’est faire circuler le faux : c’est tout ce qu’il demande.' },
+    commentaires:{ t:'Je regarde les commentaires : si beaucoup y croient, c’est vrai', p:'Le nombre ne prouve rien : un faux bien fait est cru et partagé par des milliers de personnes.' },
+    rembourser: { t:'Je renvoie le trop-perçu, par honnêteté', p:'Le premier « virement » n’existe pas : c’est votre propre argent que vous enverriez.' },
+    capture:    { t:'Je me fie à la capture d’écran du virement', p:'Une capture d’écran se fabrique en une minute. Seul votre relevé de compte fait foi.' },
+    piece:      { t:'J’ouvre la pièce jointe pour voir ce que c’est', p:'Une pièce jointe peut installer un virus dès l’ouverture.' },
+    secret:     { t:'Je n’en parle à personne, comme on me le demande', p:'Le secret est l’arme de l’escroc : en parler à un proche suffit souvent à tout arrêter.' },
+    virement:   { t:'Je fais le virement pour ne pas rater l’occasion', p:'Hors de la plateforme, aucun recours : l’argent part et l’annonce disparaît.' },
+    rdv:        { t:'Je laisse mes coordonnées, ça n’engage à rien', p:'Vos coordonnées sont revendues, et le démarchage qui suit est fait pour vous faire signer.' },
+    viteAcheter:{ t:'Je commande vite, avant la rupture de stock', p:'L’urgence est fabriquée : le colis n’arrive jamais, et votre carte reste entre leurs mains.' }
+  };
+
+  /* Le bon geste d'abord, les pièges ensuite ; l'ordre est mélangé à l'affichage.
+     Rangé par id de carte, comme THEMES : même table dans app.js et app-en.js. */
+  var GESTES = {
+    'sms-colis': ['signaler','payerPeu','cliquer'],
+    'sms-colis-photo-ia': ['signaler','payerPeu','repondre'],
+    'email-motdepasse': ['officiel','remplir','repondre'],
+    'email-boite-mystere': ['supprimer','piece','repondre'],
+    'email-panneaux': ['renov','cliquer','rdv'],
+    'chat-celebrite': ['couper','payerAvant','secret'],
+    'appel-banque': ['rappelBanque','code','enLigne'],
+    'chat-faux-proche': ['rappelProche','payerAvant','preuve'],
+    'image-deepfake': ['verifier','partager','commentaires'],
+    'sms-ameli': ['officiel','remplir','repondre'],
+    'popup-support': ['fermer','numero','obeir'],
+    'chat-emploi': ['couper','essayer','repondre'],
+    'chat-faux-numero-invest': ['couper','essayer','repondre'],
+    'email-airbnb-horsplateforme': ['plateforme','virement','preuve'],
+    'email-prenom-detourne': ['officiel','numero','repondre'],
+    'email-fausse-boutique-liquidation': ['reputation','viteAcheter','cliquer'],
+    'email-prime-video-paiement': ['officiel','remplir','repondre'],
+    'chat-trop-percu-vente': ['attendre','rembourser','capture'],
+    'sms-remboursement-impots': ['officiel','remplir','repondre'],
+    'image-deepfake-manifestation': ['verifier','partager','commentaires'],
+    'chat-faux-profil-rencontre': ['couper','payerAvant','preuve'],
+    'chat-fausse-vendeuse-acompte': ['plateforme','virement','preuve'],
+    'email-clim-aides': ['renov','cliquer','rdv'],
+    'email-ameli-regularisation': ['officiel','remplir','repondre'],
+    'popup-faux-captcha': ['fermer','obeir'],
+    'appel-voix-clonee-petit-fils': ['rappelProche','payerAvant','secret'],
+    'chat-vocal-clone-fille': ['rappelProche','payerAvant','preuve']
+  };
   function texteBrut(html){ var d = document.createElement('div'); d.innerHTML = html; return d.textContent; }
 
   /* phase de repérage des indices (après la décision) */
@@ -90,6 +160,7 @@
      ===================================================================== */
   function ecranAccueil(){
     ColFin.protegerSortie(false);   // plus de partie en cours : « ← Retour » ne demande plus confirmation
+    arreterVoix();
     hud.style.display = 'none';
     var mb = el('menu-btn'); if (mb) mb.style.display = 'none';
     app.innerHTML =
@@ -153,7 +224,7 @@
     nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
     // E2 : « rejouer mes erreurs » impose les seules cartes ratées
     deck = sousDeck ? shuffle(sousDeck) : shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
-    idx = 0; score = 0;
+    idx = 0; score = 0; etoiles = 0; gestesBons = 0; gestesPoses = 0;
     joue = [];
     ColFin.protegerSortie(true);
     hud.style.display = 'flex';
@@ -161,11 +232,16 @@
     montrerCarte();
   }
 
+  function majScore(){
+    scoreEl.innerHTML = '✔ <b>' + score + '</b>&nbsp;/&nbsp;' + deck.length +
+      '<span class="score-etoiles" title="Étoiles gagnées">⭐&nbsp;' + etoiles + '</span>';
+  }
+
   function majHud(){
     var pct = Math.round((idx) / deck.length * 100);
     barFill.style.width = pct + '%';
     barLbl.textContent = 'Message ' + (idx+1) + ' sur ' + deck.length;
-    scoreEl.innerHTML = '✔ <b>' + score + '</b>&nbsp;/&nbsp;' + deck.length;
+    majScore();
   }
 
   /* =====================================================================
@@ -174,6 +250,8 @@
   function montrerCarte(){
     repondu = false;
     currentChoix = null;
+    aideCarte = false;
+    arreterVoix();
     majHud();
     var c = deck[idx];
     reperesActifs = c.reperes || REP[c.id] || [];
@@ -270,7 +348,7 @@
   function renderImage(c){
     return '<div class="social">' +
       '<div class="sh"><div class="av">📷</div><div><div class="nm">Actu Choc 24</div><div class="mt">Page · Sponsorisé</div></div></div>' +
-      '<img class="big" src="' + esc(c.image) + '" alt="Image partagée sur les réseaux">' +
+      '<div class="img-wrap"><img class="big" src="' + esc(c.image) + '" alt="Image partagée sur les réseaux"></div>' +
       '<div class="cap">' + esc(c.legende) + '</div>' +
     '</div>';
   }
@@ -282,7 +360,9 @@
       '<div class="num">' + esc(c.numero||'') + '</div>' +
       '<div class="state">Appel en cours…</div>' +
       '<div class="keys"><div class="k red">✕</div><div class="k green">✓</div></div>' +
-      '</div><div class="transcript" data-anim="call"></div></div>';
+      '</div>' +
+      (synth ? '<button type="button" class="ecoute ecoute-appel" aria-pressed="false" data-repos="🔊 Écouter l’appel" data-stop="⏹ Arrêter la lecture">🔊 Écouter l’appel</button>' : '') +
+      '<div class="transcript" data-anim="call"></div></div>';
   }
 
   // corps d'e-mail : autorise le HTML simple déjà présent dans les données
@@ -308,13 +388,15 @@
       });
     }
     if (c.canal === 'chat'){
-      return c.messages.map(function(m){
+      return c.messages.map(function(m, k){
         // dateSep : séparateur de date facultatif, posé au-dessus du message.
         // Sert à montrer qu'on lit l'EXTRAIT d'un échange long, pas une conversation
         // qui tiendrait en trois bulles.
         var sep = m.dateSep ? '<div class="datesep"><span>' + esc(m.dateSep) + '</span></div>' : '';
         if (m.voix){
-          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div>' +
+          return sep + '<div class="msg"><div class="voicebar">' +
+            ((synth && m.texte) ? '<button type="button" class="play ecoute" data-m="' + k + '" aria-pressed="false" aria-label="Écouter le message vocal" data-repos="▶" data-stop="⏹">▶</button>' : '<span class="play">▶</span>') +
+            '<span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div>' +
             (m.texte ? '<div class="voix-txt"><span class="voix-lbl">Transcription</span>' + esc(m.texte) + '</div>' : '') + '</div>';
         }
         return sep + '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
@@ -327,6 +409,53 @@
       });
     }
     return [];
+  }
+
+  /* ---------- Lecture à voix haute ----------
+     Synthèse vocale du navigateur : rien n'est lu tant qu'on n'a pas appuyé, et les
+     boutons n'existent pas si le navigateur ne sait pas parler. Deux voix quand
+     l'appareil en propose deux, sinon deux hauteurs. */
+  var synth = (window.speechSynthesis && window.SpeechSynthesisUtterance) ? window.speechSynthesis : null;
+  var boutonVoix = null;
+  function arreterVoix(){
+    if (synth){ try { synth.cancel(); } catch(e){} }
+    if (boutonVoix){
+      boutonVoix.classList.remove('lit');
+      boutonVoix.textContent = boutonVoix.getAttribute('data-repos');
+      boutonVoix.setAttribute('aria-pressed', 'false');
+      boutonVoix = null;
+    }
+  }
+  function lireVoix(btn){
+    if (!synth) return;
+    var deja = (boutonVoix === btn);
+    arreterVoix();
+    if (deja) return;              // un second appui arrête la lecture
+    var c = deck[idx]; if (!c) return;
+    var lignes = [];
+    if (c.canal === 'appel'){
+      lignes = (c.transcript || []).map(function(l){ return { vous: l.qui === 'vous', texte: l.texte }; });
+    } else {
+      var m = (c.messages || [])[parseInt(btn.getAttribute('data-m'), 10)];
+      if (m && m.texte) lignes = [{ vous: false, texte: m.texte }];
+    }
+    if (!lignes.length) return;
+    var voix = [];
+    try { voix = synth.getVoices().filter(function(v){ return (v.lang || '').toLowerCase().indexOf('fr') === 0; }); } catch(e){}
+    boutonVoix = btn;
+    btn.classList.add('lit');
+    btn.textContent = btn.getAttribute('data-stop');
+    btn.setAttribute('aria-pressed', 'true');
+    lignes.forEach(function(l, n){
+      // les émojis seraient lus par leur nom (« cœur rouge ») : on les retire
+      var u = new SpeechSynthesisUtterance(l.texte.replace(/[☀-➿️]|[\uD83C-\uD83E][\uDC00-\uDFFF]/g, ''));
+      u.lang = 'fr-FR';
+      if (voix.length) u.voice = voix[(l.vous && voix.length > 1) ? 1 : 0];
+      u.pitch = l.vous ? 1.2 : 0.9;
+      u.rate = 0.95;
+      if (n === lignes.length - 1) u.onend = u.onerror = function(){ if (boutonVoix === btn) arreterVoix(); };
+      synth.speak(u);
+    });
   }
 
   /* affiche les messages d'une carte, animés message par message quand c'est possible,
@@ -412,7 +541,7 @@
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
     el('lower').innerHTML =
-      '<div class="spot-consigne"><b>Étape 1 — Enquêtez.</b> Cliquez, dans le message, sur les <b>éléments qui vous interpellent</b> 👆<small>À chaque clic, <b>c’est vous qui jugez</b>&nbsp;: louche, rien de spécial ou rassurant. On vous répond ensuite. Rien n’est surligné&nbsp;: à vous de fouiller. Le <b>contexte</b>, tout en haut, compte aussi.</small></div>' +
+      '<div class="spot-consigne"><b>Étape 1 — Enquêtez.</b> Cliquez, dans le message, sur les <b>éléments qui vous interpellent</b> 👆<small>À chaque clic, <b>c’est vous qui jugez</b>&nbsp;: louche, rien de spécial ou rassurant. On vous répond ensuite. Rien n’est surligné&nbsp;: à vous de fouiller. Le <b>contexte</b>, tout en haut, compte aussi.' + (deck[idx].canal === 'image' ? ' Sur une <b>image</b>, touchez le détail précis qui vous intrigue.' : '') + '</small></div>' +
       '<div class="spot-compteur" id="spot-compteur" aria-live="polite"></div>' +
       '<div class="spot-actions">' +
         '<button class="hint-btn" id="coup-pouce">💡 Coup de pouce</button>' +
@@ -479,6 +608,23 @@
         }
         return;
       }
+      /* D27, option A : une zone précise de l'image, en % de sa largeur et de sa hauteur
+         (x, y = centre). Le CSS lui garantit 44 px de côté au doigt. */
+      if (r.zone){
+        var cadre = root.querySelector('.img-wrap');
+        if (cadre){
+          var z = document.createElement('span');
+          z.className = 'repere zone'; z.setAttribute('data-i', i);
+          z.setAttribute('role', 'button'); z.setAttribute('tabindex', '0');
+          z.setAttribute('aria-label', r.nom || 'Zone de l’image');
+          z.style.left = r.zone.x + '%'; z.style.top = r.zone.y + '%';
+          z.style.width = r.zone.w + '%'; z.style.height = r.zone.h + '%';
+          cadre.appendChild(z);
+        } else {
+          console.warn('[Radar’naque] repère de zone introuvable dans le DOM.');
+        }
+        return;
+      }
       if (r.texte === '__CTX__'){
         var ctx = root.querySelector('.entete .ctx');
         if (ctx){
@@ -515,7 +661,7 @@
     root.addEventListener('click', function(e){
       if (!root.classList.contains('mode-spot')) return;
       // clic dans la petite fenêtre d'explication (ou sur un mot du glossaire) : on laisse faire
-      if (e.target.closest && e.target.closest('.gloss')) return;
+      if (e.target.closest && e.target.closest('.gloss, .ecoute')) return;
       // toucher la fenêtre d'explication la referme : plus besoin de viser la croix
       if (e.target.closest && e.target.closest('.spot-pop')){ hidePop(); return; }
       var t = e.target.closest ? e.target.closest('.repere') : null;
@@ -669,6 +815,7 @@
     // nouvelle cible → on recommence au niveau 1
     if (next !== hintIdx){ hintIdx = next; hintStep = 0; }
     hintStep++;
+    aideCarte = true;   // la troisième étoile se gagne sans aide
     var r = reperesActifs[next];
 
     if (hintStep === 1 && r.aide){
@@ -808,6 +955,28 @@
     }
 
     var st = statsReperes();
+    /* Trois étoiles par carte : le verdict, tous les indices repérés, tous bien jugés sans coup de pouce */
+    var e1 = bon, e2 = st.total > 0 && st.restants === 0, e3 = e2 && st.mal === 0 && !aideCarte;
+    var nbE = (e1 ? 1 : 0) + (e2 ? 1 : 0) + (e3 ? 1 : 0);
+    etoiles += nbE;
+    function et(ok){ return '<span class="' + (ok ? 'on' : 'off') + '">★</span>'; }
+    function etl(ok, txt){ return '<li class="' + (ok ? 'on' : 'off') + '">' + (ok ? '✓ ' : '– ') + txt + '</li>'; }
+    var blocEtoiles = '<div class="etoiles">' +
+      '<span class="et-rang" role="img" aria-label="' + nbE + ' étoile' + (nbE > 1 ? 's' : '') + ' sur 3' + '">' + et(e1) + et(e2) + et(e3) + '</span>' +
+      '<ul class="et-detail">' + etl(e1, 'Le bon verdict') + etl(e2, 'Tous les indices repérés') + etl(e3, 'Tous bien jugés, sans coup de pouce') + '</ul></div>';
+
+    /* « Et maintenant, je fais quoi ? » : après une arnaque, le joueur choisit le geste
+       avant qu'on lui donne le réflexe. Les cartes fiables n'ont pas cette étape. */
+    var gf = estArnaque ? GESTES[c.id] : null;
+    var blocGeste = '';
+    if (gf){
+      blocGeste = '<div class="quefaire" id="quefaire">' +
+        '<div class="bloc-titre">🤔 Et maintenant, vous faites quoi&nbsp;?</div>' +
+        '<p class="qf-sous">Reconnaître l’arnaque ne suffit pas&nbsp;: choisissez le bon geste.</p>' +
+        '<div class="qf-options">' +
+        shuffle(gf).map(function(k){ return '<button type="button" class="qf-opt" data-k="' + k + '">' + esc(ACTES[k].t) + '</button>'; }).join('') +
+        '</div><div class="qf-retour" id="qf-retour" tabindex="-1" aria-live="polite"></div></div>';
+    }
     var recap = st.total
       ? '<div class="spot-recap">Vous avez repéré <b>' + st.reperes + '</b> indice(s) sur ' + st.total +
         (st.mal ? ', dont <b>' + st.mal + '</b> mal jugé' + (st.mal > 1 ? 's' : '') : '') +
@@ -820,19 +989,43 @@
           '<span class="big">' + (bon?'✅':'❗') + '</span>' +
           '<div>' + titreVerdict + '<small>' + sousTitre + '</small></div>' +
         '</div>' +
+        blocEtoiles +
         recap +
         '<span class="tag ' + (estArnaque?'arnaque':'fiable') + '">' +
           (estArnaque?'🚨 ':'✅ ') + gl(c.categorie) + '</span>' +
         '<div class="bloc-titre">' + (estArnaque?'🔎 Les indices qui trahissent l’arnaque :':'✅ Ce qui montre que c’est fiable :') + '</div>' +
         '<ul class="' + listeClasse + '">' + indices + '</ul>' +
+        blocGeste +
+        '<div id="suite-corr"' + (gf ? ' hidden' : '') + '>' +
         '<div class="reflexe"><b>👉 Le bon réflexe :</b> ' + gl(c.reflexe) + '</div>' +
         '<div class="explication">' + gl(c.explication) + '</div>' +
         '<button class="next" id="next">' + (idx+1 < deck.length ? 'Message suivant ▶' : 'Voir mon résultat 🏁') + '</button>' +
+        '</div>' +
       '</div>';
 
     el('next').onclick = suivant;
+    if (gf){
+      var opts = el('quefaire').querySelectorAll('.qf-opt');
+      var choisirGeste = function(b){
+        var k = b.getAttribute('data-k'), ok = (k === gf[0]);
+        gestesPoses++; if (ok) gestesBons++;
+        for (var n = 0; n < opts.length; n++){
+          opts[n].disabled = true;
+          if (opts[n].getAttribute('data-k') === gf[0]) opts[n].classList.add('bon');
+        }
+        b.classList.add('choisi'); if (!ok) b.classList.add('faux');
+        var rt = el('qf-retour');
+        rt.className = 'qf-retour ' + (ok ? 'ok' : 'ko');
+        rt.innerHTML = ok ? '✅ C’est le bon geste. ' : '❌ ' + esc(ACTES[k].p || '') + ' Le bon geste&nbsp;: <b>' + esc(ACTES[gf[0]].t) + '</b>.';
+        el('suite-corr').hidden = false;
+        rt.focus();
+      };
+      for (var q = 0; q < opts.length; q++){
+        (function(b){ b.onclick = function(){ choisirGeste(b); }; })(opts[q]);
+      }
+    }
     barFill.style.width = Math.round((idx+1)/deck.length*100) + '%';
-    scoreEl.innerHTML = '✔ <b>' + score + '</b>&nbsp;/&nbsp;' + deck.length;
+    majScore();
     el('lower').querySelector('.feedback').scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
@@ -846,6 +1039,7 @@
      ÉCRAN DE FIN
      ===================================================================== */
   function ecranFin(){
+    arreterVoix();
     hud.style.display = 'none';
     var total = deck.length;
     var pct = Math.round(score/total*100);
@@ -883,7 +1077,7 @@
     /* E2 : jauge, score, message, cartes ratées avec leur réflexe et boutons sont rendus
        par ColFin. Pas de lien de retour : la page n'en a jamais eu. */
     ColFin.rendre({
-      cible: el('ecran-fin'), jeu: JEU, message: jauge + ' ' + texteBrut(msg),
+      cible: el('ecran-fin'), jeu: JEU, message: jauge + ' ' + texteBrut(msg) + ' ⭐ ' + etoiles + ' étoile' + (etoiles > 1 ? 's' : '') + ' sur ' + (3 * total) + '.' + (gestesPoses ? ' Bons gestes : ' + gestesBons + ' sur ' + gestesPoses + '.' : ''),
       score: score, total: total, items: joue, retour: false,
       onRejouer: function(rates){ demarrer(SCENARIOS.filter(function(c){ return rates.some(function(r){ return r.id === c.id; }); })); },
       onRecommencer: function(){ demarrer(); }
@@ -1079,6 +1273,8 @@
     // clic sur un mot du glossaire (délégation : marche sur tout contenu injecté)
     document.addEventListener('click', function(e){
       var t = e.target;
+      var ec = (t && t.closest) ? t.closest('.ecoute') : null;
+      if (ec){ lireVoix(ec); return; }
       if (t && t.classList && t.classList.contains('gloss')){
         openGlossaire(t.getAttribute('data-g'));
       }
