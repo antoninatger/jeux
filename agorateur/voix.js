@@ -98,20 +98,26 @@ const Voix = (function(){
   }
   let parle = null;
   function dire(texte, perso, opts){
-    if (!actif || !synth || !texte) return;
+    if (!actif || !synth || !texte) return false;
     const brut = opts && opts.citations ? extraireCitations(texte) : texte;
     const phrase = nettoyer(brut);
-    if (!phrase) return;
+    if (!phrase) return false;
     taire();
     const u = new SpeechSynthesisUtterance(phrase);
     const c = voixPour(perso);
     if (c.voix) { u.voice = c.voix; u.lang = c.voix.lang; } else u.lang = lang() === "fr" ? "fr-FR" : "en-GB";
     u.pitch = c.prof.p; u.rate = c.prof.r;
-    u.onend = u.onerror = () => { if (parle === u) parle = null; document.body.classList.remove("voix-parle"); };
+    u.onend = u.onerror = () => {
+      const fini = parle === u;
+      if (fini) { parle = null; document.body.classList.remove("voix-parle"); }
+      // fin : prévenir l'appelant (la tirade en direct enchaîne sur la phrase suivante).
+      if (fini && opts && opts.fin) opts.fin();
+    };
     parle = u;
     document.body.classList.add("voix-parle");
     // Chrome ignore parfois un speak() lancé juste après cancel().
     setTimeout(() => { if (parle === u) synth.speak(u); }, 60);
+    return true;
   }
   function taire(){
     parle = null;
