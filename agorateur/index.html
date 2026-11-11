@@ -322,6 +322,22 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 .options label:hover{background:rgba(255,255,255,.04);}
 .options input{accent-color:var(--acc);margin-top:3px;flex:none;}
 .options .asub{display:block;font-size:var(--fs-100);font-weight:600;color:var(--mu);margin-top:2px;}
+/* La voix (voix.js) : l'interrupteur de l'accueil, le 🔊 de la bulle, le micro. */
+.options .son{grid-column:1/-1;}
+.options .voix-note{padding:2px 6px 4px 30px;margin:0;}
+.bubble .voix-bascule{position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:50%;border:1px solid var(--bord);background:var(--card);font-size:1.2rem;cursor:pointer;line-height:1;}
+.bubble .voix-bascule:focus-visible{outline:3px solid var(--acc);outline-offset:2px;}
+.bubble:has(.voix-bascule) .btxt{padding-right:46px;}
+.bubble:has(.voix-bascule) .btag{margin-right:46px;}
+body.voix-parle .bubble .voix-bascule{animation:voix-pulse 1s ease-in-out infinite;}
+@keyframes voix-pulse{50%{box-shadow:0 0 0 6px rgba(255,93,115,.25);}}
+.voix-micro{background:linear-gradient(135deg,#ff5d73,#c2274a)!important;color:#fff!important;border:none!important;border-radius:50px!important;padding:12px 18px!important;font-size:1rem!important;font-weight:800;cursor:pointer;min-height:44px;font-family:'Nunito',sans-serif;}
+.saisie .voix-micro{flex:1 1 100%;}
+.voix-micro.ecoute{animation:voix-pulse .9s ease-in-out infinite;background:linear-gradient(135deg,#3ecf8e,#1f9e68)!important;}
+.voix-micro:disabled{opacity:.5;cursor:default;}
+.voix-zone{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px;}
+.voix-zone .voix-micro{width:min(100%,420px);}
+@media (prefers-reduced-motion: reduce){body.voix-parle .bubble .voix-bascule,.voix-micro.ecoute{animation:none;}}
 @media(max-width:520px){.options{grid-template-columns:1fr;}}
 
 /* La piste de combat : l'attaque part de l'adversaire (à droite) vers toi */
@@ -438,11 +454,17 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
       <legend data-i18n="modeTitre">Réponse</legend>
       <label><input type="radio" name="mode" value="qcm" checked><span><span data-i18n="modeQcm">🔘 Choix multiple</span><span class="asub" data-i18n="modeQcmS">Choisis parmi quatre propositions</span></span></label>
       <label><input type="radio" name="mode" value="saisie"><span><span data-i18n="modeSaisie">⌨️ Saisie libre</span><span class="asub" data-i18n="modeSaisieS">Écris le nom du sophisme, à ta façon</span></span></label>
+      <label><input type="radio" name="mode" value="voix"><span><span data-i18n="modeVoix">🎤 À l'oral</span><span class="asub" data-i18n="modeVoixS">Dis le nom du sophisme et ta réponse à voix haute</span></span></label>
+      <p class="asub voix-note" id="voix-note" hidden data-i18n="voixNote">Le navigateur demandera l'accès au micro. Sur Chrome, la voix est transcrite par les serveurs de Google.</p>
     </fieldset>
     <fieldset>
       <legend data-i18n="diffTitre">Difficulté</legend>
       <label><input type="radio" name="diff" value="facile" checked><span><span data-i18n="diffFacile">🌱 Facile</span><span class="asub" data-i18n="diffFacileS">Pas de chrono, et les indices te sont toujours donnés</span></span></label>
       <label><input type="radio" name="diff" value="difficile"><span><span data-i18n="diffDifficile">🔥 Difficile</span><span class="asub" data-i18n="diffDifficileS">Chrono, et les indices se méritent</span></span></label>
+    </fieldset>
+    <fieldset class="son">
+      <legend data-i18n="sonTitre">Son</legend>
+      <label><input type="checkbox" id="voix-perso"><span><span data-i18n="voixPerso">🔊 Les personnages parlent</span><span class="asub" data-i18n="voixPersoS">Chaque réplique est lue à voix haute, avec la voix de ton appareil</span></span></label>
     </fieldset>
     <fieldset class="av" id="avatar-choix"></fieldset>
   </div>
@@ -515,6 +537,7 @@ a.bigbtn{display:inline-flex;align-items:center;text-decoration:none;}
 <script src="../i18n.js"></script>
 <script src="../collection.js"></script>
 <script src="avatar.js"></script>
+<script src="voix.js"></script>
 <script>
 I18N.register({
   fr: {
@@ -529,6 +552,16 @@ I18N.register({
     hpYouLabel: "Ta lucidité", hpFoeLabel: "Ouverture de ton interlocuteur",
     modeTitre: "Réponse", modeQcm: "🔘 Choix multiple", modeQcmS: "Choisis parmi quatre propositions",
     modeSaisie: "⌨️ Saisie libre", modeSaisieS: "Écris le nom du sophisme, à ta façon",
+    modeVoix: "🎤 À l'oral", modeVoixS: "Dis le nom du sophisme et ta réponse à voix haute",
+    voixNote: "Le navigateur demandera l'accès au micro. Sur Chrome, la voix est transcrite par les serveurs de Google.",
+    sonTitre: "Son", voixPerso: "🔊 Les personnages parlent", voixPersoS: "Chaque réplique est lue à voix haute, avec la voix de ton appareil",
+    voixEssai: "Bienvenue sur l'Agora !", voixCouper: "Couper la voix des personnages", voixActiver: "Faire parler les personnages",
+    voixMicro: "🎤 Appuie et dis le nom du piège", voixMicroLire: "🎤 Appuie et dis ta réponse à voix haute",
+    voixEcoute: "🎙️ Je t'écoute…", voixRien: "Je n'ai rien entendu. Appuie sur le micro et parle un peu plus fort.",
+    voixRefus: "Le micro est bloqué. Autorise-le dans le navigateur, ou réponds au clavier.",
+    voixPanne: "La reconnaissance vocale ne répond pas ici. Réponds au clavier ou au clic.",
+    voixPasCompris: "J'ai entendu « {x} », sans le reconnaître. Recommence, ou réponds au clavier.",
+    voixReconnu: "J'ai entendu « {x} ».",
     diffTitre: "Difficulté", diffFacile: "🌱 Facile", diffFacileS: "Pas de chrono, et les indices te sont toujours donnés",
     diffDifficile: "🔥 Difficile", diffDifficileS: "Chrono, et les indices se méritent"
   },
@@ -544,6 +577,16 @@ I18N.register({
     hpYouLabel: "Your clarity", hpFoeLabel: "Openness of the other person",
     modeTitre: "Answer", modeQcm: "🔘 Multiple choice", modeQcmS: "Pick from four options",
     modeSaisie: "⌨️ Free typing", modeSaisieS: "Type the fallacy's name, your own way",
+    modeVoix: "🎤 Out loud", modeVoixS: "Say the fallacy's name and your reply out loud",
+    voixNote: "Your browser will ask for microphone access. In Chrome, speech is transcribed by Google's servers.",
+    sonTitre: "Sound", voixPerso: "🔊 Characters speak", voixPersoS: "Every line is read aloud, with your device's voice",
+    voixEssai: "Welcome to the Agora!", voixCouper: "Mute the characters' voices", voixActiver: "Let the characters speak",
+    voixMicro: "🎤 Press and say the trap's name", voixMicroLire: "🎤 Press and say your reply out loud",
+    voixEcoute: "🎙️ Listening…", voixRien: "I didn't hear anything. Press the mic and speak a little louder.",
+    voixRefus: "The microphone is blocked. Allow it in your browser, or answer with the keyboard.",
+    voixPanne: "Speech recognition isn't responding here. Answer with the keyboard or by clicking.",
+    voixPasCompris: "I heard “{x}” but didn't recognise it. Try again, or answer with the keyboard.",
+    voixReconnu: "I heard “{x}”.",
     diffTitre: "Difficulty", diffFacile: "🌱 Easy", diffFacileS: "No timer, and clues are always given",
     diffDifficile: "🔥 Hard", diffDifficileS: "Timer, and clues must be earned"
   }
@@ -575,6 +618,8 @@ I18N.register({
 })();
 // Le sélecteur d'avatar de l'accueil ; l'avatar de combat suit le choix.
 Avatar.monter(document.getElementById('avatar-choix'), e=>{ const a=document.querySelector('#f-you .femoji'); if(a) a.textContent=e; });
+// La voix : l'interrupteur « Les personnages parlent », le mode « À l'oral » et le 🔊 de la bulle.
+Voix.monterAccueil();
 // L'entrée sur l'Agora : une courte cinématique. On marche vers le temple,
 // seul, ou rejoint par Sophisuke (qui tombe du ciel) si l'examen du dojo est
 // réussi ; les portes s'ouvrent, la caméra plonge dans la lumière.
