@@ -14,9 +14,11 @@
    ========================================================================= */
 const AGORA_PLUS = {
   textes: {
-    reperPrompt: "🔍 Une de ces phrases cache-t-elle un piège ? Touche-la… ou dis que tout va bien.",
+    tamponPiege: "Piège !", tamponObjection: "Objection !", tamponRejete: "Rejetée", tamponHonnete: "Honnête ✔", tamponSophisme: "Sophisme !",
+    gesteAide: "Tranche la bulle d'un geste, à la souris ou au doigt, ou touche-la.",
+    reperPrompt: "🔍 Une de ces bulles cache-t-elle un piège ? Tranche-la… ou dis que tout va bien.",
     rienARedire: "👌 Rien à redire",
-    objectionPrompt: "✋ Écoute bien : « Objection ! » au moment où passe le piège. Rien de piégé ? Laisse parler.",
+    objectionPrompt: "✋ Tranche la bulle piégée au passage, ou crie « Objection ! ». Rien de piégé ? Laisse parler.",
     objection: "✋ Objection !",
     fausseAlerte: "🙅 Objection rejetée : cette phrase-là n'avait rien de piégé. −1 lucidité.",
     fausseAlerteFacile: "🙅 Rien de piégé dans celle-ci. −1 lucidité. Cherche encore.",
