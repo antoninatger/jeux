@@ -32,6 +32,76 @@
      Chaque carte a un id stable dans scenarios.js : c'est lui que ColFin mémorise. */
   var JEU = 'radarnaque';
   var joue = [];
+  /* Étoiles (3 par carte) et bons gestes de la partie ; aideCarte : un coup de pouce a servi sur la carte */
+  var etoiles = 0, gestesBons = 0, gestesPoses = 0, aideCarte = false;
+  /* « Et maintenant, je fais quoi ? » : les gestes proposés après une arnaque.
+     t = le geste ; p = pourquoi c'est un piège (absent quand c'est le bon geste). */
+  var ACTES = {
+    signaler:   { t:'I do not click, and I forward the text to 33700' },
+    officiel:   { t:'I use neither the link nor the number in the message: I go to the official site or app myself' },
+    supprimer:  { t:'I open nothing and I delete the message' },
+    rappelBanque:{ t:'I hang up, and I call my bank on the number printed on the back of my card' },
+    rappelProche:{ t:'I do nothing before calling them on their usual number' },
+    couper:     { t:'I cut it short, block this contact and tell someone close to me' },
+    fermer:     { t:'I do nothing that is asked: I close the window, and if it resists I switch the device off' },
+    plateforme: { t:'I stay on the platform: secure payment, or nothing' },
+    verifier:   { t:'I do not share: first I check whether recognised media are reporting it' },
+    attendre:   { t:'I send nothing back until the money has really arrived in my account' },
+    renov:      { t:'I do not reply; if the subject interests me, I call France Rénov’ myself' },
+    reputation: { t:'I do not buy before checking the site’s reputation somewhere other than in this message' },
+    cliquer:    { t:'I click the link, just to see', p:'Clicking “just to see” is already stepping into the trap: the fake page is built to keep you going.' },
+    payerPeu:   { t:'I pay, it is a small amount', p:'It is not the amount they are after: it is your card number.' },
+    repondre:   { t:'I reply to ask whether it is really true', p:'Replying shows there is someone at the other end, and it is the scammer who will answer, with well-rehearsed arguments.' },
+    remplir:    { t:'I click the link and fill in what I am asked for', p:'The page is a copy: everything you type there goes to the scammer.' },
+    code:       { t:'I give the code to block the transfer', p:'This code blocks nothing: it APPROVES the scammers’ transaction.' },
+    enLigne:    { t:'I stay on the line and ask questions to check', p:'The scammer has an answer for everything, and the longer the call lasts, the more hold they have. You check by hanging up.' },
+    payerAvant: { t:'I pay first, I will check afterwards', p:'A transfer, cash or gift cards cannot be recovered once they are gone.' },
+    preuve:     { t:'I ask them for proof by message', p:'A photo, an ID document, a voice: all of these can be copied or faked. Proof has to come through another channel.' },
+    essayer:    { t:'I try with a small amount, to see', p:'That is exactly what they expect of you: the first “gains” shown are fake, and are there to make you pay in more.' },
+    numero:     { t:'I call the number given', p:'That number belongs to the scammers: on the phone, they will get you to pay or take control of your device.' },
+    obeir:      { t:'I follow the instructions on the screen', p:'These steps make you install or authorise the malicious program yourself.' },
+    partager:   { t:'I share it, in case it is true', p:'Sharing “just in case” is spreading the fake: that is all it asks for.' },
+    commentaires:{ t:'I look at the comments: if many people believe it, it is true', p:'Numbers prove nothing: a well-made fake is believed and shared by thousands of people.' },
+    rembourser: { t:'I send back the overpayment, out of honesty', p:'The first “transfer” does not exist: it is your own money you would be sending.' },
+    capture:    { t:'I trust the screenshot of the transfer', p:'A screenshot can be faked in a minute. Only your bank statement counts.' },
+    piece:      { t:'I open the attachment to see what it is', p:'An attachment can install a virus as soon as it is opened.' },
+    secret:     { t:'I tell no one, as I am asked', p:'Secrecy is the scammer’s weapon: telling someone close to you is often enough to stop everything.' },
+    virement:   { t:'I make the transfer so as not to miss out', p:'Off the platform, there is no recourse: the money goes and the listing disappears.' },
+    rdv:        { t:'I leave my contact details, there is no commitment', p:'Your details are sold on, and the cold-calling that follows is designed to make you sign.' },
+    viteAcheter:{ t:'I order quickly, before it sells out', p:'The urgency is manufactured: the parcel never arrives, and your card stays in their hands.' }
+  };
+
+  /* Le bon geste d'abord, les pièges ensuite ; l'ordre est mélangé à l'affichage.
+     Rangé par id de carte, comme THEMES : même table dans app.js et app-en.js. */
+  var GESTES = {
+    'sms-colis': ['signaler','payerPeu','cliquer'],
+    'sms-colis-photo-ia': ['signaler','payerPeu','repondre'],
+    'email-motdepasse': ['officiel','remplir','repondre'],
+    'email-boite-mystere': ['supprimer','piece','repondre'],
+    'email-panneaux': ['renov','cliquer','rdv'],
+    'chat-celebrite': ['couper','payerAvant','secret'],
+    'appel-banque': ['rappelBanque','code','enLigne'],
+    'chat-faux-proche': ['rappelProche','payerAvant','preuve'],
+    'image-deepfake': ['verifier','partager','commentaires'],
+    'sms-ameli': ['officiel','remplir','repondre'],
+    'popup-support': ['fermer','numero','obeir'],
+    'chat-emploi': ['couper','essayer','repondre'],
+    'chat-faux-numero-invest': ['couper','essayer','repondre'],
+    'email-airbnb-horsplateforme': ['plateforme','virement','preuve'],
+    'email-prenom-detourne': ['officiel','numero','repondre'],
+    'email-fausse-boutique-liquidation': ['reputation','viteAcheter','cliquer'],
+    'email-prime-video-paiement': ['officiel','remplir','repondre'],
+    'chat-trop-percu-vente': ['attendre','rembourser','capture'],
+    'sms-remboursement-impots': ['officiel','remplir','repondre'],
+    'image-deepfake-manifestation': ['verifier','partager','commentaires'],
+    'chat-faux-profil-rencontre': ['couper','payerAvant','preuve'],
+    'chat-fausse-vendeuse-acompte': ['plateforme','virement','preuve'],
+    'email-clim-aides': ['renov','cliquer','rdv'],
+    'email-ameli-regularisation': ['officiel','remplir','repondre'],
+    'popup-faux-captcha': ['fermer','obeir'],
+    'appel-voix-clonee-petit-fils': ['rappelProche','payerAvant','secret'],
+    'chat-vocal-clone-fille': ['rappelProche','payerAvant','preuve']
+  };
   function texteBrut(html){ var d = document.createElement('div'); d.innerHTML = html; return d.textContent; }
 
   /* clue-spotting phase (after the decision) */
@@ -90,6 +160,7 @@
      ===================================================================== */
   function ecranAccueil(){
     ColFin.protegerSortie(false);   // plus de partie en cours : « ← Retour » ne demande plus confirmation
+    arreterVoix();
     hud.style.display = 'none';
     var mb = el('menu-btn'); if (mb) mb.style.display = 'none';
     app.innerHTML =
@@ -153,7 +224,7 @@
     nbFiables = Math.min(total - nbArnaques, fiables.length); // récupère la place restante
     // E2 : « rejouer mes erreurs » impose les seules cartes ratées
     deck = sousDeck ? shuffle(sousDeck) : shuffle(arnaques.slice(0, nbArnaques).concat(fiables.slice(0, nbFiables)));
-    idx = 0; score = 0;
+    idx = 0; score = 0; etoiles = 0; gestesBons = 0; gestesPoses = 0;
     joue = [];
     ColFin.protegerSortie(true);
     hud.style.display = 'flex';
@@ -161,11 +232,16 @@
     montrerCarte();
   }
 
+  function majScore(){
+    scoreEl.innerHTML = '✔ <b>' + score + '</b>&nbsp;/&nbsp;' + deck.length +
+      '<span class="score-etoiles" title="Stars earned">⭐&nbsp;' + etoiles + '</span>';
+  }
+
   function majHud(){
     var pct = Math.round((idx) / deck.length * 100);
     barFill.style.width = pct + '%';
     barLbl.textContent = 'Message ' + (idx+1) + ' of ' + deck.length;
-    scoreEl.innerHTML = '✔ <b>' + score + '</b>&nbsp;/&nbsp;' + deck.length;
+    majScore();
   }
 
   /* =====================================================================
@@ -174,6 +250,8 @@
   function montrerCarte(){
     repondu = false;
     currentChoix = null;
+    aideCarte = false;
+    arreterVoix();
     majHud();
     var c = deck[idx];
     reperesActifs = c.reperes || REP[c.id] || [];
@@ -208,7 +286,7 @@
       case 'chat': return 'Message received';
       case 'appel': return 'Phone call';
       case 'notif': return 'Notification shown on screen';
-      case 'image': return 'Publication vue of les réseaux sociaux';
+      case 'image': return 'Post seen on social media';
     }
     return '';
   }
@@ -269,8 +347,8 @@
 
   function renderImage(c){
     return '<div class="social">' +
-      '<div class="sh"><div class="av">📷</div><div><div class="nm">Actu Choc 24</div><div class="mt">Page · Sponsorisé</div></div></div>' +
-      '<img class="big" src="' + esc(c.image) + '" alt="Image partagée of les réseaux">' +
+      '<div class="sh"><div class="av">📷</div><div><div class="nm">Actu Choc 24</div><div class="mt">Page · Sponsored</div></div></div>' +
+      '<div class="img-wrap"><img class="big" src="' + esc(c.image) + '" alt="Image shared on social media"></div>' +
       '<div class="cap">' + esc(c.legende) + '</div>' +
     '</div>';
   }
@@ -282,7 +360,9 @@
       '<div class="num">' + esc(c.numero||'') + '</div>' +
       '<div class="state">Call in progress…</div>' +
       '<div class="keys"><div class="k red">✕</div><div class="k green">✓</div></div>' +
-      '</div><div class="transcript" data-anim="call"></div></div>';
+      '</div>' +
+      (synth ? '<button type="button" class="ecoute ecoute-appel" aria-pressed="false" data-repos="🔊 Listen to the call" data-stop="⏹ Stop reading">🔊 Listen to the call</button>' : '') +
+      '<div class="transcript" data-anim="call"></div></div>';
   }
 
   // email body: allows simple HTML already present in the data
@@ -308,13 +388,15 @@
       });
     }
     if (c.canal === 'chat'){
-      return c.messages.map(function(m){
+      return c.messages.map(function(m, k){
         // dateSep: optional date separator, shown above the message. It makes clear
         // we are reading an EXCERPT of a long exchange, not a conversation that would
         // fit in three bubbles.
         var sep = m.dateSep ? '<div class="datesep"><span>' + esc(m.dateSep) + '</span></div>' : '';
         if (m.voix){
-          return sep + '<div class="msg"><div class="voicebar"><span class="play">▶</span><span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div>' +
+          return sep + '<div class="msg"><div class="voicebar">' +
+            ((synth && m.texte) ? '<button type="button" class="play ecoute" data-m="' + k + '" aria-pressed="false" aria-label="Listen to the voice message" data-repos="▶" data-stop="⏹">▶</button>' : '<span class="play">▶</span>') +
+            '<span class="wave"></span><span class="t">'+esc(m.voix)+'</span></div>' +
             (m.texte ? '<div class="voix-txt"><span class="voix-lbl">Transcript</span>' + esc(m.texte) + '</div>' : '') + '</div>';
         }
         return sep + '<div class="msg">'+esc(m.texte)+'<div class="h">'+(m.heure||'')+' ✓✓</div></div>';
@@ -327,6 +409,53 @@
       });
     }
     return [];
+  }
+
+  /* ---------- Lecture à voix haute ----------
+     Synthèse vocale du navigateur : rien n'est lu tant qu'on n'a pas appuyé, et les
+     boutons n'existent pas si le navigateur ne sait pas parler. Deux voix quand
+     l'appareil en propose deux, sinon deux hauteurs. */
+  var synth = (window.speechSynthesis && window.SpeechSynthesisUtterance) ? window.speechSynthesis : null;
+  var boutonVoix = null;
+  function arreterVoix(){
+    if (synth){ try { synth.cancel(); } catch(e){} }
+    if (boutonVoix){
+      boutonVoix.classList.remove('lit');
+      boutonVoix.textContent = boutonVoix.getAttribute('data-repos');
+      boutonVoix.setAttribute('aria-pressed', 'false');
+      boutonVoix = null;
+    }
+  }
+  function lireVoix(btn){
+    if (!synth) return;
+    var deja = (boutonVoix === btn);
+    arreterVoix();
+    if (deja) return;              // un second appui arrête la lecture
+    var c = deck[idx]; if (!c) return;
+    var lignes = [];
+    if (c.canal === 'appel'){
+      lignes = (c.transcript || []).map(function(l){ return { vous: l.qui === 'vous', texte: l.texte }; });
+    } else {
+      var m = (c.messages || [])[parseInt(btn.getAttribute('data-m'), 10)];
+      if (m && m.texte) lignes = [{ vous: false, texte: m.texte }];
+    }
+    if (!lignes.length) return;
+    var voix = [];
+    try { voix = synth.getVoices().filter(function(v){ return (v.lang || '').toLowerCase().indexOf('en') === 0; }); } catch(e){}
+    boutonVoix = btn;
+    btn.classList.add('lit');
+    btn.textContent = btn.getAttribute('data-stop');
+    btn.setAttribute('aria-pressed', 'true');
+    lignes.forEach(function(l, n){
+      // les émojis seraient lus par leur nom (« cœur rouge ») : on les retire
+      var u = new SpeechSynthesisUtterance(l.texte.replace(/[☀-➿️]|[\uD83C-\uD83E][\uDC00-\uDFFF]/g, ''));
+      u.lang = 'en-GB';
+      if (voix.length) u.voice = voix[(l.vous && voix.length > 1) ? 1 : 0];
+      u.pitch = l.vous ? 1.2 : 0.9;
+      u.rate = 0.95;
+      if (n === lignes.length - 1) u.onend = u.onerror = function(){ if (boutonVoix === btn) arreterVoix(); };
+      synth.speak(u);
+    });
   }
 
   /* shows a card's messages, animated message by message when possible,
@@ -412,7 +541,7 @@
   function entrerSpotting(){
     hintIdx = -1; hintStep = 0;
     el('lower').innerHTML =
-      '<div class="spot-consigne"><b>Step 1 — Investigate.</b> In the message, click the <b>details that catch your attention</b> 👆<small>With each click, <b>you are the judge</b>: suspicious, nothing special or reassuring. We answer afterwards. Nothing is highlighted: it is up to you to investigate. The <b>context</b>, at the very top, counts too.</small></div>' +
+      '<div class="spot-consigne"><b>Step 1 — Investigate.</b> In the message, click the <b>details that catch your attention</b> 👆<small>With each click, <b>you are the judge</b>: suspicious, nothing special or reassuring. We answer afterwards. Nothing is highlighted: it is up to you to investigate. The <b>context</b>, at the very top, counts too.' + (deck[idx].canal === 'image' ? ' On an <b>image</b>, tap the precise detail that intrigues you.' : '') + '</small></div>' +
       '<div class="spot-compteur" id="spot-compteur" aria-live="polite"></div>' +
       '<div class="spot-actions">' +
         '<button class="hint-btn" id="coup-pouce">💡 Hint</button>' +
@@ -479,6 +608,23 @@
         }
         return;
       }
+      /* D27, option A : une zone précise de l'image, en % de sa largeur et de sa hauteur
+         (x, y = centre). Le CSS lui garantit 44 px de côté au doigt. */
+      if (r.zone){
+        var cadre = root.querySelector('.img-wrap');
+        if (cadre){
+          var z = document.createElement('span');
+          z.className = 'repere zone'; z.setAttribute('data-i', i);
+          z.setAttribute('role', 'button'); z.setAttribute('tabindex', '0');
+          z.setAttribute('aria-label', r.nom || 'Area of the image');
+          z.style.left = r.zone.x + '%'; z.style.top = r.zone.y + '%';
+          z.style.width = r.zone.w + '%'; z.style.height = r.zone.h + '%';
+          cadre.appendChild(z);
+        } else {
+          console.warn('[Radar’naque] repère de zone introuvable dans le DOM.');
+        }
+        return;
+      }
       if (r.texte === '__CTX__'){
         var ctx = root.querySelector('.entete .ctx');
         if (ctx){
@@ -515,7 +661,7 @@
     root.addEventListener('click', function(e){
       if (!root.classList.contains('mode-spot')) return;
       // click inside the explanation pop-up (or on a glossary word): let it happen
-      if (e.target.closest && e.target.closest('.gloss')) return;
+      if (e.target.closest && e.target.closest('.gloss, .ecoute')) return;
       // toucher la fenêtre d'explication la referme : plus besoin de viser la croix
       if (e.target.closest && e.target.closest('.spot-pop')){ hidePop(); return; }
       var t = e.target.closest ? e.target.closest('.repere') : null;
@@ -668,6 +814,7 @@
     // new target → start again at level 1
     if (next !== hintIdx){ hintIdx = next; hintStep = 0; }
     hintStep++;
+    aideCarte = true;   // la troisième étoile se gagne sans aide
     var r = reperesActifs[next];
 
     if (hintStep === 1 && r.aide){
@@ -807,6 +954,28 @@
     }
 
     var st = statsReperes();
+    /* Trois étoiles par carte : le verdict, tous les indices repérés, tous bien jugés sans coup de pouce */
+    var e1 = bon, e2 = st.total > 0 && st.restants === 0, e3 = e2 && st.mal === 0 && !aideCarte;
+    var nbE = (e1 ? 1 : 0) + (e2 ? 1 : 0) + (e3 ? 1 : 0);
+    etoiles += nbE;
+    function et(ok){ return '<span class="' + (ok ? 'on' : 'off') + '">★</span>'; }
+    function etl(ok, txt){ return '<li class="' + (ok ? 'on' : 'off') + '">' + (ok ? '✓ ' : '– ') + txt + '</li>'; }
+    var blocEtoiles = '<div class="etoiles">' +
+      '<span class="et-rang" role="img" aria-label="' + nbE + ' star' + (nbE === 1 ? '' : 's') + ' out of 3' + '">' + et(e1) + et(e2) + et(e3) + '</span>' +
+      '<ul class="et-detail">' + etl(e1, 'The right verdict') + etl(e2, 'Every clue spotted') + etl(e3, 'All judged correctly, without a hint') + '</ul></div>';
+
+    /* « Et maintenant, je fais quoi ? » : après une arnaque, le joueur choisit le geste
+       avant qu'on lui donne le réflexe. Les cartes fiables n'ont pas cette étape. */
+    var gf = estArnaque ? GESTES[c.id] : null;
+    var blocGeste = '';
+    if (gf){
+      blocGeste = '<div class="quefaire" id="quefaire">' +
+        '<div class="bloc-titre">🤔 And now, what do you do?</div>' +
+        '<p class="qf-sous">Recognising the scam is not enough: choose the right move.</p>' +
+        '<div class="qf-options">' +
+        shuffle(gf).map(function(k){ return '<button type="button" class="qf-opt" data-k="' + k + '">' + esc(ACTES[k].t) + '</button>'; }).join('') +
+        '</div><div class="qf-retour" id="qf-retour" tabindex="-1" aria-live="polite"></div></div>';
+    }
     var recap = st.total
       ? '<div class="spot-recap">You spotted <b>' + st.reperes + '</b> clue(s) out of ' + st.total +
         (st.mal ? ', <b>' + st.mal + '</b> of them misjudged' : '') +
@@ -819,19 +988,43 @@
           '<span class="big">' + (bon?'✅':'❗') + '</span>' +
           '<div>' + titreVerdict + '<small>' + sousTitre + '</small></div>' +
         '</div>' +
+        blocEtoiles +
         recap +
         '<span class="tag ' + (estArnaque?'arnaque':'fiable') + '">' +
           (estArnaque?'🚨 ':'✅ ') + gl(c.categorie) + '</span>' +
         '<div class="bloc-titre">' + (estArnaque?'🔎 The clues that reveal the scam:':'✅ What shows it is reliable:') + '</div>' +
         '<ul class="' + listeClasse + '">' + indices + '</ul>' +
+        blocGeste +
+        '<div id="suite-corr"' + (gf ? ' hidden' : '') + '>' +
         '<div class="reflexe"><b>👉 The right reflex:</b> ' + gl(c.reflexe) + '</div>' +
         '<div class="explication">' + gl(c.explication) + '</div>' +
         '<button class="next" id="next">' + (idx+1 < deck.length ? 'Next message ▶' : 'See my result 🏁') + '</button>' +
+        '</div>' +
       '</div>';
 
     el('next').onclick = suivant;
+    if (gf){
+      var opts = el('quefaire').querySelectorAll('.qf-opt');
+      var choisirGeste = function(b){
+        var k = b.getAttribute('data-k'), ok = (k === gf[0]);
+        gestesPoses++; if (ok) gestesBons++;
+        for (var n = 0; n < opts.length; n++){
+          opts[n].disabled = true;
+          if (opts[n].getAttribute('data-k') === gf[0]) opts[n].classList.add('bon');
+        }
+        b.classList.add('choisi'); if (!ok) b.classList.add('faux');
+        var rt = el('qf-retour');
+        rt.className = 'qf-retour ' + (ok ? 'ok' : 'ko');
+        rt.innerHTML = ok ? '✅ That is the right move. ' : '❌ ' + esc(ACTES[k].p || '') + ' The right move: <b>' + esc(ACTES[gf[0]].t) + '</b>.';
+        el('suite-corr').hidden = false;
+        rt.focus();
+      };
+      for (var q = 0; q < opts.length; q++){
+        (function(b){ b.onclick = function(){ choisirGeste(b); }; })(opts[q]);
+      }
+    }
     barFill.style.width = Math.round((idx+1)/deck.length*100) + '%';
-    scoreEl.innerHTML = '✔ <b>' + score + '</b>&nbsp;/&nbsp;' + deck.length;
+    majScore();
     el('lower').querySelector('.feedback').scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
@@ -845,11 +1038,12 @@
      END SCREEN
      ===================================================================== */
   function ecranFin(){
+    arreterVoix();
     hud.style.display = 'none';
     var total = deck.length;
     var pct = Math.round(score/total*100);
     var jauge, msg;
-    if (pct >= 85){ jauge='🏆'; msg='Excellent&nbsp;! You avez l’œil. You saurez déjouer la plupart des pièges.'; }
+    if (pct >= 85){ jauge='🏆'; msg='Excellent! You have a sharp eye. You will see through most traps.'; }
     else if (pct >= 60){ jauge='👍'; msg='Good work! Build a few more reflexes and you will be unbeatable.'; }
     else if (pct >= 40){ jauge='💪'; msg='It is a start. Play again to memorize the clues that often come up.'; }
     else { jauge='🌱'; msg='No worries: these scams are designed to deceive. Review the reflexes and try again.'; }
@@ -882,7 +1076,7 @@
     /* E2 : jauge, score, message, cartes ratées avec leur réflexe et boutons sont rendus
        par ColFin. Pas de lien de retour : la page n'en a jamais eu. */
     ColFin.rendre({
-      cible: el('ecran-fin'), jeu: JEU, message: jauge + ' ' + texteBrut(msg),
+      cible: el('ecran-fin'), jeu: JEU, message: jauge + ' ' + texteBrut(msg) + ' ⭐ ' + etoiles + ' star' + (etoiles === 1 ? '' : 's') + ' out of ' + (3 * total) + '.' + (gestesPoses ? ' Right moves: ' + gestesBons + ' out of ' + gestesPoses + '.' : ''),
       score: score, total: total, items: joue, retour: false,
       onRejouer: function(rates){ demarrer(SCENARIOS.filter(function(c){ return rates.some(function(r){ return r.id === c.id; }); })); },
       onRecommencer: function(){ demarrer(); }
@@ -1078,6 +1272,8 @@
     // click on a glossary word (delegation: works on all injected content)
     document.addEventListener('click', function(e){
       var t = e.target;
+      var ec = (t && t.closest) ? t.closest('.ecoute') : null;
+      if (ec){ lireVoix(ec); return; }
       if (t && t.classList && t.classList.contains('gloss')){
         openGlossaire(t.getAttribute('data-g'));
       }

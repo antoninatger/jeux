@@ -126,7 +126,7 @@ const SCENARIOS = [
     categorie: 'Arnaque aux sentiments / fausse célébrité',
     indices: [
       'Une célébrité qui vous écrit en privé et tombe amoureuse en quelques messages : impossible.',
-      'Le secret imposé (« ne le dis à personne ») isole la victime.',
+      'Le secret imposé (« mon équipe garde notre relation secrète ») isole la victime.',
       { risque: 'La demande d’argent finit toujours par arriver — souvent en cartes cadeaux, intraçables.' },
       'Une photo de profil ne prouve rien : elle se copie sur internet ou se fabrique avec une IA en quelques secondes.'
     ],
@@ -175,7 +175,7 @@ const SCENARIOS = [
       'Nouveau numéro inconnu qui prétend être votre enfant.',
       'Excuse classique : téléphone cassé + appli bancaire bloquée « jusqu’à demain ».',
       'Demande d’argent urgente pour une facture à régler tout de suite.',
-      'Il évite le contact vocal (« je ne peux pas appeler ») pour ne pas se faire démasquer.'
+      'Tout passe par écrit : aucun appel, aucune voix à reconnaître. Un imposteur évite le téléphone pour ne pas se faire démasquer.'
     ],
     reflexe: 'Appelez votre proche sur SON ancien numéro pour vérifier. Ne virez jamais d’argent sur la foi d’un simple message.',
     explication: 'L’escroc se fait passer pour un enfant ou un petit-enfant en détresse. Le meilleur test : posez une question dont seul votre vrai proche connaît la réponse, ou appelez-le directement. Un imposteur trouvera toujours une raison de ne pas répondre au téléphone.'
@@ -295,9 +295,9 @@ const SCENARIOS = [
     contact: '+33 6 44 71 20 96',
     avatar: '',
     messages: [
-      { from: 'eux', texte: 'Bonjour Julien ! Je confirme bien la table pour 6 personnes samedi 20h au restaurant Le Jardin ?' },
+      { from: 'eux', dateSep: 'Il y a 4 jours', texte: 'Bonjour Julien ! Je confirme bien la table pour 6 personnes samedi 20h au restaurant Le Jardin ?' },
       { from: 'eux', texte: 'Oh, mille excuses, je me suis trompée de numéro 😅 Passez tout de même une très belle journée !' },
-      { from: 'eux', texte: 'Rebonjour 🙂 C’était sympa d’échanger l’autre jour, on ne rencontre plus beaucoup de gens polis. Moi c’est Léa, je partage ma vie entre Paris et Singapour pour mon travail dans la finance.' },
+      { from: 'eux', dateSep: 'Aujourd’hui', texte: 'Rebonjour 🙂 C’était sympa d’échanger l’autre jour, on ne rencontre plus beaucoup de gens polis. Moi c’est Léa, je partage ma vie entre Paris et Singapour pour mon travail dans la finance.' },
       { from: 'eux', texte: 'Grâce à la plateforme de trading de mon oncle, j’ai gagné 32 % en trois semaines. Je peux te guider pas à pas, on commence avec 250 € seulement et tu verras les premiers gains tout de suite 📈' }
     ],
     verdict: 'arnaque',
@@ -1297,7 +1297,7 @@ const REPERES = {
   'chat-celebrite': [
     { texte:'Brad Pitt (Officiel) ✔', bon:true, aide:'Pensez-vous qu’une star du cinéma vous contacterait vraiment en privé pour vous parler ? Regardez qui écrit.', note:'Une célébrité ne vous contacte pas en privé : profil usurpé.' },
     { texte:'850 € en cartes cadeaux', bon:true, aide:'Que vous demande-t-on d’envoyer ? Est-ce une façon normale de payer ?', note:'Demande d’argent en cartes cadeaux : intraçable, réflexe d’arnaque absolu.' },
-    { texte:'garde notre relation secrète', bon:true, aide:'Cherchez la phrase qui vous demande de n’en parler à personne.', note:'Le secret imposé sert à vous isoler.' },
+    { texte:'garde notre relation secrète', bon:true, aide:'Cherchez la phrase qui installe le secret autour de cette relation.', note:'Le secret imposé sert à vous isoler.' },
     { texte:'Tu es la seule qui me comprend', bon:false, type:'leurre', note:'C’est touchant… et calculé : la flatterie sert à mettre en confiance.' }
   ],
   'appel-banque': [
@@ -1313,7 +1313,9 @@ const REPERES = {
     { texte:'virement de 680 €', bon:true, aide:'Que vous demande-t-on de faire en urgence ?', note:'Demande d’argent urgente : vérifiez en appelant le vrai numéro.' }
   ],
   'image-deepfake': [
-    { texte:'__IMG__', bon:true, aide:'Regardez l’image de près : les mains, les visages, l’arrière-plan vous paraissent-ils naturels ? Cliquez dessus.', note:'Zoomez : mains ou visages déformés, arrière-plan « lisse »… signes d’une image générée par IA.' },
+    { texte:'__ZONE__', nom:'Les mains, au centre de l’image', zone:{x:61,y:54,w:24,h:18}, bon:true, aide:'Regardez les mains de près : comptez les doigts, suivez-les jusqu’au poignet.', note:'Doigts trop nombreux, déformés, ou qui ne se rattachent à aucun bras : les mains restent l’un des points faibles des images fabriquées par IA.' },
+    { texte:'__ZONE__', nom:'L’écusson sur la manche', zone:{x:63,y:34,w:9,h:10}, bon:true, aide:'Un uniforme porte des inscriptions lisibles. Essayez de lire un écusson.', note:'L’écusson imite une inscription, mais on n’y lit aucun mot : l’IA dessine des lettres sans savoir écrire.' },
+    { texte:'__ZONE__', nom:'Le visage, au centre de l’image', zone:{x:49.5,y:36,w:13,h:16}, bon:false, type:'leurre', note:'Le visage est très ressemblant, et c’est justement ce que l’IA réussit le mieux. Reconnaître quelqu’un ne prouve pas que la scène a eu lieu.' },
     { texte:'Regardez ce qu’on nous cache', bon:true, aide:'Cherchez la phrase qui joue sur l’émotion pour vous faire réagir.', note:'Formule sensationnaliste qui joue sur l’émotion.' },
     { texte:'Partagé 48 000 fois', bon:false, type:'neutre', note:'Le nombre de partages ne prouve rien : le faux se propage très vite.' }
   ],
@@ -1430,7 +1432,9 @@ const REPERES = {
     { texte:'À samedi', bon:false, type:'neutre', note:'Formule de politesse : agréable, mais ce n’est pas là qu’est l’information importante.' }
   ],
   'image-deepfake-manifestation': [
-    { texte:'__IMG__', bon:true, aide:'Regardez l’image de près : les visages dans la foule, les inscriptions sur les casques vous paraissent-ils cohérents ? Cliquez dessus.', note:'Zoomez : chiffres sans signification sur les casques, visages flous ou déformés en arrière-plan — signes d’une image générée par IA.' },
+    { texte:'__ZONE__', nom:'Le bandeau du casque, à droite', zone:{x:86.5,y:20,w:15,h:9}, bon:true, aide:'Regardez les casques : que lit-on sur leur bandeau ?', note:'Le bandeau du casque porte une suite de signes qui ne veut rien dire. Un vrai équipement porte un marquage lisible ; l’IA imite seulement l’allure d’une inscription.' },
+    { texte:'__ZONE__', nom:'La foule, à l’arrière-plan', zone:{x:40,y:10,w:34,h:19}, bon:true, aide:'Regardez la foule à l’arrière-plan : sait-on à qui appartiennent les bras et les mains ?', note:'À l’arrière-plan, bras, mains et téléphones se confondent sans qu’on sache à qui ils appartiennent. Le flou d’une vraie photo garde des formes cohérentes ; ici, elles se mélangent.' },
+    { texte:'__ZONE__', nom:'Le visage, au centre de l’image', zone:{x:45.5,y:44,w:17,h:38}, bon:false, type:'leurre', note:'Le visage est très ressemblant, et c’est justement ce que l’IA réussit le mieux. Reconnaître quelqu’un ne prouve pas que la scène a eu lieu.' },
     { texte:'Ce qu’ils ne veulent pas que vous voyiez', bon:true, aide:'Cherchez la formule qui joue sur le complot et l’émotion.', note:'Formule complotiste classique pour faire réagir sans vérifier.' },
     { texte:'Partagé 62 000 fois', bon:false, type:'neutre', note:'Le nombre de partages ne prouve rien : le faux circule aussi vite, voire plus vite, que le vrai.' }
   ],

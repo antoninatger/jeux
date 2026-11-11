@@ -173,7 +173,7 @@ const SCENARIOS = [
       "Unknown new number claiming to be your child.",
       "Classic excuse: broken phone + banking app blocked “until tomorrow”.",
       "Urgent money request.",
-      "They avoid voice contact to avoid being exposed."
+      "Everything happens in writing: no call, no voice to recognise. An impostor avoids the phone so as not to be exposed."
     ],
     "reflexe": "Call your relative on their OLD number to check. Never transfer money based only on a message.",
     "explication": "The scammer pretends to be a child or grandchild in distress. Ask a question only the real person would know, or call them directly."
@@ -293,6 +293,7 @@ const SCENARIOS = [
     "messages": [
       {
         "from": "eux",
+        "dateSep": "4 days ago",
         "texte": "Hello Julien! I confirm the table for 6 people on Saturday at 8 p.m. at Le Jardin restaurant?"
       },
       {
@@ -301,6 +302,7 @@ const SCENARIOS = [
       },
       {
         "from": "eux",
+        "dateSep": "Today",
         "texte": "Hello again 🙂 It was nice chatting the other day; polite people are rare now. I’m Léa, I split my life between Paris and Singapore for my finance work."
       },
       {
@@ -1384,20 +1386,20 @@ const REPERES = {
     {
       "texte": "+33 7 45 13 81 31",
       "bon": true,
-      "aide": "Look at who sent the message.",
+      "aide": "Would a real carrier (Chronopost, Colissimo…) write to you from an ordinary mobile number? Look at who sent the message.",
       "note": "A real carrier does not write from a personal mobile number."
     },
     {
       "texte": "https://mon-relay-suivi.com",
       "bon": true,
-      "aide": "Is this the carrier’s official address?",
+      "aide": "Is there a link to click? Is it really the carrier’s official address?",
       "note": "This is not an official carrier website."
     },
     {
       "texte": "or it will be returned",
       "bon": true,
-      "aide": "Find the pressure phrase.",
-      "note": "False urgency pushes you to click."
+      "aide": "Find the sentence that pressures you to act right away.",
+      "note": "False urgency: you are rushed so that you click without thinking."
     },
     {
       "texte": "3e095272b3fe4c7996b",
@@ -1410,19 +1412,19 @@ const REPERES = {
     {
       "texte": "ne-pas-repondre@chronopost.fr",
       "bon": true,
-      "aide": "Does the email address match Microsoft?",
-      "note": "The displayed name and real address do not match."
+      "aide": "The message says “Microsoft”… but look at the sender’s full email address: does it fit?",
+      "note": "The displayed name says “Microsoft”, but the address ends in @chronopost.fr: it does not add up."
     },
     {
       "texte": "within 24 hours",
       "bon": true,
-      "aide": "Look for urgency.",
-      "note": "Artificial urgency."
+      "aide": "Look for a deadline that forces you to hurry.",
+      "note": "Artificial urgency: “act within 24 hours”."
     },
     {
       "texte": "account being suspended",
       "bon": true,
-      "aide": "Look for the threat.",
+      "aide": "Spot the threat meant to frighten you.",
       "note": "Fear is used to make you click."
     },
     {
@@ -1442,46 +1444,46 @@ const REPERES = {
     {
       "texte": "noreply.LE.04@b8.9a.21.eb",
       "bon": true,
-      "aide": "Does the sender address look real?",
-      "note": "Unreadable sender address."
+      "aide": "Look at the sender’s address: does it look like a real company address?",
+      "note": "An unintelligible sender address: a sign of a scam."
     },
     {
       "texte": "YouHave-Won",
       "bon": true,
-      "aide": "Did you enter a contest?",
-      "note": "Unexpected gift/prize is bait."
-    },
-    {
-      "texte": "NQLRF.pdf",
-      "bon": true,
-      "aide": "Is there an unexpected attachment?",
-      "note": "Unknown attachment: do not open."
+      "aide": "Did you really enter a competition? Find the “gift” you never asked for.",
+      "note": "A “gift” you never asked for: it is bait."
     },
     {
       "texte": "-PLeaSe.ConfIrM Receipt!!-",
       "bon": true,
-      "aide": "Does the layout of this message look normal to you?",
+      "aide": "Find the text with broken formatting (capitals and dashes in the middle of words).",
       "note": "Broken formatting (capitals, dashes) used to slip past spam filters."
+    },
+    {
+      "texte": "NQLRF.pdf",
+      "bon": true,
+      "aide": "Is there an attached file you were not expecting?",
+      "note": "Unknown attachment: never open it, it may contain a virus."
     }
   ],
   "email-panneaux": [
     {
       "texte": "charlotte.robert@shikisc.com",
       "bon": true,
-      "aide": "Look at the sender address.",
-      "note": "No link with a public body."
+      "aide": "Would a public body write from this address? Look at the sender.",
+      "note": "A fanciful company address, with no link to any public body."
     },
     {
       "texte": "Last chance",
       "bon": true,
-      "aide": "Find the pressure phrase.",
-      "note": "Pressure to act quickly."
+      "aide": "Find the phrase that pushes you to act without thinking.",
+      "note": "Pressure: “last chance”, to make you act fast."
     },
     {
       "texte": "01-01-2025",
       "bon": true,
-      "aide": "Is the date coherent?",
-      "note": "Already expired date."
+      "aide": "Look closely at the date: does it make sense, or has it already passed?",
+      "note": "The deadline for the grant has already passed: a telling inconsistency."
     },
     {
       "texte": "will not be able to handle every request",
@@ -1494,19 +1496,19 @@ const REPERES = {
     {
       "texte": "Brad Pitt (Official) ✔",
       "bon": true,
-      "aide": "Would a celebrity really contact you privately?",
-      "note": "Impersonated profile."
+      "aide": "Do you think a film star would really contact you privately for a chat? Look at who is writing.",
+      "note": "A celebrity does not contact you privately: this profile is an impersonation."
     },
     {
       "texte": "€850 in gift cards",
       "bon": true,
-      "aide": "What payment method is requested?",
-      "note": "Gift cards are untraceable scam payments."
+      "aide": "What are you asked to send? Is that a normal way to pay?",
+      "note": "A request for money in gift cards: untraceable, and a sure sign of a scam."
     },
     {
       "texte": "relationship secret",
       "bon": true,
-      "aide": "Look for secrecy.",
+      "aide": "Find the sentence that wraps this relationship in secrecy.",
       "note": "Secrecy isolates the victim."
     },
     {
@@ -1520,20 +1522,20 @@ const REPERES = {
     {
       "texte": "01 40 XX XX XX (your branch number)",
       "bon": true,
-      "aide": "Can the displayed number be trusted?",
-      "note": "Displayed numbers can be spoofed."
+      "aide": "Does the number on your screen really prove that it is your bank? Can a number be imitated?",
+      "note": "The displayed number can be faked (spoofing): it proves nothing."
     },
     {
       "texte": "suspicious transfer of €1,290",
       "bon": true,
-      "aide": "Find the panic trigger.",
-      "note": "Fake emergency."
+      "aide": "Find what is meant to make you panic straight away.",
+      "note": "A fake emergency, to make you panic."
     },
     {
       "texte": "give it to me",
       "bon": true,
-      "aide": "Is a bank allowed to ask for an SMS code?",
-      "note": "A bank never asks you to dictate a code."
+      "aide": "What are you asked to hand over? Does a bank ask for a code received by text?",
+      "note": "You are asked for a code received by text: a bank NEVER does that."
     },
     {
       "texte": "confirm your app password",
@@ -1546,40 +1548,58 @@ const REPERES = {
     {
       "texte": "+33 6 51 20 84 77",
       "bon": true,
-      "aide": "Is this the saved number of your relative?",
+      "aide": "Is this really the number you have saved for your relative? Look at where the message comes from.",
       "note": "Unknown number claiming to be your child."
     },
     {
       "texte": "new number",
       "bon": true,
       "aide": "Find the excuse for the unknown number.",
-      "note": "Classic fake-relative excuse."
-    },
-    {
-      "texte": "€680 transfer",
-      "bon": true,
-      "aide": "Find the money request.",
-      "note": "Urgent money request: verify by calling."
+      "note": "“I’ve changed my number”: the classic excuse of the fake relative."
     },
     {
       "texte": "can’t access my banking app",
       "bon": true,
-      "aide": "Why can this person not pay the bill themselves?",
+      "aide": "Why can they not pay for it themselves? Find the pretext.",
       "note": "An excuse to justify not paying themselves."
+    },
+    {
+      "texte": "€680 transfer",
+      "bon": true,
+      "aide": "What are you asked to do urgently?",
+      "note": "Urgent money request: verify by calling."
     }
   ],
   "image-deepfake": [
     {
-      "texte": "__IMG__",
+      "texte": "__ZONE__",
+      "nom": "The hands, in the centre of the image",
+      "zone": { "x": 61, "y": 54, "w": 24, "h": 18 },
       "bon": true,
-      "aide": "Look closely at the image details.",
-      "note": "AI images often contain distorted hands or faces."
+      "aide": "Look closely at the hands: count the fingers, follow them back to the wrist.",
+      "note": "Too many fingers, misshapen ones, or fingers that belong to no arm: hands remain one of the weak points of AI-made images."
+    },
+    {
+      "texte": "__ZONE__",
+      "nom": "The badge on the sleeve",
+      "zone": { "x": 63, "y": 34, "w": 9, "h": 10 },
+      "bon": true,
+      "aide": "A uniform carries readable lettering. Try to read a badge.",
+      "note": "The badge imitates lettering, but no word can be read on it: AI draws letters without knowing how to write."
+    },
+    {
+      "texte": "__ZONE__",
+      "nom": "The face, in the centre of the image",
+      "zone": { "x": 49.5, "y": 36, "w": 13, "h": 16 },
+      "bon": false,
+      "type": "leurre",
+      "note": "The face is a very good likeness, and that is exactly what AI does best. Recognising someone does not prove that the scene took place."
     },
     {
       "texte": "Look what they are hiding from us",
       "bon": true,
-      "aide": "Find the emotional hook.",
-      "note": "Sensational wording."
+      "aide": "Find the sentence that plays on emotion to make you react.",
+      "note": "A sensational phrase that plays on emotion."
     },
     {
       "texte": "Shared 48,000 times",
@@ -1592,20 +1612,20 @@ const REPERES = {
     {
       "texte": "Vitale card expires",
       "bon": true,
-      "aide": "Does a Vitale card expire like this?",
-      "note": "False claim."
+      "aide": "Does a Vitale card really “expire” to the point of blocking your reimbursements? Find that claim.",
+      "note": "A Vitale card has no date that “suspends” reimbursements: false information."
     },
     {
       "texte": "reimbursements will be suspended",
       "bon": true,
-      "aide": "Find the threat.",
-      "note": "Threat creates panic."
+      "aide": "Find the threat meant to frighten you.",
+      "note": "A threat, to make you act in a panic."
     },
     {
       "texte": "http://ameli-mise-a-jour.info-fr.net",
       "bon": true,
-      "aide": "Is this the real ameli.fr website?",
-      "note": "Misleading link."
+      "aide": "The real health insurance website is ameli.fr. Does this address really look like it?",
+      "note": "The real site is ameli.fr — this address is misleading."
     },
     {
       "texte": "AMELI-INFO",
@@ -1618,8 +1638,8 @@ const REPERES = {
     {
       "texte": "5 viruses detected",
       "bon": true,
-      "aide": "Find the scary alert.",
-      "note": "Fake scare alert."
+      "aide": "Find the dramatic alert meant to scare you.",
+      "note": "A fake, dramatic alert meant to scare you."
     },
     {
       "texte": "Do not turn off the computer",
@@ -1630,7 +1650,7 @@ const REPERES = {
     {
       "texte": "Microsoft support immediately: 01 84 88 XX XX",
       "bon": true,
-      "aide": "Would antivirus ask you to call?",
+      "aide": "Would an antivirus ask you to call a phone number?",
       "note": "Real antivirus alerts do not ask you to call a number."
     },
     {
@@ -1644,20 +1664,20 @@ const REPERES = {
     {
       "texte": "Amazon Recruitment (HR)",
       "bon": true,
-      "aide": "Do major brands recruit by WhatsApp?",
+      "aide": "Does a large company really recruit by instant message? Look at who is writing to you.",
       "note": "Major brands do not recruit like this."
     },
     {
       "texte": "€80 to €300 per day",
       "bon": true,
-      "aide": "Is the salary realistic?",
-      "note": "Unrealistic pay."
+      "aide": "Is this pay realistic for a few minutes’ work, with no experience?",
+      "note": "Unrealistic pay for “30 minutes a day, no experience”."
     },
     {
       "texte": "top up €40",
       "bon": true,
-      "aide": "Are you asked to pay to work?",
-      "note": "Paying to work is an absolute red flag."
+      "aide": "You are asked to pay in order to work: is that normal? Find that request.",
+      "note": "You are asked to pay in order to work: an absolute red flag."
     },
     {
       "texte": "no experience required",
@@ -1670,26 +1690,26 @@ const REPERES = {
     {
       "texte": "+33 6 12 44 90 08",
       "bon": true,
-      "aide": "Look at the sender number.",
-      "note": "Personal mobile number."
+      "aide": "Would a real carrier (La Poste, Chronopost, Mondial Relay…) write to you from an ordinary mobile number? Look at who sent the message.",
+      "note": "A real carrier does not write from a personal mobile number."
     },
     {
       "texte": "__IMG__",
       "bon": true,
-      "aide": "Does the photo prove the parcel exists?",
-      "note": "AI-generated photo proves nothing."
+      "aide": "Does this photo really prove that the parcel exists? Is your name on a label hard to get hold of? Click on the photo.",
+      "note": "AI-generated photo: your name on a label can be faked in seconds. A picture never proves that a parcel exists."
     },
     {
       "texte": "€1.95 for redelivery",
       "bon": true,
-      "aide": "Find the payment request.",
-      "note": "Fake redelivery fee."
+      "aide": "Does a carrier collect a couple of euros by text message? Find the request for money.",
+      "note": "No carrier asks for a “redelivery fee” by text: it is the trap used to steal your card details."
     },
     {
       "texte": "https://suivi-colis-relais.net",
       "bon": true,
-      "aide": "Is this the official carrier site?",
-      "note": "Trapped link."
+      "aide": "Is this really the carrier’s official address? Look at the link.",
+      "note": "This is not the carrier’s official website: the link is a trap."
     },
     {
       "texte": "sorting centre",
@@ -1702,26 +1722,26 @@ const REPERES = {
     {
       "texte": "wrong number",
       "bon": true,
-      "aide": "Was the message really meant for you?",
+      "aide": "Was this message really meant for you? Find the pretext used to start the conversation.",
       "note": "This message was not meant for you, and yet the conversation carries on. That is what you can check here: a genuine wrong number stops at the apology."
     },
     {
       "texte": "nice chatting",
       "bon": true,
-      "aide": "Why is the stranger coming back?",
-      "note": "They are building trust."
+      "aide": "Why does this stranger, who supposedly got the wrong number, come back to talk to you? Find what creates the bond.",
+      "note": "The stranger comes back and makes themselves likeable: they are building a bond to win your trust over time."
     },
     {
       "texte": "32% in three weeks",
       "bon": true,
-      "aide": "Is that return realistic?",
-      "note": "Unrealistic gains."
+      "aide": "Is such a return realistic? Find the promise of gains.",
+      "note": "Huge, fast gains: an unrealistic promise, the hallmark of an investment scam."
     },
     {
       "texte": "only €250",
       "bon": true,
-      "aide": "Find the money request.",
-      "note": "They push you to invest money."
+      "aide": "What are you asked to do with your money, and on which platform?",
+      "note": "You are pushed to put money on a platform that SHE names: that is the trap."
     },
     {
       "texte": "between Paris and Singapore",
@@ -1734,26 +1754,26 @@ const REPERES = {
     {
       "texte": "directly between us",
       "bon": true,
-      "aide": "Where are you asked to pay?",
-      "note": "Off-platform payment removes protection."
+      "aide": "Where are you asked to pay? Is it really on the official booking site?",
+      "note": "Paying “directly”, off the platform, strips you of all protection."
     },
     {
       "texte": "bank transfer",
       "bon": true,
-      "aide": "Is this payment easy to recover?",
-      "note": "Bank transfers are hard to recover."
+      "aide": "Does this payment method protect you? Is a bank transfer easy to get back?",
+      "note": "A transfer to a private individual is almost impossible to recover: scammers’ favourite method."
     },
     {
       "texte": "marco.rivas.locations@gmail.com",
       "bon": true,
-      "aide": "Would a platform message come from Gmail?",
-      "note": "Personal Gmail address."
+      "aide": "Would a genuine message sent through the platform come from a personal Gmail address?",
+      "note": "A personal Gmail address: nothing goes through the official booking site."
     },
     {
       "texte": "two other families",
       "bon": true,
       "aide": "Find the urgency/scarcity phrase.",
-      "note": "Artificial scarcity."
+      "note": "Artificial scarcity: “others are interested”, to make you pay before you think."
     },
     {
       "texte": "I cannot hold the dates for long",
@@ -1798,13 +1818,13 @@ const REPERES = {
     {
       "texte": "Call the number on the back of your card",
       "bon": true,
-      "aide": "Find the safe official channel.",
+      "aide": "Find what points you to a safe channel that you control yourself.",
       "note": "It sends you to a channel you control."
     },
     {
       "texte": "never ask for your codes",
       "bon": true,
-      "aide": "Find the safety reminder.",
+      "aide": "Find the sentence promising never to ask for your codes.",
       "note": "A real bank reminds you not to share codes."
     },
     {
@@ -1856,28 +1876,28 @@ const REPERES = {
     {
       "texte": "Jacqueline (neighbour)",
       "bon": true,
-      "aide": "Is this a known contact?",
-      "note": "Known saved contact."
+      "aide": "Look at who is writing: is it a contact you know and have saved?",
+      "note": "A known, saved contact: it really is your neighbour."
     },
     {
       "texte": "coffee tomorrow at 3 p.m.",
       "bon": true,
-      "aide": "Does it match real life?",
+      "aide": "Find what fits your everyday life.",
       "note": "Coherent everyday appointment."
     },
     {
       "texte": "Bring nothing, just yourself",
       "bon": true,
-      "aide": "Any money or code request?",
-      "note": "No sensitive request."
+      "aide": "Are you asked for money or information? Find what shows that you are not.",
+      "note": "No request for money or information: all is well."
     }
   ],
   "sms-code-ok": [
     {
       "texte": "Never share it with anyone",
       "bon": true,
-      "aide": "Find the security reminder.",
-      "note": "The code must never be shared."
+      "aide": "Find the perfectly normal security reminder about this code.",
+      "note": "A normal security reminder: the code is not to be given out."
     },
     {
       "texte": "valid for 5 minutes",
@@ -1922,14 +1942,14 @@ const REPERES = {
     {
       "texte": "contact@restosducoeur.org",
       "bon": true,
-      "aide": "Does the address match the organisation?",
-      "note": "Coherent sender address."
+      "aide": "Look at the sender’s address: does it fit the organisation?",
+      "note": "The address fits the organisation: a good sign."
     },
     {
       "texte": "unsubscribe at any time",
       "bon": true,
-      "aide": "Find the unsubscribe option.",
-      "note": "Clear unsubscribe option."
+      "aide": "Find the clear unsubscribe link, as the law requires.",
+      "note": "A clear unsubscribe link, as the law requires."
     },
     {
       "texte": "Thank you for your loyalty",
@@ -1942,20 +1962,20 @@ const REPERES = {
     {
       "texte": "Sophie (my daughter)",
       "bon": true,
-      "aide": "Is this the usual contact?",
-      "note": "Known usual contact."
+      "aide": "Look at who is writing: is it really her usual number, already saved?",
+      "note": "A known contact, on her usual number."
     },
     {
       "texte": "Léa’s dance show",
       "bon": true,
-      "aide": "Find the personal detail.",
+      "aide": "Find the personal detail that fits your family life.",
       "note": "Personal content consistent with real life."
     },
     {
       "texte": "as planned",
       "bon": true,
-      "aide": "Is it referring to an existing plan?",
-      "note": "Refers to a real agreed plan."
+      "aide": "Find what shows this is about a plan you had already agreed together.",
+      "note": "It refers to a real plan, already agreed: nothing unusual."
     }
   ],
   "appel-medecin-ok": [
@@ -1968,13 +1988,13 @@ const REPERES = {
     {
       "texte": "confirm your appointment",
       "bon": true,
-      "aide": "What is the purpose?",
+      "aide": "Find what shows they are only confirming an appointment you already know about.",
       "note": "Only confirming a known appointment."
     },
     {
       "texte": "bring your Vitale card",
       "bon": true,
-      "aide": "Are numbers requested?",
+      "aide": "Are you asked for numbers over the phone, or simply to bring it with you?",
       "note": "Bring it in person, no phone details requested."
     }
   ],
@@ -2130,10 +2150,28 @@ const REPERES = {
   ],
   "image-deepfake-manifestation": [
     {
-      "texte": "__IMG__",
+      "texte": "__ZONE__",
+      "nom": "The band on the helmet, on the right",
+      "zone": { "x": 86.5, "y": 20, "w": 15, "h": 9 },
       "bon": true,
-      "aide": "Look closely at the image: do the faces in the crowd and the inscriptions on the helmets look consistent to you? Click on it.",
-      "note": "Zoom in: meaningless numbers on the helmets, blurred or distorted faces in the background — signs of an AI-generated image."
+      "aide": "Look at the helmets: what can you read on their band?",
+      "note": "The helmet band carries a string of signs that means nothing. Real equipment has readable markings; AI only imitates the look of lettering."
+    },
+    {
+      "texte": "__ZONE__",
+      "nom": "The crowd, in the background",
+      "zone": { "x": 40, "y": 10, "w": 34, "h": 19 },
+      "bon": true,
+      "aide": "Look at the crowd in the background: can you tell whose arms and hands are whose?",
+      "note": "In the background, arms, hands and phones merge so that you cannot tell whose they are. The blur of a real photo keeps coherent shapes; here they melt into one another."
+    },
+    {
+      "texte": "__ZONE__",
+      "nom": "The face, in the centre of the image",
+      "zone": { "x": 45.5, "y": 44, "w": 17, "h": 38 },
+      "bon": false,
+      "type": "leurre",
+      "note": "The face is a very good likeness, and that is exactly what AI does best. Recognising someone does not prove that the scene took place."
     },
     {
       "texte": "What they don’t want you to see",
