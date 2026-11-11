@@ -642,7 +642,7 @@
     var maq = el('maquette'); if (!maq) return;
     var next = -1;
     reperesActifs.forEach(function(r, i){
-      if (next >= 0 || !r.bon) return;
+      if (next >= 0 || typeRepere(r) !== 'indice') return;
       var s = maq.querySelector('.repere[data-i="' + i + '"]');
       if (s && !s.classList.contains('trouve')) next = i;
     });

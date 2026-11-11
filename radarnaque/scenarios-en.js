@@ -1829,9 +1829,9 @@ const REPERES = {
   "appel-medecin-ok": [
     {
       "texte": "Dr Martin’s office",
-      "bon": true,
-      "aide": "Who is calling?",
-      "note": "Clearly identified caller."
+      "bon": false,
+      "type": "neutre",
+      "note": "The name shown during a call can be faked (“spoofing”): it proves neither that it’s the practice nor the opposite. What makes this call trustworthy is that it confirms an appointment you already know about, without asking for anything sensitive."
     },
     {
       "texte": "confirm your appointment",
