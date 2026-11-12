@@ -197,9 +197,14 @@ main { max-width: 760px; margin: 0 auto; }
 .piste.touche .piste__cible { animation: impact .4s ease-out 2; }
 .fleche { position: absolute; left: 44px; top: 50%; translate: 0 -50%; font-size: 2.4rem; line-height: 1; color: var(--acc); font-weight: 900; }
 .fleche.vole { animation: fleche-vole linear forwards; }
+.fleche::before { content: ''; position: absolute; right: 78%; top: 50%; width: 74px; height: 3px; translate: 0 -50%; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--acc)); opacity: .55; }
+.fleche.brisee::before { display: none; }
+.piste.touche { animation: piste-touche .5s ease-out; }
+@keyframes piste-touche { 0%, 60% { background: rgba(179,18,46,.28); } 100% { background: transparent; } }
 @keyframes fleche-vole { to { left: calc(100% - 96px); } }
 .fleche.brisee { animation-play-state: paused; transition: transform .5s ease-in, opacity .5s; transform: translateY(26px) rotate(70deg); opacity: .35; }
-.bouclier { position: absolute; top: 50%; translate: -10% -50%; font-size: 2.4rem; animation: impact .35s ease-out; z-index: 3; }
+.bouclier { position: absolute; top: 50%; translate: -10% -50%; font-size: 2.4rem; animation: bouclier .45s cubic-bezier(.3,1.8,.5,1); z-index: 3; }
+@keyframes bouclier { 0% { transform: scale(.2) rotate(-30deg); opacity: 0; } 55% { transform: scale(1.35) rotate(6deg); opacity: 1; } 100% { transform: none; } }
 .choix.saisi { opacity: .45; }
 .parade-copie { position: fixed; z-index: 960; translate: -50% -120%; max-width: min(80vw, 360px); background: #fff; border: 3px solid var(--encre); border-radius: 6px; box-shadow: 4px 4px 0 var(--encre); padding: 6px 10px; font-weight: 700; font-size: var(--fs-200); pointer-events: none; rotate: -2deg; }
 @media (prefers-reduced-motion: reduce) { .fleche.vole { animation: none; } }
@@ -244,57 +249,104 @@ main { max-width: 760px; margin: 0 auto; }
 .consigne b { color: var(--acc); }
 .aire { position: relative; margin-bottom: var(--sp-4); }
 
-/* Les Feuilles qui tombent */
+/* Les Feuilles qui tombent : un terrain au soleil couchant, une branche,
+   des feuilles mortes au loin, et la feuille-phrase qui se balance. */
 .terrain {
   position: relative;
   height: 330px;
   overflow: hidden;
+  isolation: isolate;
   border: 3px solid var(--encre);
   border-radius: 4px;
-  background:
-    linear-gradient(to bottom, rgba(255,179,71,.55), rgba(142,27,58,.35)),
-    var(--trame),
-    var(--surface);
+  background: linear-gradient(to bottom, #ffd27f 0%, #ffa55f 36%, #cf566b 72%, #7b2c57 100%);
+}
+.terrain::before { /* la trame manga, par-dessus le ciel */
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--trame); opacity: .8;
 }
 .terrain::after { /* le sol */
-  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
-  background: repeating-linear-gradient(90deg, #3a1d12 0 18px, #2b140c 18px 36px);
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; z-index: 1;
+  background:
+    repeating-linear-gradient(100deg, transparent 0 9px, rgba(120,170,80,.55) 9px 11px) top / 100% 7px no-repeat,
+    repeating-linear-gradient(90deg, #3a1d12 0 18px, #2b140c 18px 36px);
   border-top: 3px solid var(--encre);
 }
+.terrain__decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.terrain__soleil { position: absolute; left: 70%; top: 40%; width: 170px; height: 170px; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle, #fff6cf 0 32%, #ffd76e 33% 56%, rgba(255,215,110,.35) 57% 66%, rgba(255,215,110,0) 72%); animation: soleil 5s ease-in-out infinite alternate; }
+@keyframes soleil { to { scale: 1.06; opacity: .92; } }
+.terrain__torii { position: absolute; left: 7%; bottom: 23px; width: 112px; fill: #4a1730; opacity: .5; }
+.terrain__branche { position: absolute; left: -8px; top: -8px; width: min(64%, 320px); }
+.brindille { position: absolute; top: -14%; opacity: .7; animation: brindille linear infinite; }
+@keyframes brindille {
+  0%   { transform: translate(0, 0) rotate(0); }
+  25%  { transform: translate(-24px, 100px) rotate(130deg); }
+  50%  { transform: translate(16px, 200px) rotate(210deg); }
+  75%  { transform: translate(-20px, 300px) rotate(320deg); }
+  100% { transform: translate(10px, 410px) rotate(400deg); }
+}
 .feuille {
-  position: absolute; left: 50%; top: 0;
+  position: absolute; left: 50%; top: 0; z-index: 2;
   width: min(88%, 520px);
   margin-left: calc(min(88%, 520px) / -2);
-  background: #fff;
+  background: linear-gradient(115deg, #fffdf5 0%, #fff3d6 55%, #ffe2ae 100%);
   border: 3px solid var(--encre);
-  border-radius: 40% 4px 40% 4px;
-  padding: var(--sp-3) var(--sp-4) var(--sp-3) 52px;
-  box-shadow: 4px 4px 0 var(--encre);
+  border-radius: 10px 64px 10px 64px / 10px 46px 10px 46px;
+  padding: var(--sp-3) var(--sp-5) var(--sp-3) 52px;
+  box-shadow: 4px 5px 0 var(--encre);
   font-weight: 700;
   line-height: var(--lh-normal);
 }
+.feuille--2 { background: linear-gradient(115deg, #fffdf5, #ffecc9 55%, #ffcf9a); }
+.feuille--3 { background: linear-gradient(115deg, #fffdf5, #fbeed0 55%, #f4d58a); }
+.feuille::before { /* la nervure */
+  content: ''; position: absolute; left: 7%; right: 7%; top: 50%; height: 2px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(139,69,19,.22) 12% 88%, transparent); transform: rotate(-2deg);
+}
+.feuille p { position: relative; }
 .feuille__icone { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.6rem; }
 .feuille.tombe { animation: chute linear forwards; }
 .feuille.posee { top: 22%; }
+/* La chute : la feuille part de la branche et se balance d'un bord à l'autre,
+   en ralentissant à chaque bout de sa course, jusqu'au sol (--sol, --amp et
+   --sens sont posés par dojo.js). */
 @keyframes chute {
-  0%   { transform: translate(0, 8px) rotate(-3deg); opacity: 0; }
-  5%   { opacity: 1; }
-  25%  { transform: translate(-14px, 55px) rotate(2deg); }
-  50%  { transform: translate(12px, 105px) rotate(-2deg); }
-  75%  { transform: translate(-8px, 155px) rotate(3deg); }
-  100% { transform: translate(0, 205px) rotate(0); }
+  0%   { transform: translate(0, -46px) rotate(-5deg); opacity: 0; animation-timing-function: ease-out; }
+  6%   { opacity: 1; }
+  14%  { transform: translate(calc(var(--sens, 1) * var(--amp, 14px) * -1), calc(var(--sol, 205px) * .14)) rotate(calc(var(--sens, 1) * -7deg)); animation-timing-function: ease-in-out; }
+  32%  { transform: translate(calc(var(--sens, 1) * var(--amp, 14px) * .9), calc(var(--sol, 205px) * .32)) rotate(calc(var(--sens, 1) * 6deg)); animation-timing-function: ease-in-out; }
+  50%  { transform: translate(calc(var(--sens, 1) * var(--amp, 14px) * -.78), calc(var(--sol, 205px) * .5)) rotate(calc(var(--sens, 1) * -5deg)); animation-timing-function: ease-in-out; }
+  68%  { transform: translate(calc(var(--sens, 1) * var(--amp, 14px) * .62), calc(var(--sol, 205px) * .68)) rotate(calc(var(--sens, 1) * 4deg)); animation-timing-function: ease-in-out; }
+  85%  { transform: translate(calc(var(--sens, 1) * var(--amp, 14px) * -.4), calc(var(--sol, 205px) * .85)) rotate(calc(var(--sens, 1) * -3deg)); animation-timing-function: ease-in-out; }
+  100% { transform: translate(0, var(--sol, 205px)) rotate(0); opacity: 1; }
 }
-.feuille.tranchee { clip-path: polygon(0 0, 100% 0, 100% 46%, 0 58%); border-color: var(--acc); translate: -3px -6px; rotate: -1.5deg; transition: translate .25s, rotate .25s; }
-.feuille.tranchee::after {
-  content: ''; position: absolute; left: -6%; right: -6%; top: 52%; height: 4px;
-  background: var(--acc); transform: rotate(var(--coupe, -4deg));
-}
+/* La coupe suit l'angle du geste : --g et --d sont les hauteurs de la coupe à
+   gauche et à droite de la feuille. */
+.feuille.tranchee { clip-path: polygon(0 0, 100% 0, 100% var(--d, 46%), 0 var(--g, 58%)); border-color: var(--acc); translate: -5px -9px; rotate: -2deg; transition: translate .35s cubic-bezier(.3,1.6,.5,1), rotate .35s; }
+.feuille.moitie { clip-path: polygon(0 var(--g, 58%), 100% var(--d, 46%), 100% 100%, 0 100%); border-color: var(--acc); pointer-events: none; translate: 6px 12px; rotate: 2.2deg; animation: moitie .4s cubic-bezier(.3,1.6,.5,1); }
+@keyframes moitie { from { translate: 0 0; rotate: 0deg; } }
+.feuille.erreur { border-color: var(--txt-secondaire); filter: saturate(.35); }
+.feuille.bien-laissee { border-color: var(--ok); box-shadow: 4px 5px 0 var(--ok); }
+.feuille.mal-laissee { border-color: var(--acc); box-shadow: 4px 5px 0 var(--acc); filter: saturate(.7) brightness(.97); }
+.eclair { position: absolute; z-index: 4; height: 4px; margin-top: -2px; translate: -50% 0; pointer-events: none; border-radius: 4px;
+  background: linear-gradient(90deg, transparent, #fff 18% 82%, transparent); box-shadow: 0 0 10px #fff, 0 0 24px var(--acc);
+  transform: rotate(var(--coupe, -4deg)); animation: eclair .45s ease-out forwards; }
+@keyframes eclair { 0% { scale: 0 1; opacity: 1; } 30% { scale: 1 1; opacity: 1; } 100% { scale: 1.12 .2; opacity: 0; } }
 /* Le geste qui tranche : pas de défilement ni de sélection sur le terrain. */
 .terrain { touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
 .trainee { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
-.trainee polyline { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px var(--acc)); }
-.feuille.moitie { clip-path: polygon(0 58%, 100% 46%, 100% 100%, 0 100%); border-color: var(--acc); pointer-events: none; translate: 4px 8px; rotate: 1.5deg; animation: moitie .3s ease-out; }
-@keyframes moitie { from { translate: 0 0; rotate: 0deg; } }
+.trainee polyline { fill: none; stroke: #fff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 8px var(--acc)); }
+.trainee polyline.trainee__halo { stroke: var(--acc); stroke-width: 14; opacity: .32; filter: blur(3px); }
+/* Les effets partagés par les épreuves : éclats, onde de choc, secousse */
+.eclat { position: absolute; z-index: 5; pointer-events: none; font-size: 1.1rem; line-height: 1; will-change: transform; }
+.eclat--or { color: var(--or); font-size: 1.35rem; font-weight: 900; text-shadow: 0 0 6px #fff, 1px 1px 0 var(--encre); }
+.onde { position: absolute; z-index: 4; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 4px solid var(--or); pointer-events: none; animation: onde .6s ease-out forwards; }
+.onde--eau { border-color: rgba(255,255,255,.95); border-width: 3px; }
+.onde--choc { box-shadow: 0 0 14px var(--or); }
+@keyframes onde { from { transform: scale(.3); opacity: 1; } to { transform: scale(6); opacity: 0; } }
+.secoue { animation: secoue .28s ease-out; }
+@keyframes secoue { 20% { transform: translate(-4px, 2px); } 45% { transform: translate(4px, -2px); } 70% { transform: translate(-2px, 1px); } }
+@media (prefers-reduced-motion: reduce) { .terrain__soleil, .secoue { animation: none; } }
 .feuille-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-top: var(--sp-3); }
 .feuille-actions .btn-manga { width: 100%; }
 .touches { text-align: center; font-size: var(--fs-200); color: var(--txt-secondaire); font-weight: 700; margin-top: var(--sp-2); }
@@ -338,6 +390,12 @@ kbd { font-family: var(--font-mono); border: 2px solid var(--encre); border-radi
 .lanceur { position: absolute; left: 50%; bottom: 8px; translate: -50% 0; width: 54px; height: 54px; display: grid; place-items: center; font-size: 2rem; color: var(--encre); background: #fff; border: 3px solid var(--encre); border-radius: 50%; box-shadow: 3px 3px 0 var(--encre); pointer-events: none; }
 .lanceur.vide { color: transparent; }
 .shuriken { position: absolute; z-index: 3; font-size: 2rem; line-height: 1; color: var(--encre); pointer-events: none; text-shadow: 0 0 6px #fff; }
+.shuriken--fantome { z-index: 2; color: var(--acc); filter: blur(1px); }
+.stand:not(.stand--calme) .lanceur:not(.vide) { animation: lanceur-pret 1.8s ease-in-out infinite; }
+@keyframes lanceur-pret { 50% { box-shadow: 3px 3px 0 var(--encre), 0 0 0 7px rgba(242,179,61,.35); } }
+.stand .morceau.trouve { animation: trouve .5s cubic-bezier(.3,1.7,.5,1); }
+@keyframes trouve { 0% { transform: scale(.9); } 45% { transform: scale(1.2) rotate(-3deg); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .stand .lanceur { animation: none !important; } }
 @media (prefers-reduced-motion: reduce) { .stand .morceau { animation: none; } }
 /* Le mode calme fige aussi les cibles. */
 .stand--calme .morceau { animation: none; }
@@ -351,8 +409,9 @@ body:has(#ecran-epreuve:not([hidden])) .pj-flot, body:has(#ecran-scene:not([hidd
 /* Le Test des clochettes */
 .cloches { display: flex; gap: var(--sp-3); justify-content: center; font-size: 2rem; margin-bottom: var(--sp-3); }
 .cloche { filter: grayscale(1); opacity: .35; transition: transform .2s; }
-.cloche.prise { filter: none; opacity: 1; animation: ding .5s; }
-@keyframes ding { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-25deg); } 75% { transform: rotate(25deg); } }
+.cloche.prise { filter: drop-shadow(0 0 8px var(--or)); opacity: 1; animation: ding .7s; }
+.cloche-vol { position: fixed; z-index: 960; font-size: 2rem; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 8px var(--or)); }
+@keyframes ding { 0% { transform: scale(1.6) rotate(0); } 20% { transform: scale(1.2) rotate(-28deg); } 45% { transform: rotate(24deg); } 70% { transform: rotate(-14deg); } 100% { transform: none; } }
 .chrono { height: 12px; border: 2px solid var(--encre); border-radius: 50px; overflow: hidden; background: #fff; margin-bottom: var(--sp-3); }
 .chrono__barre { height: 100%; background: repeating-linear-gradient(45deg, var(--acc) 0 8px, #d63b55 8px 16px); transition: width 1s linear; }
 .sujet { font-family: var(--font-titre); font-size: var(--fs-400); margin-bottom: var(--sp-3); }
@@ -377,12 +436,14 @@ body:has(#ecran-epreuve:not([hidden])) .pj-flot, body:has(#ecran-scene:not([hidd
 .phrase-cloche.manquee { border: 3px dashed var(--acc); }
 /* La rivière : les phrases-feuilles descendent le courant jusqu'à la cascade */
 .discours.riviere { position: relative; display: block; height: min(430px, 62svh); overflow: hidden; border: 3px solid var(--encre); border-radius: 4px; user-select: none; -webkit-user-select: none;
-  background: repeating-linear-gradient(170deg, rgba(255,255,255,.18) 0 2px, transparent 2px 26px), linear-gradient(#5fa8c9, #3c7fa6); background-size: 100% 200%, 100% 100%; animation: eau 6s linear infinite; }
-@keyframes eau { to { background-position: 0 100%, 0 0; } }
-.riviere .phrase-cloche { position: absolute; left: 6%; width: 88%; top: -45%; border-radius: 30% 6px 30% 6px; box-shadow: 3px 3px 0 rgba(0,0,0,.35); animation: courant 26s linear both; cursor: grab; }
+  background: radial-gradient(ellipse 60px 5px, rgba(255,255,255,.55), transparent 70%) 0 0 / 190px 97px, repeating-linear-gradient(170deg, rgba(255,255,255,.18) 0 2px, transparent 2px 26px), linear-gradient(#6db5d3, #3c7fa6 60%, #2c6589); background-size: 190px 97px, 100% 200%, 100% 100%; animation: eau 6s linear infinite; }
+@keyframes eau { to { background-position: 40px 388px, 0 100%, 0 0; } }
+.riviere .phrase-cloche { position: absolute; left: 6%; width: 88%; top: -45%; border-radius: 30% 6px 30% 6px; box-shadow: 3px 3px 0 rgba(0,0,0,.35); animation: courant 26s linear both, flot 2.4s ease-out infinite; cursor: grab; }
+/* Le rond dans l'eau autour de chaque feuille */
+@keyframes flot { 0% { box-shadow: 3px 3px 0 rgba(0,0,0,.35), 0 0 0 0 rgba(255,255,255,.55); } 100% { box-shadow: 3px 3px 0 rgba(0,0,0,.35), 0 0 0 16px rgba(255,255,255,0); } }
 .riviere .phrase-cloche::before { content: '🍃'; margin-right: 6px; }
 @keyframes courant { 0% { top: -45%; transform: translateX(0) rotate(-1deg); } 25% { transform: translateX(-10px) rotate(1deg); } 50% { transform: translateX(10px) rotate(-1deg); } 75% { transform: translateX(-6px) rotate(1deg); } 100% { top: 104%; transform: translateX(0) rotate(0); } }
-.riviere .phrase-cloche.repechee { transition: transform .5s ease-out, opacity .5s; transform: translateY(-30px) scale(.92); opacity: .9; z-index: 2; }
+.riviere .phrase-cloche.repechee { transition: transform .5s cubic-bezier(.3,1.6,.5,1), opacity .5s, box-shadow .3s; transform: translateY(-30px) scale(.94) rotate(-1.5deg); opacity: .95; z-index: 2; box-shadow: 6px 10px 0 rgba(0,0,0,.28); }
 .riviere .phrase-cloche.repechee.faux { opacity: .55; }
 .cascade { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; pointer-events: none; z-index: 3;
   background: repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 6px, rgba(255,255,255,.35) 6px 14px); -webkit-mask: linear-gradient(transparent, #000); mask: linear-gradient(transparent, #000); animation: ecume .6s linear infinite; }
@@ -441,6 +502,9 @@ body:has(#ecran-epreuve:not([hidden])) .pj-flot, body:has(#ecran-scene:not([hidd
 .revue-ko { color: var(--acc); font-size: var(--fs-200); white-space: nowrap; }
 @media (max-width: 560px) { .lexique dl { grid-template-columns: 1fr; } .lexique dd { margin-bottom: var(--sp-2); } }
 .retour[hidden] { display: none; }
+.retour { animation: retour-entre .38s cubic-bezier(.3,1.5,.5,1); }
+@keyframes retour-entre { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+@media (prefers-reduced-motion: reduce) { .retour, .bouclier, .piste.touche { animation: none; } }
 
 /* Résultat d'une épreuve */
 .resultat { text-align: center; }

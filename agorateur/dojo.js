@@ -112,6 +112,38 @@
     setTimeout(() => s.remove(), 950);
   }
 
+  // Des éclats qui jaillissent d'un point (bouts de feuille, étincelles,
+  // gouttes) puis retombent. `parent` doit être positionné ; x, y sont en
+  // pixels dans ce parent. Rien en mode calme.
+  function eclats(parent, x, y, glyphes, n, opts) {
+    if (calme() || !parent.animate) return;
+    opts = opts || {};
+    const force = opts.force || 70, chute = opts.chute == null ? 60 : opts.chute;
+    for (let k = 0; k < n; k++) {
+      const e = el('span', 'eclat' + (opts.classe ? ' ' + opts.classe : ''), glyphes[k % glyphes.length]);
+      e.setAttribute('aria-hidden', 'true');
+      e.style.left = x + 'px'; e.style.top = y + 'px';
+      parent.appendChild(e);
+      const a = (opts.cone ? opts.cone[0] + Math.random() * (opts.cone[1] - opts.cone[0]) : Math.random() * 360) * Math.PI / 180;
+      const d = force * (0.5 + Math.random() * 0.7);
+      const dx = Math.cos(a) * d, dy = Math.sin(a) * d, tour = (Math.random() * 540 - 270).toFixed(0);
+      e.animate([
+        { transform: 'translate(-50%, -50%) scale(.4)', opacity: 0 },
+        { transform: 'translate(calc(-50% + ' + (dx * 0.7).toFixed(1) + 'px), calc(-50% + ' + (dy * 0.7).toFixed(1) + 'px)) rotate(' + (tour / 2) + 'deg) scale(1.1)', opacity: 1, offset: 0.3 },
+        { transform: 'translate(calc(-50% + ' + dx.toFixed(1) + 'px), calc(-50% + ' + (dy + chute).toFixed(1) + 'px)) rotate(' + tour + 'deg) scale(.7)', opacity: 0 }
+      ], { duration: (opts.duree || 800) * (0.8 + Math.random() * 0.4), easing: 'cubic-bezier(.2,.7,.4,1)' }).onfinish = () => e.remove();
+    }
+  }
+  // Une onde qui s'élargit : le choc d'un bouclier, le rond dans l'eau.
+  function onde(parent, x, y, classe) {
+    if (calme()) return;
+    const o = el('span', 'onde' + (classe ? ' ' + classe : '')); o.setAttribute('aria-hidden', 'true');
+    o.style.left = x + 'px'; o.style.top = y + 'px';
+    parent.appendChild(o);
+    setTimeout(() => o.remove(), 700);
+  }
+  function secouer(x) { x.classList.remove('secoue'); void x.offsetWidth; x.classList.add('secoue'); }
+
   // ─── Les scènes : une suite de planches, avec ou sans choix ───
   const PERSOS = {
     sensei:      () => ({ emoji: DOJO.sensei.emoji, nom: DOJO.sensei.nom }),
@@ -259,7 +291,8 @@
     const aire = $('ep-aire');
     aire.textContent = '';
     const terrain = el('div', 'terrain');
-    const f = el('div', 'feuille');
+    decorTerrain(terrain);
+    const f = el('div', 'feuille feuille--' + (1 + Math.floor(Math.random() * 3)));
     const ic = el('span', 'feuille__icone', '🍃'); ic.setAttribute('aria-hidden', 'true');
     f.append(ic, el('p', null, item.t));
     terrain.appendChild(f);
@@ -274,9 +307,15 @@
     let fait = false;
     if (statique) f.classList.add('posee');
     else {
+      // La feuille se balance jusqu'au sol : la hauteur de chute dépend de sa taille.
+      const sol = () => Math.max(60, terrain.clientHeight - 30 - f.offsetHeight);
+      f.style.setProperty('--sol', sol() + 'px');
+      f.style.setProperty('--sens', Math.random() < 0.5 ? '1' : '-1');
+      // Le balancement s'arrête avant les bords du terrain (étroit sur téléphone).
+      f.style.setProperty('--amp', Math.max(6, Math.min(48, (terrain.clientWidth - f.offsetWidth) / 2 - 6)) + 'px');
       f.style.animationDuration = duree + 's';
       f.classList.add('tombe');
-      f.addEventListener('animationend', () => decider(false, true));
+      f.addEventListener('animationend', e => { if (e.animationName === 'chute') decider(false, true); });
     }
     annoncer(item.t);
 
@@ -292,9 +331,9 @@
     bT.addEventListener('click', () => decider(true));
     bL.addEventListener('click', () => decider(false));
     bT.focus({ preventScroll: true });
-    geste(terrain, f, angle => { f.style.setProperty('--coupe', angle + 'deg'); decider(true); }, () => fait);
+    geste(terrain, f, angle => decider(true, false, angle), () => fait);
 
-    function decider(tranche, tombee) {
+    function decider(tranche, tombee, angle) {
       if (fait) return;
       fait = true;
       document.removeEventListener('keydown', clavier);
@@ -302,7 +341,8 @@
       f.style.animationPlayState = 'paused';
       bT.disabled = bL.disabled = true;
       const ok = (tranche === !!item.piege);
-      if (tranche) { f.classList.add('tranchee'); moitie(terrain, f); sfx(terrain, t('sfxClac')); }
+      if (tranche) { couper(terrain, f, angle == null ? -4 : angle, ok); sfx(terrain, t('sfxClac')); }
+      else atterrir(terrain, f, ok, tombee || statique);
       let titre;
       if (ok && item.piege) {
         demasque(item.piege);
@@ -332,8 +372,9 @@
     const NS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('class', 'trainee'); svg.setAttribute('aria-hidden', 'true');
+    const halo = document.createElementNS(NS, 'polyline'); halo.setAttribute('class', 'trainee__halo');
     const trait = document.createElementNS(NS, 'polyline');
-    svg.appendChild(trait); terrain.appendChild(svg);
+    svg.append(halo, trait); terrain.appendChild(svg);
     let pts = [], actif = false, dedans = 0, depart = null, anim = 0;
     const local = e => { const r = terrain.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() }; };
     // Longueur du segment a→b à l'intérieur du rectangle r (découpage de Liang-Barsky).
@@ -350,7 +391,8 @@
     function dessiner() {
       const now = performance.now();
       pts = pts.filter(p => now - p.t < 180);
-      trait.setAttribute('points', pts.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' '));
+      const liste = pts.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+      trait.setAttribute('points', liste); halo.setAttribute('points', liste);
       anim = pts.length ? requestAnimationFrame(dessiner) : 0;
     }
     terrain.addEventListener('pointerdown', e => {
@@ -376,17 +418,75 @@
     terrain.addEventListener('pointerup', lacher);
     terrain.addEventListener('pointercancel', lacher);
   }
-  // La moitié basse de la feuille tranchée s'écarte un peu de la haute : la
-  // coupe se voit, et la phrase reste lisible pendant qu'on lit le retour.
-  function moitie(terrain, f) {
+  // Le décor du terrain : le soleil couchant, la branche d'où tombent les
+  // feuilles, et quelques feuilles mortes qui dérivent au loin.
+  function decorTerrain(terrain) {
+    const d = el('div', 'terrain__decor'); d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<span class="terrain__soleil"></span>' +
+      '<svg class="terrain__torii" viewBox="0 0 120 90"><path d="M4 16c18 6 94 6 112 0l3 9c-20 6-98 6-118 0zM16 34h88v7H16zM26 25h9v65h-9zM85 25h9v65h-9zM54 26h12v10H54z"/></svg>' +
+      '<svg class="terrain__branche" viewBox="0 0 260 70"><path d="M0 8c40 2 80 10 120 22s90 18 140 16" fill="none" stroke="#3a1d12" stroke-width="7" stroke-linecap="round"/><path d="M96 24c14-12 30-16 46-12M168 41c10-14 26-20 44-18" fill="none" stroke="#3a1d12" stroke-width="4" stroke-linecap="round"/><g fill="#c8502a"><ellipse cx="146" cy="10" rx="13" ry="6" transform="rotate(-18 146 10)"/><ellipse cx="216" cy="21" rx="13" ry="6" transform="rotate(-10 216 21)"/><ellipse cx="62" cy="24" rx="12" ry="5.5" transform="rotate(24 62 24)"/></g><g fill="#e8a13a"><ellipse cx="118" cy="36" rx="11" ry="5" transform="rotate(30 118 36)"/><ellipse cx="190" cy="52" rx="12" ry="5.5" transform="rotate(22 190 52)"/><ellipse cx="24" cy="20" rx="11" ry="5" transform="rotate(34 24 20)"/></g></svg>';
+    if (!calme()) {
+      for (let k = 0; k < 7; k++) {
+        const b = el('span', 'brindille', k % 3 ? '🍂' : '🍁');
+        b.style.left = (4 + Math.random() * 92) + '%';
+        b.style.fontSize = (0.65 + Math.random() * 0.6).toFixed(2) + 'rem';
+        b.style.animationDuration = (7 + Math.random() * 7).toFixed(1) + 's';
+        b.style.animationDelay = (-Math.random() * 12).toFixed(1) + 's';
+        d.appendChild(b);
+      }
+    }
+    terrain.appendChild(d);
+  }
+  // La feuille tranchée : la coupe suit l'angle du geste, les deux moitiés
+  // s'écartent sans cesser d'être lisibles, des éclats de feuille jaillissent.
+  function couper(terrain, f, angle, ok) {
+    const w = f.offsetWidth, h = f.offsetHeight;
+    // Pente de la coupe, en pourcentage de la hauteur de la feuille.
+    const k = Math.max(-34, Math.min(34, Math.tan(angle * Math.PI / 180) * w / (2 * h) * 100));
+    f.style.setProperty('--g', (50 - k).toFixed(1) + '%');
+    f.style.setProperty('--d', (50 + k).toFixed(1) + '%');
+    f.style.setProperty('--coupe', angle + 'deg');
     const m = f.cloneNode(true);
-    m.classList.remove('tombe', 'tranchee'); m.classList.add('moitie');
+    m.classList.remove('tombe'); m.classList.add('moitie');
     m.style.top = f.offsetTop + 'px';
     m.style.transform = getComputedStyle(f).transform;
     m.setAttribute('aria-hidden', 'true');
     m.style.animationDuration = m.style.animationPlayState = '';
     if (calme()) m.style.animation = 'none';
+    f.classList.add('tranchee');
+    if (!ok) { f.classList.add('erreur'); m.classList.add('erreur'); }
     terrain.appendChild(m);
+    // L'éclair de la lame, au milieu de la feuille, et les éclats.
+    const tr = terrain.getBoundingClientRect(), fr = f.getBoundingClientRect();
+    const cx = fr.left - tr.left + fr.width / 2, cy = fr.top - tr.top + fr.height / 2;
+    if (!calme()) {
+      const e = el('i', 'eclair'); e.setAttribute('aria-hidden', 'true');
+      e.style.left = cx + 'px'; e.style.top = cy + 'px'; e.style.width = (fr.width * 1.25) + 'px';
+      e.style.setProperty('--coupe', angle + 'deg');
+      terrain.appendChild(e);
+      setTimeout(() => e.remove(), 500);
+    }
+    eclats(terrain, cx, cy, ['🍂', '🍃', '✦', '🍂', '·'], 9, { force: 95, chute: 90, duree: 950 });
+    secouer(terrain);
+  }
+  // La feuille qu'on laisse tomber finit sa chute et se pose sur le sol : un
+  // peu de poussière, et elle reste lisible pendant qu'on lit le retour.
+  function atterrir(terrain, f, ok, dejaPosee) {
+    f.classList.add(ok ? 'bien-laissee' : 'mal-laissee');
+    const poser = () => {
+      f.classList.add('au-sol');
+      const tr = terrain.getBoundingClientRect(), fr = f.getBoundingClientRect();
+      eclats(terrain, fr.left - tr.left + fr.width / 2, fr.bottom - tr.top - 4, ['·', '•', '🍂', '·'], 6, { force: 60, chute: 10, cone: [200, 340], duree: 650 });
+    };
+    if (dejaPosee || calme() || !f.animate) { if (!calme() && !f.classList.contains('posee')) poser(); return; }
+    const de = getComputedStyle(f).transform;
+    const sol = parseFloat(f.style.getPropertyValue('--sol')) || 200;
+    const a = f.animate([
+      { transform: de === 'none' ? 'translate(0, 0)' : de },
+      { transform: 'translate(0, ' + (sol + 6) + 'px) rotate(3deg)', offset: 0.8, easing: 'ease-out' },
+      { transform: 'translate(0, ' + sol + 'px) rotate(-1.5deg)' }
+    ], { duration: 650, easing: 'cubic-bezier(.45,0,.9,.6)', fill: 'forwards' });
+    a.onfinish = poser;
   }
 
   // ─── L'Œil du sensei ───
@@ -428,13 +528,37 @@
       sh.style.left = a.x + 'px'; sh.style.top = a.y + 'px';
       stand.appendChild(sh);
       lanceur.classList.add('vide');
-      const anim = sh.animate([
+      const trajet = [
         { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)' },
         { transform: 'translate(calc(-50% + ' + (z.x - a.x) + 'px), calc(-50% + ' + (z.y - a.y) + 'px)) rotate(900deg) scale(.8)' }
-      ], { duration: b ? 320 : 450, easing: 'ease-in' });
+      ];
+      const duree = b ? 320 : 450;
+      // Deux fantômes suivent le shuriken : sa traînée.
+      [1, 2].forEach(n => {
+        const g = el('span', 'shuriken shuriken--fantome', '✦'); g.setAttribute('aria-hidden', 'true');
+        g.style.left = a.x + 'px'; g.style.top = a.y + 'px'; g.style.opacity = String(0.4 / n);
+        stand.appendChild(g);
+        g.animate(trajet, { duration: duree, easing: 'ease-in', delay: 38 * n, fill: 'backwards' }).onfinish = () => g.remove();
+      });
+      const anim = sh.animate(trajet, { duration: duree, easing: 'ease-in' });
       anim.onfinish = () => {
-        sh.remove(); vol = false; lanceur.classList.remove('vide');
-        if (!b) return;
+        vol = false; lanceur.classList.remove('vide');
+        if (!b) { sh.remove(); return; }
+        if (b.dataset.cible === '1') {
+          // En plein dans le piège : des étincelles.
+          sh.remove();
+          eclats(stand, z.x, z.y, ['✦', '✧', '⋆', '✦'], 10, { force: 80, chute: 30, classe: 'eclat--or', duree: 750 });
+        } else {
+          // À côté : le shuriken ricoche et retombe.
+          sh.style.left = z.x + 'px'; sh.style.top = z.y + 'px';
+          const cote = z.x < a.x ? -1 : 1;
+          sh.animate([
+            { transform: 'translate(-50%, -50%) rotate(0deg)', opacity: 1 },
+            { transform: 'translate(calc(-50% + ' + (cote * 34) + 'px), calc(-50% - 26px)) rotate(' + (cote * 200) + 'deg)', opacity: 1, offset: 0.35 },
+            { transform: 'translate(calc(-50% + ' + (cote * 62) + 'px), calc(-50% + 90px)) rotate(' + (cote * 520) + 'deg)', opacity: 0 }
+          ], { duration: 520, easing: 'cubic-bezier(.3,.6,.7,1)' }).onfinish = () => sh.remove();
+          eclats(stand, z.x, z.y, ['·', '•', '·'], 4, { force: 34, chute: 20, duree: 450 });
+        }
         b.classList.remove('touche'); void b.offsetWidth; b.classList.add('touche');
         clic(b);
       };
@@ -539,11 +663,17 @@
     function clic(b, ph) {
       if (termine) return;
       b.disabled = true;
-      if (riviere) { b.style.animationPlayState = 'paused'; b.classList.add('repechee'); }
+      if (riviere) {
+        b.style.animationPlayState = 'paused'; b.classList.add('repechee');
+        const lr = liste.getBoundingClientRect(), br = b.getBoundingClientRect();
+        const x = br.left - lr.left + br.width / 2, y = br.top - lr.top + br.height / 2;
+        onde(liste, x, y, 'onde--eau');
+        eclats(liste, x, y, ['💧', '·', '💧', '•'], 8, { force: 75, chute: 70, cone: [200, 340], duree: 800 });
+      }
       if (ph.piege) {
         prises++;
         b.classList.add('prise');
-        (prises === 1 ? c1 : c2).classList.add('prise');
+        envolCloche(b, prises === 1 ? c1 : c2);
         const s = soph(ph.piege);
         note(b, '<b>' + s.tech + '</b> (' + s.l + ') — ' + ph.e);
         demasque(ph.piege);
@@ -584,6 +714,21 @@
       const joue = { id: item.id, titre: item.sujet, reussi: prises === 2, explication: expl };
       suivant(t('suivant'), () => fini(prises / 2, joue));
     }
+  }
+
+  // La clochette repêchée s'envole de la feuille jusqu'au compteur, puis sonne.
+  function envolCloche(de, vers) {
+    if (calme() || !de.animate) { vers.classList.add('prise'); return; }
+    const a = de.getBoundingClientRect(), z = vers.getBoundingClientRect();
+    const c = el('span', 'cloche-vol', '🔔'); c.setAttribute('aria-hidden', 'true');
+    c.style.left = (a.left + a.width / 2) + 'px'; c.style.top = (a.top + a.height / 2) + 'px';
+    document.body.appendChild(c);
+    const dx = z.left + z.width / 2 - (a.left + a.width / 2), dy = z.top + z.height / 2 - (a.top + a.height / 2);
+    c.animate([
+      { transform: 'translate(-50%, -50%) scale(.4) rotate(-20deg)', opacity: 0 },
+      { transform: 'translate(calc(-50% + ' + (dx * 0.35) + 'px), calc(-50% + ' + (dy * 0.35 - 46) + 'px)) scale(1.5) rotate(18deg)', opacity: 1, offset: 0.4 },
+      { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1) rotate(0deg)', opacity: 1 }
+    ], { duration: 620, easing: 'cubic-bezier(.4,0,.3,1)' }).onfinish = () => { c.remove(); vers.classList.add('prise'); };
   }
 
   // ─── Le Contre ───
@@ -664,10 +809,21 @@
       dureeContre = Math.max(14, dureeContre - 1);
       if (ok) {
         const bouclier = el('span', 'bouclier', '🛡️'); bouclier.setAttribute('aria-hidden', 'true');
-        bouclier.style.left = (fleche.offsetLeft + fleche.offsetWidth) + 'px';
+        const x = fleche.offsetLeft + fleche.offsetWidth;
+        bouclier.style.left = x + 'px';
         piste.appendChild(bouclier);
         fleche.classList.add('brisee');
-      } else piste.classList.add('touche');
+        onde(piste, x + 14, piste.clientHeight / 2, 'onde--choc');
+        eclats(piste, x + 6, piste.clientHeight / 2, ['✦', '✧', '·', '✦'], 9, { force: 70, chute: 30, cone: [110, 250], classe: 'eclat--or', duree: 700 });
+      } else {
+        // La flèche finit sa course et touche : le joueur encaisse.
+        piste.classList.add('touche');
+        if (!calme() && fleche.animate) {
+          const fin = piste.clientWidth - 96;
+          fleche.animate([{ left: fleche.offsetLeft + 'px' }, { left: fin + 'px' }], { duration: 220, easing: 'ease-in', fill: 'forwards' })
+            .onfinish = () => { eclats(piste, piste.clientWidth - 30, piste.clientHeight / 2, ['💥', '✦', '·', '·'], 7, { force: 60, chute: 30, duree: 650 }); secouer(cadre); };
+        }
+      }
       croise(item.a, ok);
       if (ok) { sfx(cadre, t('sfxContre')); retour(true, t('contreOk'), item.e, definition(item.a)); }
       else if (c.k === 'tard') { sfx(cadre, t('sfxBonk'), true); retour(false, t('contreTard'), item.e, definition(item.a)); }
