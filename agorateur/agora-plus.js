@@ -5,10 +5,10 @@
    l'anglais (les textes sont dans agora-plus-data.js / agora-plus-data-en.js) :
 
    1. « Objection ! » (Difficile) : le personnage déroule une tirade bulle par
-      bulle, il faut trancher la bulle piégée au passage ;
-   2. Trancher le piège (Facile) : la même tirade, affichée d'un coup, et l'on
-      tranche d'un geste (ou l'on touche) la bulle qui cloche… ou « Rien à
-      redire ». Le geste est celui des feuilles du dojo ;
+      bulle, il faut toucher la bulle piégée au passage (ou « Objection ! ») ;
+   2. Repérer le piège (Facile) : la même tirade, affichée d'un coup, et l'on
+      touche la bulle qui cloche… ou « Rien à redire ». On ne tranche pas la
+      parole de l'autre : ce geste-là reste celui du dojo ;
    3. La foule : un public qui applaudit les sophismes du personnage et revient
       vers toi quand tu discutes honnêtement ;
    4. Une conversation qui bifurque : l'humeur du personnage change avec tes
@@ -190,84 +190,15 @@ const AgoraPlus = (function(){
     suite();
   }
 
-  // ─── Les bulles et le geste qui tranche ───
-  // Comme les feuilles du dojo : on glisse la souris (bouton enfoncé) ou le
-  // doigt à travers une bulle, une traînée suit le geste, et la bulle est
-  // tranchée quand le trait l'a traversée sur une bonne longueur. Un simple
-  // appui (ou Entrée au clavier) marche aussi. Le défilement vertical de la
-  // page reste possible au doigt : seul un geste en travers tranche.
+  // ─── Les bulles de la tirade ───
   function scene(z, classe){
     z.innerHTML = ""; z.className = classe + " scene";
-    const NS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", "trainee"); svg.setAttribute("aria-hidden", "true");
-    const trait = document.createElementNS(NS, "polyline"); svg.appendChild(trait);
     const bulles = document.createElement("div"); bulles.className = "bulles";
-    z.append(bulles, svg);
-    return {bulles:bulles, trait:trait};
+    z.appendChild(bulles);
+    return {bulles:bulles};
   }
-  // Longueur du segment a→b à l'intérieur du rectangle r (découpage de Liang-Barsky).
-  function traverse(a, b, r){
-    const dx = b.x - a.x, dy = b.y - a.y; let t0 = 0, t1 = 1;
-    const bords = [[-dx, a.x - r.left], [dx, r.right - a.x], [-dy, a.y - r.top], [dy, r.bottom - a.y]];
-    for (const [p, q] of bords) {
-      if (p === 0) { if (q < 0) return 0; continue; }
-      const u = q / p;
-      if (p < 0) { if (u > t1) return 0; if (u > t0) t0 = u; } else { if (u < t0) return 0; if (u < t1) t1 = u; }
-    }
-    return (t1 - t0) * Math.hypot(dx, dy);
-  }
-  // cibles() : les bulles que l'on peut trancher maintenant ; coupe(bulle, angle).
-  function geste(z, trait, cibles, coupe){
-    let pts = [], actif = false, depart = null, anim = 0, cumul = new Map();
-    const local = e => { const r = z.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now()}; };
-    function dessiner(){
-      const now = performance.now();
-      pts = pts.filter(p => now - p.t < 200);
-      trait.setAttribute("points", pts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" "));
-      anim = pts.length ? requestAnimationFrame(dessiner) : 0;
-    }
-    z.addEventListener("pointerdown", e => {
-      if (e.pointerType === "mouse" && e.button !== 0) return;
-      actif = true; cumul = new Map(); depart = local(e); pts = [depart];
-    });
-    z.addEventListener("pointermove", e => {
-      if (!actif) return;
-      const p = local(e), a = pts[pts.length - 1] || p;
-      pts.push(p);
-      if (!anim) anim = requestAnimationFrame(dessiner);
-      const zr = z.getBoundingClientRect();
-      for (const b of cibles()) {
-        const br = b.getBoundingClientRect();
-        const r = {left: br.left - zr.left, right: br.right - zr.left, top: br.top - zr.top, bottom: br.bottom - zr.top};
-        const d = (cumul.get(b) || 0) + traverse(a, p, r);
-        cumul.set(b, d);
-        if (d >= Math.min(130, br.width * 0.3)) {
-          actif = false;
-          // Le clic qui suit le relâchement ne doit pas compter une seconde fois.
-          z.dataset.coupe = String(performance.now());
-          coupe(b, Math.max(-30, Math.min(30, Math.atan2(p.y - depart.y, p.x - depart.x) * 180 / Math.PI)));
-          return;
-        }
-      }
-    });
-    const lacher = () => { actif = false; };
-    z.addEventListener("pointerup", lacher); z.addEventListener("pointercancel", lacher); z.addEventListener("pointerleave", lacher);
-  }
-  const vientDeCouper = z => performance.now() - (+z.dataset.coupe || 0) < 450;
-  // La bulle tranchée : la moitié haute et la moitié basse s'écartent, une
-  // entaille lumineuse marque la coupe.
-  function trancher(b, angle){
-    const bulles = b.parentNode;
-    b.style.setProperty("--coupe", (angle == null ? -4 : angle) + "deg");
-    const m = b.cloneNode(true);
-    m.classList.add("moitie"); m.removeAttribute("id"); m.setAttribute("aria-hidden", "true"); m.tabIndex = -1; m.disabled = true;
-    m.style.top = b.offsetTop + "px"; m.style.left = b.offsetLeft + "px"; m.style.width = b.offsetWidth + "px";
-    const e = document.createElement("i"); e.className = "entaille";
-    e.style.top = (b.offsetTop + b.offsetHeight * 0.52) + "px"; e.style.left = b.offsetLeft + "px"; e.style.width = b.offsetWidth + "px";
-    e.style.setProperty("--coupe", (angle == null ? -4 : angle) + "deg");
-    b.classList.add("tranchee");
-    bulles.append(m, e);
-  }
+  // La bulle repérée s'illumine : on a mis le doigt sur le piège, sans couper la parole.
+  function reperer(b){ b.classList.add("reperee"); }
   // Un tampon qui claque au milieu de la scène : « Objection ! », « Rejetée »…
   function tampon(dans, texte, type){
     if (!texte) return;
@@ -277,7 +208,7 @@ const AgoraPlus = (function(){
   }
   function refuser(b){ b.classList.remove("non"); void b.offsetWidth; b.classList.add("non", "bad"); }
 
-  // 2. Facile : toutes les bulles sont là, on tranche (ou on touche) celle qui cloche.
+  // 2. Facile : toutes les bulles sont là, on touche celle qui cloche.
   function surligner(line, phrases, foe, suite){
     el("qprompt").textContent = T.reperPrompt;
     const z = zoneTirade(), S = scene(z, "surligner");
@@ -285,19 +216,17 @@ const AgoraPlus = (function(){
     const boutons = phrases.map((p, i) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "phrase bulle"; b.textContent = p.t;
       b.style.animationDelay = (i * 0.16) + "s";
-      b.onclick = () => { if (!vientDeCouper(z)) choisir(p, b, null); };
+      b.onclick = () => choisir(p, b);
       S.bulles.appendChild(b); return b;
     });
-    geste(z, S.trait, () => fini ? [] : boutons.filter(b => !b.disabled), (b, angle) => choisir(phrases[boutons.indexOf(b)], b, angle));
     const rien = document.createElement("button"); rien.type = "button"; rien.className = "abtn rien"; rien.textContent = T.rienARedire;
-    rien.onclick = () => choisir(null, rien, null);
-    const aide = document.createElement("p"); aide.className = "geste-aide"; aide.textContent = T.gesteAide || "";
-    el("answers").append(rien, aide);
+    rien.onclick = () => choisir(null, rien);
+    el("answers").append(rien);
     Voix.replique(phrases.map(p => p.t).join(" "), foe);
     Voix.brancherBoutons(el("answers"), [...boutons, rien]);
     boutons[0].focus({preventScroll:true});
     function figer(){ fini = true; boutons.forEach(x => x.disabled = true); rien.disabled = true; }
-    function choisir(p, b, angle){
+    function choisir(p, b){
       if (fini) return;
       if (p && !p.cible) {
         b.disabled = true; refuser(b);
@@ -308,26 +237,25 @@ const AgoraPlus = (function(){
       figer();
       if (p && p.cible) {
         if (line.type === "sain") { refuser(b); tampon(z, T.tamponRejete, "ko"); apres(750, () => conclure(line, phrases, "", T.objectionSain)); }
-        else { trancher(b, angle); tampon(z, T.tamponPiege, "ok"); apres(800, () => repere(line, phrases, suite, false)); }
+        else { reperer(b); tampon(z, T.tamponPiege, "ok"); apres(800, () => repere(line, phrases, suite, false)); }
         return;
       }
       if (line.type === "sain") conclure(line, phrases, "valable", T.laisseOk);
       else {
-        // Le piège manqué : on montre un instant la bulle qu'il fallait trancher.
+        // Le piège manqué : on montre un instant la bulle qu'il fallait repérer.
         const c = boutons[phrases.findIndex(x => x.cible)]; if (c) c.classList.add("manquee");
         apres(900, () => conclure(line, phrases, "", T.rate));
       }
     }
   }
 
-  // 1. Difficile : les bulles arrivent une à une ; il faut trancher la bulle
+  // 1. Difficile : les bulles arrivent une à une ; il faut toucher la bulle
   //    piégée pendant qu'elle est à l'écran (ou crier « Objection ! »).
   function objection(line, phrases, foe, suite){
     el("qprompt").textContent = T.objectionPrompt;
     const z = zoneTirade(), S = scene(z, "direct");
     const b = document.createElement("button"); b.type = "button"; b.className = "objection"; b.textContent = T.objection;
-    const aide = document.createElement("p"); aide.className = "geste-aide"; aide.textContent = T.gesteAide || "";
-    el("answers").append(b, aide);
+    el("answers").append(b);
     b.focus({preventScroll:true});
     const monJeton = jeton;
     let i = -1, courante = null, debut = 0, duree = 0, ligne = null, fini = false;
@@ -343,7 +271,7 @@ const AgoraPlus = (function(){
       ligne = document.createElement("button"); ligne.type = "button"; ligne.className = "phrase-direct bulle"; ligne.textContent = courante.t;
       ligne.tabIndex = -1;   // au clavier, c'est le bouton « Objection ! » qui sert
       const moi = ligne;
-      ligne.onclick = () => { if (!vientDeCouper(z) && moi === ligne) objecter(null); };
+      ligne.onclick = () => { if (moi === ligne) objecter(); };
       S.bulles.appendChild(ligne);
       debut = performance.now();
       duree = Math.max(2300, courante.t.length * 62);
@@ -358,22 +286,21 @@ const AgoraPlus = (function(){
       if (line.type === "sain") conclure(line, phrases, "valable", T.laisseOk);
       else conclure(line, phrases, "", T.rate);
     }
-    function objecter(angle){
+    function objecter(){
       if (!courante || fini || monJeton !== jeton) return;
       if (courante.cible) {
         fini = true; clearTimeout(minuteur); Voix.taire();
         b.disabled = true; ligne.disabled = true;
         const vite = performance.now() - debut < duree * 0.6;
         if (line.type === "sain") { refuser(ligne); tampon(z, T.tamponRejete, "ko"); apres(750, () => { b.remove(); conclure(line, phrases, "", T.objectionSain); }); }
-        else { trancher(ligne, angle); tampon(z, T.tamponObjection, "ok"); apres(800, () => { b.remove(); repere(line, phrases, suite, vite); }); }
+        else { reperer(ligne); tampon(z, T.tamponObjection, "ok"); apres(800, () => { b.remove(); repere(line, phrases, suite, vite); }); }
         return;
       }
       refuser(ligne); tampon(z, T.tamponRejete, "ko");
       fausseAlerte(T.fausseAlerte);
       if (youHP <= 0) { fini = true; b.remove(); conclure(line, phrases, "", ""); }
     }
-    b.onclick = () => objecter(null);
-    geste(z, S.trait, () => (fini || !ligne) ? [] : [ligne], (x, angle) => objecter(angle));
+    b.onclick = () => objecter();
     suivante(-1);
   }
 

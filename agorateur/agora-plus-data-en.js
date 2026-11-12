@@ -6,10 +6,9 @@
 const AGORA_PLUS = {
   textes: {
     tamponPiege: "Trap!", tamponObjection: "Objection!", tamponRejete: "Overruled", tamponHonnete: "Honest ✔", tamponSophisme: "Fallacy!",
-    gesteAide: "Slice the bubble with a swipe, mouse or finger, or just tap it.",
-    reperPrompt: "🔍 Is one of these bubbles hiding a trap? Slice it… or say it's all fine.",
+    reperPrompt: "🔍 Is one of these bubbles hiding a trap? Tap it… or say it's all fine.",
     rienARedire: "👌 Nothing wrong here",
-    objectionPrompt: "✋ Slice the trap bubble as it goes by, or shout “Objection!”. Nothing tricky? Let them talk.",
+    objectionPrompt: "✋ Tap the trap bubble as it goes by, or shout “Objection!”. Nothing tricky? Let them talk.",
     objection: "✋ Objection!",
     fausseAlerte: "🙅 Objection overruled: that sentence had no trap in it. −1 clarity.",
     fausseAlerteFacile: "🙅 Nothing tricky in that one. −1 clarity. Keep looking.",
