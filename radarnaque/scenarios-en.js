@@ -2058,6 +2058,12 @@ const REPERES = {
       "note": "She never comes in person: a classic setup for this scam."
     },
     {
+      "texte": "a transfer of €350 by mistake",
+      "bon": true,
+      "aide": "How much does she say she sent, and why? Find the convenient “mistake”.",
+      "note": "The transfer that was “too high by mistake” is the heart of the trap: it does not exist, or will be cancelled. Nobody pays €150 too much without noticing."
+    },
+    {
       "texte": "send back the extra €150",
       "bon": true,
       "aide": "What are you asked to do with money you have not actually received yet?",

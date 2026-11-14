@@ -779,7 +779,7 @@
   function clicVide(e){
     var p = document.querySelector('#spot-pop');
     if (p && p.style.display !== 'none'){ hidePop(); return; }
-    showPopAt(e, 'miss', 'Nothing useful here. Look for details that seem unusual: the sender, a link, the tone, urgency, a request for money or a code…');
+    showPopAt(e, 'miss', 'No detail to judge at this exact spot. Try right next to it, or look for what seems unusual: the sender, a link, the tone, urgency, a request for money or a code…');
   }
 
   function majCompteur(){
