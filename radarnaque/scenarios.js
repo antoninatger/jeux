@@ -1416,6 +1416,7 @@ const REPERES = {
   ],
   'chat-trop-percu-vente': [
     { texte:'un transporteur passera le récupérer', bon:true, aide:'L’acheteuse vient-elle voir l’objet elle-même ? Cherchez le prétexte pour ne pas se déplacer.', note:'Elle ne vient jamais en personne : prétexte classique pour préparer l’arnaque.' },
+    { texte:'un virement de 350 € par erreur', bon:true, aide:'Combien dit-elle avoir envoyé, et pourquoi ? Cherchez l’« erreur » qui tombe bien.', note:'Le virement « trop élevé par erreur » est le cœur du piège : il n’existe pas, ou sera annulé. Personne ne paie 150 € de trop sans s’en apercevoir.' },
     { texte:'renvoyer les 150 € de trop', bon:true, aide:'Que vous demande-t-on de faire avec de l’argent que vous n’avez pas encore reçu ?', note:'Demande de rembourser un « trop-perçu » avant même que l’argent soit arrivé.' },
     { texte:'capture d’écran du virement', bon:true, aide:'Cette « preuve » de paiement montre-t-elle vraiment que l’argent est sur votre compte ?', note:'Une capture d’écran se fabrique facilement : ce n’est pas une preuve que l’argent est arrivé.' },
     { texte:'200 €', bon:false, type:'neutre', note:'Le prix de l’objet lui-même n’est pas un indice : c’est autour de lui que se joue l’arnaque.' }
