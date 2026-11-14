@@ -1396,7 +1396,7 @@ const REPERES = {
       "note": "This is not an official carrier website."
     },
     {
-      "texte": "or it will be returned",
+      "texte": "Act before 09/01 or it will be returned",
       "bon": true,
       "aide": "Find the sentence that pressures you to act right away.",
       "note": "False urgency: you are rushed so that you click without thinking."
@@ -1434,10 +1434,16 @@ const REPERES = {
       "note": "Odd wording and wrong verb form (“usually Using”): a real service does not write like this."
     },
     {
-      "texte": "antoninatger",
+      "texte": "Hi, antoninatger",
       "bon": true,
       "aide": "How are you addressed? Does a real service use your first name, or a squashed-together login?",
       "note": "You are addressed by a squashed-together lowercase login (“antoninatger”) rather than “Hi Antonin”: a real service names you properly. A sign of a malicious automated blast."
+    },
+    {
+      "texte": "Yes, it was me — confirm",
+      "bon": true,
+      "aide": "What are you offered to do to “fix” the problem? Look at the button.",
+      "note": "The button is the trap: it leads to a fake page that captures your password. You never confirm your identity from an email."
     }
   ],
   "email-boite-mystere": [
@@ -1464,6 +1470,12 @@ const REPERES = {
       "bon": true,
       "aide": "Is there an attached file you were not expecting?",
       "note": "Unknown attachment: never open it, it may contain a virus."
+    },
+    {
+      "texte": "Open the attachment to claim your gift before it expires",
+      "bon": true,
+      "aide": "What are you asked to do, and by when?",
+      "note": "You are rushed into opening an attachment “before it expires”: the urgency is there to make you open the booby-trapped file without thinking."
     }
   ],
   "email-panneaux": [
@@ -1490,6 +1502,18 @@ const REPERES = {
       "bon": true,
       "aide": "Look for what suggests you must hurry before there is nothing left.",
       "note": "Artificial scarcity, to create urgency."
+    },
+    {
+      "texte": "government grants",
+      "bon": true,
+      "aide": "Who is speaking in the name of the State in this message?",
+      "note": "A private company putting forward “government grants”: the State is used as a guarantee, but it is not the State writing."
+    },
+    {
+      "texte": "sign up today",
+      "bon": true,
+      "aide": "Find what you are pushed to do without waiting.",
+      "note": "You are pushed to sign up right away, and so to hand over your details before checking who is writing."
     }
   ],
   "chat-celebrite": [
@@ -1516,6 +1540,12 @@ const REPERES = {
       "bon": false,
       "type": "leurre",
       "note": "Touching… and calculated: flattery is there to win your trust."
+    },
+    {
+      "texte": "my accounts are blocked by production",
+      "bon": true,
+      "aide": "Why would a star need your money? Find the excuse.",
+      "note": "The pretext explaining why a rich person needs YOUR money: there always is one, and it can never be checked."
     }
   ],
   "appel-banque": [
@@ -1532,7 +1562,7 @@ const REPERES = {
       "note": "A fake emergency, to make you panic."
     },
     {
-      "texte": "give it to me",
+      "texte": "I’m sending you a code by SMS: give it to me",
       "bon": true,
       "aide": "What are you asked to hand over? Does a bank ask for a code received by text?",
       "note": "You are asked for a code received by text: a bank NEVER does that."
@@ -1542,6 +1572,12 @@ const REPERES = {
       "bon": true,
       "aide": "Would a real adviser ask you for your password?",
       "note": "A real adviser never asks for your password."
+    },
+    {
+      "texte": "Don’t worry, I’ll block it right away",
+      "bon": false,
+      "type": "leurre",
+      "note": "The reassuring tone is part of the trap: after frightening you, the scammer poses as your rescuer so that you obey."
     }
   ],
   "chat-faux-proche": [
@@ -1552,7 +1588,7 @@ const REPERES = {
       "note": "Unknown number claiming to be your child."
     },
     {
-      "texte": "new number",
+      "texte": "I broke my phone, this is my new number",
       "bon": true,
       "aide": "Find the excuse for the unknown number.",
       "note": "“I’ve changed my number”: the classic excuse of the fake relative."
@@ -1564,10 +1600,16 @@ const REPERES = {
       "note": "An excuse to justify not paying themselves."
     },
     {
-      "texte": "€680 transfer",
+      "texte": "€680 transfer for an urgent bill",
       "bon": true,
       "aide": "What are you asked to do urgently?",
       "note": "Urgent money request: verify by calling."
+    },
+    {
+      "texte": "Hi mum, it’s me",
+      "bon": true,
+      "aide": "Would your child introduce themselves without giving their first name?",
+      "note": "“It’s me” with no first name: the scammer sends the same message to thousands of parents and lets you guess who it is."
     }
   ],
   "image-deepfake": [
@@ -1610,7 +1652,7 @@ const REPERES = {
   ],
   "sms-ameli": [
     {
-      "texte": "Vitale card expires",
+      "texte": "Vitale card expires on 15/07",
       "bon": true,
       "aide": "Does a Vitale card really “expire” to the point of blocking your reimbursements? Find that claim.",
       "note": "A Vitale card has no date that “suspends” reimbursements: false information."
@@ -1636,7 +1678,7 @@ const REPERES = {
   ],
   "popup-support": [
     {
-      "texte": "5 viruses detected",
+      "texte": "YOUR COMPUTER IS INFECTED (5 viruses detected)",
       "bon": true,
       "aide": "Find the dramatic alert meant to scare you.",
       "note": "A fake, dramatic alert meant to scare you."
@@ -1648,7 +1690,7 @@ const REPERES = {
       "note": "They want to keep you under pressure."
     },
     {
-      "texte": "Microsoft support immediately: 01 84 88 XX XX",
+      "texte": "Call Microsoft support immediately: 01 84 88 XX XX",
       "bon": true,
       "aide": "Would an antivirus ask you to call a phone number?",
       "note": "Real antivirus alerts do not ask you to call a number."
@@ -1668,13 +1710,13 @@ const REPERES = {
       "note": "Major brands do not recruit like this."
     },
     {
-      "texte": "€80 to €300 per day",
+      "texte": "30 min/day, €80 to €300 per day",
       "bon": true,
       "aide": "Is this pay realistic for a few minutes’ work, with no experience?",
       "note": "Unrealistic pay for “30 minutes a day, no experience”."
     },
     {
-      "texte": "top up €40",
+      "texte": "top up €40, which will be returned with your earnings",
       "bon": true,
       "aide": "You are asked to pay in order to work: is that normal? Find that request.",
       "note": "You are asked to pay in order to work: an absolute red flag."
@@ -1716,6 +1758,12 @@ const REPERES = {
       "bon": false,
       "type": "leurre",
       "note": "“Sorting centre” sounds very official… but it is only set dressing added under the fake photo."
+    },
+    {
+      "texte": "your address is incomplete",
+      "bon": true,
+      "aide": "What reason is given for the parcel being blocked?",
+      "note": "The classic pretext of the incomplete address… while the photo shows a label with your name. It is there to justify the link and the payment."
     }
   ],
   "chat-faux-numero-invest": [
@@ -1732,13 +1780,13 @@ const REPERES = {
       "note": "The stranger comes back and makes themselves likeable: they are building a bond to win your trust over time."
     },
     {
-      "texte": "32% in three weeks",
+      "texte": "Thanks to my uncle’s trading platform, I made 32% in three weeks",
       "bon": true,
       "aide": "Is such a return realistic? Find the promise of gains.",
       "note": "Huge, fast gains: an unrealistic promise, the hallmark of an investment scam."
     },
     {
-      "texte": "only €250",
+      "texte": "we start with only €250 and you’ll see the first gains immediately",
       "bon": true,
       "aide": "What are you asked to do with your money, and on which platform?",
       "note": "You are pushed to put money on a platform that SHE names: that is the trap."
@@ -1758,7 +1806,7 @@ const REPERES = {
       "note": "Paying “directly”, off the platform, strips you of all protection."
     },
     {
-      "texte": "bank transfer",
+      "texte": "pay a 40% deposit by bank transfer",
       "bon": true,
       "aide": "Does this payment method protect you? Is a bank transfer easy to get back?",
       "note": "A transfer to a private individual is almost impossible to recover: scammers’ favourite method."
@@ -1786,6 +1834,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "A polite formula: pleasant, but this is not where the trap is."
+    },
+    {
+      "texte": "To avoid platform service fees",
+      "bon": true,
+      "aide": "What advantage is dangled in front of you to leave the platform?",
+      "note": "Saving on fees is the bait: those fees are precisely what pays for your protection if something goes wrong."
     }
   ],
   "email-prenom-detourne": [
@@ -1796,7 +1850,7 @@ const REPERES = {
       "note": "A “first name” that talks about money, an IBAN and direct debits: this text was slipped into the first-name field in place of your name."
     },
     {
-      "texte": "0259509226",
+      "texte": "contact your fraud prevention department immediately on 0259509226",
       "bon": true,
       "aide": "What are they trying to get you to do? Spot the number to call: that is where the trap is.",
       "note": "The message supplies the number to call itself. Nothing you can see tells you who would answer: a phone number cannot be checked. You always call back through a channel you looked up yourself."
@@ -2022,6 +2076,12 @@ const REPERES = {
       "bon": false,
       "type": "leurre",
       "note": "A fake shop can easily write “secure payment” too: the claim alone proves nothing."
+    },
+    {
+      "texte": "everything must go before June 30",
+      "bon": true,
+      "aide": "Find the deadline that pushes you to buy.",
+      "note": "A deadline to make you order before you have checked the site."
     }
   ],
   "email-prime-video-paiement": [
@@ -2052,19 +2112,19 @@ const REPERES = {
   ],
   "chat-trop-percu-vente": [
     {
-      "texte": "a courier will pick it up",
+      "texte": "I won’t come myself, a courier will pick it up",
       "bon": true,
       "aide": "Does the buyer come to see the item herself? Find the excuse for not coming in person.",
       "note": "She never comes in person: a classic setup for this scam."
     },
     {
-      "texte": "a transfer of €350 by mistake",
+      "texte": "a transfer of €350 by mistake instead of €200, the form glitched",
       "bon": true,
       "aide": "How much does she say she sent, and why? Find the convenient “mistake”.",
       "note": "The transfer that was “too high by mistake” is the heart of the trap: it does not exist, or will be cancelled. Nobody pays €150 too much without noticing."
     },
     {
-      "texte": "send back the extra €150",
+      "texte": "send back the extra €150 by instant transfer",
       "bon": true,
       "aide": "What are you asked to do with money you have not actually received yet?",
       "note": "Asked to refund an “overpayment” before the money has even arrived."
@@ -2106,6 +2166,12 @@ const REPERES = {
       "bon": false,
       "type": "leurre",
       "note": "The timing is convenient, and that is no accident: scammers send these texts during tax return season, when a message from the tax office seems natural. Plausible timing proves nothing — you asked for nothing."
+    },
+    {
+      "texte": "you are entitled to a refund of €237.80",
+      "bon": true,
+      "aide": "What makes you want to click in this message?",
+      "note": "The bait: a precise sum to collect. The tax office refunds automatically by bank transfer; it does not announce a refund by text with a link."
     }
   ],
   "email-clim-aides": [
@@ -2132,6 +2198,12 @@ const REPERES = {
       "bon": false,
       "type": "leurre",
       "note": "A vague, reassuring phrase… but one you’ll also find in real ads: it proves nothing on its own."
+    },
+    {
+      "texte": "Check your eligibility now",
+      "bon": true,
+      "aide": "Find what you are pushed to do right away.",
+      "note": "You are pressed to “check your eligibility”: it is the way to collect your details and then canvass you."
     }
   ],
   "chat-leboncoin-paiement-securise-ok": [
@@ -2200,13 +2272,13 @@ const REPERES = {
       "note": "A classic job that conveniently explains being far away and unavailable."
     },
     {
-      "texte": "We’ve been talking for 3 weeks",
+      "texte": "We’ve been talking for 3 weeks, and I feel like I’ve known you forever",
       "bon": true,
       "aide": "Is this relationship moving at a normal pace?",
       "note": "A relationship progressing very fast online: a warning sign."
     },
     {
-      "texte": "€400 in fees",
+      "texte": "customs is asking me for €400 in fees",
       "bon": true,
       "aide": "What are you always eventually asked for in this kind of exchange?",
       "note": "A request for money: the sign that never lies."
@@ -2216,6 +2288,12 @@ const REPERES = {
       "bon": false,
       "type": "neutre",
       "note": "A generic opening compliment: pleasant, but not a clue on its own."
+    },
+    {
+      "texte": "Could you lend it to me",
+      "bon": true,
+      "aide": "What does he end up asking you for?",
+      "note": "The request for money, wrapped in a promise to pay it back: that is where the whole conversation was heading."
     }
   ],
   "chat-fausse-vendeuse-acompte": [
@@ -2226,7 +2304,7 @@ const REPERES = {
       "note": "You are being pushed outside the platform’s secure system: a classic warning sign."
     },
     {
-      "texte": "€30 deposit by direct bank transfer",
+      "texte": "As I have a lot of messages, I’m asking for a €30 deposit by direct bank transfer",
       "bon": true,
       "aide": "Are you being asked for money before you’ve even seen the item?",
       "note": "A request for a direct payment before any real contact: be cautious."
@@ -2710,7 +2788,7 @@ const REPERES = {
       "note": "Secrecy isolates you: it stops you calling the people who would say at once “but Théo is at home”."
     },
     {
-      "texte": "Bail of €3,800 must be paid tonight",
+      "texte": "Bail of €3,800 must be paid tonight to keep him out of custody",
       "bon": true,
       "aide": "How much, and by when? Find the request for money and its deadline.",
       "note": "A large sum, to be found that same evening: the urgency is there to stop you checking."
@@ -2726,6 +2804,18 @@ const REPERES = {
       "bon": false,
       "type": "leurre",
       "note": "It really is his voice, you think — and that is exactly the intended effect. AI can now imitate a voice from a short recording: it no longer proves who is speaking. What gives the call away is what you are asked to do."
+    },
+    {
+      "texte": "I’ve had a car accident, I hurt someone",
+      "bon": true,
+      "aide": "What is meant to panic you from the very first sentence?",
+      "note": "A drama announced straight away to panic you: in shock, you no longer check anything."
+    },
+    {
+      "texte": "I’ll put my lawyer on",
+      "bon": true,
+      "aide": "Why does your grandson’s voice disappear so quickly?",
+      "note": "The imitated voice says only a few sentences, then hands over to an accomplice: that way you cannot ask it a question."
     }
   ],
   "chat-vocal-clone-fille": [
@@ -2736,19 +2826,19 @@ const REPERES = {
       "note": "Unknown number claiming to be your child."
     },
     {
-      "texte": "I’m writing from a colleague’s mobile",
+      "texte": "my phone fell in the water 😩 I’m writing from a colleague’s mobile",
       "bon": true,
       "aide": "Find the excuse given to explain this unknown number.",
       "note": "The excuse that explains the unknown number — and discourages you from calling the old one."
     },
     {
-      "texte": "before 6pm",
+      "texte": "I have to pay the garage €940 before 6pm, otherwise they keep the car",
       "bon": true,
       "aide": "Find the deadline that rushes you.",
       "note": "A hard deadline: they want you to pay before you have checked."
     },
     {
-      "texte": "make an instant transfer",
+      "texte": "I’m sending you the garage’s bank details: make an instant transfer",
       "bon": true,
       "aide": "How are you asked to pay? Can this payment method be undone?",
       "note": "An instant transfer leaves in seconds and cannot be cancelled: that is why you are asked for one."

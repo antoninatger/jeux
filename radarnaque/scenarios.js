@@ -1265,7 +1265,7 @@ const REPERES = {
   'sms-colis': [
     { texte:'+33 7 45 13 81 31', bon:true, aide:'Un vrai transporteur (Chronopost, Colissimo…) vous écrirait-il depuis un simple numéro de portable ? Regardez qui envoie le message.', note:'Un vrai transporteur n’écrit pas depuis un numéro de portable personnel.' },
     { texte:'https://mon-relay-suivi.com', bon:true, aide:'Y a-t-il un lien à cliquer ? Est-ce vraiment l’adresse officielle du transporteur ?', note:'Ce n’est pas l’adresse officielle du transporteur : lien piégé.' },
-    { texte:'sinon il sera renvoyé', bon:true, aide:'Cherchez la phrase qui vous met la pression pour agir tout de suite.', note:'Fausse urgence : on vous presse pour vous faire cliquer sans réfléchir.' },
+    { texte:'Réagissez avant le 09/01, sinon il sera renvoyé', bon:true, aide:'Cherchez la phrase qui vous met la pression pour agir tout de suite.', note:'Fausse urgence : on vous presse pour vous faire cliquer sans réfléchir.' },
     { texte:'3e095272b3fe4c7996b', bon:false, type:'leurre', note:'Impressionnant, mais c’est du décor : une suite de caractères pour faire « officiel ».' }
   ],
   'sms-colis-photo-ia': [
@@ -1273,44 +1273,52 @@ const REPERES = {
     { texte:'__IMG__', bon:true, aide:'Cette photo prouve-t-elle vraiment que le colis existe ? Votre nom sur l’étiquette est-il difficile à obtenir ? Cliquez sur la photo.', note:'Photo générée par IA : votre nom sur une étiquette se fabrique en quelques secondes. Une image ne prouve jamais qu’un colis existe.' },
     { texte:'1,95 € de relivraison', bon:true, aide:'Un transporteur se fait-il payer quelques euros par SMS ? Cherchez la demande d’argent.', note:'Aucun transporteur ne réclame de « frais de relivraison » par SMS : c’est le piège pour voler votre carte.' },
     { texte:'https://suivi-colis-relais.net', bon:true, aide:'Est-ce vraiment l’adresse officielle du transporteur ? Regardez le lien.', note:'Ce n’est pas le site officiel du transporteur : lien piégé.' },
-    { texte:'centre de tri', bon:false, type:'leurre', note:'« Centre de tri » fait très officiel… mais ce n’est que du décor ajouté sous la fausse photo.' }
+    { texte:'centre de tri', bon:false, type:'leurre', note:'« Centre de tri » fait très officiel… mais ce n’est que du décor ajouté sous la fausse photo.' },
+    { texte:'votre adresse est incomplète', bon:true, aide:'Quelle raison donne-t-on au blocage du colis ?', note:'Le prétexte classique de l’adresse incomplète… alors que la photo montre une étiquette à votre nom. Il sert à justifier le lien et le paiement.' }
   ],
   'email-motdepasse': [
     { texte:'ne-pas-repondre@chronopost.fr', bon:true, aide:'Le message dit « Microsoft »… mais regardez l’adresse e-mail complète de l’expéditeur : est-elle cohérente ?', note:'Le nom affiché dit « Microsoft », mais l’adresse finit par @chronopost.fr : ça ne colle pas.' },
     { texte:'sous 24h', bon:true, aide:'Cherchez un délai qui vous oblige à vous dépêcher.', note:'Urgence artificielle : « agissez sous 24h ».' },
     { texte:'suspension de votre compte', bon:true, aide:'Repérez la menace censée vous faire peur.', note:'On vous fait peur avec une menace de suspension.' },
     { texte:'que vous n’avez pas Utiliser', bon:true, aide:'Un grand service écrit-il sans fautes ? Cherchez une tournure ou une majuscule qui sonne faux.', note:'Faute et tournure maladroite : un vrai service ne s’exprime pas ainsi.' },
-    { texte:'antoninatger', bon:true, aide:'Comment vous appelle-t-on ? Un vrai service utilise-t-il votre prénom, ou un identifiant collé ?', note:'On vous appelle par un identifiant collé en minuscules (« antoninatger ») et non « Bonjour Antonin » : un vrai service vous nomme correctement. Signe d’un envoi automatique malveillant.' }
+    { texte:'Salut, antoninatger', bon:true, aide:'Comment vous appelle-t-on ? Un vrai service utilise-t-il votre prénom, ou un identifiant collé ?', note:'On vous appelle par un identifiant collé en minuscules (« antoninatger ») et non « Bonjour Antonin » : un vrai service vous nomme correctement. Signe d’un envoi automatique malveillant.' },
+    { texte:'Oui, c’est moi — confirmer', bon:true, aide:'Que vous propose-t-on de faire pour « régler » le problème ? Regardez le bouton.', note:'Le bouton est le piège : il mène à une fausse page qui récupère votre mot de passe. On ne confirme jamais son identité depuis un e-mail.' }
   ],
   'email-boite-mystere': [
     { texte:'noreply.LE.04@b8.9a.21.eb', bon:true, aide:'Regardez l’adresse de l’expéditeur : ressemble-t-elle à une vraie adresse d’entreprise ?', note:'Adresse d’expéditeur incompréhensible : signe d’arnaque.' },
     { texte:'Gagné Une Boîte-mystère', bon:true, aide:'Avez-vous vraiment participé à un jeu ? Cherchez le « cadeau » que vous n’avez jamais demandé.', note:'Un « cadeau » que vous n’avez jamais demandé : c’est un appât.' },
     { texte:'-VeuiLLez.ConFirmer La-Reception!!-', bon:true, aide:'Cherchez le texte à la mise en forme cassée (majuscules et tirets au milieu des mots).', note:'Mise en forme cassée (majuscules, tirets) pour tromper les filtres anti-spam.' },
-    { texte:'NQLRF.pdf', bon:true, aide:'Y a-t-il un fichier joint que vous n’attendiez pas ?', note:'Pièce jointe inconnue : ne jamais l’ouvrir, elle peut contenir un virus.' }
+    { texte:'NQLRF.pdf', bon:true, aide:'Y a-t-il un fichier joint que vous n’attendiez pas ?', note:'Pièce jointe inconnue : ne jamais l’ouvrir, elle peut contenir un virus.' },
+    { texte:'Ouvrez la pièce jointe pour récupérer votre cadeau avant expiration', bon:true, aide:'Que vous demande-t-on de faire, et dans quel délai ?', note:'On vous presse d’ouvrir une pièce jointe « avant expiration » : l’urgence sert à vous faire ouvrir le fichier piégé sans réfléchir.' }
   ],
   'email-panneaux': [
     { texte:'charlotte.robert@shikisc.com', bon:true, aide:'Un organisme public écrirait-il depuis cette adresse ? Regardez l’expéditeur.', note:'Adresse d’entreprise fantaisiste, sans lien avec un organisme public.' },
     { texte:'Dernière chance', bon:true, aide:'Cherchez la formule qui vous pousse à agir sans réfléchir.', note:'Pression : « dernière chance » pour vous faire agir vite.' },
     { texte:'01-01-2025', bon:true, aide:'Regardez bien la date : est-elle cohérente, ou déjà passée ?', note:'Date d’aide déjà dépassée : incohérence révélatrice.' },
-    { texte:'ne pourront pas faire face', bon:true, aide:'Cherchez ce qui laisse croire qu’il faut se dépêcher avant qu’il ne reste plus rien.', note:'Rareté artificielle pour créer l’urgence.' }
+    { texte:'ne pourront pas faire face', bon:true, aide:'Cherchez ce qui laisse croire qu’il faut se dépêcher avant qu’il ne reste plus rien.', note:'Rareté artificielle pour créer l’urgence.' },
+    { texte:'aides gouvernementales', bon:true, aide:'Qui parle au nom de l’État dans ce message ?', note:'Une entreprise privée qui met en avant des « aides gouvernementales » : l’État sert de caution, mais ce n’est pas lui qui écrit.' },
+    { texte:'s’inscrire dès aujourd’hui', bon:true, aide:'Cherchez ce qu’on vous pousse à faire sans attendre.', note:'On vous pousse à vous inscrire tout de suite, donc à donner vos coordonnées avant d’avoir vérifié qui écrit.' }
   ],
   'chat-celebrite': [
     { texte:'Brad Pitt (Officiel) ✔', bon:true, aide:'Pensez-vous qu’une star du cinéma vous contacterait vraiment en privé pour vous parler ? Regardez qui écrit.', note:'Une célébrité ne vous contacte pas en privé : profil usurpé.' },
     { texte:'850 € en cartes cadeaux', bon:true, aide:'Que vous demande-t-on d’envoyer ? Est-ce une façon normale de payer ?', note:'Demande d’argent en cartes cadeaux : intraçable, réflexe d’arnaque absolu.' },
     { texte:'garde notre relation secrète', bon:true, aide:'Cherchez la phrase qui installe le secret autour de cette relation.', note:'Le secret imposé sert à vous isoler.' },
-    { texte:'Tu es la seule qui me comprend', bon:false, type:'leurre', note:'C’est touchant… et calculé : la flatterie sert à mettre en confiance.' }
+    { texte:'Tu es la seule qui me comprend', bon:false, type:'leurre', note:'C’est touchant… et calculé : la flatterie sert à mettre en confiance.' },
+    { texte:'mes comptes sont bloqués par ma production', bon:true, aide:'Pourquoi une star aurait-elle besoin de votre argent ? Cherchez l’excuse.', note:'Le prétexte qui explique pourquoi une personne riche a besoin de VOTRE argent : il y en a toujours un, et il est toujours invérifiable.' }
   ],
   'appel-banque': [
     { texte:'01 40 XX XX XX (n° de votre agence)', bon:true, aide:'Le numéro qui s’affiche prouve-t-il vraiment que c’est votre banque ? Un numéro peut-il être imité ?', note:'Le numéro affiché peut être falsifié (spoofing) : il ne prouve rien.' },
     { texte:'virement suspect de 1 290 €', bon:true, aide:'Cherchez ce qui doit vous faire paniquer tout de suite.', note:'Fausse urgence pour vous faire paniquer.' },
-    { texte:'donnez-le-moi', bon:true, aide:'Que vous demande-t-on de communiquer ? Une banque réclame-t-elle un code reçu par SMS ?', note:'On vous demande un code reçu par SMS : une banque ne fait JAMAIS ça.' },
-    { texte:'confirmez votre mot de passe', bon:true, aide:'Un vrai conseiller vous demanderait-il votre mot de passe ?', note:'Jamais un vrai conseiller ne demande votre mot de passe.' }
+    { texte:'je vous envoie un code par SMS : donnez-le-moi', bon:true, aide:'Que vous demande-t-on de communiquer ? Une banque réclame-t-elle un code reçu par SMS ?', note:'On vous demande un code reçu par SMS : une banque ne fait JAMAIS ça.' },
+    { texte:'confirmez votre mot de passe', bon:true, aide:'Un vrai conseiller vous demanderait-il votre mot de passe ?', note:'Jamais un vrai conseiller ne demande votre mot de passe.' },
+    { texte:'Pas d’inquiétude, je bloque tout de suite', bon:false, type:'leurre', note:'Le ton rassurant fait partie du piège : après vous avoir fait peur, l’escroc se pose en sauveur pour que vous lui obéissiez.' }
   ],
   'chat-faux-proche': [
     { texte:'+33 6 51 20 84 77', bon:true, aide:'Ce numéro est-il bien celui, enregistré, de votre proche ? Regardez d’où vient le message.', note:'Numéro inconnu qui prétend être votre enfant.' },
-    { texte:'voici mon nouveau numéro', bon:true, aide:'Cherchez l’excuse donnée pour expliquer ce numéro inconnu.', note:'« J’ai changé de numéro » : l’excuse classique du faux proche.' },
+    { texte:'j’ai cassé mon téléphone, voici mon nouveau numéro', bon:true, aide:'Cherchez l’excuse donnée pour expliquer ce numéro inconnu.', note:'« J’ai changé de numéro » : l’excuse classique du faux proche.' },
     { texte:'plus accès à mon appli bancaire', bon:true, aide:'Pourquoi ne peut-il pas payer lui-même ? Cherchez le prétexte.', note:'Prétexte pour justifier de ne pas payer lui-même.' },
-    { texte:'virement de 680 €', bon:true, aide:'Que vous demande-t-on de faire en urgence ?', note:'Demande d’argent urgente : vérifiez en appelant le vrai numéro.' }
+    { texte:'virement de 680 € pour une facture urgente', bon:true, aide:'Que vous demande-t-on de faire en urgence ?', note:'Demande d’argent urgente : vérifiez en appelant le vrai numéro.' },
+    { texte:'Coucou maman c’est moi', bon:true, aide:'Votre enfant se présenterait-il sans donner son prénom ?', note:'« C’est moi » sans prénom : l’escroc envoie le même message à des milliers de parents et vous laisse deviner de qui il s’agit.' }
   ],
   'image-deepfake': [
     { texte:'__ZONE__', nom:'Les mains, au centre de l’image', zone:{x:61,y:54,w:24,h:18}, bon:true, aide:'Regardez les mains de près : comptez les doigts, suivez-les jusqu’au poignet.', note:'Doigts trop nombreux, déformés, ou qui ne se rattachent à aucun bras : les mains restent l’un des points faibles des images fabriquées par IA.' },
@@ -1320,41 +1328,42 @@ const REPERES = {
     { texte:'Partagé 48 000 fois', bon:false, type:'neutre', note:'Le nombre de partages ne prouve rien : le faux se propage très vite.' }
   ],
   'sms-ameli': [
-    { texte:'carte Vitale expire', bon:true, aide:'Une carte Vitale « expire »-t-elle vraiment au point de bloquer vos remboursements ? Cherchez cette affirmation.', note:'La carte Vitale n’a pas de date qui « suspend » les remboursements : fausse info.' },
+    { texte:'carte Vitale expire le 15/07', bon:true, aide:'Une carte Vitale « expire »-t-elle vraiment au point de bloquer vos remboursements ? Cherchez cette affirmation.', note:'La carte Vitale n’a pas de date qui « suspend » les remboursements : fausse info.' },
     { texte:'remboursements seront suspendus', bon:true, aide:'Cherchez la menace censée vous faire peur.', note:'Menace pour vous faire agir dans la panique.' },
     { texte:'http://ameli-mise-a-jour.info-fr.net', bon:true, aide:'Le vrai site de l’Assurance Maladie, c’est ameli.fr. Cette adresse lui ressemble-t-elle vraiment ?', note:'Le vrai site est ameli.fr — cette adresse est trompeuse.' },
     { texte:'AMELI-INFO', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « AMELI-INFO ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' }
   ],
   'popup-support': [
-    { texte:'5 virus détectés', bon:true, aide:'Cherchez l’alerte spectaculaire censée vous effrayer.', note:'Fausse alerte spectaculaire pour vous effrayer.' },
+    { texte:'VOTRE ORDINATEUR EST INFECTÉ (5 virus détectés)', bon:true, aide:'Cherchez l’alerte spectaculaire censée vous effrayer.', note:'Fausse alerte spectaculaire pour vous effrayer.' },
     { texte:'N’éteignez pas l’ordinateur', bon:true, aide:'Cherchez la consigne qui vous empêche de réfléchir ou de demander de l’aide.', note:'On vous empêche de réfléchir ou de demander de l’aide.' },
-    { texte:'support Microsoft : 01 84 88 XX XX', bon:true, aide:'Un antivirus vous demanderait-il d’appeler un numéro de téléphone ?', note:'Un vrai antivirus ne demande jamais d’appeler un numéro.' },
+    { texte:'Appelez immédiatement le support Microsoft : 01 84 88 XX XX', bon:true, aide:'Un antivirus vous demanderait-il d’appeler un numéro de téléphone ?', note:'Un vrai antivirus ne demande jamais d’appeler un numéro.' },
     { texte:'données bancaires sont en danger', bon:false, type:'neutre', note:'Une vraie alerte de sécurité dit la même chose : cette phrase ne départage pas le vrai du faux. Ce qui trahit ici, c’est le numéro à appeler.' }
   ],
   'chat-emploi': [
     { texte:'Recrutement Amazon (RH)', bon:true, aide:'Une grande entreprise recrute-t-elle vraiment par messagerie ? Regardez qui vous écrit.', note:'Une grande marque ne recrute pas par WhatsApp.' },
-    { texte:'80 à 300 € par jour', bon:true, aide:'Ce salaire est-il réaliste pour quelques minutes de travail, sans expérience ?', note:'Salaire irréaliste pour « 30 min par jour, sans expérience ».' },
-    { texte:'rechargez 40 €', bon:true, aide:'On vous demande de payer pour travailler : est-ce normal ? Cherchez cette demande.', note:'On vous demande de payer pour travailler : signal d’alarme absolu.' },
+    { texte:'30 min/jour, 80 à 300 € par jour', bon:true, aide:'Ce salaire est-il réaliste pour quelques minutes de travail, sans expérience ?', note:'Salaire irréaliste pour « 30 min par jour, sans expérience ».' },
+    { texte:'rechargez 40 € qui vous seront rendus avec vos gains', bon:true, aide:'On vous demande de payer pour travailler : est-ce normal ? Cherchez cette demande.', note:'On vous demande de payer pour travailler : signal d’alarme absolu.' },
     { texte:'aucune expérience requise', bon:false, type:'leurre', note:'Ça met en confiance, mais ce n’est pas en soi la preuve d’une arnaque.' }
   ],
   'chat-faux-numero-invest': [
     { texte:'je me suis trompée de numéro', bon:true, aide:'Ce message vous était-il vraiment destiné ? Cherchez le prétexte utilisé pour engager la conversation.', note:'Ce message ne vous était pas destiné, et pourtant la conversation continue. C’est cela qui se vérifie ici : une vraie erreur de numéro s’arrête à l’excuse.' },
     { texte:'C’était sympa d’échanger', bon:true, aide:'Pourquoi cet inconnu, censé s’être trompé, revient-il vous parler ? Cherchez ce qui crée le lien.', note:'L’inconnu revient et se rend sympathique : il tisse un lien pour gagner votre confiance sur la durée.' },
-    { texte:'j’ai gagné 32 % en trois semaines', bon:true, aide:'Un tel rendement est-il réaliste ? Cherchez la promesse de gains.', note:'Gains énormes et rapides : promesse irréaliste, marque de l’arnaque à l’investissement.' },
-    { texte:'on commence avec 250 € seulement', bon:true, aide:'Que vous demande-t-on de faire de votre argent, et sur quelle plateforme ?', note:'On vous pousse à verser de l’argent sur une plateforme qu’ELLE indique : c’est le piège.' },
+    { texte:'Grâce à la plateforme de trading de mon oncle, j’ai gagné 32 % en trois semaines', bon:true, aide:'Un tel rendement est-il réaliste ? Cherchez la promesse de gains.', note:'Gains énormes et rapides : promesse irréaliste, marque de l’arnaque à l’investissement.' },
+    { texte:'on commence avec 250 € seulement et tu verras les premiers gains tout de suite', bon:true, aide:'Que vous demande-t-on de faire de votre argent, et sur quelle plateforme ?', note:'On vous pousse à verser de l’argent sur une plateforme qu’ELLE indique : c’est le piège.' },
     { texte:'entre Paris et Singapour', bon:false, type:'leurre', note:'Ces détails de vie donnent une impression de vrai… mais ils sont inventés pour faire sérieux.' }
   ],
   'email-airbnb-horsplateforme': [
     { texte:'directement entre nous', bon:true, aide:'Où vous propose-t-on de payer ? Est-ce bien sur le site de réservation officiel ?', note:'Payer « en direct », hors de la plateforme, vous prive de toute protection.' },
-    { texte:'par virement bancaire', bon:true, aide:'Ce moyen de paiement vous protège-t-il ? Un virement se récupère-t-il facilement ?', note:'Un virement à un particulier est quasi impossible à récupérer : moyen favori des escrocs.' },
+    { texte:'versez un acompte de 40\u00a0% par virement bancaire', bon:true, aide:'Ce moyen de paiement vous protège-t-il ? Un virement se récupère-t-il facilement ?', note:'Un virement à un particulier est quasi impossible à récupérer : moyen favori des escrocs.' },
     { texte:'marco.rivas.locations@gmail.com', bon:true, aide:'Un vrai message passant par la plateforme viendrait-il d’une adresse Gmail personnelle ?', note:'Adresse Gmail personnelle : rien ne passe par le site officiel de réservation.' },
     { texte:'deux autres familles', bon:true, aide:'Cherchez ce qui vous pousse à vous décider en vitesse.', note:'Rareté artificielle : « d’autres sont intéressés » pour vous faire payer avant de réfléchir.' },
     { texte:'je ne pourrai pas garder les dates bien longtemps', bon:true, aide:'Cherchez la phrase qui vous met la pression du temps pour ne pas vous laisser réfléchir.', note:'Ton d’urgence : « ne tardez pas », « je ne pourrai pas garder les dates » — on veut vous faire payer avant que vous ne réfléchissiez.' },
-    { texte:'Merci pour votre intérêt', bon:false, type:'neutre', note:'Formule de politesse : agréable, mais ce n’est pas là qu’est le piège.' }
+    { texte:'Merci pour votre intérêt', bon:false, type:'neutre', note:'Formule de politesse : agréable, mais ce n’est pas là qu’est le piège.' },
+    { texte:'Pour vous éviter les frais de service de la plateforme', bon:true, aide:'Quel avantage vous fait-on miroiter pour sortir de la plateforme ?', note:'L’économie de frais est l’appât : ces frais sont justement ce qui paie votre protection en cas de problème.' }
   ],
   'email-prenom-detourne': [
     { texte:'Vous serez débité de 447,00', bon:true, aide:'Un simple prénom contient-il une phrase sur de l’argent et un IBAN ? Cherchez ce qui n’a rien à faire dans un « Bonjour ».', note:'Un « prénom » qui parle d’argent, d’IBAN et de prélèvements : ce texte a été glissé dans le champ prénom à la place de votre nom.' },
-    { texte:'0259509226', bon:true, aide:'Que cherche-t-on à vous faire faire ? Repérez le numéro à appeler : c’est là qu’est le piège.', note:'Le message fournit lui-même le numéro à rappeler. Rien de ce que vous avez sous les yeux ne dit qui décrochera : un numéro ne se vérifie pas. On rappelle toujours par un canal qu’on est allé chercher soi-même.' },
+    { texte:'contacter immédiatement votre service de prévention des fraudes au 0259509226', bon:true, aide:'Que cherche-t-on à vous faire faire ? Repérez le numéro à appeler : c’est là qu’est le piège.', note:'Le message fournit lui-même le numéro à rappeler. Rien de ce que vous avez sous les yeux ne dit qui décrochera : un numéro ne se vérifie pas. On rappelle toujours par un canal qu’on est allé chercher soi-même.' },
     { texte:'no-reply@welcometothejungle.com', bon:false, type:'neutre', note:'L’adresse est bien celle du vrai site, correctement orthographiée : cet e-mail vient réellement de Welcome to the Jungle. L’expéditeur n’est donc pas ce qui cloche ici.' },
     { texte:'__CTX__', bon:true, aide:'Avez-vous fait quelque chose qui explique cet e-mail ? Regardez le contexte, tout en haut.', note:'Vous n’avez créé aucun compte : quelqu’un d’autre a donc saisi votre adresse à votre place. Un message « de bienvenue » pour une inscription que vous n’avez pas faite mérite toujours la méfiance.' }
   ],
@@ -1406,7 +1415,8 @@ const REPERES = {
     { texte:'contact@velo-discount-shop.top', bon:true, aide:'Regardez l’adresse de l’expéditeur : correspond-elle à une vraie marque connue ?', note:'Le domaine finit par « .top » : une extension à quelques euros, que les boutiques établies n’utilisent pas. Et « velo-discount-shop » ne correspond à aucune enseigne existante — cherchez ce nom, vous ne trouverez aucun magasin derrière.' },
     { texte:'149 € au lieu de 899 €', bon:true, aide:'Cette réduction vous semble-t-elle réaliste pour un vélo électrique ?', note:'Réduction énorme et invraisemblable : signe classique de fausse boutique.' },
     { texte:'Stock très limité', bon:true, aide:'Cherchez ce qui vous pousse à acheter tout de suite sans réfléchir.', note:'Fausse rareté pour vous faire acheter dans la précipitation.' },
-    { texte:'Paiement 100 % sécurisé', bon:false, type:'leurre', note:'Une fausse boutique peut très bien écrire « paiement sécurisé » : l’affirmation seule ne prouve rien.' }
+    { texte:'Paiement 100 % sécurisé', bon:false, type:'leurre', note:'Une fausse boutique peut très bien écrire « paiement sécurisé » : l’affirmation seule ne prouve rien.' },
+    { texte:'tout doit disparaître avant le 30 juin', bon:true, aide:'Cherchez la date limite qui vous presse d’acheter.', note:'Une date butoir pour vous faire commander avant d’avoir vérifié le site.' }
   ],
   'email-prime-video-paiement': [
     { texte:'support@prime-video-facturation.com', bon:true, aide:'Regardez l’adresse complète de l’expéditeur : est-ce le vrai domaine du service ?', note:'Domaine inventé, sans rapport avec le vrai service de streaming.' },
@@ -1415,9 +1425,9 @@ const REPERES = {
     { texte:'Échec de paiement', bon:false, type:'neutre', note:'Un vrai service peut aussi écrire ça un jour : ce n’est pas cette phrase seule qui trahit l’arnaque, mais l’adresse et le lien.' }
   ],
   'chat-trop-percu-vente': [
-    { texte:'un transporteur passera le récupérer', bon:true, aide:'L’acheteuse vient-elle voir l’objet elle-même ? Cherchez le prétexte pour ne pas se déplacer.', note:'Elle ne vient jamais en personne : prétexte classique pour préparer l’arnaque.' },
-    { texte:'un virement de 350 € par erreur', bon:true, aide:'Combien dit-elle avoir envoyé, et pourquoi ? Cherchez l’« erreur » qui tombe bien.', note:'Le virement « trop élevé par erreur » est le cœur du piège : il n’existe pas, ou sera annulé. Personne ne paie 150 € de trop sans s’en apercevoir.' },
-    { texte:'renvoyer les 150 € de trop', bon:true, aide:'Que vous demande-t-on de faire avec de l’argent que vous n’avez pas encore reçu ?', note:'Demande de rembourser un « trop-perçu » avant même que l’argent soit arrivé.' },
+    { texte:'Je ne viendrai pas moi-même, un transporteur passera le récupérer', bon:true, aide:'L’acheteuse vient-elle voir l’objet elle-même ? Cherchez le prétexte pour ne pas se déplacer.', note:'Elle ne vient jamais en personne : prétexte classique pour préparer l’arnaque.' },
+    { texte:'un virement de 350 € par erreur au lieu de 200 €, le formulaire a mal fonctionné', bon:true, aide:'Combien dit-elle avoir envoyé, et pourquoi ? Cherchez l’« erreur » qui tombe bien.', note:'Le virement « trop élevé par erreur » est le cœur du piège : il n’existe pas, ou sera annulé. Personne ne paie 150 € de trop sans s’en apercevoir.' },
+    { texte:'renvoyer les 150 € de trop par virement instantané', bon:true, aide:'Que vous demande-t-on de faire avec de l’argent que vous n’avez pas encore reçu ?', note:'Demande de rembourser un « trop-perçu » avant même que l’argent soit arrivé.' },
     { texte:'capture d’écran du virement', bon:true, aide:'Cette « preuve » de paiement montre-t-elle vraiment que l’argent est sur votre compte ?', note:'Une capture d’écran se fabrique facilement : ce n’est pas une preuve que l’argent est arrivé.' },
     { texte:'200 €', bon:false, type:'neutre', note:'Le prix de l’objet lui-même n’est pas un indice : c’est autour de lui que se joue l’arnaque.' }
   ],
@@ -1425,7 +1435,8 @@ const REPERES = {
     { texte:'DGFIP', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « DGFIP ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' },
     { texte:'https://remboursement-impots-particuliers.com', bon:true, aide:'Le vrai site des impôts, c’est impots.gouv.fr. Cette adresse lui ressemble-t-elle ?', note:'Ce n’est pas impots.gouv.fr : lien piégé.' },
     { texte:'complétez vos coordonnées bancaires', bon:true, aide:'Si vous avez déjà été remboursé par le passé, l’administration a-t-elle besoin que vous ressaisissiez vos coordonnées bancaires ?', note:'L’administration a déjà votre RIB si vous avez déjà été remboursé : elle ne le redemande pas par SMS.' },
-    { texte:'__CTX__', bon:false, type:'leurre', note:'Le moment tombe bien, et ce n’est pas un hasard : les escrocs envoient ces SMS pendant la période de déclaration, quand un message des impôts paraît naturel. Un moment plausible ne prouve rien — vous n’avez rien demandé.' }
+    { texte:'__CTX__', bon:false, type:'leurre', note:'Le moment tombe bien, et ce n’est pas un hasard : les escrocs envoient ces SMS pendant la période de déclaration, quand un message des impôts paraît naturel. Un moment plausible ne prouve rien — vous n’avez rien demandé.' },
+    { texte:'vous bénéficiez d’un remboursement de 237,80 €', bon:true, aide:'Qu’est-ce qui donne envie de cliquer dans ce message ?', note:'L’appât : une somme précise à toucher. Les impôts remboursent d’office par virement, ils n’annoncent pas un remboursement par SMS avec un lien.' }
   ],
   'chat-leboncoin-paiement-securise-ok': [
     { texte:'Paiement Leboncoin', bon:true, aide:'Comment l’acheteuse propose-t-elle de régler ? Cherchez le système de paiement utilisé.', note:'Le paiement passe par le système sécurisé de la plateforme, pas par un virement direct.' },
@@ -1441,13 +1452,14 @@ const REPERES = {
   ],
   'chat-faux-profil-rencontre': [
     { texte:'ingénieur, actuellement en mission sur une plateforme pétrolière offshore', bon:true, aide:'Pourquoi cette personne est-elle si difficile à joindre ou à rencontrer en vrai ? Cherchez le prétexte.', note:'Métier classique qui justifie d’être loin et indisponible.' },
-    { texte:'On discute depuis 3 semaines', bon:true, aide:'Cette relation évolue-t-elle à une vitesse normale ?', note:'Relation qui progresse très vite en ligne : signal d’alerte.' },
-    { texte:'400 € de frais', bon:true, aide:'Que finit-on toujours par vous demander dans ce genre d’échange ?', note:'Demande d’argent : le signe qui ne trompe jamais.' },
-    { texte:'Ton profil m’a tout de suite plu', bon:false, type:'neutre', note:'Compliment banal d’ouverture : agréable, mais pas un indice en soi.' }
+    { texte:'On discute depuis 3 semaines, j’ai l’impression de te connaître depuis toujours', bon:true, aide:'Cette relation évolue-t-elle à une vitesse normale ?', note:'Relation qui progresse très vite en ligne : signal d’alerte.' },
+    { texte:'la douane me réclame 400 € de frais', bon:true, aide:'Que finit-on toujours par vous demander dans ce genre d’échange ?', note:'Demande d’argent : le signe qui ne trompe jamais.' },
+    { texte:'Ton profil m’a tout de suite plu', bon:false, type:'neutre', note:'Compliment banal d’ouverture : agréable, mais pas un indice en soi.' },
+    { texte:'Tu pourrais m’avancer ça', bon:true, aide:'Que finit-il par vous demander ?', note:'La demande d’argent, enrobée d’une promesse de remboursement : c’est là que menait toute la conversation.' }
   ],
   'chat-fausse-vendeuse-acompte': [
     { texte:'en dehors de Leboncoin', bon:true, aide:'Où vous pousse-t-on à effectuer le paiement, par rapport à la plateforme ?', note:'On vous fait sortir du système sécurisé de la plateforme : signal classique.' },
-    { texte:'acompte de 30 € par virement direct', bon:true, aide:'Vous demande-t-on de l’argent avant même d’avoir vu l’objet ?', note:'Demande de paiement direct avant tout contact réel : prudence.' },
+    { texte:'Comme j’ai beaucoup de messages, je vous demande un acompte de 30 € par virement direct', bon:true, aide:'Vous demande-t-on de l’argent avant même d’avoir vu l’objet ?', note:'Demande de paiement direct avant tout contact réel : prudence.' },
     { texte:'ça évite les frais de la plateforme', bon:true, aide:'Quel prétexte utilise-t-on pour justifier de sortir du paiement sécurisé ?', note:'Prétexte classique pour vous faire sortir du paiement sécurisé.' },
     { texte:'toujours disponible', bon:false, type:'neutre', note:'Réponse banale de vendeur : agréable, mais pas un indice en soi.' }
   ],
@@ -1455,7 +1467,8 @@ const REPERES = {
     { texte:'noreply@mail-cbk-1sa.amberfunnel.com', bon:true, aide:'Regardez l’adresse complète de l’expéditeur : a-t-elle un rapport avec un organisme public ou un installateur ?', note:'« amberfunnel.com » est un outil marketing (« funnel » = entonnoir publicitaire), sans aucun lien avec un organisme public ou un vrai installateur.' },
     { texte:'03:40', bon:true, aide:'Regardez l’heure d’envoi : est-ce une heure normale pour un vrai message professionnel ?', note:'Envoyé à 3h40 du matin : aucune entreprise sérieuse n’écrit à cette heure — signe d’un envoi automatisé de masse.' },
     { texte:'jusqu’à 10 800 €', bon:true, aide:'Ce montant est-il cohérent avec les « 900 € » annoncés juste au-dessus ?', note:'Les chiffres s’empilent sans logique : « 900 € » en gros titre, puis « jusqu’à 10 800 € » plus bas — des maximums théoriques additionnés pour impressionner.' },
-    { texte:'sous conditions', bon:false, type:'leurre', note:'Formule vague et rassurante… mais qu’on retrouve aussi dans de vraies publicités : elle ne prouve rien à elle seule.' }
+    { texte:'sous conditions', bon:false, type:'leurre', note:'Formule vague et rassurante… mais qu’on retrouve aussi dans de vraies publicités : elle ne prouve rien à elle seule.' },
+    { texte:'Vérifiez votre éligibilité maintenant', bon:true, aide:'Cherchez ce qu’on vous pousse à faire tout de suite.', note:'On vous presse de « vérifier votre éligibilité » : c’est le moyen de récupérer vos coordonnées pour vous démarcher.' }
   ],
   'email-ameli-regularisation': [
     { texte:'theintersection@foundryco.com', bon:true, aide:'Le message a les couleurs de l’Assurance Maladie… mais regardez l’adresse complète de l’expéditeur : a-t-elle un rapport avec ameli.fr ?', note:'Adresse d’une société sans aucun lien avec l’Assurance Maladie : le bandeau est copié, l’adresse trahit l’escroc.' },
@@ -1565,15 +1578,17 @@ const REPERES = {
   'appel-voix-clonee-petit-fils': [
     { texte:'Numéro inconnu', bon:true, aide:'Avant même d’écouter : d’où vient cet appel ? Regardez ce qu’affiche le téléphone.', note:'L’appel n’arrive pas du numéro enregistré de votre petit-fils. Un proche qui appelle d’un numéro inconnu pour une urgence d’argent se vérifie toujours en le rappelant sur son numéro habituel.' },
     { texte:'ne dis rien à papa et maman', bon:true, aide:'Cherchez la phrase qui vous demande de n’en parler à personne.', note:'Le secret vous isole : il vous empêche d’appeler ceux qui diraient aussitôt « mais Théo est à la maison ».' },
-    { texte:'caution de 3 800 € ce soir', bon:true, aide:'Combien, et pour quand ? Cherchez la demande d’argent et son délai.', note:'Une grosse somme, à réunir le soir même : l’urgence sert à vous empêcher de vérifier.' },
+    { texte:'caution de 3 800 € ce soir pour lui éviter la garde à vue', bon:true, aide:'Combien, et pour quand ? Cherchez la demande d’argent et son délai.', note:'Une grosse somme, à réunir le soir même : l’urgence sert à vous empêcher de vérifier.' },
     { texte:'Un coursier passera chez vous prendre l’enveloppe', bon:true, aide:'Comment l’argent doit-il être remis ? Est-ce ainsi qu’on paie quoi que ce soit d’officiel ?', note:'De l’argent liquide remis à un inconnu sur le pas de la porte : aucune caution, aucune amende, aucun avocat ne se paie ainsi.' },
-    { texte:'Mamie, c’est moi', bon:false, type:'leurre', note:'C’est bien sa voix, pensez-vous — et c’est exactement l’effet recherché. Une voix s’imite aujourd’hui par IA à partir d’un court enregistrement : elle ne prouve plus qui parle. Ce qui trahit l’appel, c’est ce qu’on vous demande.' }
+    { texte:'Mamie, c’est moi', bon:false, type:'leurre', note:'C’est bien sa voix, pensez-vous — et c’est exactement l’effet recherché. Une voix s’imite aujourd’hui par IA à partir d’un court enregistrement : elle ne prouve plus qui parle. Ce qui trahit l’appel, c’est ce qu’on vous demande.' },
+    { texte:'J’ai eu un accident de voiture, j’ai blessé quelqu’un', bon:true, aide:'Qu’est-ce qui doit vous affoler dès la première phrase ?', note:'Un drame annoncé d’emblée pour vous affoler : sous le choc, on ne vérifie plus rien.' },
+    { texte:'Je te passe mon avocat', bon:true, aide:'Pourquoi la voix de votre petit-fils disparaît-elle si vite ?', note:'La voix imitée ne dit que quelques phrases, puis passe la main à un complice : impossible ainsi de lui poser une question.' }
   ],
   'chat-vocal-clone-fille': [
     { texte:'+33 7 49 02 15 63', bon:true, aide:'Ce numéro est-il bien celui, enregistré, de votre fille ? Regardez d’où viennent les messages.', note:'Numéro inconnu qui prétend être votre enfant.' },
-    { texte:'Je t’écris du portable d’une collègue', bon:true, aide:'Cherchez l’excuse donnée pour expliquer ce numéro inconnu.', note:'Le prétexte qui explique le numéro inconnu — et qui vous dissuade d’appeler l’ancien.' },
-    { texte:'avant 18h', bon:true, aide:'Cherchez le délai qui vous presse.', note:'Un délai couperet : on veut que vous payiez avant d’avoir vérifié.' },
-    { texte:'fais un virement instantané', bon:true, aide:'Comment vous demande-t-on de payer ? Ce moyen de paiement se rattrape-t-il ?', note:'Un virement instantané part en quelques secondes et ne s’annule pas : c’est pour cela qu’on vous le demande.' },
+    { texte:'mon téléphone est tombé dans l’eau 😩 Je t’écris du portable d’une collègue', bon:true, aide:'Cherchez l’excuse donnée pour expliquer ce numéro inconnu.', note:'Le prétexte qui explique le numéro inconnu — et qui vous dissuade d’appeler l’ancien.' },
+    { texte:'Je dois régler 940 € au garage avant 18h, sinon ils gardent la voiture', bon:true, aide:'Cherchez le délai qui vous presse.', note:'Un délai couperet : on veut que vous payiez avant d’avoir vérifié.' },
+    { texte:'Je t’envoie le RIB du garagiste : fais un virement instantané', bon:true, aide:'Comment vous demande-t-on de payer ? Ce moyen de paiement se rattrape-t-il ?', note:'Un virement instantané part en quelques secondes et ne s’annule pas : c’est pour cela qu’on vous le demande.' },
     { texte:'c’est vraiment moi, écoute', bon:false, type:'leurre', note:'Ce message vocal est là pour vous rassurer : « tu entends bien que c’est moi ». Mais une voix s’imite par IA, et celui qui vous réclame de l’argent ne peut pas fournir lui-même la preuve de son identité.' }
   ],
   'appel-petite-fille-code-ok': [
