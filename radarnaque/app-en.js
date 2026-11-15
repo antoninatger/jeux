@@ -24,7 +24,7 @@
     { cle:'admin', em:'🏛️', nom:'Health, taxes and grants',
       ids:['sms-ameli','email-ameli-regularisation','sms-remboursement-impots','email-panneaux','email-clim-aides','notif-ameli-ok','email-impots-ok','appel-mairie-ok','appel-medecin-ok','sms-pharmacie-ok','sms-rdv-ok','email-mutuelle-ok'] },
     { cle:'annonces', em:'🏷️', nom:'Classified ads and rentals',
-      ids:['chat-trop-percu-vente','chat-fausse-vendeuse-acompte','email-airbnb-horsplateforme','chat-leboncoin-paiement-securise-ok'] }
+      ids:['chat-trop-percu-vente','chat-wero-faux-virements','chat-fausse-vendeuse-acompte','email-airbnb-horsplateforme','chat-leboncoin-paiement-securise-ok'] }
   ];
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
@@ -46,7 +46,9 @@
     fermer:     { t:'I do nothing that is asked: I close the window, and if it resists I switch the device off' },
     plateforme: { t:'I stay on the platform: secure payment, or nothing' },
     verifier:   { t:'I do not share: first I check whether recognised media are reporting it' },
-    attendre:   { t:'I send nothing back until the money has really arrived in my account' },
+    jamaisRendre:{ t:'I never refund it myself: if the mistake is real, it is up to their bank to recall the transfer' },
+    attendre:   { t:'I wait to see the money in my account, then I refund', p:'Seeing the money arrive proves nothing: a fraudulent transfer can be cancelled later, and some scammers make money taken from your own savings accounts appear in your account.' },
+    scanner:    { t:'I scan the QR code to give them their money back', p:'The QR code leads to a copy of your bank’s website: by logging in there, you hand your access to the scammer.' },
     renov:      { t:'I do not reply; if the subject interests me, I call France Rénov’ myself' },
     reputation: { t:'I do not buy before checking the site’s reputation somewhere other than in this message' },
     cliquer:    { t:'I click the link, just to see', p:'Clicking “just to see” is already stepping into the trap: the fake page is built to keep you going.' },
@@ -62,7 +64,7 @@
     obeir:      { t:'I follow the instructions on the screen', p:'These steps make you install or authorise the malicious program yourself.' },
     partager:   { t:'I share it, in case it is true', p:'Sharing “just in case” is spreading the fake: that is all it asks for.' },
     commentaires:{ t:'I look at the comments: if many people believe it, it is true', p:'Numbers prove nothing: a well-made fake is believed and shared by thousands of people.' },
-    rembourser: { t:'I send back the overpayment, out of honesty', p:'The first “transfer” does not exist: it is your own money you would be sending.' },
+    rembourser: { t:'I send back the overpayment, out of honesty', p:'Whether their transfer exists or not, it is your own money you would be sending, and it will not come back.' },
     capture:    { t:'I trust the screenshot of the transfer', p:'A screenshot can be faked in a minute. Only your bank statement counts.' },
     piece:      { t:'I open the attachment to see what it is', p:'An attachment can install a virus as soon as it is opened.' },
     secret:     { t:'I tell no one, as I am asked', p:'Secrecy is the scammer’s weapon: telling someone close to you is often enough to stop everything.' },
@@ -91,7 +93,8 @@
     'email-prenom-detourne': ['officiel','numero','repondre'],
     'email-fausse-boutique-liquidation': ['reputation','viteAcheter','cliquer'],
     'email-prime-video-paiement': ['officiel','remplir','repondre'],
-    'chat-trop-percu-vente': ['attendre','rembourser','capture'],
+    'chat-trop-percu-vente': ['jamaisRendre','attendre','rembourser','capture'],
+    'chat-wero-faux-virements': ['jamaisRendre','scanner','attendre'],
     'sms-remboursement-impots': ['officiel','remplir','repondre'],
     'image-deepfake-manifestation': ['verifier','partager','commentaires'],
     'chat-faux-profil-rencontre': ['couper','payerAvant','preuve'],

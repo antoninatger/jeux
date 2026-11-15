@@ -24,7 +24,7 @@
     { cle:'admin', em:'🏛️', nom:'Santé, impôts et aides',
       ids:['sms-ameli','email-ameli-regularisation','sms-remboursement-impots','email-panneaux','email-clim-aides','notif-ameli-ok','email-impots-ok','appel-mairie-ok','appel-medecin-ok','sms-pharmacie-ok','sms-rdv-ok','email-mutuelle-ok'] },
     { cle:'annonces', em:'🏷️', nom:'Petites annonces et locations',
-      ids:['chat-trop-percu-vente','chat-fausse-vendeuse-acompte','email-airbnb-horsplateforme','chat-leboncoin-paiement-securise-ok'] }
+      ids:['chat-trop-percu-vente','chat-wero-faux-virements','chat-fausse-vendeuse-acompte','email-airbnb-horsplateforme','chat-leboncoin-paiement-securise-ok'] }
   ];
   var app, hud, barFill, barLbl, scoreEl;
   var deck = [], idx = 0, score = 0, repondu = false;
@@ -46,7 +46,9 @@
     fermer:     { t:'Je ne fais rien de ce qui est demandé : je ferme la fenêtre, et si elle résiste j’éteins l’appareil' },
     plateforme: { t:'Je reste sur la plateforme : paiement sécurisé, ou rien' },
     verifier:   { t:'Je ne partage pas : je cherche d’abord si des médias reconnus en parlent' },
-    attendre:   { t:'Je ne renvoie rien tant que l’argent n’est pas réellement arrivé sur mon compte' },
+    jamaisRendre:{ t:'Je ne rembourse jamais moi-même : si l’erreur est vraie, c’est à sa banque de rappeler le virement' },
+    attendre:   { t:'J’attends de voir l’argent sur mon compte, puis je rembourse', p:'Voir l’argent arriver ne prouve rien : un virement frauduleux peut être annulé plus tard, et certains escrocs font apparaître sur votre compte de l’argent pris sur vos propres livrets.' },
+    scanner:    { t:'Je scanne le QR code pour lui rendre son argent', p:'Le QR code mène à une copie du site de votre banque : en vous y connectant, vous donnez votre accès à l’escroc.' },
     renov:      { t:'Je ne réponds pas ; si le sujet m’intéresse, j’appelle moi-même France Rénov’' },
     reputation: { t:'Je n’achète pas avant d’avoir vérifié la réputation du site ailleurs que sur ce message' },
     cliquer:    { t:'Je clique sur le lien, juste pour voir', p:'Cliquer « pour voir », c’est déjà entrer dans le piège : la fausse page est faite pour vous faire continuer.' },
@@ -62,7 +64,7 @@
     obeir:      { t:'Je suis les instructions affichées à l’écran', p:'Ces manipulations vous font installer ou autoriser vous-même le programme malveillant.' },
     partager:   { t:'Je partage, au cas où ce serait vrai', p:'Partager « au cas où », c’est faire circuler le faux : c’est tout ce qu’il demande.' },
     commentaires:{ t:'Je regarde les commentaires : si beaucoup y croient, c’est vrai', p:'Le nombre ne prouve rien : un faux bien fait est cru et partagé par des milliers de personnes.' },
-    rembourser: { t:'Je renvoie le trop-perçu, par honnêteté', p:'Le premier « virement » n’existe pas : c’est votre propre argent que vous enverriez.' },
+    rembourser: { t:'Je renvoie le trop-perçu, par honnêteté', p:'Que son virement existe ou non, c’est votre propre argent que vous enverriez, et il ne reviendra pas.' },
     capture:    { t:'Je me fie à la capture d’écran du virement', p:'Une capture d’écran se fabrique en une minute. Seul votre relevé de compte fait foi.' },
     piece:      { t:'J’ouvre la pièce jointe pour voir ce que c’est', p:'Une pièce jointe peut installer un virus dès l’ouverture.' },
     secret:     { t:'Je n’en parle à personne, comme on me le demande', p:'Le secret est l’arme de l’escroc : en parler à un proche suffit souvent à tout arrêter.' },
@@ -91,7 +93,8 @@
     'email-prenom-detourne': ['officiel','numero','repondre'],
     'email-fausse-boutique-liquidation': ['reputation','viteAcheter','cliquer'],
     'email-prime-video-paiement': ['officiel','remplir','repondre'],
-    'chat-trop-percu-vente': ['attendre','rembourser','capture'],
+    'chat-trop-percu-vente': ['jamaisRendre','attendre','rembourser','capture'],
+    'chat-wero-faux-virements': ['jamaisRendre','scanner','attendre'],
     'sms-remboursement-impots': ['officiel','remplir','repondre'],
     'image-deepfake-manifestation': ['verifier','partager','commentaires'],
     'chat-faux-profil-rencontre': ['couper','payerAvant','preuve'],
