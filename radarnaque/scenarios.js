@@ -421,11 +421,38 @@ const SCENARIOS = [
     indices: [
       'L’acheteuse ne vient jamais voir l’objet elle-même : elle passe par un « transporteur ».',
       'Elle prétend avoir envoyé trop d’argent par erreur et demande de lui renvoyer la différence tout de suite.',
-      'Sa seule « preuve » est une capture d’écran du virement — jamais l’argent réellement crédité sur votre compte.',
-      { risque: 'Vous renvoyez un vrai virement de votre poche, alors que le premier virement n’arrivera jamais (ou sera annulé).' }
+      'Sa seule « preuve » est une capture d’écran du virement : une image qui se fabrique en une minute.',
+      { risque: 'Vous renvoyez un vrai virement de votre poche. Le premier, lui, n’existe pas, sera annulé… ou vient en réalité de vos propres comptes.' }
     ],
-    reflexe: 'Ne remboursez jamais un « trop-perçu » avant que l’argent soit réellement et définitivement crédité sur votre compte : vérifiez vous-même dans votre application bancaire, pas sur une capture d’écran envoyée par l’acheteur.',
-    explication: 'Arnaque classique sur les sites de petites annonces : l’escroc simule (ou falsifie) un virement trop élevé, souvent via une fausse capture d’écran, et demande à être remboursé de la différence « en urgence ». Le premier virement n’existe pas ou sera rejeté quelques jours plus tard : la victime a bel et bien envoyé, elle, un vrai virement — perdu. Utilisez toujours le paiement sécurisé intégré à la plateforme, jamais un virement direct à un inconnu.'
+    reflexe: 'Ne remboursez jamais vous-même un « trop-perçu », même si l’argent semble bien arrivé sur votre compte. Un acheteur qui s’est vraiment trompé demande à SA banque de rappeler son virement : ce n’est jamais à vous de le renvoyer.',
+    explication: 'Arnaque classique sur les sites de petites annonces : l’escroc simule (ou falsifie) un virement trop élevé, souvent via une fausse capture d’écran, et demande à être remboursé de la différence « en urgence ». Attendre de voir l’argent sur votre compte ne protège pas : un virement frauduleux peut être annulé des jours plus tard, et dans les versions les plus récentes de cette arnaque, l’argent que la victime voit arriver vient de ses propres livrets, déplacé par l’escroc. La seule règle sûre : on ne rembourse jamais soi-même. Utilisez toujours le paiement sécurisé intégré à la plateforme, jamais un virement direct à un inconnu.'
+  },
+
+  /* ---------- 22 bis. Faux trop-perçu Wero + faux QR code — ARNAQUE ---- */
+  {
+    id: 'chat-wero-faux-virements',
+    canal: 'chat',
+    entete: 'Vous vendez deux places de spectacle à 30 € sur un site de petites annonces. L’acheteur vous écrit',
+    plateforme: 'Site de petites annonces — messagerie',
+    contact: 'Acheteur (places de spectacle)',
+    avatar: '',
+    messages: [
+      { from: 'eux', texte: 'Bonjour, je prends vos deux places ! Je vous ai fait un virement Wero de 30,00 €.' },
+      { from: 'eux', texte: 'Oh mon dieu, j’ai fait une énorme erreur 😱 La virgule n’a pas été prise en compte, et comme j’ai eu un message d’erreur j’ai recommencé : je vous ai fait 3 virements Wero de 3 000 € ! Je n’ai plus rien sur mon compte, comment je vais faire ?' },
+      { from: 'eux', texte: 'Vous pouvez me faire un Wero en retour SVP ? Je vous envoie mon QR code Wero : il suffit de le scanner et de vous connecter à votre banque pour valider.' },
+      { from: 'eux', texte: 'Je vous appelle tout de suite pour vous guider, ce sera plus rapide 🙏' }
+    ],
+    verdict: 'arnaque',
+    categorie: 'Faux trop-perçu Wero et faux QR code (vol de l’accès à votre banque)',
+    indices: [
+      'Un montant cent fois trop élevé, envoyé trois fois « par erreur » : le scénario est fabriqué pour vous affoler.',
+      'On vous demande de rembourser vous-même, tout de suite.',
+      'Le QR code mène à une copie du site de votre banque, où l’on vous fait vous connecter et valider.',
+      'L’escroc passe au téléphone pour vous guider et vous empêcher de réfléchir.',
+      { risque: 'En validant, vous ouvrez votre banque à l’escroc. Il vire alors l’argent de VOS livrets vers votre compte courant : vous voyez bien arriver trois fois 3 000 €… qui sont à vous, et que vous lui « rendez ».' }
+    ],
+    reflexe: 'Ne remboursez jamais vous-même un « trop-perçu », même si l’argent apparaît sur votre compte : c’est à la banque de l’acheteur de rappeler son virement. Et ne vous connectez jamais à votre banque depuis un QR code ou un lien reçu.',
+    explication: 'Cette arnaque a fait de vraies victimes, et elles avaient bien vu l’argent arriver. La fausse page ouverte par le QR code imite la banque : pendant que la victime s’y connecte, l’escroc se connecte en même temps au vrai site, et c’est SA connexion que la victime valide sur son téléphone. Une fois entré, il déplace l’argent des livrets vers le compte courant. Sur un petit écran, difficile de voir que ces trois arrivées de 3 000 € sont des virements internes : la victime croit rendre l’argent de l’acheteur, elle envoie ses propres économies. Les escrocs savent parfois quels comptes vous détenez, grâce à des fuites de données. Wero est un vrai service des banques : il s’utilise depuis l’application de votre banque, jamais depuis un code ou un lien envoyé par un inconnu. Au moindre doute, raccrochez et appelez votre banque au numéro inscrit au dos de votre carte.'
   },
 
   /* ---------- 23. SMS faux remboursement des impôts — ARNAQUE ---------- */
@@ -1230,7 +1257,10 @@ const GLOSSAIRE = [
     def:'Se faire payer en dehors du site officiel (location, petite annonce, billetterie) — par virement ou cartes cadeaux — pour échapper aux protections de la plateforme. Un vrai loueur ou vendeur passe toujours par le paiement sécurisé du site.' },
   { key:'trop-percu', terme:'Arnaque au trop-perçu',
     aliases:['trop-perçu','arnaque au trop-perçu'],
-    def:'Un acheteur prétend avoir envoyé trop d’argent par erreur (souvent avec une fausse capture d’écran de virement) et demande de lui rembourser la différence avant que l’argent ne soit réellement arrivé. Le premier virement n’existe pas ou sera annulé : la victime perd le vrai virement qu’elle a renvoyé.' },
+    def:'Un acheteur prétend avoir envoyé trop d’argent par erreur (souvent avec une fausse capture d’écran de virement) et demande de lui rembourser la différence. Le premier virement n’existe pas, sera annulé, ou vient en réalité des propres comptes de la victime : elle perd ce qu’elle a renvoyé. On ne rembourse jamais soi-même : c’est à la banque de l’acheteur de rappeler un virement.' },
+  { key:'wero', terme:'Wero',
+    aliases:['Wero'],
+    def:'Service de paiement instantané des banques européennes, qui a remplacé Paylib en France. On envoie de l’argent depuis l’application de sa banque, avec un numéro de téléphone ou un QR code. Un paiement Wero part tout de suite et ne s’annule pas : on ne l’utilise jamais depuis un lien ou un code envoyé par un inconnu.' },
   { key:'fausse-boutique', terme:'Fausse boutique en ligne',
     aliases:['fausse boutique en ligne','faux site marchand'],
     def:'Un site de vente factice, souvent avec des réductions extrêmes et une urgence artificielle (« liquidation », « stock limité »), qui encaisse le paiement sans jamais livrer, ou vole les données bancaires.' },
@@ -1426,10 +1456,20 @@ const REPERES = {
   ],
   'chat-trop-percu-vente': [
     { texte:'Je ne viendrai pas moi-même, un transporteur passera le récupérer', bon:true, aide:'L’acheteuse vient-elle voir l’objet elle-même ? Cherchez le prétexte pour ne pas se déplacer.', note:'Elle ne vient jamais en personne : prétexte classique pour préparer l’arnaque.' },
-    { texte:'un virement de 350 € par erreur au lieu de 200 €, le formulaire a mal fonctionné', bon:true, aide:'Combien dit-elle avoir envoyé, et pourquoi ? Cherchez l’« erreur » qui tombe bien.', note:'Le virement « trop élevé par erreur » est le cœur du piège : il n’existe pas, ou sera annulé. Personne ne paie 150 € de trop sans s’en apercevoir.' },
-    { texte:'renvoyer les 150 € de trop par virement instantané', bon:true, aide:'Que vous demande-t-on de faire avec de l’argent que vous n’avez pas encore reçu ?', note:'Demande de rembourser un « trop-perçu » avant même que l’argent soit arrivé.' },
-    { texte:'capture d’écran du virement', bon:true, aide:'Cette « preuve » de paiement montre-t-elle vraiment que l’argent est sur votre compte ?', note:'Une capture d’écran se fabrique facilement : ce n’est pas une preuve que l’argent est arrivé.' },
+    { texte:'un virement de 350 € par erreur au lieu de 200 €, le formulaire a mal fonctionné', bon:true, aide:'Combien dit-elle avoir envoyé, et pourquoi ? Cherchez l’« erreur » qui tombe bien.', note:'Le virement « trop élevé par erreur » est le cœur du piège. Qu’il existe ou non, la suite est toujours la même : on vous demande de renvoyer de l’argent.' },
+    { texte:'renvoyer les 150 € de trop par virement instantané', bon:true, aide:'Que vous demande-t-on de faire, et par un moyen impossible à annuler ?', note:'Demande de rembourser vous-même un « trop-perçu » : on ne le fait jamais, que l’argent paraisse arrivé ou non. C’est à sa banque de rappeler le virement.' },
+    { texte:'capture d’écran du virement', bon:true, aide:'Cette « preuve » de paiement prouve-t-elle quoi que ce soit ?', note:'Une capture d’écran se fabrique facilement : elle ne prouve rien.' },
     { texte:'200 €', bon:false, type:'neutre', note:'Le prix de l’objet lui-même n’est pas un indice : c’est autour de lui que se joue l’arnaque.' }
+  ],
+  'chat-wero-faux-virements': [
+    { texte:'La virgule n’a pas été prise en compte', bon:true, aide:'Quelle « erreur » explique un montant cent fois trop élevé ?', note:'L’erreur de virgule qui transforme 30 € en 3 000 € : un scénario fabriqué pour vous affoler. Une application de paiement fait confirmer le montant avant l’envoi.' },
+    { texte:'je vous ai fait 3 virements Wero de 3 000 €', bon:true, aide:'Combien dit-il avoir envoyé, et combien de fois ?', note:'Trois fois la même « erreur », 9 000 € en jeu : l’énormité de la somme sert à vous faire agir vite, par peur et par honnêteté.' },
+    { texte:'Vous pouvez me faire un Wero en retour SVP', bon:true, aide:'Que vous demande-t-on de faire vous-même ?', note:'On ne rembourse jamais soi-même un « trop-perçu », même si l’argent apparaît sur votre compte. Si l’erreur était vraie, sa banque rappellerait le virement.' },
+    { texte:'Je vous envoie mon QR code Wero', bon:true, aide:'Par quel chemin veut-on vous faire passer pour rembourser ?', note:'Le QR code mène à une copie du site de votre banque. Wero s’utilise depuis l’application de votre banque, jamais depuis un code ou un lien reçu.' },
+    { texte:'vous connecter à votre banque pour valider', bon:true, aide:'Que devrez-vous taper et valider sur la page ouverte par le QR code ?', note:'Vous connecter et valider sur cette page, c’est donner à l’escroc l’entrée de votre banque : il se connecte en même temps que vous, et c’est SA connexion que vous validez.' },
+    { texte:'Je vous appelle tout de suite pour vous guider', bon:true, aide:'Pourquoi tient-il à vous avoir au téléphone ?', note:'Au téléphone, l’escroc vous presse et vous dicte chaque geste : vous n’avez plus le temps de réfléchir ni de demander conseil.' },
+    { texte:'Je n’ai plus rien sur mon compte, comment je vais faire ?', bon:false, type:'leurre', note:'La détresse touche, et c’est fait pour : elle vous pousse à réparer vite une « erreur » qui n’est pas la vôtre.' },
+    { texte:'un virement Wero de 30,00 €', bon:false, type:'neutre', note:'Wero est un vrai service de paiement des banques, et 30 € est le prix convenu : rien de suspect ici. C’est la suite qui trahit l’arnaque.' }
   ],
   'sms-remboursement-impots': [
     { texte:'DGFIP', bon:false, type:'neutre', note:'Un nom d’expéditeur de SMS ou d’e-mail s’écrit librement : n’importe qui peut signer « DGFIP ». Il ne prouve rien — ni qu’un message est faux, ni qu’il est vrai.' },

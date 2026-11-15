@@ -423,11 +423,36 @@ const SCENARIOS = [
     "indices": [
       "The buyer never comes to see the item herself: she uses a “courier”.",
       "She claims to have sent too much money by mistake and asks you to send back the difference right away.",
-      "Her only “proof” is a screenshot of the transfer — never money actually credited to your account.",
-      { "risque": "You send a real transfer out of your own pocket, while her first transfer never arrives (or gets cancelled)." }
+      "Her only “proof” is a screenshot of the transfer: a picture that can be faked in a minute.",
+      { "risque": "You send a real transfer out of your own pocket. Hers does not exist, will be cancelled… or actually comes from your own accounts." }
     ],
-    "reflexe": "Never refund an “overpayment” before the money is truly and permanently credited to your account: check yourself in your banking app, not on a screenshot sent by the buyer.",
-    "explication": "A classic scam on classifieds sites: the scammer fakes (or forges) an overly large transfer, often with a fake screenshot, and asks to be refunded the difference “urgently”. The first transfer does not exist or gets rejected days later: the victim really did send a genuine transfer — and loses it. Always use the platform’s built-in secure payment, never a direct transfer to a stranger."
+    "reflexe": "Never refund an “overpayment” yourself, even if the money seems to have arrived in your account. A buyer who really made a mistake asks THEIR bank to recall the transfer: it is never up to you to send it back.",
+    "explication": "A classic scam on classifieds sites: the scammer fakes (or forges) an overly large transfer, often with a fake screenshot, and asks to be refunded the difference “urgently”. Waiting to see the money in your account does not protect you: a fraudulent transfer can be cancelled days later, and in the most recent versions of this scam, the money the victim sees arriving comes from their own savings accounts, moved by the scammer. The only safe rule: never refund it yourself. Always use the platform’s built-in secure payment, never a direct transfer to a stranger."
+  },
+  {
+    "id": "chat-wero-faux-virements",
+    "canal": "chat",
+    "entete": "You are selling two show tickets for €30 on a classifieds site. The buyer writes to you",
+    "plateforme": "Classifieds site — messaging",
+    "contact": "Buyer (show tickets)",
+    "avatar": "",
+    "messages": [
+      { "from": "eux", "texte": "Hello, I’ll take your two tickets! I’ve sent you a Wero payment of €30.00." },
+      { "from": "eux", "texte": "Oh my god, I’ve made a huge mistake 😱 The decimal point was ignored, and as I got an error message I tried again: I’ve sent you 3 Wero payments of €3,000! I have nothing left in my account, what am I going to do?" },
+      { "from": "eux", "texte": "Can you send me a Wero back please? I’m sending you my Wero QR code: just scan it and log in to your bank to confirm." },
+      { "from": "eux", "texte": "I’ll call you right now to guide you, it will be quicker 🙏" }
+    ],
+    "verdict": "arnaque",
+    "categorie": "Fake Wero overpayment and fake QR code (theft of your bank access)",
+    "indices": [
+      "An amount a hundred times too high, sent three times “by mistake”: the story is built to panic you.",
+      "You are asked to refund it yourself, right away.",
+      "The QR code leads to a copy of your bank’s website, where you are made to log in and confirm.",
+      "The scammer moves to the phone to guide you and stop you from thinking.",
+      { "risque": "By confirming, you open your bank to the scammer. They then move money from YOUR savings accounts to your current account: you really do see three lots of €3,000 arrive… which are yours, and which you “give back” to them." }
+    ],
+    "reflexe": "Never refund an “overpayment” yourself, even if the money appears in your account: it is up to the buyer’s bank to recall the transfer. And never log in to your bank from a QR code or a link you were sent.",
+    "explication": "This scam has made real victims, and they had indeed seen the money arrive. The fake page opened by the QR code imitates the bank: while the victim logs in there, the scammer logs in to the real site at the same time, and it is THEIR login that the victim approves on their phone. Once inside, they move money from the savings accounts to the current account. On a small screen, it is hard to see that these three arrivals of €3,000 are internal transfers: the victim thinks they are returning the buyer’s money, and sends their own savings. Scammers sometimes know which accounts you hold, thanks to data leaks. Wero is a genuine banking service: it is used from your bank’s app, never from a code or a link sent by a stranger. If in any doubt, hang up and call your bank on the number printed on the back of your card."
   },
   {
     "id": "sms-remboursement-impots",
@@ -1340,7 +1365,15 @@ const GLOSSAIRE = [
       "overpayment scam",
       "trop-perçu"
     ],
-    "def": "A buyer claims to have sent too much money by mistake (often with a fake transfer screenshot) and asks to be refunded the difference before the money has actually arrived. The first transfer does not exist or gets cancelled: the victim loses the real money sent back."
+    "def": "A buyer claims to have sent too much money by mistake (often with a fake transfer screenshot) and asks to be refunded the difference. The first transfer does not exist, gets cancelled, or actually comes from the victim’s own accounts: the victim loses what they sent back. Never refund it yourself: it is up to the buyer’s bank to recall a transfer."
+  },
+  {
+    "key": "wero",
+    "terme": "Wero",
+    "aliases": [
+      "Wero"
+    ],
+    "def": "Instant payment service run by European banks, which replaced Paylib in France. You send money from your bank’s app, using a phone number or a QR code. A Wero payment leaves at once and cannot be cancelled: never use it from a link or a code sent by a stranger."
   },
   {
     "key": "fausse-boutique",
@@ -2121,25 +2154,75 @@ const REPERES = {
       "texte": "a transfer of €350 by mistake instead of €200, the form glitched",
       "bon": true,
       "aide": "How much does she say she sent, and why? Find the convenient “mistake”.",
-      "note": "The transfer that was “too high by mistake” is the heart of the trap: it does not exist, or will be cancelled. Nobody pays €150 too much without noticing."
+      "note": "The transfer that was “too high by mistake” is the heart of the trap. Whether it exists or not, what follows is always the same: you are asked to send money back."
     },
     {
       "texte": "send back the extra €150 by instant transfer",
       "bon": true,
-      "aide": "What are you asked to do with money you have not actually received yet?",
-      "note": "Asked to refund an “overpayment” before the money has even arrived."
+      "aide": "What are you asked to do, and by a means that cannot be undone?",
+      "note": "You are asked to refund an “overpayment” yourself: you never do, whether the money seems to have arrived or not. It is up to her bank to recall the transfer."
     },
     {
       "texte": "screenshot of the transfer",
       "bon": true,
-      "aide": "Does this “proof” of payment really show the money is in your account?",
-      "note": "A screenshot is easy to fake: it is not proof the money has arrived."
+      "aide": "Does this “proof” of payment prove anything at all?",
+      "note": "A screenshot is easy to fake: it proves nothing."
     },
     {
       "texte": "€200",
       "bon": false,
       "type": "neutre",
       "note": "The item’s price itself is not a clue: the scam plays out around it."
+    }
+  ],
+  "chat-wero-faux-virements": [
+    {
+      "texte": "The decimal point was ignored",
+      "bon": true,
+      "aide": "What “mistake” explains an amount a hundred times too high?",
+      "note": "The decimal-point error that turns €30 into €3,000: a story built to panic you. A payment app makes you confirm the amount before sending."
+    },
+    {
+      "texte": "I’ve sent you 3 Wero payments of €3,000",
+      "bon": true,
+      "aide": "How much do they say they sent, and how many times?",
+      "note": "The same “mistake” three times, €9,000 at stake: the sheer size of the sum is there to make you act fast, out of fear and honesty."
+    },
+    {
+      "texte": "Can you send me a Wero back please",
+      "bon": true,
+      "aide": "What are you asked to do yourself?",
+      "note": "You never refund an “overpayment” yourself, even if the money appears in your account. If the mistake were real, their bank would recall the transfer."
+    },
+    {
+      "texte": "I’m sending you my Wero QR code",
+      "bon": true,
+      "aide": "Which route are you being steered down to make the refund?",
+      "note": "The QR code leads to a copy of your bank’s website. Wero is used from your bank’s app, never from a code or a link you were sent."
+    },
+    {
+      "texte": "log in to your bank to confirm",
+      "bon": true,
+      "aide": "What will you have to type and approve on the page opened by the QR code?",
+      "note": "Logging in and confirming on that page hands the scammer the way into your bank: they log in at the same time as you, and it is THEIR login that you approve."
+    },
+    {
+      "texte": "I’ll call you right now to guide you",
+      "bon": true,
+      "aide": "Why are they so keen to get you on the phone?",
+      "note": "On the phone, the scammer rushes you and dictates every step: you no longer have time to think or to ask for advice."
+    },
+    {
+      "texte": "I have nothing left in my account, what am I going to do?",
+      "bon": false,
+      "type": "leurre",
+      "note": "The distress is touching, and it is meant to be: it pushes you to quickly fix a “mistake” that is not yours."
+    },
+    {
+      "texte": "a Wero payment of €30.00",
+      "bon": false,
+      "type": "neutre",
+      "note": "Wero is a genuine banking payment service, and €30 is the agreed price: nothing suspicious here. It is what follows that gives the scam away."
     }
   ],
   "sms-remboursement-impots": [
