@@ -46,7 +46,7 @@
     fermer:     { t:'Je ne fais rien de ce qui est demandé : je ferme la fenêtre, et si elle résiste j’éteins l’appareil' },
     plateforme: { t:'Je reste sur la plateforme : paiement sécurisé, ou rien' },
     verifier:   { t:'Je ne partage pas : je cherche d’abord si des médias reconnus en parlent' },
-    jamaisRendre:{ t:'Je ne rembourse jamais moi-même : si l’erreur est vraie, c’est à sa banque de rappeler le virement' },
+    jamaisRendre:{ t:'Je ne rembourse rien moi-même : j’écris à ma banque pour expliquer ce qui s’est passé et lui demander comment être certain de rembourser la bonne personne' },
     attendre:   { t:'J’attends de voir l’argent sur mon compte, puis je rembourse', p:'Voir l’argent arriver ne prouve rien : un virement frauduleux peut être annulé plus tard, et certains escrocs font apparaître sur votre compte de l’argent pris sur vos propres livrets.' },
     scanner:    { t:'Je scanne le QR code pour lui rendre son argent', p:'Le QR code mène à une copie du site de votre banque : en vous y connectant, vous donnez votre accès à l’escroc.' },
     renov:      { t:'Je ne réponds pas ; si le sujet m’intéresse, j’appelle moi-même France Rénov’' },

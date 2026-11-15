@@ -46,7 +46,7 @@
     fermer:     { t:'I do nothing that is asked: I close the window, and if it resists I switch the device off' },
     plateforme: { t:'I stay on the platform: secure payment, or nothing' },
     verifier:   { t:'I do not share: first I check whether recognised media are reporting it' },
-    jamaisRendre:{ t:'I never refund it myself: if the mistake is real, it is up to their bank to recall the transfer' },
+    jamaisRendre:{ t:'I refund nothing myself: I write to my bank to explain what happened and ask how to be certain I refund the right person' },
     attendre:   { t:'I wait to see the money in my account, then I refund', p:'Seeing the money arrive proves nothing: a fraudulent transfer can be cancelled later, and some scammers make money taken from your own savings accounts appear in your account.' },
     scanner:    { t:'I scan the QR code to give them their money back', p:'The QR code leads to a copy of your bank’s website: by logging in there, you hand your access to the scammer.' },
     renov:      { t:'I do not reply; if the subject interests me, I call France Rénov’ myself' },
