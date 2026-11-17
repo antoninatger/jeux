@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrouille : quel drapeau ?</title>
+<!--
+  Patrouille de France : bleu-blanc-rouge… ou drapeau russe ?
+  Les avions blancs volent un peu PLUS HAUT et un peu DEVANT ; les bleus et les rouges
+  derrière, côte à côte. Selon l'endroit d'où l'on regarde, les fumées se rangent en
+  bleu-blanc-rouge, ou en blanc-bleu-rouge : le drapeau russe.
+  Page autonome (aucune bibliothèque, aucune connexion) : une petite scène 3D dessinée à la
+  main sur un canvas. L'ordre des couleurs affiché en haut est CALCULÉ à partir de ce qui est
+  à l'écran, pas écrit d'avance. Créée le 14 octobre 2026 pour la formation Fake news niveau 1.
+-->
+<style>
+  :root{--tx:#10233a;--panel:rgba(255,255,255,.9);--acc:#1d4fd8}
+  html,body{margin:0;height:100%;overflow:hidden;background:#8fc3ea;color:var(--tx);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  canvas.tire{cursor:grabbing}
+  .haut{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:center;pointer-events:none}
+  .lecture{background:var(--panel);border-radius:14px;padding:8px 14px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 6px 20px rgba(16,35,58,.18);font-size:15px;max-width:100%}
+  .drapeau{display:flex;flex:none;width:54px;height:36px;border:1px solid rgba(0,0,0,.3);border-radius:3px;overflow:hidden}
+  .drapeau.h{flex-direction:column}
+  .drapeau span{flex:1}
+  .lecture b{font-weight:700}
+  .verdict{display:block;font-size:13px;opacity:.8}
+  .info{position:absolute;left:10px;bottom:62px;max-width:min(430px,calc(100% - 20px));background:var(--panel);
+    border-radius:12px;padding:9px 13px;font-size:13.5px;line-height:1.4;box-shadow:0 6px 20px rgba(16,35,58,.15)}
+  .info:empty{display:none}
+  .bas{position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  button{font:inherit;font-size:14px;font-weight:600;border:1.5px solid rgba(16,35,58,.25);background:var(--panel);
+    color:var(--tx);border-radius:999px;padding:8px 14px;cursor:pointer;box-shadow:0 3px 10px rgba(16,35,58,.12)}
+  button:hover{border-color:var(--acc)}
+  button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+  @media (max-width:560px){button{font-size:12.5px;padding:7px 10px}.info{bottom:96px}}
+</style>
+</head>
+<body>
+<canvas id="cv" aria-label="Trois groupes d'avions et leurs fumées bleue, blanche et rouge, vus en 3D"></canvas>
+
+<div class="haut">
+  <div class="lecture" aria-live="polite">
+    <div class="drapeau" id="drapeau"><span></span><span></span><span></span></div>
+    <div><b id="ordre">…</b><span class="verdict" id="verdict"></span></div>
+  </div>
+</div>
+
+<div class="info" id="info"></div>
+
+<div class="bas">
+  <button type="button" data-vue="vrai">Vu d'en haut : la vraie position</button>
+  <button type="button" data-vue="fr">Vu d'en dessous</button>
+  <button type="button" data-vue="ru">Vu de côté</button>
+  <button type="button" id="visite">▶ Faire le tour</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var W=0,H=0,DPR=1,FOV=55*Math.PI/180;
+
+/* ── La patrouille ─────────────────────────────────────────────────────────
+   Repère : x = sens du vol, y = vers le haut, z = sur le côté.
+   Bleus à gauche (z < 0), rouges à droite (z > 0), au même niveau.
+   Blancs au milieu, PLUS HAUT (y = 6) et DEVANT (x = 10). */
+var COUL={
+  bleu:{coeur:'#2457e6',bord:'#173a9e',nom:'bleu'},
+  blanc:{coeur:'#ffffff',bord:'#b9c6d6',nom:'blanc'},
+  rouge:{coeur:'#e8282f',bord:'#a3161c',nom:'rouge'}
+};
+var GROUPES=[{c:'bleu',x:0,y:0,z:-6},{c:'blanc',x:10,y:6,z:0},{c:'rouge',x:0,y:0,z:6}];
+var AVIONS=[];
+GROUPES.forEach(function(g){
+  // trois avions en V : le chef devant, deux ailiers un peu en retrait
+  [[0,0],[-2.4,-1.7],[-2.4,1.7]].forEach(function(o,i){
+    AVIONS.push({c:g.c,x:g.x+o[0],y:g.y,z:g.z+o[1],ph:i*2.1+g.z});
+  });
+});
+var LONG=130, PAS=2.6;           // longueur des fumées, pas de l'échantillonnage
+var CIBLE={x:22,y:2,z:0};         // point que la caméra regarde (dans le repère miroir, voir proj)
+
+/* ── Points de vue ─────────────────────────────────────────────────────── */
+var VUES={
+  fr:{az:Math.PI,el:-86*Math.PI/180,d:115,
+    txt:"Depuis le sol, juste <b>sous</b> la patrouille : les trois fumées sont côte à côte. Bleu, blanc, rouge : c'est bien le drapeau français."},
+  ru:{az:-Math.PI/2,el:-20*Math.PI/180,d:78,
+    txt:"Depuis le sol, <b>sur le côté</b> : on ne voit plus que la hauteur des fumées. Les blancs volent plus haut, ils passent au-dessus. Et la fumée bleue, plus proche de nous, paraît plus haute que la rouge, plus lointaine. Résultat : blanc, bleu, rouge… le drapeau russe."},
+  /* 17 novembre : la vue de départ, demandée par Anton : vu de dessus, les avions vont vers le bas
+     de l'écran, les trois fumées font des bandes verticales (bleu à gauche, rouge à droite). */
+  vrai:{az:Math.PI,el:84*Math.PI/180,d:120,
+    txt:"Vu d'en haut, la vraie position : les blancs sont <b>au milieu</b>, un peu <b>devant</b>, et ils volent un peu <b>plus haut</b> que les bleus et les rouges. Ce sont les mêmes avions et les mêmes fumées : seul le point de vue change ce que l'on croit voir.",
+    etiquettes:true}
+};
+var cam={az:VUES.vrai.az,el:VUES.vrai.el,d:VUES.vrai.d};
+var trajet=null, vueActive='vrai', visite=false, tVisite=0, ORDRE_VISITE=['vrai','fr','ru'];
+
+/* ── Petite algèbre ───────────────────────────────────────────────────── */
+function sub(a,b){return {x:a.x-b.x,y:a.y-b.y,z:a.z-b.z};}
+function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z;}
+function cross(a,b){return {x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x};}
+function norm(a){var l=Math.hypot(a.x,a.y,a.z)||1;return {x:a.x/l,y:a.y/l,z:a.z/l};}
+
+var C;   // caméra du dessin en cours
+function poserCamera(){
+  var ce=Math.cos(cam.el);
+  var p={x:CIBLE.x+cam.d*ce*Math.cos(cam.az),y:CIBLE.y+cam.d*Math.sin(cam.el),z:CIBLE.z+cam.d*ce*Math.sin(cam.az)};
+  var f=norm(sub(CIBLE,p)),r=norm(cross(f,{x:0,y:1,z:0})),u=cross(r,f);
+  C={p:p,f:f,r:r,u:u,F:0.5*H/Math.tan(FOV/2)};
+}
+/* Le 2 novembre, Anton : les avions doivent venir VERS nous. On retourne la scène
+   (x devient -x) au moment de la projection : la patrouille arrive face à la caméra,
+   les bleus restent à gauche vus d'en dessous, et vus de côté elle file vers la droite. */
+function proj(q){
+  var d=sub({x:-q.x,y:q.y,z:q.z},C.p),z=dot(d,C.f);
+  if(z<0.5)return null;
+  return {x:W/2+C.F*dot(d,C.r)/z,y:H/2-C.F*dot(d,C.u)/z,z:z};
+}
+
+/* Point de la fumée, s mètres derrière la queue de l'avion */
+function ptFumee(a,s,t){
+  return {x:a.x-1.3-s,y:a.y-0.012*s+0.25*Math.sin(s/17+a.ph),z:a.z+0.35*Math.sin(s/23+a.ph*1.7)};
+}
+
+/* ── Dessin ───────────────────────────────────────────────────────────── */
+function ciel(){
+  // pas de roulis : l'horizon est une droite horizontale à l'écran
+  var tang=C.f.y/Math.sqrt(Math.max(1e-6,1-C.f.y*C.f.y));
+  var yh=H/2+C.F*tang;
+  var g=ctx.createLinearGradient(0,Math.min(yh,H)-H*1.2,0,Math.min(yh,H));
+  g.addColorStop(0,'#5d9fdc');g.addColorStop(1,'#cfe6f7');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  if(yh<H){
+    var s=ctx.createLinearGradient(0,yh,0,H);
+    s.addColorStop(0,'#9db58a');s.addColorStop(1,'#6f8f5c');
+    ctx.fillStyle=s;ctx.fillRect(0,Math.max(0,yh),W,H-Math.max(0,yh));
+  }
+}
+
+var FORME=[ // avion vu de haut (nez vers +x) : fuselage, ailes, dérive
+  [[1.3,0,0],[-1.3,0,0.28],[-1.3,0,-0.28]],
+  [[0.25,0,0],[-0.75,0,1.15],[-0.75,0,-1.15]],
+  [[-0.6,0,0],[-1.3,0,0],[-1.3,0.6,0]]
+];
+
+function dessiner(t){
+  poserCamera();
+  ciel();
+  var objets=[];
+  AVIONS.forEach(function(a){
+    var prec=null;
+    for(var s=0;s<=LONG;s+=PAS){
+      var q=proj(ptFumee(a,s,t));
+      if(q&&prec){
+        var r=(0.42+0.022*s)*(1+0.13*Math.sin((s-t*28)/3.6+a.ph));
+        var zm=(q.z+prec.z)/2;
+        objets.push({z:zm,type:'f',x1:prec.x,y1:prec.y,x2:q.x,y2:q.y,
+          w:Math.max(1,2*C.F*r/zm),a:0.92*Math.pow(1-s/LONG,0.55),c:COUL[a.c]});
+      }
+      prec=q;
+    }
+    var bob=0.18*Math.sin(t*1.6+a.ph);
+    var pts=FORME.map(function(tri){return tri.map(function(v){return proj({x:a.x+v[0],y:a.y+v[1]+bob,z:a.z+v[2]});});});
+    var cz=proj({x:a.x,y:a.y,z:a.z});
+    if(cz)objets.push({z:cz.z-0.01,type:'a',pts:pts});
+  });
+  objets.sort(function(m,n){return n.z-m.z;});
+  ctx.lineCap='round';
+  objets.forEach(function(o){
+    if(o.type==='f'){
+      ctx.globalAlpha=o.a*0.35;ctx.strokeStyle=o.c.bord;ctx.lineWidth=o.w*1.45;
+      ctx.beginPath();ctx.moveTo(o.x1,o.y1);ctx.lineTo(o.x2,o.y2);ctx.stroke();
+      ctx.globalAlpha=o.a;ctx.strokeStyle=o.c.coeur;ctx.lineWidth=o.w;
+      ctx.beginPath();ctx.moveTo(o.x1,o.y1);ctx.lineTo(o.x2,o.y2);ctx.stroke();
+    }else{
+      ctx.globalAlpha=1;ctx.fillStyle='#e9eef4';ctx.strokeStyle='#2b3d52';ctx.lineWidth=1;ctx.lineJoin='round';
+      o.pts.forEach(function(tri){
+        if(tri.some(function(p){return !p;}))return;
+        ctx.beginPath();ctx.moveTo(tri[0].x,tri[0].y);ctx.lineTo(tri[1].x,tri[1].y);ctx.lineTo(tri[2].x,tri[2].y);ctx.closePath();
+        ctx.fill();ctx.stroke();
+      });
+    }
+  });
+  ctx.globalAlpha=1;
+  if(vueActive==='vrai'&&!trajet)etiquettes();
+  lire();
+}
+
+/* Vue d'en haut : l'altitude ne se voit pas, on l'écrit à côté de chaque groupe */
+function etiquettes(){
+  ctx.font='600 13px system-ui,-apple-system,"Segoe UI",sans-serif';ctx.textBaseline='middle';
+  GROUPES.forEach(function(g){
+    var q=proj({x:g.x+2.5,y:g.y,z:g.z});if(!q)return;
+    var t=g.c==='blanc'?'Blancs : 6 m plus haut, et devant':(g.c==='bleu'?'Bleus':'Rouges')+' : altitude de référence';
+    var w=ctx.measureText(t).width+14;
+    ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();
+    var x0=g.c==='bleu'?q.x-28-w:q.x+28, y0=g.c==='blanc'?q.y+34:q.y;
+    x0=Math.max(4,Math.min(W-4-w,x0));
+    if(ctx.roundRect)ctx.roundRect(x0,y0-12,w,24,8);else ctx.rect(x0,y0-12,w,24);
+    ctx.fill();ctx.fillStyle='#10233a';ctx.fillText(t,x0+7,y0);
+  });
+}
+
+/* ── Ce que l'on voit : ordre des trois fumées à l'écran ─────────────────
+   Pour chaque couleur, le milieu des trois fumées à 30 m derrière les avions.
+   Si les fumées filent de haut en bas à l'écran, on lit de gauche à droite
+   (bandes verticales) ; sinon de haut en bas (bandes horizontales). */
+var derniereLecture='';
+function centre(c,s){
+  var x=0,y=0,n=0;
+  AVIONS.forEach(function(a){if(a.c!==c)return;var q=proj(ptFumee(a,s,0));if(q){x+=q.x;y+=q.y;n++;}});
+  return n?{x:x/n,y:y/n}:null;
+}
+function lire(){
+  var c={},ok=true;
+  ['bleu','blanc','rouge'].forEach(function(k){c[k]=centre(k,30);if(!c[k])ok=false;});
+  var a=centre('bleu',8),b=centre('bleu',70);
+  var el=document.getElementById('ordre'),ve=document.getElementById('verdict'),dr=document.getElementById('drapeau');
+  if(!ok||!a||!b){if(derniereLecture!=='-'){el.textContent='Fais glisser pour tourner autour';ve.textContent='';derniereLecture='-';}return;}
+  var vertical=Math.abs(b.y-a.y)>Math.abs(b.x-a.x);
+  var ordre=['bleu','blanc','rouge'].sort(function(m,n){return vertical?c[m].x-c[n].x:c[m].y-c[n].y;});
+  var cle=(vertical?'v':'h')+ordre.join();
+  if(cle===derniereLecture)return;
+  derniereLecture=cle;
+  dr.classList.toggle('h',!vertical);
+  Array.prototype.forEach.call(dr.children,function(s,i){s.style.background=COUL[ordre[i]].coeur;});
+  el.textContent='Tu vois : '+ordre.join(', ')+(vertical?' (de gauche à droite)':' (de haut en bas)');
+  var verdict='';
+  if(ordre[1]==='blanc')verdict='Le blanc au milieu : le drapeau français.';
+  else if(!vertical&&ordre.join()==='blanc,bleu,rouge')verdict='Blanc, bleu, rouge : le drapeau russe !';
+  ve.textContent=verdict;
+}
+
+/* ── Mouvements de caméra ─────────────────────────────────────────────── */
+function lisse(x){return x<0?0:x>1?1:x*x*(3-2*x);}
+function allerA(nom){
+  var v=VUES[nom];if(!v)return;
+  var daz=((v.az-cam.az)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI;   // plus court chemin
+  trajet={de:{az:cam.az,el:cam.el,d:cam.d},vers:{az:cam.az+daz,el:v.el,d:v.d},t0:performance.now(),dur:1800};
+  vueActive=nom;
+  document.getElementById('info').innerHTML=v.txt;
+  marquer();
+}
+function marquer(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-vue]'),function(b){b.classList.toggle('on',b.getAttribute('data-vue')===vueActive);});
+  document.getElementById('visite').classList.toggle('on',visite);
+  document.getElementById('visite').textContent=visite?'⏸ Arrêter le tour':'▶ Faire le tour';
+}
+function majTrajet(now){
+  if(!trajet)return;
+  var k=lisse((now-trajet.t0)/trajet.dur);
+  ['az','el','d'].forEach(function(p){cam[p]=trajet.de[p]+(trajet.vers[p]-trajet.de[p])*k;});
+  if(k>=1)trajet=null;
+}
+
+document.querySelectorAll('[data-vue]').forEach(function(b){
+  b.addEventListener('click',function(){visite=false;allerA(b.getAttribute('data-vue'));});
+});
+document.getElementById('visite').addEventListener('click',function(){
+  visite=!visite;
+  if(visite){var i=(ORDRE_VISITE.indexOf(vueActive)+1)%ORDRE_VISITE.length;allerA(ORDRE_VISITE[i]);tVisite=performance.now();}
+  marquer();
+});
+
+// Glisser pour tourner, molette pour s'approcher
+var glisse=null;
+cv.addEventListener('pointerdown',function(e){glisse={x:e.clientX,y:e.clientY};trajet=null;visite=false;vueActive='';marquer();
+  document.getElementById('info').innerHTML='';cv.setPointerCapture(e.pointerId);cv.classList.add('tire');});
+cv.addEventListener('pointermove',function(e){
+  if(!glisse)return;
+  cam.az+=(e.clientX-glisse.x)*0.006;
+  cam.el=Math.max(-88*Math.PI/180,Math.min(85*Math.PI/180,cam.el+(e.clientY-glisse.y)*0.006));
+  glisse={x:e.clientX,y:e.clientY};
+});
+function lacher(){glisse=null;cv.classList.remove('tire');}
+cv.addEventListener('pointerup',lacher);cv.addEventListener('pointercancel',lacher);
+cv.addEventListener('wheel',function(e){e.preventDefault();trajet=null;cam.d=Math.max(35,Math.min(260,cam.d*(e.deltaY>0?1.08:1/1.08)));},{passive:false});
+
+function taille(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  W=cv.clientWidth;H=cv.clientHeight;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize',taille);
+taille();
+
+var reduit=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function boucle(now){
+  majTrajet(now);
+  if(visite&&!trajet&&now-tVisite>5500){
+    tVisite=now;
+    allerA(ORDRE_VISITE[(ORDRE_VISITE.indexOf(vueActive)+1)%ORDRE_VISITE.length]);
+  }
+  dessiner(reduit?0:now/1000);
+  requestAnimationFrame(boucle);
+}
+allerA('vrai');
+requestAnimationFrame(boucle);
+})();
+</script>
+</body>
+</html>
