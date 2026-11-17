@@ -36,6 +36,9 @@
   button:hover{border-color:var(--acc)}
   button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
   @media (max-width:560px){button{font-size:12.5px;padding:7px 10px}.info{bottom:96px}}
+/* 18 novembre (Anton) : sans textes. Ni lecture des couleurs en haut, ni explication, ni étiquettes :
+   seulement la scène et les boutons du bas. */
+.haut,.info{display:none !important}
 </style>
 </head>
 <body>
@@ -185,7 +188,7 @@ function dessiner(t){
     }
   });
   ctx.globalAlpha=1;
-  if(vueActive==='vrai'&&!trajet)etiquettes();
+  /* étiquettes retirées le 18 novembre */
   lire();
 }
 
