@@ -814,3 +814,83 @@ function loseGame(){
 
 /* --- Entrée clavier --- */
 input.addEventListener("keydown", e=>{ if(e.key==="Enter") handleSend(); });
+
+/* --- Bilan de fin de partie ---
+   Questions à cocher (BILAN, dans reso-alberte-data.js), correction, puis
+   export en PDF par l'impression du navigateur : la feuille de style
+   d'impression ne montre que la fiche #ficheBilan (nom, date, réponses
+   cochées, corrections, score). */
+let bilanCorrige = false, bilanScore = 0;
+function openBilan(){
+  if(!$("bilanQs").children.length){
+    BILAN.forEach((item, qi)=>{
+      const box = document.createElement("div"); box.className = "bl-q";
+      const h = document.createElement("h2"); h.textContent = (qi+1) + ". " + item.q; box.appendChild(h);
+      item.options.forEach((o, oi)=>{
+        const l = document.createElement("label");
+        const c = document.createElement("input"); c.type = "checkbox"; c.id = "bl-" + qi + "-" + oi;
+        const t = document.createElement("span"); t.textContent = o.t;
+        l.append(c, t); box.appendChild(l);
+      });
+      const e = document.createElement("p"); e.className = "bl-expl hidden"; e.textContent = item.explication; box.appendChild(e);
+      $("bilanQs").appendChild(box);
+    });
+  }
+  $("bilanModal").classList.remove("hidden");
+  $("bilanModal").scrollTop = 0;
+}
+function closeBilan(){ $("bilanModal").classList.add("hidden"); }
+function choixBilan(qi){ return BILAN[qi].options.map((_, oi)=> $("bl-" + qi + "-" + oi).checked); }
+function corrigerBilan(){
+  bilanScore = 0;
+  const boxes = $("bilanQs").children;
+  BILAN.forEach((item, qi)=>{
+    const ch = choixBilan(qi), box = boxes[qi];
+    const juste = item.options.every((o, oi)=> o.bon === ch[oi]);
+    if(juste) bilanScore++;
+    box.querySelectorAll("label").forEach((l, oi)=>{
+      const o = item.options[oi];
+      l.classList.toggle("juste", o.bon && ch[oi]);
+      l.classList.toggle("faux", !o.bon && ch[oi]);
+      l.classList.toggle("oubli", o.bon && !ch[oi]);
+    });
+    const h = box.querySelector("h2");
+    let r = h.querySelector(".bl-res");
+    if(!r){ r = document.createElement("span"); r.className = "bl-res"; h.appendChild(r); }
+    r.textContent = juste ? "✓" : "✗"; r.style.color = juste ? "var(--accent)" : "var(--danger)";
+    box.querySelector(".bl-expl").classList.remove("hidden");
+  });
+  bilanCorrige = true;
+  $("bilanScore").innerHTML = "Score : <b>" + bilanScore + " / " + BILAN.length + "</b> · en vert les bonnes réponses cochées, en rouge les erreurs, en pointillés orange les bonnes réponses oubliées.";
+  $("bilanScore").classList.remove("hidden");
+  $("bilanCheck").textContent = "Vérifier à nouveau";
+  $("bilanPdf").classList.remove("hidden"); $("bilanPdfTip").classList.remove("hidden");
+  transcript.push({ who: "bilan", text: "Bilan : " + bilanScore + "/" + BILAN.length + " (" + ($("bilanNom").value.trim() || "sans nom") + ")" });
+}
+function exporterBilan(){
+  if(!bilanCorrige) corrigerBilan();
+  const esc = t => String(t).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const nom = $("bilanNom").value.trim();
+  const d = new Date().toLocaleDateString("fr-FR", { day:"numeric", month:"long", year:"numeric" });
+  let html = "<h1>RÉSO · Bilan de la mission avec Alberte</h1>"
+    + '<div class="meta">Nom : <b>' + (nom ? esc(nom) : "……………………………") + "</b> · " + esc(d)
+    + " · Niveau de risque final : " + riskScore + " %</div>"
+    + '<div class="bl-sc">Score : ' + bilanScore + " / " + BILAN.length + "</div>";
+  BILAN.forEach((item, qi)=>{
+    const ch = choixBilan(qi);
+    const juste = item.options.every((o, oi)=> o.bon === ch[oi]);
+    html += '<div class="q"><h2>' + (qi+1) + ". " + esc(item.q) + " " + (juste ? "✓" : "✗") + "</h2><ul>";
+    item.options.forEach((o, oi)=>{
+      const coche = ch[oi] ? "☑" : "☐";
+      const note = o.bon ? (ch[oi] ? " — bonne réponse" : " — bonne réponse oubliée") : (ch[oi] ? " — erreur" : "");
+      html += "<li>" + coche + " " + esc(o.t) + (note ? "<i>" + note + "</i>" : "") + "</li>";
+    });
+    html += '</ul><div class="expl">' + esc(item.explication) + "</div></div>";
+  });
+  $("ficheBilan").innerHTML = html;
+  const titre = document.title;
+  document.title = "RESO-bilan" + (nom ? "-" + nom.replace(/[^\p{L}\p{N}]+/gu, "-") : "");
+  setTimeout(()=>{ window.print(); document.title = titre; }, 50);
+}
+// ?bilan dans l'adresse : ouvre directement le bilan (pour l'enseignant)
+if(new URLSearchParams(location.search).has("bilan")){ $("intro").classList.add("hidden"); openBilan(); }

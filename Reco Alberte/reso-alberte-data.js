@@ -362,3 +362,48 @@ const VERROU = {
     "Indice du réseau : la petite A passe la première, son nom de demoiselle marche derrière elle."
   ]
 };
+
+/* --- Bilan de fin de partie ---
+   Proposé sur l'écran de victoire. Pour chaque question, les élèves cochent
+   toutes les bonnes réponses (bon: true). Une question est juste quand la
+   sélection correspond exactement aux bonnes réponses. Le bilan s'exporte en
+   PDF (impression du navigateur → « Enregistrer au format PDF »).
+   Pour tester directement : reso-alberte.html?bilan */
+const BILAN = [
+  { q: "Quels mots de passe sont solides ?", options: [
+      { t: "Alberte1900", bon: false },
+      { t: "Le nom de son chat", bon: false },
+      { t: "k7#Rv!q2Lm9z", bon: true },
+      { t: "Lune?Piano-47-Velo (une longue phrase sans rapport avec sa vie)", bon: true } ],
+    explication: "Un mot de passe fait avec ses informations personnelles (prénom, date de naissance, animal) se devine facilement. Il faut un code long, qui mélange lettres, chiffres et signes, sans rapport avec sa vie." },
+  { q: "Avant de partager une photo, à quoi faut-il penser ?", options: [
+      { t: "Elle peut révéler le lieu et l'heure où elle a été prise", bon: true },
+      { t: "Retirer la localisation (les métadonnées) avant de l'envoyer", bon: true },
+      { t: "À rien : une photo ne contient que l'image", bon: false } ],
+    explication: "Une photo enregistre souvent l'heure et le lieu de la prise de vue : ce sont les métadonnées. La partager peut révéler où l'on se trouve." },
+  { q: "Un « ami » écrit depuis un numéro inconnu et demande l'adresse du prochain rendez-vous. Que faire ?", options: [
+      { t: "Lui répondre tout de suite : il connaît mon prénom", bon: false },
+      { t: "Vérifier son identité par un autre moyen avant de répondre", bon: true },
+      { t: "Ne jamais donner d'information sensible sans être sûr de son identité", bon: true } ],
+    explication: "C'est de l'hameçonnage : un inconnu se fait passer pour un proche pour soutirer des informations." },
+  { q: "Pourquoi éviter de garder la liste des contacts du réseau, en clair, dans le téléphone ?", options: [
+      { t: "Si le téléphone est perdu ou saisi, toutes les données sont exposées d'un coup", bon: true },
+      { t: "Parce que cela prend trop de place dans la mémoire", bon: false },
+      { t: "Mieux vaut utiliser des codes, ou ne pas stocker ces informations", bon: true } ],
+    explication: "Un appareil peut être perdu ou volé. Les informations sensibles ne doivent pas y être stockées en clair." },
+  { q: "Sur un wifi public ouvert, sans mot de passe…", options: [
+      { t: "On peut tout envoyer, c'est gratuit", bon: false },
+      { t: "D'autres personnes peuvent intercepter ce qui passe", bon: true },
+      { t: "On évite d'y faire passer des informations sensibles", bon: true } ],
+    explication: "Une connexion ouverte et non protégée peut être écoutée par d'autres." },
+  { q: "Une application de lampe torche demande l'accès à vos contacts et à votre position. Que faire ?", options: [
+      { t: "Tout accepter pour aller plus vite", bon: false },
+      { t: "Refuser les accès qui ne sont pas nécessaires", bon: true },
+      { t: "Toujours lire ce qu'une application demande avant d'accepter", bon: true } ],
+    explication: "N'accorder que les autorisations vraiment utiles au fonctionnement de l'application." },
+  { q: "Quelle photo de profil choisir pour rester discret ?", options: [
+      { t: "Une photo nette de son visage", bon: false },
+      { t: "Des initiales ou un pictogramme", bon: true },
+      { t: "Une photo devant sa maison", bon: false } ],
+    explication: "Une photo réelle et reconnaissable permet d'identifier quelqu'un. Une image neutre protège." }
+];

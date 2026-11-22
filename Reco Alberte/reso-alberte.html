@@ -280,6 +280,37 @@
   .vw-body.zoom img{max-width:none;max-height:none;cursor:zoom-out;margin:0}
   .vw-page{border:0;flex:1;align-self:stretch;min-height:100%;display:block;background:#161210}
   .vw-note{padding:18px;color:var(--txt);font-size:15px;line-height:1.6;align-self:stretch;width:100%}
+  /* ---------- Bilan ---------- */
+  .overlay.bilan{padding:18px 16px;gap:12px;text-align:left;align-items:stretch}
+  .overlay.bilan > :first-child{margin-top:0}
+  .overlay.bilan .fb-field{max-width:none}
+  .bl-q{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+  .bl-q h2{font-size:14.5px;color:#fff;margin:0 0 8px;line-height:1.4}
+  .bl-q label{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--txt);line-height:1.4;padding:7px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+  .bl-q input{margin-top:2px;width:18px;height:18px;accent-color:var(--accent);flex-shrink:0}
+  .bl-q label.juste{border-color:var(--accent-dim);background:rgba(61,220,132,.08)}
+  .bl-q label.faux{border-color:var(--danger);background:rgba(229,72,77,.08)}
+  .bl-q label.oubli{border-color:var(--warn);border-style:dashed}
+  .bl-q .bl-expl{font-size:13px;color:var(--muted);margin:8px 0 0;line-height:1.5}
+  .bl-q .bl-res{font-weight:700;font-size:13px;margin-left:6px}
+  .bl-score{font-size:15px;color:#fff;margin:0;text-align:center}
+  .bl-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  /* Fiche imprimée (PDF) : seule visible à l'impression */
+  #ficheBilan{display:none}
+  @media print{
+    body > *:not(#ficheBilan){display:none!important}
+    html,body{background:#fff!important;height:auto!important;overflow:visible!important}
+    #ficheBilan{display:block;color:#000;font:11pt/1.45 Georgia,serif;padding:0}
+    #ficheBilan h1{font-size:18pt;margin:0 0 4pt}
+    #ficheBilan .meta{font-size:10pt;color:#333;margin-bottom:10pt;border-bottom:1px solid #999;padding-bottom:6pt}
+    #ficheBilan .q{break-inside:avoid;margin:0 0 9pt}
+    #ficheBilan .q h2{font-size:11.5pt;margin:0 0 3pt}
+    #ficheBilan ul{list-style:none;margin:0;padding:0 0 0 6pt}
+    #ficheBilan li{margin:1pt 0}
+    #ficheBilan .expl{font-size:9.5pt;color:#444;font-style:italic;margin-top:2pt}
+    #ficheBilan .bl-sc{font-size:13pt;font-weight:bold;margin:8pt 0;color:#000}
+    @page{margin:16mm}
+  }
   .hidden{display:none!important}
   /* Focus, mouvement réduit, cibles de 44 px : fournis par collection.css. */
 </style>
@@ -362,6 +393,7 @@
     cet appareil et protéger nos données, à vous de jouer : vous, résistants du futur, devriez créer des outils pour
     apprendre aux gens de votre époque à être plus vigilants sur leurs données personnelles. »</p>
     <div class="score" id="scoreBox"></div>
+    <button class="btn" onclick="openBilan()">📝 Faire le bilan</button>
     <button class="btn ghost" onclick="openRecap()">📋 Revoir les points clés</button>
     <button class="btn big" onclick="openFeedback()">💬 Faire un retour au créateur</button>
     <button class="btn ghost" onclick="sendCompletedConversation(this)">📤 Envoyer ma partie au créateur</button>
@@ -393,6 +425,23 @@
       <button class="btn ghost" onclick="closeFeedback()">Fermer</button>
     </div>
     <p class="fb-status" id="fb-status"></p>
+  </div>
+
+  <!-- ===== Bilan de fin de partie (exportable en PDF) ===== -->
+  <div class="overlay bilan hidden" id="bilanModal" style="z-index:31">
+    <div class="fi-head">
+      <div class="fi-title">📝 Le bilan</div>
+      <button class="iconbtn" onclick="closeBilan()" aria-label="Fermer le bilan">✕</button>
+    </div>
+    <p class="fi-sub">Pour chaque question, cochez <b>toutes</b> les bonnes réponses (il peut y en avoir plusieurs).</p>
+    <input id="bilanNom" class="fb-field" type="text" placeholder="Prénom(s) et classe" aria-label="Prénom(s) et classe" autocomplete="off">
+    <div id="bilanQs"></div>
+    <p class="bl-score hidden" id="bilanScore"></p>
+    <div class="bl-actions">
+      <button class="btn" id="bilanCheck" onclick="corrigerBilan()">Vérifier mes réponses</button>
+      <button class="btn ghost hidden" id="bilanPdf" onclick="exporterBilan()">📄 Exporter en PDF</button>
+    </div>
+    <p class="fi-sub hidden" id="bilanPdfTip">Dans la fenêtre d'impression, choisissez « Enregistrer au format PDF ».</p>
   </div>
 
   <!-- ===== Récapitulatif des points clés ===== -->
@@ -443,6 +492,8 @@
   </div>
 
 </div>
+
+<div id="ficheBilan"></div>
 
 <script src="../collection.js"></script>
 <script src="reso-alberte-data.js"></script>
