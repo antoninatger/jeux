@@ -130,7 +130,7 @@
     <div class="telegramme">
       <div class="k">Télégramme · de Castor</div>
       <div class="phrase">Entre le 1<sup>er</sup> et le 2<sup>e</sup> rendez-vous, il y a <span class="mots" id="mot0"></span> d'écart.</div>
-      <div class="phrase">Le 3<sup>e</sup> et le 4<sup>e</sup> rendez-vous se sont suivis : <span class="mots" id="mot1"></span>.</div>
+      <div class="phrase">Le 3<sup>e</sup> et le 4<sup>e</sup> rendez-vous <span class="mots" id="mot1"></span>.</div>
     </div>
     <div class="table-morse">
       <p>Table du morse (point « · » = bip court, trait « — » = bip long) :</p>
@@ -217,13 +217,13 @@ function show(i){
 }
 
 /* ================= 1. Morse =================
-   Message volontairement court (13 lettres, deux mots à trous dans un
+   Message volontairement court (15 lettres, deux mots à trous dans un
    télégramme) : les signes s'écrivent au-dessus des cases pendant l'écoute,
    et on remplit une case en touchant la lettre dans la table. Une mauvaise
    lettre est refusée tout de suite. */
 const MORSE = {A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",
   N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--.."};
-const MOTS_MORSE = [["UN","JOUR"],["DE","SUITE"]];
+const MOTS_MORSE = [["UN","JOUR"],["SE","SUIVENT"]];
 const cases = [];          // {el, lettre, ok}
 let sel = 0;
 const pretty = s => s.replace(/\./g,"·").replace(/-/g,"—");
