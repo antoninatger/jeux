@@ -99,9 +99,18 @@
   .chiffre .k{font:700 10px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
   .chiffre .c{font:700 17px/1.5 "Courier New",monospace;letter-spacing:1px;word-break:break-word}
   .chiffre .note{font:italic 14px/1.4 Georgia,serif;margin-top:8px;color:#4a3a2a}
-  .lecture{margin-top:12px;background:#0f0c0a;border-radius:10px;padding:10px 12px;font:700 16px/1.5 "Courier New",monospace;color:#f3e9d2;letter-spacing:1px;min-height:54px;word-break:break-word}
-  .lecture.ok{color:#7be0a2}
-  .lecture small{display:block;font:12px system-ui,sans-serif;color:#9b8c72;letter-spacing:0;margin-bottom:4px}
+  .grille3{display:flex;flex-wrap:wrap;gap:10px 14px}
+  .gmot{display:flex;gap:3px}
+  .gl{display:flex;flex-direction:column;align-items:center;gap:3px;width:26px}
+  .gl b{font:700 17px "Courier New",monospace}
+  .gl input{width:26px;height:32px;border:2px solid #b49c74;border-radius:5px;background:#fffaf0;color:var(--ink);padding:0;
+    font:700 17px "Courier New",monospace;text-align:center;text-transform:uppercase;outline:none}
+  .gl input:focus{border-color:var(--accent)}
+  .gl input.ok{border-color:var(--ok);background:#e5f3e8;color:var(--ok)}
+  .gl input.bad{border-color:#c0261b;animation:shake .4s}
+  .gl .ponct{font:700 17px "Courier New",monospace;align-self:flex-end;padding-bottom:6px}
+  .astuce{margin-top:12px;background:#2a211a;border:1px dashed #c9b48e;border-radius:10px;padding:10px 12px;font:14px/1.5 system-ui,sans-serif;color:#d8c7a6}
+  .astuce b{color:#fff}
 
   .histo{margin-top:14px;border-left:3px solid #9a3b22;background:#2a211a;border-radius:0 10px 10px 0;padding:10px 14px;font:13.5px/1.55 system-ui,sans-serif;color:#d8c7a6}
   .histo b{color:#f3e9d2}
@@ -165,20 +174,20 @@
 
   <!-- 3. Disque chiffrant -->
   <section class="stage hidden" id="s2">
-    <p class="consigne">Le dernier message est <b>chiffré</b> : chaque lettre a été remplacée par une autre. <b>Tourne le disque</b> (fais-le glisser, ou utilise les flèches) jusqu'à ce que le message devienne lisible. Un indice : <b>il commence par le mot PREMIER</b>.</p>
+    <p class="consigne">Le dernier message est <b>chiffré</b> : toutes les lettres ont été décalées du même nombre de crans. Trouve le bon réglage du <b>disque</b> (fais-le glisser, ou utilise les flèches), puis <b>déchiffre le billet lettre par lettre</b> en écrivant la vraie lettre sous chaque lettre chiffrée.</p>
     <div class="disquebox">
       <div>
         <svg class="disque" id="disque" viewBox="-150 -150 300 300" tabindex="0" role="slider" aria-label="Disque chiffrant : flèches gauche et droite pour tourner" aria-valuemin="0" aria-valuemax="25" aria-valuenow="0"></svg>
         <div class="rot-btns"><button class="smallbtn" id="rotG" aria-label="Tourner à gauche">↺ Tourner</button><button class="smallbtn" id="rotD" aria-label="Tourner à droite">Tourner ↻</button></div>
       </div>
       <div>
-        <div class="chiffre"><div class="k">Billet chiffré · de Merle</div><div class="c" id="chiffre"></div>
+        <div class="chiffre"><div class="k">Billet chiffré · de Merle</div><div class="grille3" id="chiffre"></div>
           <div class="note">« Disque intérieur : la lettre chiffrée. Disque extérieur : la vraie lettre. »</div></div>
-        <div class="lecture" id="lecture"><small>Avec le disque dans cette position, on lit :</small><span id="lu"></span></div>
+        <div class="astuce">🔎 <b>Comment trouver le réglage ?</b> En français, la lettre qu'on écrit le plus souvent est le <b>E</b>. Compte quelle lettre revient le plus dans le billet chiffré : c'est sûrement un E déguisé…</div>
       </div>
     </div>
     <div class="msg" id="m2"></div>
-    <div class="histo"><div class="h">📜 Dans l'histoire</div>Le <b>disque chiffrant</b> a été inventé à la Renaissance par l'Italien Leon Battista Alberti. Décaler toutes les lettres du même nombre de crans, c'est le plus vieux des chiffres, celui qu'utilisait déjà Jules César. Il est très facile à casser, comme tu viens de le faire en devinant un seul mot ! C'est pourquoi les agents de la Résistance formés à Londres utilisaient des chiffres bien plus solides, par exemple des grilles construites à partir d'un poème appris par cœur.</div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Le <b>disque chiffrant</b> a été inventé à la Renaissance par l'Italien Leon Battista Alberti. Décaler toutes les lettres du même nombre de crans, c'est le plus vieux des chiffres, celui qu'utilisait déjà Jules César. Il est très facile à casser, comme tu viens de le faire en comptant les lettres ! Cette méthode, l'<b>analyse des fréquences</b>, est connue depuis plus de mille ans : elle a été décrite au IX<sup>e</sup> siècle par le savant arabe Al-Kindi. C'est pourquoi les agents de la Résistance formés à Londres utilisaient des chiffres bien plus solides, par exemple des grilles construites à partir d'un poème appris par cœur.</div>
   </section>
 
   <div class="carnet">
@@ -258,7 +267,7 @@ function essai(l){
   const c = cases[sel];
   if(!c || c.ok) return;
   if(l === c.lettre){
-    c.ok = true; c.el.classList.add("ok"); c.el.querySelector(".let").textContent = l;
+    c.ok = true; c.el.classList.add("ok"); c.el.classList.remove("bad"); c.el.querySelector(".let").textContent = l;
     c.el.querySelector(".sig").classList.remove("vide");
     const next = cases.findIndex((x,i)=> !x.ok && i > sel);
     const any = cases.findIndex(x=> !x.ok);
@@ -388,7 +397,7 @@ function saisie(k, i){
   const v = (i.value || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   if(!v){ i.classList.remove("ok"); return; }
   if(v === lettres[k]){
-    i.value = v; i.classList.add("ok"); i.readOnly = true;
+    i.value = v; i.classList.add("ok"); i.classList.remove("bad"); i.readOnly = true;
     const next = cases1.find((c,j)=> j > k && !c.classList.contains("ok")) || cases1.find(c=> !c.classList.contains("ok"));
     if(next) next.focus();
     else { $("aide1").classList.add("hidden"); setTimeout(()=> markFound(1), 300); }
@@ -420,11 +429,41 @@ $("aide1").onclick = ()=>{ holes.forEach((h,k)=>{ h.classList.add("lit"); if(!tr
    disque intérieur mobile = lettres chiffrées. Quand le disque est sur la
    bonne position, la ligne « on lit » devient le message en clair. */
 const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const CLAIR = "PREMIER RENDEZ-VOUS LE DOUZE NOVEMBRE. DERNIER LE DIX-NEUF.";
+const CLAIR = "PREMIER LE DOUZE, DERNIER LE DIX-NEUF.";
 const CLE = 7;
 const chiffrer = (s, k) => s.replace(/[A-Z]/g, c => ALPHA[(ALPHA.indexOf(c)+k)%26]);
 const CHIFFRE = chiffrer(CLAIR, CLE);
-$("chiffre").textContent = CHIFFRE;
+/* Les élèves écrivent la lettre claire sous chaque lettre chiffrée. Une
+   bonne lettre remplit aussi toutes les cases de la même lettre chiffrée
+   (comme on le fait sur papier) ; une mauvaise est refusée. Plus de lecture
+   automatique : tourner le disque au hasard ne suffit pas. */
+const cases3 = [];
+CHIFFRE.split(" ").forEach(mot=>{
+  const g = document.createElement("div"); g.className = "gmot";
+  [...mot].forEach(ch=>{
+    if(!/[A-Z]/.test(ch)){ const p = document.createElement("span"); p.className = "ponct"; p.textContent = ch; g.appendChild(p); return; }
+    const d = document.createElement("span"); d.className = "gl";
+    const b = document.createElement("b"); b.textContent = ch;
+    const i = document.createElement("input"); i.maxLength = 1; i.autocomplete = "off"; i.spellcheck = false;
+    i.setAttribute("autocapitalize","characters"); i.setAttribute("aria-label", "Lettre chiffrée " + ch);
+    const n = cases3.length;
+    cases3.push({ i, c: ch });
+    i.addEventListener("input", ()=> saisie3(n));
+    i.addEventListener("keydown", e=>{ if(e.key === "Backspace" && !i.value && n) cases3[n-1].i.focus(); });
+    d.append(b, i); g.appendChild(d);
+  });
+  $("chiffre").appendChild(g);
+});
+function saisie3(n){
+  const { i, c } = cases3[n];
+  const v = (i.value || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(!v) return;
+  const bonne = ALPHA[(ALPHA.indexOf(c) - CLE + 26) % 26];
+  if(v !== bonne){ i.value = ""; i.classList.remove("bad"); void i.offsetWidth; i.classList.add("bad"); return; }
+  cases3.forEach(x=>{ if(x.c === c){ x.i.value = bonne; x.i.classList.add("ok"); x.i.classList.remove("bad"); x.i.readOnly = true; } });
+  const next = cases3.find((x,j)=> j > n && !x.i.classList.contains("ok")) || cases3.find(x=> !x.i.classList.contains("ok"));
+  if(next) next.i.focus(); else markFound(2);
+}
 let rot = 3;          // position de départ (≠ CLE)
 const svg = $("disque"), NS = "http://www.w3.org/2000/svg";
 function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for(const a in attrs) e.setAttribute(a, attrs[a]); parent.appendChild(e); return e; }
@@ -445,11 +484,6 @@ function majDisque(){
   // le disque intérieur montre sa lettre (i + rot) en face de la lettre extérieure i
   inner.setAttribute("transform", "rotate(" + (-angleVis) + ")");
   svg.setAttribute("aria-valuenow", rot);
-  const lu = chiffrer(CHIFFRE, (26 - rot) % 26);
-  $("lu").textContent = lu;
-  const ok = rot === CLE;
-  $("lecture").classList.toggle("ok", ok);
-  if(ok) markFound(2);
 }
 function tourner(d){ rot = ((rot + d) % 26 + 26) % 26; angleVis = rot*360/26; majDisque(); }
 $("rotG").onclick = ()=> tourner(-1);
@@ -467,7 +501,7 @@ svg.addEventListener("pointermove", e=>{
   angleVis = drag.v0 - d;            // tourner dans le sens des aiguilles décale les lettres vers l'avant
   inner.setAttribute("transform", "rotate(" + (-angleVis) + ")");
   const r = ((Math.round(angleVis / (360/26)) % 26) + 26) % 26;
-  if(r !== rot){ rot = r; svg.setAttribute("aria-valuenow", rot); $("lu").textContent = chiffrer(CHIFFRE, (26 - rot) % 26); $("lecture").classList.toggle("ok", rot === CLE); }
+  if(r !== rot){ rot = r; svg.setAttribute("aria-valuenow", rot); }
 });
 function finDrag(){ if(!drag) return; drag = null; angleVis = rot*360/26; majDisque(); }
 svg.addEventListener("pointerup", finDrag);
