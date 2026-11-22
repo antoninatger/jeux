@@ -183,7 +183,8 @@
       <div>
         <div class="chiffre"><div class="k">Billet chiffré · de Merle</div><div class="grille3" id="chiffre"></div>
           <div class="note">« Disque intérieur : la lettre chiffrée. Disque extérieur : la vraie lettre. »</div></div>
-        <div class="astuce">🔎 <b>Comment trouver le réglage ?</b> En français, la lettre qu'on écrit le plus souvent est le <b>E</b>. Compte quelle lettre revient le plus dans le billet chiffré : c'est sûrement un E déguisé…</div>
+        <button class="smallbtn" id="voirIndice3" style="margin-top:12px" aria-expanded="false">💡 Afficher l'indice</button>
+        <div class="astuce hidden" id="indice3">Indice : quelle est la lettre la plus présente dans la langue française ?</div>
       </div>
     </div>
     <div class="msg" id="m2"></div>
@@ -507,6 +508,7 @@ function finDrag(){ if(!drag) return; drag = null; angleVis = rot*360/26; majDis
 svg.addEventListener("pointerup", finDrag);
 svg.addEventListener("pointercancel", finDrag);
 tourner(0);
+$("voirIndice3").onclick = ()=>{ $("indice3").classList.remove("hidden"); $("voirIndice3").classList.add("hidden"); $("voirIndice3").setAttribute("aria-expanded","true"); };
 </script>
 </body>
 </html>
