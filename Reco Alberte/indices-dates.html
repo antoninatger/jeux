@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indices des dates</title>
+<!-- Les trois indices qui mènent aux dates des rendez-vous de Rossignol
+     (12, 14, 18 et 19 novembre), en version interactive, sur le modèle de
+     indices-mot-de-passe.html. Ouvert depuis le dossier « Fichiers résistance »
+     du téléphone (avec ?embed) ou seul. La page ne donne jamais les dates :
+     elle donne les trois indices, les élèves en déduisent les dates. -->
+<style>
+  :root{--ink:#2b2118;--paper:#f3e9d2;--paper2:#e9dcbf;--muted:#76664f;--line:#c9b48e;--accent:#9a3b22;--ok:#2f7a4b;--bg:#161210}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--paper);font-family:Georgia,"Times New Roman",serif;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:16px 16px 40px}
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .top h1{font-size:20px;margin:0;letter-spacing:1px;flex:1}
+  body.embed .top{display:none}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .tab{background:#241c16;border:1px solid #4a3a2a;color:#d8c7a6;border-radius:12px;padding:10px 6px;cursor:pointer;font:600 13px system-ui,sans-serif;text-align:center;line-height:1.3}
+  .tab small{display:block;font-weight:400;opacity:.7;font-size:11px}
+  .tab.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .tab.done::after{content:" ✓";color:#4fbf7d}
+  .tab.on.done::after{color:var(--ok)}
+  .stage{background:#201914;border:1px solid #3d3024;border-radius:16px;padding:14px;position:relative;user-select:none;-webkit-user-select:none}
+  .consigne{font:14px/1.5 system-ui,sans-serif;color:#d8c7a6;margin:0 0 12px}
+  .consigne b{color:#fff}
+  .hidden{display:none!important}
+  .smallbtn{background:none;border:1px solid #4a3a2a;color:#d8c7a6;border-radius:18px;padding:8px 14px;font:13px system-ui,sans-serif;cursor:pointer}
+  .smallbtn:hover{border-color:#c9b48e;color:#fff}
+  .bigbtn{background:var(--paper);color:var(--ink);border:none;border-radius:22px;padding:10px 18px;font:700 14px system-ui,sans-serif;cursor:pointer}
+  .bigbtn:disabled{opacity:.5;cursor:default}
+  @keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+  .msg{font:600 14px system-ui,sans-serif;color:#4fbf7d;margin-top:10px;min-height:20px}
+
+  /* ---- 1. morse ---- */
+  .poste{display:flex;align-items:center;gap:14px;background:linear-gradient(#4a3524,#2e2015);border-radius:14px;padding:12px 14px;box-shadow:inset 0 2px 0 rgba(255,255,255,.1)}
+  .lampe{width:46px;height:46px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#5a4a2a,#2a2114);border:3px solid #1c140c;transition:background .03s}
+  .lampe.on{background:radial-gradient(circle at 40% 35%,#fffbe0,#ffd23f 45%,#e08a00);box-shadow:0 0 22px 6px rgba(255,200,60,.55)}
+  .poste .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .poste label{font:13px system-ui,sans-serif;color:#d8c7a6;display:flex;gap:6px;align-items:center}
+  .telegramme{margin-top:14px;background:var(--paper);color:var(--ink);border-radius:6px;padding:14px 14px 10px;box-shadow:0 6px 14px rgba(0,0,0,.5);font:16px/1.6 "Courier New",monospace}
+  .telegramme .k{font:700 10px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .phrase{margin:6px 0 10px}
+  .mots{display:inline-flex;flex-wrap:wrap;gap:4px 12px;vertical-align:top}
+  .mot{display:inline-flex;gap:4px}
+  .case{display:inline-flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:0;font:inherit;color:inherit}
+  .case .sig{font:700 15px/1 "Courier New",monospace;color:#7a5a36;min-height:16px;letter-spacing:1px;white-space:nowrap}
+  .case .sig.vide{color:transparent}
+  .case .let{width:30px;height:34px;border:2px solid #b49c74;border-radius:6px;background:#fffaf0;display:flex;align-items:center;justify-content:center;font:700 19px "Courier New",monospace;color:var(--ink)}
+  .case.sel .let{border-color:var(--accent);box-shadow:0 0 0 3px rgba(154,59,34,.25)}
+  .case.ok .let{border-color:var(--ok);background:#e5f3e8;color:var(--ok)}
+  .case.bad .let{border-color:#c0261b;animation:shake .4s}
+  .case.joue .sig{color:#c0261b}
+  .table-morse{margin-top:14px}
+  .table-morse p{font:13px system-ui,sans-serif;color:#d8c7a6;margin:0 0 8px}
+  .touches{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+  .touche{background:#2a211a;border:1px solid #4a3a2a;color:#f3e9d2;border-radius:10px;padding:6px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .touche b{font:700 17px Georgia,serif}
+  .touche span{font:700 14px "Courier New",monospace;color:#e0a07a;letter-spacing:1px}
+  .touche:hover{border-color:#c9b48e}
+
+  /* ---- 2. journal piqué ---- */
+  .journal{position:relative;background:linear-gradient(#efe6cf,#e6dabd);color:#2a2016;border-radius:3px;padding:14px 16px 16px;box-shadow:0 6px 18px rgba(0,0,0,.5);cursor:crosshair;touch-action:none;outline:none;overflow:hidden}
+  .journal:focus-visible{box-shadow:0 0 0 3px #ffd166,0 6px 18px rgba(0,0,0,.5)}
+  .journal .titre{font:900 30px/1 Georgia,serif;text-align:center;letter-spacing:1px;border-bottom:3px double #2a2016;padding-bottom:6px}
+  .journal .date{font:11px system-ui,sans-serif;text-align:center;letter-spacing:1px;text-transform:uppercase;margin:4px 0 8px;border-bottom:1px solid #2a2016;padding-bottom:4px}
+  .journal h3{font:700 17px/1.2 Georgia,serif;margin:0 0 6px}
+  .journal .art{font:14px/1.55 Georgia,serif;text-align:justify;column-gap:18px}
+  @media(min-width:560px){.journal .art{columns:2}}
+  .journal .p{position:relative}
+  .journal .p::before{content:"";position:absolute;left:50%;top:-1px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;
+    background:#fff6c8;box-shadow:0 0 6px 3px rgba(255,220,90,.95);opacity:0;transition:opacity .15s}
+  .journal .p.lit::before{opacity:1}
+  .noir{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;
+    background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(255,236,170,.15) 0,rgba(255,236,170,0) 60px,rgba(10,7,4,.86) 110px)}
+  .journal.allume .noir{opacity:1}
+  .journal .p.lit{z-index:2}
+  .bandeau{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+  .bandeau span{width:24px;height:30px;border-bottom:2px solid #c9b48e;font:700 18px/30px "Courier New",monospace;text-align:center;color:#f3e9d2}
+  .bandeau span.esp{border:none;width:12px}
+
+  /* ---- 3. disque ---- */
+  .disquebox{display:grid;grid-template-columns:1fr;gap:14px;align-items:center}
+  @media(min-width:620px){.disquebox{grid-template-columns:300px 1fr}}
+  .disque{width:100%;max-width:300px;margin:0 auto;display:block;touch-action:none;cursor:grab;outline:none}
+  .disque:focus-visible{filter:drop-shadow(0 0 4px #ffd166)}
+  .disque text{font:700 15px Georgia,serif;text-anchor:middle;dominant-baseline:central;user-select:none}
+  .rot-btns{display:flex;justify-content:center;gap:10px;margin-top:8px}
+  .chiffre{background:var(--paper);color:var(--ink);border-radius:6px;padding:12px 14px;box-shadow:0 6px 14px rgba(0,0,0,.5);transform:rotate(-1deg)}
+  .chiffre .k{font:700 10px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .chiffre .c{font:700 17px/1.5 "Courier New",monospace;letter-spacing:1px;word-break:break-word}
+  .chiffre .note{font:italic 14px/1.4 Georgia,serif;margin-top:8px;color:#4a3a2a}
+  .lecture{margin-top:12px;background:#0f0c0a;border-radius:10px;padding:10px 12px;font:700 16px/1.5 "Courier New",monospace;color:#f3e9d2;letter-spacing:1px;min-height:54px;word-break:break-word}
+  .lecture.ok{color:#7be0a2}
+  .lecture small{display:block;font:12px system-ui,sans-serif;color:#9b8c72;letter-spacing:0;margin-bottom:4px}
+
+  .histo{margin-top:14px;border-left:3px solid #9a3b22;background:#2a211a;border-radius:0 10px 10px 0;padding:10px 14px;font:13.5px/1.55 system-ui,sans-serif;color:#d8c7a6}
+  .histo b{color:#f3e9d2}
+  .histo .h{font:700 11px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#e0a07a;margin-bottom:4px}
+  .carnet{margin-top:16px;background:var(--paper);color:var(--ink);border-radius:10px;padding:14px 16px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .carnet h2{font-size:15px;margin:0 0 8px;letter-spacing:1px}
+  .carnet ol{margin:0;padding-left:20px}
+  .carnet li{font-size:15px;line-height:1.5;margin-bottom:6px;color:#9b8c72}
+  .carnet li.got{color:var(--ink);font-style:italic}
+  .carnet .fin{font:14px/1.5 system-ui,sans-serif;color:var(--accent);margin:8px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>📅 Les indices des dates</h1></div>
+  <div class="tabs">
+    <button class="tab on" data-t="0">Indice 1<small>Le message en morse</small></button>
+    <button class="tab" data-t="1">Indice 2<small>Le journal piqué</small></button>
+    <button class="tab" data-t="2">Indice 3<small>Le disque chiffrant</small></button>
+  </div>
+
+  <!-- 1. Morse -->
+  <section class="stage" id="s0">
+    <p class="consigne">Le radio du réseau a envoyé un télégramme en <b>morse</b>. <b>Écoute-le</b> : la lampe clignote et les points et les traits s'écrivent au-dessus des cases. Ensuite, <b>touche une case</b>, puis <b>la lettre qui a les mêmes signes</b> dans la table. Tu peux toucher les signes d'une case pour les réentendre.</p>
+    <div class="poste">
+      <div class="lampe" id="lampe" aria-hidden="true"></div>
+      <div class="ctl">
+        <button class="bigbtn" id="play">▶ Écouter le message</button>
+        <label><input type="checkbox" id="lent" checked> très lent</label>
+      </div>
+    </div>
+    <div class="telegramme">
+      <div class="k">Télégramme · de Castor</div>
+      <div class="phrase">Entre le 1<sup>er</sup> et le 2<sup>e</sup> rendez-vous, il y a <span class="mots" id="mot0"></span> d'écart.</div>
+      <div class="phrase">Le 3<sup>e</sup> et le 4<sup>e</sup> rendez-vous se sont suivis : <span class="mots" id="mot1"></span>.</div>
+    </div>
+    <div class="table-morse">
+      <p>Table du morse (point « · » = bip court, trait « — » = bip long) :</p>
+      <div class="touches" id="touches"></div>
+    </div>
+    <div class="msg" id="m0"></div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Les réseaux de résistance communiquaient avec Londres grâce à des <b>opérateurs radio</b>, surnommés les « pianistes ». Cachés dans un grenier ou une ferme, ils tapaient leurs messages en <b>morse</b>, des bips courts et longs, souvent chiffrés en plus. Ils devaient émettre vite : les Allemands repéraient les postes clandestins avec des camions équipés pour localiser les émissions (la radiogoniométrie). Beaucoup de pianistes ont été arrêtés ainsi.</div>
+  </section>
+
+  <!-- 2. Journal piqué -->
+  <section class="stage hidden" id="s1">
+    <p class="consigne">Un journal tout à fait banal… sauf que quelqu'un a <b>piqué de minuscules trous d'épingle</b> au-dessus de certaines lettres. <b>Garde le doigt (ou la souris) appuyé sur le journal</b> et promène la lumière : comme si tu le tenais devant une lampe, les trous s'allument. Chaque lettre trouvée prend sa place dans le message.</p>
+    <div class="journal" id="journal" tabindex="0" aria-label="Journal : appuyez et déplacez la lumière, ou utilisez les flèches du clavier">
+      <div class="titre">L'Écho du Rhône</div>
+      <div class="date">Quotidien régional · Lyon · Mardi 9 novembre 1943 · 1 franc</div>
+      <h3>Le marché de la Croix-Rousse sous la pluie</h3>
+      <div class="art" id="art"></div>
+      <div class="noir" id="noir"></div>
+    </div>
+    <div class="bandeau" id="bandeau" aria-live="polite"></div>
+    <div style="text-align:center;margin-top:10px"><button class="smallbtn hidden" id="aide1">💡 Montrer tous les trous</button></div>
+    <div class="msg" id="m1"></div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Piquer un trou d'épingle au-dessus de certaines lettres d'un journal est une très vieille façon de cacher un message. Elle était connue dès le XIX<sup>e</sup> siècle et a servi à des espions pendant les deux guerres mondiales. Les services de <b>censure</b> le savaient : ils examinaient les journaux envoyés par la poste en les tenant devant une lampe. Le journal de cette page est <b>inventé</b>, et nous n'avons pas de trace d'un réseau lyonnais qui ait utilisé ce procédé.</div>
+  </section>
+
+  <!-- 3. Disque chiffrant -->
+  <section class="stage hidden" id="s2">
+    <p class="consigne">Le dernier message est <b>chiffré</b> : chaque lettre a été remplacée par une autre. <b>Tourne le disque</b> (fais-le glisser, ou utilise les flèches) jusqu'à ce que le message devienne lisible. Un indice : <b>il commence par le mot PREMIER</b>.</p>
+    <div class="disquebox">
+      <div>
+        <svg class="disque" id="disque" viewBox="-150 -150 300 300" tabindex="0" role="slider" aria-label="Disque chiffrant : flèches gauche et droite pour tourner" aria-valuemin="0" aria-valuemax="25" aria-valuenow="0"></svg>
+        <div class="rot-btns"><button class="smallbtn" id="rotG" aria-label="Tourner à gauche">↺ Tourner</button><button class="smallbtn" id="rotD" aria-label="Tourner à droite">Tourner ↻</button></div>
+      </div>
+      <div>
+        <div class="chiffre"><div class="k">Billet chiffré · de Merle</div><div class="c" id="chiffre"></div>
+          <div class="note">« Disque intérieur : la lettre chiffrée. Disque extérieur : la vraie lettre. »</div></div>
+        <div class="lecture" id="lecture"><small>Avec le disque dans cette position, on lit :</small><span id="lu"></span></div>
+      </div>
+    </div>
+    <div class="msg" id="m2"></div>
+    <div class="histo"><div class="h">📜 Dans l'histoire</div>Le <b>disque chiffrant</b> a été inventé à la Renaissance par l'Italien Leon Battista Alberti. Décaler toutes les lettres du même nombre de crans, c'est le plus vieux des chiffres, celui qu'utilisait déjà Jules César. Il est très facile à casser, comme tu viens de le faire en devinant un seul mot ! C'est pourquoi les agents de la Résistance formés à Londres utilisaient des chiffres bien plus solides, par exemple des grilles construites à partir d'un poème appris par cœur.</div>
+  </section>
+
+  <div class="carnet">
+    <h2>🗒️ Carnet des indices</h2>
+    <ol>
+      <li id="c0">Indice 1 : pas encore trouvé</li>
+      <li id="c1">Indice 2 : pas encore trouvé</li>
+      <li id="c2">Indice 3 : pas encore trouvé</li>
+    </ol>
+    <p class="fin hidden" id="fin">Les trois indices sont réunis. À vous de retrouver les quatre dates des rendez-vous !</p>
+  </div>
+</div>
+
+<script>
+if(new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");
+const $ = id => document.getElementById(id);
+const TEXTS = [
+  "Il y a un jour d'écart entre la date 1 et la date 2. Les dates 3 et 4 se suivent (elles sont consécutives).",
+  "Parmi les dates, il y a trois jours pairs, et un seul jour impair.",
+  "La première date est le 12 novembre. La dernière date est le 19 novembre."
+];
+const found = [false,false,false];
+try{ const s = JSON.parse(localStorage.getItem("reso_indices_dates")); if(Array.isArray(s)) s.forEach((v,i)=>{ if(v) found[i]=true; }); }catch(e){}
+function store(){ try{ localStorage.setItem("reso_indices_dates", JSON.stringify(found)); }catch(e){} }
+function showFound(i){
+  document.querySelector('.tab[data-t="'+i+'"]').classList.add("done");
+  const li = $("c"+i); li.textContent = "« " + TEXTS[i] + " »"; li.classList.add("got");
+  $("fin").classList.toggle("hidden", !found.every(Boolean));
+}
+function markFound(i){
+  if(found[i]) return;
+  found[i] = true; store(); showFound(i);
+  $("m"+i).textContent = "✓ Indice " + (i+1) + " ajouté au carnet.";
+}
+found.forEach((v,i)=>{ if(v) showFound(i); });
+
+/* --- onglets --- */
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => show(+t.dataset.t));
+function show(i){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", +t.dataset.t === i));
+  [0,1,2].forEach(k => $("s"+k).classList.toggle("hidden", k !== i));
+  if(i === 1) placeHoles();
+}
+
+/* ================= 1. Morse =================
+   Message volontairement court (13 lettres, deux mots à trous dans un
+   télégramme) : les signes s'écrivent au-dessus des cases pendant l'écoute,
+   et on remplit une case en touchant la lettre dans la table. Une mauvaise
+   lettre est refusée tout de suite. */
+const MORSE = {A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",
+  N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--.."};
+const MOTS_MORSE = [["UN","JOUR"],["DE","SUITE"]];
+const cases = [];          // {el, lettre, ok}
+let sel = 0;
+const pretty = s => s.replace(/\./g,"·").replace(/-/g,"—");
+MOTS_MORSE.forEach((groupe, gi)=>{
+  const box = $("mot"+gi);
+  groupe.forEach(mot=>{
+    const m = document.createElement("span"); m.className = "mot";
+    [...mot].forEach(l=>{
+      const b = document.createElement("button"); b.type = "button"; b.className = "case";
+      b.innerHTML = '<span class="sig vide">'+pretty(MORSE[l])+'</span><span class="let"></span>';
+      const c = { el:b, lettre:l, ok:false }, n = cases.length;
+      b.setAttribute("aria-label", "Case " + (n+1));
+      b.onclick = e => { select(n); if(e.target.classList.contains("sig")) jouer([n]); };
+      cases.push(c); m.appendChild(b);
+    });
+    box.appendChild(m);
+  });
+});
+function select(n){
+  sel = n;
+  cases.forEach((c,i)=> c.el.classList.toggle("sel", i === n && !c.ok));
+}
+function essai(l){
+  const c = cases[sel];
+  if(!c || c.ok) return;
+  if(l === c.lettre){
+    c.ok = true; c.el.classList.add("ok"); c.el.querySelector(".let").textContent = l;
+    c.el.querySelector(".sig").classList.remove("vide");
+    const next = cases.findIndex((x,i)=> !x.ok && i > sel);
+    const any = cases.findIndex(x=> !x.ok);
+    if(any < 0){ select(-1); markFound(0); return; }
+    select(next >= 0 ? next : any);
+  } else {
+    c.el.classList.remove("bad"); void c.el.offsetWidth; c.el.classList.add("bad");
+    $("m0").textContent = "Ce n'est pas la bonne lettre : compare les signes au-dessus de la case avec la table.";
+    $("m0").style.color = "#e0a07a";
+    setTimeout(()=>{ $("m0").textContent = ""; $("m0").style.color = ""; }, 2600);
+  }
+}
+Object.keys(MORSE).forEach(l=>{
+  const b = document.createElement("button"); b.type = "button"; b.className = "touche";
+  b.innerHTML = "<b>"+l+"</b><span>"+pretty(MORSE[l])+"</span>";
+  b.setAttribute("aria-label", l + " : " + MORSE[l].replace(/\./g,"point ").replace(/-/g,"trait "));
+  b.onclick = ()=> essai(l);
+  $("touches").appendChild(b);
+});
+document.addEventListener("keydown", e=>{
+  if($("s0").classList.contains("hidden") || e.ctrlKey || e.metaKey || e.altKey) return;
+  const l = e.key.toUpperCase();
+  if(/^[A-Z]$/.test(l)) essai(l);
+});
+select(0);
+// son + lampe
+let actx = null, enCours = false;
+function jouer(liste){
+  if(enCours) return;
+  enCours = true; $("play").disabled = true;
+  try{ actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if(actx.state === "suspended") actx.resume(); }catch(e){ actx = null; }
+  const u = $("lent").checked ? 0.17 : 0.11;     // durée d'un point, en secondes
+  const etapes = [];                              // [debut, duree, indexCase]
+  let t = 0.3, prev = null;
+  liste.forEach(n=>{
+    if(prev !== null) t += (motDe(prev) === motDe(n) ? 3 : 7) * u;
+    [...MORSE[cases[n].lettre]].forEach((s,k)=>{
+      if(k) t += u;
+      const d = s === "." ? u : 3*u;
+      etapes.push([t, d, n]); t += d;
+    });
+    prev = n;
+  });
+  const t0 = actx ? actx.currentTime : 0, start = performance.now();
+  etapes.forEach(([deb, d, n])=>{
+    if(actx){
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = 640; o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(0, t0+deb); g.gain.linearRampToValueAtTime(.25, t0+deb+.008);
+      g.gain.setValueAtTime(.25, t0+deb+d-.008); g.gain.linearRampToValueAtTime(0, t0+deb+d);
+      o.start(t0+deb); o.stop(t0+deb+d+.02);
+    }
+    setTimeout(()=>{
+      $("lampe").classList.add("on");
+      const c = cases[n]; c.el.querySelector(".sig").classList.remove("vide");
+      cases.forEach((x,i)=> x.el.classList.toggle("joue", i === n));
+    }, deb*1000);
+    setTimeout(()=> $("lampe").classList.remove("on"), (deb+d)*1000);
+  });
+  setTimeout(()=>{ enCours = false; $("play").disabled = false; cases.forEach(x=> x.el.classList.remove("joue")); }, (t+0.2)*1000);
+}
+function motDe(n){ let k = 0, i = 0; for(const g of MOTS_MORSE) for(const m of g){ if(n < i + m.length) return k; i += m.length; k++; } return k; }
+$("play").onclick = ()=> jouer(cases.map((_,i)=>i));
+
+/* ================= 2. Journal piqué =================
+   Les lettres piquées sont choisies dans l'ordre du texte, réparties sur tout
+   l'article. On les révèle en promenant la « lumière » (doigt ou souris
+   appuyés, ou flèches du clavier) : un trou s'allume quand la lumière passe
+   à moins de RAYON pixels. */
+const ARTICLE = "Malgré une pluie froide et tenace, les ménagères étaient nombreuses dès sept heures sur le boulevard de la Croix-Rousse. Les marchands de primeurs ont proposé des poireaux, quelques choux et des pommes de terre, toujours distribuées contre tickets. Les files d'attente se sont allongées devant les étals de fromage, où chacun espérait trouver un morceau de tomme. Un vieux maraîcher de Caluire racontait qu'il n'avait jamais vu une saison aussi pauvre. À midi, les parapluies se sont refermés et le marché s'est vidé en silence. La mairie rappelle que les cartes d'alimentation du mois de décembre seront distribuées à partir du lundi suivant, dans les écoles du quartier. Les personnes âgées pourront se faire représenter par un voisin muni d'une procuration.";
+const SECRET = "TROIS PAIRS UN IMPAIR";
+const lettres = SECRET.replace(/ /g,"");
+const RAYON = 70;
+let holes = [], trouves = [];
+(function construireJournal(){
+  // choisit, pour chaque lettre du secret, une occurrence répartie dans le texte
+  const pos = []; let from = 0;
+  const pas = Math.floor(ARTICLE.length / (lettres.length + 1));
+  [...lettres].forEach((l,k)=>{
+    let i = from, cible = Math.max(from, k*pas + 8);
+    let best = -1;
+    for(i = cible; i < ARTICLE.length; i++) if(ARTICLE[i].toUpperCase() === l){ best = i; break; }
+    if(best < 0) for(i = from; i < ARTICLE.length; i++) if(ARTICLE[i].toUpperCase() === l){ best = i; break; }
+    pos.push(best); from = best + 1;
+  });
+  let html = "", last = 0;
+  pos.forEach((p,k)=>{ html += esc(ARTICLE.slice(last,p)) + '<span class="p" data-k="'+k+'">'+esc(ARTICLE[p])+'</span>'; last = p+1; });
+  html += esc(ARTICLE.slice(last));
+  $("art").innerHTML = html;
+  holes = [...document.querySelectorAll("#art .p")];
+  trouves = holes.map(()=>false);
+  let k = 0;
+  SECRET.split(" ").forEach((mot,mi)=>{
+    if(mi){ const e = document.createElement("span"); e.className = "esp"; $("bandeau").appendChild(e); }
+    [...mot].forEach(()=>{ const s = document.createElement("span"); s.dataset.k = k++; $("bandeau").appendChild(s); });
+  });
+})();
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+let centres = [];
+function placeHoles(){
+  const r = $("journal").getBoundingClientRect();
+  centres = holes.map(h=>{ const b = h.getBoundingClientRect(); return [b.left - r.left + b.width/2, b.top - r.top]; });
+}
+const journal = $("journal");
+let lum = null;
+function eclairer(x, y){
+  lum = [x, y];
+  journal.classList.add("allume");
+  $("noir").style.setProperty("--x", x+"px"); $("noir").style.setProperty("--y", y+"px");
+  if(!centres.length) placeHoles();
+  holes.forEach((h,k)=>{
+    const d = Math.hypot(centres[k][0]-x, centres[k][1]-y);
+    const on = d < RAYON;
+    h.classList.toggle("lit", on);
+    if(on && !trouves[k]) reveler(k);
+  });
+}
+function eteindre(){ journal.classList.remove("allume"); holes.forEach(h=> h.classList.remove("lit")); }
+function reveler(k){
+  trouves[k] = true;
+  document.querySelector('#bandeau span[data-k="'+k+'"]').textContent = lettres[k];
+  if(trouves.every(Boolean)){ $("aide1").classList.add("hidden"); setTimeout(()=> markFound(1), 400); }
+}
+function relPos(e){ const r = journal.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+journal.addEventListener("pointerdown", e=>{ journal.setPointerCapture(e.pointerId); placeHoles(); eclairer(...relPos(e)); e.preventDefault(); });
+journal.addEventListener("pointermove", e=>{ if(journal.classList.contains("allume") && lum && e.buttons) eclairer(...relPos(e)); });
+journal.addEventListener("pointerup", eteindre);
+journal.addEventListener("pointercancel", eteindre);
+journal.addEventListener("keydown", e=>{
+  const dirs = {ArrowLeft:[-25,0],ArrowRight:[25,0],ArrowUp:[0,-25],ArrowDown:[0,25]};
+  if(!dirs[e.key]) return;
+  e.preventDefault(); placeHoles();
+  const r = journal.getBoundingClientRect();
+  const [x,y] = lum || [r.width/2, r.height/2];
+  eclairer(Math.max(0,Math.min(r.width, x+dirs[e.key][0])), Math.max(0,Math.min(r.height, y+dirs[e.key][1])));
+});
+journal.addEventListener("blur", eteindre);
+window.addEventListener("resize", ()=>{ centres = []; });
+// aide pour l'enseignant ou les groupes bloqués : après 90 s sur l'onglet
+setTimeout(()=>{ if(!trouves.every(Boolean)) $("aide1").classList.remove("hidden"); }, 90000);
+$("aide1").onclick = ()=>{ holes.forEach((h,k)=>{ h.classList.add("lit"); if(!trouves[k]) reveler(k); }); };
+
+/* ================= 3. Disque chiffrant =================
+   Chiffre par décalage (clé CLE). Disque extérieur fixe = lettres en clair,
+   disque intérieur mobile = lettres chiffrées. Quand le disque est sur la
+   bonne position, la ligne « on lit » devient le message en clair. */
+const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const CLAIR = "PREMIER RENDEZ-VOUS LE DOUZE NOVEMBRE. DERNIER LE DIX-NEUF.";
+const CLE = 7;
+const chiffrer = (s, k) => s.replace(/[A-Z]/g, c => ALPHA[(ALPHA.indexOf(c)+k)%26]);
+const CHIFFRE = chiffrer(CLAIR, CLE);
+$("chiffre").textContent = CHIFFRE;
+let rot = 3;          // position de départ (≠ CLE)
+const svg = $("disque"), NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for(const a in attrs) e.setAttribute(a, attrs[a]); parent.appendChild(e); return e; }
+el("circle",{r:146,fill:"#f3e9d2",stroke:"#7a5a36","stroke-width":3},svg);
+el("circle",{r:112,fill:"#d9c49a",stroke:"#7a5a36","stroke-width":2},svg);
+const inner = el("g",{},svg);
+el("circle",{r:110,fill:"#3a2a1d"},inner);
+el("circle",{r:70,fill:"#2a1d12",stroke:"#7a5a36","stroke-width":2},inner);
+[...ALPHA].forEach((l,i)=>{
+  const a = i/26*2*Math.PI - Math.PI/2;
+  el("text",{x:(129*Math.cos(a)).toFixed(1),y:(129*Math.sin(a)).toFixed(1),fill:"#2b2118"},svg).textContent = l;
+  el("text",{x:(91*Math.cos(a)).toFixed(1),y:(91*Math.sin(a)).toFixed(1),fill:"#f3c98a"},inner).textContent = l;
+  el("line",{x1:(112*Math.cos(a+Math.PI/26)).toFixed(1),y1:(112*Math.sin(a+Math.PI/26)).toFixed(1),x2:(146*Math.cos(a+Math.PI/26)).toFixed(1),y2:(146*Math.sin(a+Math.PI/26)).toFixed(1),stroke:"#c9b48e","stroke-width":1},svg);
+});
+el("text",{x:0,y:0,fill:"#9b8c72",style:"font:11px system-ui,sans-serif"},svg).textContent = "↻ fais tourner";
+let angleVis = 0;
+function majDisque(){
+  // le disque intérieur montre sa lettre (i + rot) en face de la lettre extérieure i
+  inner.setAttribute("transform", "rotate(" + (-angleVis) + ")");
+  svg.setAttribute("aria-valuenow", rot);
+  const lu = chiffrer(CHIFFRE, (26 - rot) % 26);
+  $("lu").textContent = lu;
+  const ok = rot === CLE;
+  $("lecture").classList.toggle("ok", ok);
+  if(ok) markFound(2);
+}
+function tourner(d){ rot = ((rot + d) % 26 + 26) % 26; angleVis = rot*360/26; majDisque(); }
+$("rotG").onclick = ()=> tourner(-1);
+$("rotD").onclick = ()=> tourner(1);
+svg.addEventListener("keydown", e=>{
+  if(e.key === "ArrowLeft" || e.key === "ArrowDown"){ tourner(-1); e.preventDefault(); }
+  if(e.key === "ArrowRight" || e.key === "ArrowUp"){ tourner(1); e.preventDefault(); }
+});
+let drag = null;
+function angleDe(e){ const r = svg.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2)) * 180/Math.PI; }
+svg.addEventListener("pointerdown", e=>{ svg.setPointerCapture(e.pointerId); drag = { a0: angleDe(e), v0: angleVis }; e.preventDefault(); });
+svg.addEventListener("pointermove", e=>{
+  if(!drag) return;
+  let d = angleDe(e) - drag.a0;
+  angleVis = drag.v0 - d;            // tourner dans le sens des aiguilles décale les lettres vers l'avant
+  inner.setAttribute("transform", "rotate(" + (-angleVis) + ")");
+  const r = ((Math.round(angleVis / (360/26)) % 26) + 26) % 26;
+  if(r !== rot){ rot = r; svg.setAttribute("aria-valuenow", rot); $("lu").textContent = chiffrer(CHIFFRE, (26 - rot) % 26); $("lecture").classList.toggle("ok", rot === CLE); }
+});
+function finDrag(){ if(!drag) return; drag = null; angleVis = rot*360/26; majDisque(); }
+svg.addEventListener("pointerup", finDrag);
+svg.addEventListener("pointercancel", finDrag);
+tourner(0);
+</script>
+</body>
+</html>

@@ -310,13 +310,11 @@ const INTRO_ALBERTE = [
    doivent lui écrire qui il faut prévenir : Camille Maricot (nom de code
    Colombe). Pour ajouter un document : déposer l'image dans
    fichiers-resistance/ et ajouter une ligne ci-dessous.
-   type "image" : une image (src) ; type "note" : un texte (lignes). */
+   type "image" : une image (src) ; type "note" : un texte (lignes) ;
+   type "page" : une page interactive ouverte dans la visionneuse (src). */
 const FICHIERS_RESISTANCE = [
   { nom: "Carnet de notes",          type: "image", src: "fichiers-resistance/carnet-de-notes.jpg" },
-  { nom: "Indices localisation",     type: "note",  lignes: [
-      "<b>Indice 1</b>", "Il y a un jour d'écart entre la date 1 et la date 2.", "Les dates 3 et 4 sont consécutives.", "",
-      "<b>Indice 2</b>", "Parmi les dates, il y a 3 jours pairs, et un jour impair.", "",
-      "<b>Indice 3</b>", "La première date est le 12 novembre.", "La dernière date est le 19 novembre." ] },
+  { nom: "Indices des dates",       type: "page",  src: "indices-dates.html?embed" },
   { nom: "Consommation électrique",  type: "image", src: "fichiers-resistance/consommation-electrique.jpg" },
   { nom: "Plan général de Lyon",     type: "image", src: "fichiers-resistance/plan-general-de-lyon.jpg" },
   { nom: "Ali Boubakour",            type: "image", src: "fichiers-resistance/ali-boubakour.jpg" },

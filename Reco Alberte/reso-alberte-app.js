@@ -467,7 +467,7 @@ function renderFiles(){
     const b = document.createElement("button");
     b.className = "fi-item"; b.type = "button";
     const th = document.createElement("span"); th.className = "fi-thumb";
-    if(f.type === "image") th.style.backgroundImage = "url('" + f.src + "')"; else th.textContent = "📝";
+    if(f.type === "image") th.style.backgroundImage = "url('" + f.src + "')"; else th.textContent = f.type === "page" ? "📅" : "📝";
     const nm = document.createElement("span"); nm.textContent = f.nom;
     b.append(th, nm);
     b.onclick = ()=> openViewer(i);
@@ -493,6 +493,11 @@ function openViewer(i){
     img.onclick = ()=> body.classList.toggle("zoom");
     body.appendChild(img);
     $("vwTip").classList.remove("hidden");
+  } else if(f.type === "page"){
+    const fr = document.createElement("iframe");
+    fr.src = f.src; fr.title = f.nom; fr.className = "vw-page";
+    body.appendChild(fr);
+    $("vwTip").classList.add("hidden");
   } else {
     const d = document.createElement("div"); d.className = "vw-note";
     d.innerHTML = f.lignes.map(l => l || "&nbsp;").join("<br>");
