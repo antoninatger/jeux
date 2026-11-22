@@ -44,10 +44,11 @@
   .telegramme{margin-top:14px;background:var(--paper);color:var(--ink);border-radius:6px;padding:14px 14px 10px;box-shadow:0 6px 14px rgba(0,0,0,.5);font:16px/1.6 "Courier New",monospace}
   .telegramme .k{font:700 10px system-ui,sans-serif;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
   .phrase{margin:6px 0 10px}
-  .mots{display:inline-flex;flex-wrap:wrap;gap:4px 12px;vertical-align:top}
-  .mot{display:inline-flex;gap:4px}
+  .mots{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:4px}
+  .mot{display:flex;flex-wrap:wrap;gap:6px 4px}
   .case{display:inline-flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:0;font:inherit;color:inherit}
-  .case .sig{font:700 15px/1 "Courier New",monospace;color:#7a5a36;min-height:16px;letter-spacing:1px;white-space:nowrap}
+  .case{width:42px}
+  .case .sig{font:700 14px/1 "Courier New",monospace;color:#7a5a36;min-height:16px;letter-spacing:0;white-space:nowrap}
   .case .sig.vide{color:transparent}
   .case .let{width:30px;height:34px;border:2px solid #b49c74;border-radius:6px;background:#fffaf0;display:flex;align-items:center;justify-content:center;font:700 19px "Courier New",monospace;color:var(--ink)}
   .case.sel .let{border-color:var(--accent);box-shadow:0 0 0 3px rgba(154,59,34,.25)}
@@ -79,8 +80,13 @@
   .journal.allume .noir{opacity:1}
   .journal .p.lit{z-index:2}
   .bandeau{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
-  .bandeau span{width:24px;height:30px;border-bottom:2px solid #c9b48e;font:700 18px/30px "Courier New",monospace;text-align:center;color:#f3e9d2}
-  .bandeau span.esp{border:none;width:12px}
+  .bandeau input{width:30px;height:36px;border:2px solid #4a3a2a;border-radius:6px;background:#2a211a;color:#f3e9d2;
+    font:700 18px "Courier New",monospace;text-align:center;text-transform:uppercase;padding:0;outline:none}
+  .bandeau input:focus{border-color:#c9b48e}
+  .bandeau input.ok{border-color:#4fbf7d;background:#1d3326;color:#7be0a2}
+  .bandeau input.bad{border-color:#c0261b;animation:shake .4s}
+  .journal .p.vu::before{opacity:.55}
+  .bandeau-txt{font:13px system-ui,sans-serif;color:#d8c7a6;margin:12px 0 0;text-align:center}
 
   /* ---- 3. disque ---- */
   .disquebox{display:grid;grid-template-columns:1fr;gap:14px;align-items:center}
@@ -129,8 +135,8 @@
     </div>
     <div class="telegramme">
       <div class="k">Télégramme · de Castor</div>
-      <div class="phrase">Entre le 1<sup>er</sup> et le 2<sup>e</sup> rendez-vous, il y a <span class="mots" id="mot0"></span> d'écart.</div>
-      <div class="phrase">Le 3<sup>e</sup> et le 4<sup>e</sup> rendez-vous <span class="mots" id="mot1"></span>.</div>
+      <div class="phrase">Le 1<sup>er</sup> et le 2<sup>e</sup> rendez-vous : <span class="mots" id="mot0"></span></div>
+      <div class="phrase">Le 3<sup>e</sup> et le 4<sup>e</sup> rendez-vous : <span class="mots" id="mot1"></span></div>
     </div>
     <div class="table-morse">
       <p>Table du morse (point « · » = bip court, trait « — » = bip long) :</p>
@@ -142,7 +148,7 @@
 
   <!-- 2. Journal piqué -->
   <section class="stage hidden" id="s1">
-    <p class="consigne">Un journal tout à fait banal… sauf que quelqu'un a <b>piqué de minuscules trous d'épingle</b> au-dessus de certaines lettres. <b>Garde le doigt (ou la souris) appuyé sur le journal</b> et promène la lumière : comme si tu le tenais devant une lampe, les trous s'allument. Chaque lettre trouvée prend sa place dans le message.</p>
+    <p class="consigne">Un journal tout à fait banal… sauf que quelqu'un a <b>piqué de minuscules trous d'épingle</b> au-dessus de certaines lettres. <b>Garde le doigt (ou la souris) appuyé sur le journal</b> et promène la lumière : comme si tu le tenais devant une lampe, les trous s'allument. <b>Recopie les lettres piquées</b>, dans l'ordre, dans les cases sous le journal.</p>
     <div class="journal" id="journal" tabindex="0" aria-label="Journal : appuyez et déplacez la lumière, ou utilisez les flèches du clavier">
       <div class="titre">L'Écho du Rhône</div>
       <div class="date">Quotidien régional · Lyon · Mardi 9 novembre 1943 · 1 franc</div>
@@ -150,7 +156,8 @@
       <div class="art" id="art"></div>
       <div class="noir" id="noir"></div>
     </div>
-    <div class="bandeau" id="bandeau" aria-live="polite"></div>
+    <p class="bandeau-txt">Écris ici les lettres piquées, dans l'ordre du texte, une par case :</p>
+    <div class="bandeau" id="bandeau"></div>
     <div style="text-align:center;margin-top:10px"><button class="smallbtn hidden" id="aide1">💡 Montrer tous les trous</button></div>
     <div class="msg" id="m1"></div>
     <div class="histo"><div class="h">📜 Dans l'histoire</div>Piquer un trou d'épingle au-dessus de certaines lettres d'un journal est une très vieille façon de cacher un message. Elle était connue dès le XIX<sup>e</sup> siècle et a servi à des espions pendant les deux guerres mondiales. Les services de <b>censure</b> le savaient : ils examinaient les journaux envoyés par la poste en les tenant devant une lampe. Le journal de cette page est <b>inventé</b>, et nous n'avons pas de trace d'un réseau lyonnais qui ait utilisé ce procédé.</div>
@@ -217,13 +224,14 @@ function show(i){
 }
 
 /* ================= 1. Morse =================
-   Message volontairement court (15 lettres, deux mots à trous dans un
+   Message volontairement court (21 lettres, deux mots à trous dans un
    télégramme) : les signes s'écrivent au-dessus des cases pendant l'écoute,
    et on remplit une case en touchant la lettre dans la table. Une mauvaise
    lettre est refusée tout de suite. */
 const MORSE = {A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",K:"-.-",L:".-..",M:"--",
   N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--.."};
-const MOTS_MORSE = [["UN","JOUR"],["SE","SUIVENT"]];
+// sans espaces entre les mots : on ne peut pas deviner les mots à leur longueur
+const MOTS_MORSE = [["UNJOURDECART"],["SESUIVENT"]];
 const cases = [];          // {el, lettre, ok}
 let sel = 0;
 const pretty = s => s.replace(/\./g,"·").replace(/-/g,"—");
@@ -324,7 +332,7 @@ const ARTICLE = "Malgré une pluie froide et tenace, les ménagères étaient no
 const SECRET = "TROIS PAIRS UN IMPAIR";
 const lettres = SECRET.replace(/ /g,"");
 const RAYON = 70;
-let holes = [], trouves = [];
+let holes = [], trouves = [], cases1 = [];
 (function construireJournal(){
   // choisit, pour chaque lettre du secret, une occurrence répartie dans le texte
   const pos = []; let from = 0;
@@ -342,10 +350,14 @@ let holes = [], trouves = [];
   $("art").innerHTML = html;
   holes = [...document.querySelectorAll("#art .p")];
   trouves = holes.map(()=>false);
-  let k = 0;
-  SECRET.split(" ").forEach((mot,mi)=>{
-    if(mi){ const e = document.createElement("span"); e.className = "esp"; $("bandeau").appendChild(e); }
-    [...mot].forEach(()=>{ const s = document.createElement("span"); s.dataset.k = k++; $("bandeau").appendChild(s); });
+  // une case par lettre, sans espaces (on ne devine pas les mots à leur longueur)
+  [...lettres].forEach((l,k)=>{
+    const i = document.createElement("input");
+    i.maxLength = 1; i.autocomplete = "off"; i.spellcheck = false; i.setAttribute("autocapitalize","characters");
+    i.setAttribute("aria-label", "Lettre " + (k+1));
+    i.addEventListener("input", ()=> saisie(k, i));
+    i.addEventListener("keydown", e=>{ if(e.key === "Backspace" && !i.value && k) cases1[k-1].focus(); });
+    cases1.push(i); $("bandeau").appendChild(i);
   });
 })();
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
@@ -369,10 +381,20 @@ function eclairer(x, y){
   });
 }
 function eteindre(){ journal.classList.remove("allume"); holes.forEach(h=> h.classList.remove("lit")); }
-function reveler(k){
-  trouves[k] = true;
-  document.querySelector('#bandeau span[data-k="'+k+'"]').textContent = lettres[k];
-  if(trouves.every(Boolean)){ $("aide1").classList.add("hidden"); setTimeout(()=> markFound(1), 400); }
+// un trou déjà éclairé reste marqué faiblement : les élèves recopient les
+// lettres eux-mêmes, case par case ; une mauvaise lettre est refusée.
+function reveler(k){ trouves[k] = true; holes[k].classList.add("vu"); }
+function saisie(k, i){
+  const v = (i.value || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(!v){ i.classList.remove("ok"); return; }
+  if(v === lettres[k]){
+    i.value = v; i.classList.add("ok"); i.readOnly = true;
+    const next = cases1.find((c,j)=> j > k && !c.classList.contains("ok")) || cases1.find(c=> !c.classList.contains("ok"));
+    if(next) next.focus();
+    else { $("aide1").classList.add("hidden"); setTimeout(()=> markFound(1), 300); }
+  } else {
+    i.value = ""; i.classList.remove("bad"); void i.offsetWidth; i.classList.add("bad");
+  }
 }
 function relPos(e){ const r = journal.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
 journal.addEventListener("pointerdown", e=>{ journal.setPointerCapture(e.pointerId); placeHoles(); eclairer(...relPos(e)); e.preventDefault(); });
