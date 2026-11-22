@@ -370,40 +370,40 @@ const VERROU = {
    PDF (impression du navigateur → « Enregistrer au format PDF »).
    Pour tester directement : reso-alberte.html?bilan */
 const BILAN = [
-  { q: "Quels mots de passe sont solides ?", options: [
-      { t: "Alberte1900", bon: false },
-      { t: "Le nom de son chat", bon: false },
+  { q: "Alberte avait fabriqué son mot de passe avec l'initiale de son prénom et son nom de jeune fille. Quels mots de passe sont solides ?", options: [
+      { t: "L'initiale de son prénom suivie de son nom de jeune fille", bon: false },
+      { t: "Alberte1900 (son prénom et son année de naissance)", bon: false },
       { t: "k7#Rv!q2Lm9z", bon: true },
-      { t: "Lune?Piano-47-Velo (une longue phrase sans rapport avec sa vie)", bon: true } ],
-    explication: "Un mot de passe fait avec ses informations personnelles (prénom, date de naissance, animal) se devine facilement. Il faut un code long, qui mélange lettres, chiffres et signes, sans rapport avec sa vie." },
-  { q: "Avant de partager une photo, à quoi faut-il penser ?", options: [
-      { t: "Elle peut révéler le lieu et l'heure où elle a été prise", bon: true },
-      { t: "Retirer la localisation (les métadonnées) avant de l'envoyer", bon: true },
-      { t: "À rien : une photo ne contient que l'image", bon: false } ],
-    explication: "Une photo enregistre souvent l'heure et le lieu de la prise de vue : ce sont les métadonnées. La partager peut révéler où l'on se trouve." },
-  { q: "Un « ami » écrit depuis un numéro inconnu et demande l'adresse du prochain rendez-vous. Que faire ?", options: [
-      { t: "Lui répondre tout de suite : il connaît mon prénom", bon: false },
-      { t: "Vérifier son identité par un autre moyen avant de répondre", bon: true },
-      { t: "Ne jamais donner d'information sensible sans être sûr de son identité", bon: true } ],
-    explication: "C'est de l'hameçonnage : un inconnu se fait passer pour un proche pour soutirer des informations." },
-  { q: "Pourquoi éviter de garder la liste des contacts du réseau, en clair, dans le téléphone ?", options: [
-      { t: "Si le téléphone est perdu ou saisi, toutes les données sont exposées d'un coup", bon: true },
-      { t: "Parce que cela prend trop de place dans la mémoire", bon: false },
-      { t: "Mieux vaut utiliser des codes, ou ne pas stocker ces informations", bon: true } ],
-    explication: "Un appareil peut être perdu ou volé. Les informations sensibles ne doivent pas y être stockées en clair." },
-  { q: "Sur un wifi public ouvert, sans mot de passe…", options: [
-      { t: "On peut tout envoyer, c'est gratuit", bon: false },
-      { t: "D'autres personnes peuvent intercepter ce qui passe", bon: true },
-      { t: "On évite d'y faire passer des informations sensibles", bon: true } ],
-    explication: "Une connexion ouverte et non protégée peut être écoutée par d'autres." },
-  { q: "Une application de lampe torche demande l'accès à vos contacts et à votre position. Que faire ?", options: [
+      { t: "Lune?Piano-47-Velo : long, avec lettres, chiffres et signes, sans rapport avec sa vie", bon: true } ],
+    explication: "Un mot de passe fait avec ses informations personnelles se devine : le nom de jeune fille d'Alberte était écrit sur son acte de mariage, à la mairie. Il faut un code long, qui mélange lettres, chiffres et signes, sans rapport avec sa vie." },
+  { q: "Alberte veut photographier la planque du réseau. Que faut-il savoir ?", options: [
+      { t: "La photo enregistre l'endroit exact où elle a été prise", bon: true },
+      { t: "Mieux vaut ne pas photographier un lieu secret", bon: true },
+      { t: "Une simple image ne peut trahir personne", bon: false } ],
+    explication: "Une photo enregistre souvent l'heure et le lieu où elle a été prise (les métadonnées). Si elle tombe entre de mauvaises mains, la planque est découverte." },
+  { q: "Un inconnu très aimable jure qu'il est « des nôtres » et demande le nom du réseau et des camarades. Que faire ?", options: [
+      { t: "Lui donner les noms, puisqu'il veut aider", bon: false },
+      { t: "Se méfier et ne pas répondre", bon: true },
+      { t: "Vérifier qui il est vraiment", bon: true } ],
+    explication: "C'est de l'hameçonnage : quelqu'un se fait passer pour un allié pour soutirer des informations. C'est ainsi que la Gestapo infiltrait les réseaux." },
+  { q: "Alberte veut noter dans l'appareil les vrais noms et adresses de tous ses camarades. Que lui conseiller ?", options: [
+      { t: "C'est une bonne idée, c'est plus solide que le papier", bon: false },
+      { t: "Si l'appareil est saisi, tout le réseau est exposé d'un coup", bon: true },
+      { t: "N'écrire que des surnoms codés", bon: true } ],
+    explication: "Un appareil peut être perdu, volé ou saisi : toutes les données qu'il contient sont alors exposées. On n'y stocke pas d'informations sensibles en clair." },
+  { q: "L'appareil propose de passer par un « canal ouvert », sans protection, pour envoyer les messages plus vite (aujourd'hui, ce serait un wifi public sans mot de passe). Que faire ?", options: [
+      { t: "Accepter, c'est plus rapide", bon: false },
+      { t: "Savoir que n'importe qui à portée peut écouter ce qui y passe", bon: true },
+      { t: "Refuser d'y faire passer des messages sensibles", bon: true } ],
+    explication: "Une connexion ouverte et non protégée peut être écoutée par d'autres, comme une radio que l'ennemi capte." },
+  { q: "Une application veut voir les contacts, la position à tout instant et les photos d'Alberte. Elle dit que c'est obligatoire. Que faire ?", options: [
       { t: "Tout accepter pour aller plus vite", bon: false },
-      { t: "Refuser les accès qui ne sont pas nécessaires", bon: true },
-      { t: "Toujours lire ce qu'une application demande avant d'accepter", bon: true } ],
-    explication: "N'accorder que les autorisations vraiment utiles au fonctionnement de l'application." },
-  { q: "Quelle photo de profil choisir pour rester discret ?", options: [
-      { t: "Une photo nette de son visage", bon: false },
-      { t: "Des initiales ou un pictogramme", bon: true },
-      { t: "Une photo devant sa maison", bon: false } ],
-    explication: "Une photo réelle et reconnaissable permet d'identifier quelqu'un. Une image neutre protège." }
+      { t: "Lire avant d'accepter", bon: true },
+      { t: "N'accorder que le strict nécessaire", bon: true } ],
+    explication: "Les applications demandent souvent plus d'accès qu'il ne leur en faut. On lit toujours, et on n'accorde que ce qui est vraiment utile." },
+  { q: "Sur la ligne clandestine, la photo de profil d'Alberte montre son vrai visage. Que faire ?", options: [
+      { t: "La garder : personne ne regarde les photos de profil", bon: false },
+      { t: "La remplacer par une image neutre (initiales, pictogramme, petit dessin)", bon: true },
+      { t: "Mettre plutôt une photo d'elle devant sa maison", bon: false } ],
+    explication: "Une photo réelle et reconnaissable permet d'identifier quelqu'un. Dans un contexte sensible, une image neutre protège." }
 ];
