@@ -304,6 +304,49 @@ const INTRO_ALBERTE = [
   "J'ai grand besoin de vous. Guidez-moi pas à pas… et aidez-moi à ne laisser aucune trace, car la moindre erreur pourrait me faire prendre par la police de Vichy… ou pire, par la Gestapo, arrivée à Lyon avec les Allemands en novembre."
 ];
 
+/* --- Dossier « Fichiers résistance » : ouvert juste après le mot de passe ---
+   Les élèves y trouvent les documents du réseau (fiches de police, carnet,
+   plan, relevé électrique, indices). Pour ouvrir la ligne avec Alberte, ils
+   doivent lui écrire qui il faut prévenir : Camille Maricot (nom de code
+   Colombe). Pour ajouter un document : déposer l'image dans
+   fichiers-resistance/ et ajouter une ligne ci-dessous.
+   type "image" : une image (src) ; type "note" : un texte (lignes). */
+const FICHIERS_RESISTANCE = [
+  { nom: "Carnet de notes",          type: "image", src: "fichiers-resistance/carnet-de-notes.jpg" },
+  { nom: "Indices localisation",     type: "note",  lignes: [
+      "<b>Indice 1</b>", "Il y a un jour d'écart entre la date 1 et la date 2.", "Les dates 3 et 4 sont consécutives.", "",
+      "<b>Indice 2</b>", "Parmi les dates, il y a 3 jours pairs, et un jour impair.", "",
+      "<b>Indice 3</b>", "La première date est le 12 novembre.", "La dernière date est le 19 novembre." ] },
+  { nom: "Consommation électrique",  type: "image", src: "fichiers-resistance/consommation-electrique.jpg" },
+  { nom: "Plan général de Lyon",     type: "image", src: "fichiers-resistance/plan-general-de-lyon.jpg" },
+  { nom: "Ali Boubakour",            type: "image", src: "fichiers-resistance/ali-boubakour.jpg" },
+  { nom: "André Roger Perceveaux",   type: "image", src: "fichiers-resistance/andre-roger-perceveaux.jpg" },
+  { nom: "Brillaux Daniel",          type: "image", src: "fichiers-resistance/brillaux-daniel.jpg" },
+  { nom: "Camille Maricot",          type: "image", src: "fichiers-resistance/camille-maricot.jpg" },
+  { nom: "Francisque Cercy",         type: "image", src: "fichiers-resistance/francisque-cercy.jpg" },
+  { nom: "Georges Durand",           type: "image", src: "fichiers-resistance/georges-durand.jpg" },
+  { nom: "Hélène Varnatons",         type: "image", src: "fichiers-resistance/helene-varnatons.jpg" },
+  { nom: "Maria Sokolowska",         type: "image", src: "fichiers-resistance/maria-sokolowska.jpg" },
+  { nom: "Odette Borgis",            type: "image", src: "fichiers-resistance/odette-borgis.jpg" }
+];
+
+/* --- Message à envoyer à Alberte pour ouvrir la ligne ---
+   Accepté dès que le message contient l'un des mots de « bons » (accents,
+   majuscules et ordre des mots indifférents ; une faute de frappe d'une
+   lettre est tolérée sur « Maricot »). Ex. : « Maricot », « camille maricot »,
+   « Il faut prévenir Camille Maricot », « Maricot Camille », « Colombe ». */
+const PREVENIR = {
+  bons: ["maricot", "camille", "colombe"],
+  // autres noms des fichiers : réponse dédiée si les élèves se trompent de personne
+  autres: ["boubakour","perceveaux","brillaux","cercy","durand","varnatons","sokolowska","borgis","ali","andre","daniel","francisque","georges","helene","maria","odette"],
+  essaisAvantPasser: 3,       // après 3 essais ratés, l'enseignant peut passer l'étape
+  merci: [
+    "Merci, résistant du futur ! Je fais prévenir Camille Maricot sur-le-champ. Grâce à vous, notre camarade est hors de danger.",
+  ],
+  mauvaisePersonne: "Ce n'est pas la personne en danger. Relisez bien les fichiers résistance.",
+  incompris: "Alberte ne comprend pas votre message. Écrivez-lui le nom de la personne qu'il faut prévenir."
+};
+
 /* --- Écran de verrouillage : le mot de passe d'Alberte (mission 2, partie 1) ---
    code : le mot de passe exact attendu, en lettres sans accents (ex. "AMARTIN").
           Laissé vide, l'écran accepte tout code qui suit la recette :

@@ -451,10 +451,89 @@ function unlockPhone(skipped){
   addMsg("Système", skipped ? "🔓 Téléphone ouvert par l'enseignant." : "🔓 <b>Mot de passe trouvé.</b> La ligne avec Alberte est ouverte.", "sys");
   setTimeout(()=>{
     $("lockscreen").classList.add("hidden");
-    busy=true;
-    alberteSay(INTRO_ALBERTE, ()=> loadScenario());
+    openFiles(false);
   }, skipped ? 300 : 1100);
 }
+
+/* --- Dossier « Fichiers résistance » ---
+   Juste après le mot de passe, le téléphone montre les documents du réseau.
+   La ligne avec Alberte ne s'ouvre que quand les élèves lui ont écrit qui il
+   faut prévenir (PREVENIR dans reso-alberte-data.js). Ensuite, le bouton 📁
+   de l'en-tête permet de revoir les fichiers à tout moment. */
+let fiFails = 0, prevenu = false;
+function renderFiles(){
+  $("fiGrid").innerHTML = "";
+  FICHIERS_RESISTANCE.forEach((f, i)=>{
+    const b = document.createElement("button");
+    b.className = "fi-item"; b.type = "button";
+    const th = document.createElement("span"); th.className = "fi-thumb";
+    if(f.type === "image") th.style.backgroundImage = "url('" + f.src + "')"; else th.textContent = "📝";
+    const nm = document.createElement("span"); nm.textContent = f.nom;
+    b.append(th, nm);
+    b.onclick = ()=> openViewer(i);
+    $("fiGrid").appendChild(b);
+  });
+}
+function openFiles(fromChat){
+  if(!$("fiGrid").children.length) renderFiles();
+  $("fiSend").classList.toggle("hidden", !!fromChat || prevenu);
+  $("fiClose").classList.toggle("hidden", !fromChat && !prevenu);
+  $("files").classList.remove("hidden");
+  $("files").scrollTop = 0;
+  if(!fromChat && !prevenu) setTimeout(()=>$("fiInput").focus({preventScroll:true}), 50);
+}
+function closeFiles(){ $("files").classList.add("hidden"); if(!busy) input.focus(); }
+function openViewer(i){
+  const f = FICHIERS_RESISTANCE[i], body = $("vwBody");
+  $("vwTitle").textContent = f.nom;
+  body.innerHTML = ""; body.classList.remove("zoom"); body.scrollTop = 0; body.scrollLeft = 0;
+  if(f.type === "image"){
+    const img = document.createElement("img");
+    img.src = f.src; img.alt = f.nom;
+    img.onclick = ()=> body.classList.toggle("zoom");
+    body.appendChild(img);
+    $("vwTip").classList.remove("hidden");
+  } else {
+    const d = document.createElement("div"); d.className = "vw-note";
+    d.innerHTML = f.lignes.map(l => l || "&nbsp;").join("<br>");
+    body.appendChild(d);
+    $("vwTip").classList.add("hidden");
+  }
+  $("viewer").classList.remove("hidden");
+}
+function closeViewer(){ $("viewer").classList.add("hidden"); }
+
+// distance d'édition (fautes de frappe sur le nom)
+function editDist(a, b){
+  const d = Array.from({length:a.length+1}, (_,i)=>[i]);
+  for(let j=1;j<=b.length;j++) d[0][j]=j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++)
+    d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[a.length][b.length];
+}
+function tryPrevenir(){
+  const raw = $("fiInput").value.trim();
+  if(!raw) return;
+  const mots = norm(raw).replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean);
+  const ok = mots.some(m => PREVENIR.bons.includes(m) || (m.length >= 6 && editDist(m, "maricot") <= 1));
+  transcript.push({ who: "message", text: "À Alberte : " + raw + (ok ? " (accepté)" : " (refusé)") });
+  if(ok){ prevenirOk(false, raw); return; }
+  fiFails++;
+  const autre = mots.some(m => PREVENIR.autres.includes(m));
+  $("fiMsg").textContent = autre ? PREVENIR.mauvaisePersonne : PREVENIR.incompris;
+  $("fiInput").value = "";
+  if(fiFails >= PREVENIR.essaisAvantPasser) $("fiSkip").classList.remove("hidden");
+}
+function prevenirOk(skipped, raw){
+  prevenu = true;
+  $("files").classList.add("hidden"); closeViewer();
+  $("filesBtn").classList.remove("hidden");
+  busy = true;
+  if(skipped) addMsg("Système", "📁 Étape « Fichiers résistance » passée par l'enseignant.", "sys");
+  else addMsg("me", echapper(raw), "me");
+  alberteSay(PREVENIR.merci.concat(INTRO_ALBERTE), ()=> loadScenario());
+}
+$("fiInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryPrevenir(); });
 $("lsInput").addEventListener("input", renderDots);
 $("lsInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryUnlock(); });
 

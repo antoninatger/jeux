@@ -87,6 +87,10 @@
      un ecran etroit, la date ne tient plus sur la meme ligne que le nom. Elle
      est deja affichee en grand sur l'ecran d'accueil, elle cede la place. */
   @media (max-width:430px){ .h-tag{display:none} }
+  /* Trois boutons d'outil (📁 💬 📥) : le bloc du nom cède la place et le
+     statut se coupe proprement plutôt que de pousser un bouton hors du cadre. */
+  .h-top > div:nth-child(2){flex:1;min-width:0}
+  .h-status{overflow:hidden;text-overflow:ellipsis}
   /* 44 px : la cible tactile minimale. À 26 px, ces deux boutons étaient
      hors d'atteinte du pouce sur un téléphone. */
   .iconbtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;
@@ -247,6 +251,34 @@
     border-radius:10px;padding:8px 11px;line-height:1.45}
   #lsBtn:disabled{opacity:.4;cursor:default}
   .ls-skip{background:none;border:none;color:var(--muted);font-size:11px;text-decoration:underline;cursor:pointer}
+  /* ---------- Dossier « Fichiers résistance » et visionneuse ---------- */
+  .overlay.files,.overlay.viewer{padding:18px 16px;gap:10px;text-align:left;align-items:stretch}
+  .overlay.files > :first-child,.overlay.viewer > :first-child{margin-top:0}
+  .fi-head{display:flex;align-items:center;gap:8px}
+  .fi-title{flex:1;font-size:18px;font-weight:700;color:#fff;letter-spacing:.5px}
+  .overlay p.fi-sub{font-size:12.5px;max-width:none}
+  .fi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+  .fi-item{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:8px 6px;color:var(--txt);font:inherit;font-size:12px;line-height:1.3;cursor:pointer;text-align:center}
+  .fi-item:hover{border-color:var(--accent)}
+  .fi-thumb{width:100%;height:64px;border-radius:6px;background:#0b0f16 center/cover no-repeat;display:flex;
+    align-items:center;justify-content:center;font-size:30px}
+  /* La zone de message reste collée en bas : sur téléphone, la grille défile
+     derrière, et les élèves voient tout de suite qu'il faut écrire à Alberte. */
+  .fi-send{margin-top:auto;border-top:1px solid var(--line);padding:12px 0 4px;display:flex;flex-direction:column;gap:8px;
+    position:sticky;bottom:-18px;background:#0b0f16;margin-bottom:-18px;padding-bottom:18px;box-shadow:0 -10px 16px rgba(8,11,16,.9)}
+  .fi-label{font-size:13.5px;color:#fff;font-weight:600}
+  .fi-row{display:flex;gap:8px}
+  .fi-row input{flex:1;min-width:0;background:#0b0f16;border:1px solid var(--line);border-radius:22px;padding:11px 14px;
+    color:#fff;font-size:15px;font-family:inherit;outline:none}
+  .fi-row input:focus{border-color:var(--accent-dim)}
+  .overlay.viewer > :last-child{margin-bottom:0}
+  .vw-body{flex:1 1 auto;flex-shrink:1;min-height:0;overflow:auto;background:#0b0f16;border:1px solid var(--line);border-radius:10px;
+    display:flex;align-items:flex-start;justify-content:center}
+  .vw-body img{max-width:100%;max-height:100%;margin:auto;cursor:zoom-in;display:block}
+  .vw-body.zoom{display:block}
+  .vw-body.zoom img{max-width:none;max-height:none;cursor:zoom-out;margin:0}
+  .vw-note{padding:18px;color:var(--txt);font-size:15px;line-height:1.6;align-self:stretch;width:100%}
   .hidden{display:none!important}
   /* Focus, mouvement réduit, cibles de 44 px : fournis par collection.css. */
 </style>
@@ -289,6 +321,35 @@
     <p class="ls-msg" id="lsMsg"></p>
     <div class="ls-hints" id="lsHints"></div>
     <button class="ls-skip hidden" id="lsSkip" onclick="unlockPhone(true)">Passer cette étape (enseignant)</button>
+  </div>
+
+  <!-- ===== Dossier « Fichiers résistance » (après le mot de passe) ===== -->
+  <div class="overlay files hidden" id="files">
+    <div class="fi-head">
+      <div class="fi-title">📁 Fichiers résistance</div>
+      <button class="iconbtn hidden" id="fiClose" onclick="closeFiles()" aria-label="Revenir à la conversation">✕</button>
+    </div>
+    <p class="fi-sub">Les documents du réseau. Touchez un fichier pour l'ouvrir.</p>
+    <div class="fi-grid" id="fiGrid"></div>
+    <div class="fi-send" id="fiSend">
+      <label for="fiInput" class="fi-label">✉️ Message pour Alberte : qui faut-il prévenir ?</label>
+      <div class="fi-row">
+        <input id="fiInput" type="text" placeholder="Il faut prévenir…" autocomplete="off" spellcheck="false">
+        <button class="send" onclick="tryPrevenir()" aria-label="Envoyer à Alberte">➤</button>
+      </div>
+      <p class="ls-msg" id="fiMsg"></p>
+      <button class="ls-skip hidden" id="fiSkip" onclick="prevenirOk(true)">Passer cette étape (enseignant)</button>
+    </div>
+  </div>
+
+  <!-- ===== Visionneuse d'un fichier ===== -->
+  <div class="overlay viewer hidden" id="viewer" style="z-index:25">
+    <div class="fi-head">
+      <div class="fi-title" id="vwTitle"></div>
+      <button class="iconbtn" onclick="closeViewer()" aria-label="Fermer le fichier">✕</button>
+    </div>
+    <div class="vw-body" id="vwBody"></div>
+    <p class="fi-sub" id="vwTip">Touchez l'image pour zoomer.</p>
   </div>
 
   <!-- ===== Win overlay ===== -->
@@ -350,6 +411,7 @@
         <div class="h-status">● en ligne · canal chiffré</div>
       </div>
       <div class="h-tag">LYON · 1942</div>
+      <button class="iconbtn hidden" id="filesBtn" title="Fichiers résistance" aria-label="Ouvrir les fichiers résistance" onclick="openFiles(true)">📁</button>
       <button class="iconbtn" title="Laisser un commentaire" aria-label="Laisser un commentaire" onclick="openFeedback()">💬</button>
       <button class="iconbtn" title="Exporter la conversation" aria-label="Exporter la conversation" onclick="exportTranscript()">📥</button>
     </div>
