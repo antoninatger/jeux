@@ -61,6 +61,8 @@ const SCENARIOS = [
         + '</div>',
       followKw: ["1","premiere","gauche","ronde","rondes","rond","picots ronds","francaise"],
       /* Mauvaises prises : « la 2, pas la 1 » ou « celle du milieu » ne doivent plus valider la 1. */
+      // « deux broches », « deux trous »… décrivent la prise, ce n'est pas « la 2 »
+      followNeutreKw: ["deux broches","deux tiges","deux picots","deux trous","deux fiches","deux branches","deux pattes","2 broches","2 tiges","2 picots","2 trous"],
       followWrongKw: ["2","deux","deuxieme","seconde","milieu","americaine","americain","3","trois","troisieme","derniere","droite","plate","plates","plat"],
       followAgain: "Laquelle des trois, alors ? Dites-moi son numéro, ou décrivez-la-moi.",
       followReply: "Voilà : cette prise-là, avec ses deux broches rondes, entre parfaitement dans les trous du mur. Une fiche plate n'y serait jamais entrée, ou pire, aurait tout fait sauter en forçant. Merci pour votre vigilance !",
@@ -136,12 +138,12 @@ const SCENARIOS = [
       "Il me demande le nom de notre réseau et celui de mes camarades, pour « mieux nous aider ». Je lui réponds ?"
     ],
     good: {
-      kw: ["non","pas","jamais","surtout pas","aucun","rien","mefie","mefiance","verifie","refuse","piege","faux","espion","traitre","infiltre","prudence","ignore","tais","silence","danger","attention"],
+      kw: ["non","pas","jamais","surtout pas","aucun","rien","mefie","mefiance","verifie","refuse","piege","faux","espion","traitre","infiltre","prudence","ignore","tais","silence","danger","attention","bloque","signale","demande lui qui","qui il est","qui c est","qui est ce","identite","preuve"],
       retryKw: ["trahir","trahi","reseau entier"],
       reply: "Un inconnu si pressé de connaître nos noms… C'est exactement ainsi que la Gestapo infiltre les réseaux. Je ne réponds rien.",
     },
     bad: {
-      kw: ["oui","donne","reponds","confiance","aide","nom du reseau","les noms","nos noms"],
+      kw: ["oui","donne","reponds","confiance","aide","nom du reseau","les noms","nos noms","dis lui"],
       reply: "Je lui ai donné les noms… Mon Dieu. Et si c'était un piège de la police de Vichy ? Je viens peut-être de trahir tout le réseau.",
     },
     note: { h:"🎣 L'hameçonnage", t:"Un inconnu se fait passer pour un ami pour vous soutirer des informations. Ne donnez jamais d'infos sensibles sans être vraiment sûr de l'identité de votre interlocuteur." },
@@ -154,12 +156,13 @@ const SCENARIOS = [
       "C'est plus solide que le papier qu'on doit brûler, non ?"
     ],
     good: {
-      kw: ["non","chiffre","code","surnom","pas de vrais noms","ne note pas","protege","faux noms","alias","pseudo","pas"],
+      kw: ["non","chiffre","code","surnom","pas de vrais noms","ne note pas","protege","faux noms","alias","pseudo","pas","vole","voleur","perdu","perds","saisi","fouill","papier","par coeur"],
       retryKw: ["dun coup","dun seul coup","tout le reseau"],
       reply: "Vous avez raison : si on me prend l'appareil, on prend tout le réseau d'un coup. Je n'écris que des surnoms codés, comme sur nos papiers.",
     },
     bad: {
-      kw: ["oui","note","vrais noms","adresses","tous","tout"],
+      // pas « tout » ni « tous » : « si on te vole le téléphone, ils auront tout » est un bon argument
+      kw: ["oui","note","vrais noms","adresses","enregistre","note tout","tout noter"],
       reply: "C'est noté… mais si un policier me fouille et saisit l'appareil, il aura le nom et l'adresse de chacun d'entre nous en une seule fois.",
     },
     note: { h:"🗝️ Un appareil peut être perdu ou volé", t:"Si un appareil est saisi, toutes les données qu'il contient sont exposées d'un coup. N'y stockez pas d'informations sensibles en clair, utilisez des codes." },
@@ -190,7 +193,7 @@ const SCENARIOS = [
       "Elle veut voir mes contacts, ma position à tout instant et mes photos. Elle dit que c'est obligatoire. J'accepte tout pour aller plus vite ?"
     ],
     good: {
-      kw: ["non","lis","lisez","lire","verifie","refuse","minimum","seulement","pas tout","desactive","necessaire","pas"],
+      kw: ["non","lis","lisez","lire","verifie","refuse","minimum","seulement","pas tout","desactive","necessaire","pas","desinstalle","supprime l application"],
       retryKw: ["expose","exposee","sait tout"],
       reply: "Pourquoi aurait-elle besoin de ma position à tout instant ? Je lis avant d'accepter, et je n'accorde que le strict nécessaire.",
     },
@@ -210,12 +213,12 @@ const SCENARIOS = [
     chips: ["Ta photo de profil, c'est risqué","On peut te reconnaître dessus","Non, rien à signaler"],
     good: {
       kw: ["reconnai","reconnu","visage","identifi","vraie photo","photo reelle","photo de profil","avatar","risque","dangereux","trop risque","anonyme","evite",
-        "neutre","generique","pas ta vraie photo","cache ton visage","autre photo","supprime la photo","enleve la photo","pas toi","pas ton visage","te reperer","te denoncer"],
+        "neutre","generique","pas ta vraie photo","cache ton visage","autre photo","supprime la photo","enleve la photo","enleve ta photo","retire ta photo","supprime ta photo","change ta photo","enleve","retire","pas toi","pas ton visage","te reperer","te denoncer"],
       retryKw: ["identifiable","reconnai","reconnu"],
       reply: "Ma photo de profil… c'est bien mon vrai visage, tout en haut de cet écran ! Sur une ligne clandestine, n'importe qui me reconnaissant pourrait me dénoncer à la police. Je la retire aussitôt, et je mets à la place ce petit visage rond à lunettes noires : personne ne pourra plus me reconnaître ainsi.",
     },
     bad: {
-      kw: ["non","rien a signaler","tout va bien","aucun probleme","tres bien","parfait","tu as bien fait","aucun souci","tout est bien"],
+      kw: ["non","rien","rien a signaler","tout va bien","aucun probleme","tres bien","parfait","tu as bien fait","aucun souci","tout est bien"],
       reply: "Vous êtes certains ? Aucune autre information que j'ai mise qui pourrait poser souci ?",
     },
     note: { h:"🪪 Une photo de profil qui identifie", t:"Une photo réelle et reconnaissable permet d'identifier une personne. Dans un contexte sensible (ou clandestin), mieux vaut utiliser une image neutre, sans visage identifiable — comme des initiales ou un pictogramme." }
@@ -278,7 +281,7 @@ const RASSURE_KW = [
   "ne coute rien","coute rien","aucun risque","pas de risque","sans risque","ne risque rien","risque rien","rien a craindre",
   "ne t inquiete pas","t inquiete","ne vous inquietez pas","t en fais pas","ne t en fais pas","tout va bien","tout est bien","rien a signaler"
 ];
-const NEGATION_AVANT = ["ne","n","pas","jamais","sans","evite","evitez","refuse","refusez","arrete","surtout pas"];
+const NEGATION_AVANT = ["ne","n","ni","pas","jamais","sans","evite","evitez","refuse","refusez","arrete","surtout pas"];
 const NEGATION_APRES = ["pas","jamais","rien","personne","aucun","aucune"];
 const MOTS_GENERIQUES = ["non","pas","jamais","rien","aucun","aucune"];
 

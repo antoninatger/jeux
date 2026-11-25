@@ -122,7 +122,9 @@ function classer(sc, text, extraGood){
 
   let bons = 0, generiques = 0, mauvais = 0, accords = rassure;
   if(aDesMauvais){
-    trouver(t, ACCORD_KW).forEach(o => {
+    // un accord n'est nié que par ce qui le précède (« pas d'accord ») : dans
+    // « oui, personne ne le sait », « personne » ne nie pas le « oui »
+    trouver(t, ACCORD_KW, true).forEach(o => {
       if(o.niee) bons++; else accords++;
       for(let i=o.a;i<o.b;i++) t[i] = "§";
     });
@@ -152,6 +154,7 @@ function classer(sc, text, extraGood){
    (« la 2, pas la 1 ») ne comptent pas. */
 function classerChoix(sc, text){
   const t = mots(text);
+  retirer(t, sc.good.followNeutreKw || []);
   // pour un choix, seule la négation placée avant compte : « la ronde, pas les autres »
   const bon = trouver(t, sc.good.followKw, true).some(o => !o.niee);
   const faux = trouver(t, sc.good.followWrongKw || [], true).some(o => !o.niee);
@@ -304,6 +307,8 @@ function resumeGame(){
   riskScore = saved.riskScore || 0;
   if(Array.isArray(saved.transcript)){ transcript.length=0; transcript.push(...saved.transcript); }
   $("intro").classList.add("hidden");
+  // une partie sauvegardée a forcément passé l'étape « qui prévenir » : le dossier 📁 reste ouvert
+  prevenu = true; $("filesBtn").classList.remove("hidden");
   updateRisk(0); updateProgress();
   addMsg("Système", "↻ Reprise de la partie à l'étape " + (idx+1) + "/" + SCENARIOS.length + ".", "sys");
   loadScenario();
