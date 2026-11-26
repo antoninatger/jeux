@@ -87,6 +87,10 @@
      un ecran etroit, la date ne tient plus sur la meme ligne que le nom. Elle
      est deja affichee en grand sur l'ecran d'accueil, elle cede la place. */
   @media (max-width:430px){ .h-tag{display:none} }
+  /* Avec le troisième bouton (📁), le badge chevauchait le nom et le statut
+     sur ordinateur aussi (le cadre ne dépasse jamais 440 px) : il cède la place. */
+  .h-top:has(#filesBtn:not(.hidden)) .h-tag{display:none}
+  .h-name,.h-status{overflow:hidden;text-overflow:ellipsis}
   /* Trois boutons d'outil (📁 💬 📥) : le bloc du nom cède la place et le
      statut se coupe proprement plutôt que de pousser un bouton hors du cadre. */
   .h-top > div:nth-child(2){flex:1;min-width:0}
